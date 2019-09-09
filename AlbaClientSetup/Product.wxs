@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="AlbaClientSetup" Language="1033" Version="1.0.0.0" Manufacturer="Territory Tools" UpgradeCode="680b0e19-4eeb-4d3d-9a6c-007025295ecf">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate  EmbedCab="yes" />
+
+		<Feature Id="ProductFeature" Title="AlbaClientSetup" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="AlbaClientSetup" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+			 <Component Id="ProductComponent" Guid="FD3B7A08-E317-4CA5-A516-8256D9AC7B8B"> 
+         <File Id="WpfUITargetDir1" Source="$(var.WpfUI.TargetDir)AlbaClientWpfUI.exe" />
+         <File Id="WpfUITargetDir2" Source="$(var.WpfUI.TargetDir)Controllers.dll" />
+         <!--<File Id="WpfUITargetDir3" Source="$(var.WpfUI.TargetDir)" />-->
+				<!-- TODO: Insert files, registry keys, and other resources here. -->
+			 </Component> 
+		</ComponentGroup>
+	</Fragment>
+</Wix>
