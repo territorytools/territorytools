@@ -1,0 +1,59 @@
+@using Microsoft.AspNetCore.Identity
+@using AlbaClient.Controllers.UseCases;
+@using WebUI;
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@model Publisher;
+@{
+    ViewData["Title"] = "Your Territories";
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <h4 style="text-align:center;">Your Territories</h4>
+    if (Model == null || Model.Territories.Count == 0)
+    {
+        <p style="margin-right:auto;margin-left:auto;">You do not have any territories checked out.</p>
+    }
+    else
+    {
+        <div class="container mt-3" style="max-width:600px;">
+            <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                <div class="pr-2 pl-2" style="min-width:60px;">#</div>
+                <div class="pr-2 pl-2 flex-grow-1">Description</div>
+                <div class="pr-2 pl-2 flex-grow-1"></div>
+                <div class="pr-2 pl-2" style="width:150px;">Assigned</div>
+                <div class="pr-2 pl-2" style="width:50px;">Addr.</div>
+                <div class="pr-1 pl-1" style="min-width:60px;"></div>
+            </div>
+  
+            @foreach (var assignment in Model.Territories)
+            {
+                string signedOut = "";
+                int days = (int)(DateTime.Now - assignment.SignedOut)?.TotalDays;
+                if (days > 30)
+                {
+                    int months = days / 30;
+                    signedOut = $"{months} months";
+                }
+                else
+                {
+                    signedOut = $"{days} days";
+                }
+                <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                    <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
+                    <div class="p-2 flex-grow-1">@assignment.Description</div>
+                    <div class="p-2" style="width:150px;">@signedOut</div>
+                    <div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>
+                    <div class="p-2" style="min-width:60px;">
+                        <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Map</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+else
+{
+ 
+}
