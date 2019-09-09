@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+  web:
+    container_name: territorytools
+    restart: always
+    build:
+      context: .
+      dockerfile: ./WebUI/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "${DataVolume}:/data"
+    environment:
+      - ASPNETCORE_URLS=$ASPNETCORE_URLS
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - Authentication:Google:ClientId=$GoogleClientId
+      - Authentication:Google:ClientSecret=$GoogleClientSecret
+      - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
+      - AuthorizedUsers=$AuthorizedUsers
+      - AdminUsers=$AdminUsers
+      - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
+      - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaUser=$AlbaUser
+      - AlbaPassword=$AlbaPassword
+      - AlbaAccount=$AlbaAccount
+      - LetsEncrypt:Email=$LetsEncryptEmail
+      - LetsEncrypt:UseStaging=$LetsEncryptUseStaging
+      - LetsEncrypt:Domains=$LetsEncryptDomains
+      - LetsEncrypt:CountryName=$LetsEncryptCountryName
+      - LetsEncrypt:Locality=$LetsEncryptLocality
+      - LetsEncrypt:Organization=$LetsEncryptOrganization
+      - LetsEncrypt:OrganizationUnit=$LetsEncryptOrganizationUnit
+      - LetsEncrypt:State=$LetsEncryptState
+      - DataVolume=$DataVolume
