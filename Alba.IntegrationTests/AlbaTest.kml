@@ -1,0 +1,726 @@
+<?xml version="1.0"?>
+<kml xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Territories</name>
+    <description>Territories</description>
+    <Folder>
+      <name>Territory Borders</name>
+      <Placemark>
+        <name>TEST123-456</name>
+        <MultiGeometry>
+          <Polygon>
+            <outerBoundaryIs>
+              <LinearRing>
+                <tessellate>0</tessellate>
+                <coordinates>-122.227277755737,47.7767134866039,0.0 -122.228007316589,47.7671954027062,0.0 -122.229208946228,47.7672242480162,0.0 -122.229251861572,47.7655511935936,0.0 -122.227878570557,47.7653781159267,0.0 -122.227964401245,47.7569543067881,0.0 -122.228736877441,47.753722894777,0.0 -122.224745750427,47.752597623846,0.0 -122.220840454102,47.7524245030815,0.0 -122.2141456604,47.7504047182743,0.0 -122.212643623352,47.7506067002826,0.0 -122.211570739746,47.7516743064468,0.0 -122.212343215942,47.7542710948772,0.0 -122.211141586304,47.7580506331268,0.0 -122.209296226501,47.7588584377524,0.0 -122.207708358765,47.7590315371119,0.0 -122.207880020142,47.7635607656541,0.0 -122.210283279419,47.7656954245428,0.0 -122.211527824402,47.768637648609,0.0 -122.21667766571,47.7692433799623,0.0 -122.216591835022,47.7753579871026,0.0 -122.217235565186,47.7766269664149,0.0</coordinates>
+              </LinearRing>
+            </outerBoundaryIs>
+          </Polygon>
+        </MultiGeometry>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Doors</name>
+      <Placemark>
+        <name>1</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Liu, Jin</value>
+          </Data>
+          <Data name="Address">
+            <value>8428 Ne Bothell Way</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>1</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>1: Jin Liu: 8428 Ne Bothell Way</description>
+        <Point>
+          <coordinates>-122.228202279657,47.7538139373064,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>2</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Wu, Xiao</value>
+          </Data>
+          <Data name="Address">
+            <value>8700 Ne Bothell Way Apt A202</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>2</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>2: Xiao Wu: 8700 Ne Bothell Way Apt A202</description>
+        <Point>
+          <coordinates>-122.224773494527,47.7528781816363,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>3</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Leung, Esmond T</value>
+          </Data>
+          <Data name="Address">
+            <value>8700 Ne Bothell Way #H102</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>3</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>3: Esmond T Leung: 8700 Ne Bothell Way #H102</description>
+        <Point>
+          <coordinates>-122.224773494527,47.7528781816363,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>4</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Lam, Dena</value>
+          </Data>
+          <Data name="Address">
+            <value>17721 Hall Rd Apt 105</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>4</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>4: Dena Lam: 17721 Hall Rd Apt 105</description>
+        <Point>
+          <coordinates>-122.212492832914,47.7567952964455,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>5</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Song, Siu</value>
+          </Data>
+          <Data name="Address">
+            <value>17813 85th Pl Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>5</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>5: Siu Song: 17813 85th Pl Ne</description>
+        <Point>
+          <coordinates>-122.226481055841,47.7572153974324,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>6</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Z Tang, Yongzeng</value>
+          </Data>
+          <Data name="Address">
+            <value>20350 86th Pl Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>6</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>6: Yongzeng Z Tang: 20350 86th Pl Ne</description>
+        <Point>
+          <coordinates>-122.224746169522,47.7753802388906,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>7</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Tam, Yat</value>
+          </Data>
+          <Data name="Address">
+            <value>19641 88th Pl Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>7</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>7: Yat Tam: 19641 88th Pl Ne</description>
+        <Point>
+          <coordinates>-122.222437541932,47.7710567694157,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>8</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Ong, Hartlnl</value>
+          </Data>
+          <Data name="Address">
+            <value>18022 89th Pl Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>8</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>8: Hartlnl Ong: 18022 89th Pl Ne</description>
+        <Point>
+          <coordinates>-122.221385696903,47.758659934625,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>9</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Hu, Fengsheng</value>
+          </Data>
+          <Data name="Address">
+            <value>19017 89th Pl Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>9</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>9: Fengsheng Hu: 19017 89th Pl Ne</description>
+        <Point>
+          <coordinates>-122.221235493198,47.7658624202013,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>10</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>K Chui, Wai</value>
+          </Data>
+          <Data name="Address">
+            <value>17300 91st Ave Ne, Apt D202</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>10</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>10: Wai K Chui: 17300 91st Ave Ne, Apt D202</description>
+        <Point>
+          <coordinates>-122.220566114411,47.7532572951168,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>11</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Chui, Wai</value>
+          </Data>
+          <Data name="Address">
+            <value>17300 91st Ave Ne Apt D202</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>11</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>11: Wai Chui: 17300 91st Ave Ne Apt D202</description>
+        <Point>
+          <coordinates>-122.220566114411,47.7532572951168,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>12</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Tan, Muyheang</value>
+          </Data>
+          <Data name="Address">
+            <value>17807 93rd Pl Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>12</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>12: Muyheang Tan: 17807 93rd Pl Ne</description>
+        <Point>
+          <coordinates>-122.21633140929,47.7575090993196,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>13</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Hui, Chen</value>
+          </Data>
+          <Data name="Address">
+            <value>19519 94th Ave Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>13</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>13: Chen Hui: 19519 94th Ave Ne</description>
+        <Point>
+          <coordinates>-122.214897014201,47.7627342101187,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>14</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Xie, S</value>
+          </Data>
+          <Data name="Address">
+            <value>18309 96th Ave Ne</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>14</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>14: S Xie: 18309 96th Ave Ne</description>
+        <Point>
+          <coordinates>-122.212397195399,47.7607227209955,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>15</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>X Liang, Wei</value>
+          </Data>
+          <Data name="Address">
+            <value>9222 Ne 173rd Pl</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>15</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>15: Wei X Liang: 9222 Ne 173rd Pl</description>
+        <Point>
+          <coordinates>-122.218844890594,47.7536431979388,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>16</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Wong, Wai</value>
+          </Data>
+          <Data name="Address">
+            <value>9236 Ne 174th Pl</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>16</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>16: Wai Wong: 9236 Ne 174th Pl</description>
+        <Point>
+          <coordinates>-122.218175511807,47.754452554509,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>17</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Chunsheng Zhang, Rev</value>
+          </Data>
+          <Data name="Address">
+            <value>9243 Ne 174th Pl</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>17</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>17: Rev Chunsheng Zhang: 9243 Ne 174th Pl</description>
+        <Point>
+          <coordinates>-122.218134524301,47.7544935420156,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>18</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Chau, Vincent</value>
+          </Data>
+          <Data name="Address">
+            <value>9412 Ne 174th Pl</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>18</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>18: Vincent Chau: 9412 Ne 174th Pl</description>
+        <Point>
+          <coordinates>-122.214541872963,47.7545037679374,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>19</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Lin, Maria</value>
+          </Data>
+          <Data name="Address">
+            <value>8824 Ne 176th St</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>19</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>19: Maria Lin: 8824 Ne 176th St</description>
+        <Point>
+          <coordinates>-122.223243545741,47.7555351611227,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>20</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Zhu, Feng</value>
+          </Data>
+          <Data name="Address">
+            <value>9007 Ne 176th St</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>20</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>20: Feng Zhu: 9007 Ne 176th St</description>
+        <Point>
+          <coordinates>-122.220962243155,47.7553609851748,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>21</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Wu, Shaomtn</value>
+          </Data>
+          <Data name="Address">
+            <value>8822 Ne 178th St</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>21</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>21: Shaomtn Wu: 8822 Ne 178th St</description>
+        <Point>
+          <coordinates>-122.223011283204,47.7573485858738,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>22</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Wang, Boulland</value>
+          </Data>
+          <Data name="Address">
+            <value>8825 Ne 178th St</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>22</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>22: Boulland Wang: 8825 Ne 178th St</description>
+        <Point>
+          <coordinates>-122.222970295697,47.757338359952,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>23</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Sam, Roy</value>
+          </Data>
+          <Data name="Address">
+            <value>9228 Ne 191st St</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>23</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>23: Roy Sam: 9228 Ne 191st St</description>
+        <Point>
+          <coordinates>-122.217028029263,47.7666444517672,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>24</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Lam, Dinh</value>
+          </Data>
+          <Data name="Address">
+            <value>8517 Ne 201st Pl</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>24</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>No</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>24: Dinh Lam: 8517 Ne 201st Pl</description>
+        <Point>
+          <coordinates>-122.226276118308,47.7733517345041,0.0</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>25</name>
+        <ExtendedData>
+          <Data name="Name">
+            <value>Shen, Xiaojing</value>
+          </Data>
+          <Data name="Address">
+            <value>8630 Ne 201st Pl</value>
+          </Data>
+          <Data name="City">
+            <value>Bothell</value>
+          </Data>
+          <Data name="Zip">
+            <value>98011</value>
+          </Data>
+          <Data name="PushPinNo">
+            <value>25</value>
+          </Data>
+          <Data name="LanguageConfirmed">
+            <value>Yes</value>
+          </Data>
+          <Data name="ResultCode" />
+        </ExtendedData>
+        <description>25: Xiaojing Shen: 8630 Ne 201st Pl</description>
+        <Point>
+          <coordinates>-122.224923782051,47.7734780497849,0.0</coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>
