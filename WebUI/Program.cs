@@ -10,8 +10,6 @@ namespace WebUI
     {
         public static void Main(string[] args)
         {
-            DotNetEnv.Env.Load("../.env");
-
             CreateWebHostBuilder(args).Build().Run();
         }
 
