@@ -7,8 +7,6 @@
 @inject IViewLocalizer Localizer
 
     <div class="text-center">
-        <img src="mstile-144x144.png">
-        <h1 class="display-4">@Localizer["WelcomeBanner"]</h1>
         @if (SignInManager.IsSignedIn(User))
         {
             if (!string.IsNullOrWhiteSpace(Model.Name))
@@ -17,12 +15,16 @@
             }
             else
             {
-                <h5>We do not have a name for your email address: @Model.Email</h5>
+                <h5>@Model.Email</h5>
+                <p>We do not have a name for your email address!</p>
             }
         }
         else
         {
+            <img src="mstile-144x144.png">
+            <h1 class="display-4">Territory Tools</h1>
             <p>@Localizer["FrontPageExplanation"]</p>
+            <p>@Localizer["PleaseLogIn"]</p>
             <form id="external-account" action="~/Identity/Account/ExternalLogin?returnUrl=%2F" method="post" class="form-horizontal">
                 <div>
                     <p>
@@ -37,7 +39,7 @@
                 </div>
             </form>
         }
-        <a href="http://bellevuemandarin.org">Main Bellevue Mandarin Site</a>
     </div>
 
 <partial name="_MyTerritories">
+

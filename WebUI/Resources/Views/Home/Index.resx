@@ -118,7 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FrontPageExplanation" xml:space="preserve">
-    <value>This is a reporting system for territories.  Please log in.</value>
+    <value>Welcome!  This site has tools and reports for territories.  This is not a public site you must be invited to have an account.</value>
+  </data>
+  <data name="PleaseLogIn" xml:space="preserve">
+    <value>Please sign in:</value>
   </data>
   <data name="WelcomeBanner" xml:space="preserve">
     <value>Welcome</value>
