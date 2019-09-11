@@ -275,7 +275,7 @@ namespace WebUI.Controllers
 
             LoadUserData();
 
-            return Ok();
+            return LocalRedirect("~/Home/Load");
         }
 
         [HttpPost]
