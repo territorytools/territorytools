@@ -332,3 +332,5 @@ ASALocalRun/
 .env
 .vscode/launch.json
 .vscode/tasks.json
+
+WebUI/DataVolume/
