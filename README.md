@@ -1,5 +1,5 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+Territory Web is a web site that suppliments the Alba territory system with a few reports and a territory check-out page.
 
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
