@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using FluffySpoon.AspNet.LetsEncrypt;
+using System;
 using System.Linq;
 
 namespace WebUI
@@ -9,6 +10,8 @@ namespace WebUI
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load("../.env");
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
@@ -16,11 +19,16 @@ namespace WebUI
         {
             var builder = WebHost.CreateDefaultBuilder(args);
 
-            if (!args.Contains("no-ssl"))
+            string noSsl = Environment.GetEnvironmentVariable("NoSsl");
+
+            if (!args.Contains("no-ssl") 
+                && !args.Contains("NoSsl") 
+                && (noSsl == null 
+                || string.Equals(noSsl,"false",StringComparison.OrdinalIgnoreCase)))
             {
                 builder.UseKestrel(kestrelOptions => kestrelOptions.ConfigureHttpsDefaults(
-                    httpsOptions => httpsOptions.ServerCertificateSelector
-                        = (c, s) => LetsEncryptRenewalService.Certificate));
+                   httpsOptions => httpsOptions.ServerCertificateSelector
+                       = (c, s) => LetsEncryptRenewalService.Certificate));
             }
             else
             {

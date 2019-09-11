@@ -13,7 +13,11 @@
     <h4 style="text-align:center;">Your Territories</h4>
     if (Model == null || Model.Territories.Count == 0)
     {
-        <p style="margin-right:auto;margin-left:auto;">You do not have any territories checked out.</p>
+        <div class="container mt-3" style="max-width:600px;">
+            <div class="d-flex mb-2" style="border-top: 1px solid #aaa;">
+                <div class="pr-2 pl-2 flex-grow-1" style="text-align:center;">You do not have any territories checked out.</div>
+            </div>
+        </div>
     }
     else
     {
