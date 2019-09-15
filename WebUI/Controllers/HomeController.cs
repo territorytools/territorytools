@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace WebUI.Controllers
 {
-
     public class HomeController : Controller
     {
         readonly IStringLocalizer<HomeController> localizer;
