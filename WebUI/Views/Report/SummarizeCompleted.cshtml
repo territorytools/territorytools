@@ -1,0 +1,15 @@
+@model SummarizeCompletedReport;
+@{
+    ViewData["Title"] = "Summarize Completed";
+}
+<div class="container mt-3" style="max-width:600px;">
+    <h3>Summary of territory completion</h3>
+    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="pr-2 pl-2" style="min-width:60px;">Name</div>
+        <div class="pr-2 pl-2 flex-grow-1">Value</div>
+    </div>
+    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="p-2" style="min-width:60px;"><strong>Completed Count</strong></div>
+        <div class="p-2" style="min-width:60px;"><strong>@Model.CompletedCount</strong></div>
+    </div>
+</div>
