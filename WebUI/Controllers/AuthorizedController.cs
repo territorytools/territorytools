@@ -17,6 +17,7 @@ using Microsoft.Extensions.Options;
 using io = System.IO;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
+using WebUI.BasicStrings.StringsEqual;
 
 namespace WebUI.Controllers
 {
@@ -203,7 +204,7 @@ namespace WebUI.Controllers
 
             foreach (var user in users)
             {
-                if (string.Equals(user.Email, User.Identity.Name, StringComparison.OrdinalIgnoreCase))
+                if (StringsEqual(user.Email, User.Identity.Name))
                 {
                     return true;
                 }
