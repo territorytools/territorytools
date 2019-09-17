@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
 using AlbaClient;
@@ -9,21 +7,19 @@ using AlbaClient.AlbaServer;
 using AlbaClient.Controllers.AlbaServer;
 using AlbaClient.Controllers.UseCases;
 using AlbaClient.Models;
-using Microsoft.AspNetCore.Authorization;
 using cuc = Controllers.UseCases;
 using Controllers.UseCases;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using io = System.IO;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
-using WebUI.BasicStrings.StringsEqual;
+using static WebUI.BasicStrings;
 
 namespace WebUI.Controllers
 {
     public class AuthorizedController : Controller
     {
-        protected readonly IStringLocalizer<HomeController> localizer;
+        protected readonly IStringLocalizer<AuthorizedController> localizer;
 
         protected string account;
         protected string user;
@@ -31,7 +27,7 @@ namespace WebUI.Controllers
         protected WebUI.Services.IAuthorizationService authorizationService;
 
         public AuthorizedController(
-            IStringLocalizer<HomeController> localizer,
+            IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             WebUI.Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor)
