@@ -3,20 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models;
-using AlbaClient;
-using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.AlbaServer;
-using AlbaClient.Controllers.UseCases;
-using AlbaClient.Models;
 using Microsoft.AspNetCore.Authorization;
-using cuc = Controllers.UseCases;
-using Controllers.UseCases;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using io = System.IO;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
+using WebUI.Models;
 
 namespace WebUI.Controllers
 {
@@ -30,7 +22,7 @@ namespace WebUI.Controllers
         // WebUI.Services.IAuthorizationService authorizationService;
 
         public HomeController(
-            IStringLocalizer<HomeController> localizer,
+            IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             WebUI.Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
