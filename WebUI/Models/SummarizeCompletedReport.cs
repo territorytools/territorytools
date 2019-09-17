@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AlbaClient.Controllers.UseCases;
-using Controllers.UseCases;
-
 namespace WebUI
 {
     public class SummarizeCompletedReport
     {
-        public int CompletedCount { get; set; } 
+        public int CompletedThisYear { get; set; }
+        public int CompletedLastYear { get; set; }
+        public int CompletedTwoYearsAgo { get; set; }
+        public int CompletedThreeYearsAgo { get; set; }
+        public int CompletedFourYearsAgo { get; set; }
     }
 }
