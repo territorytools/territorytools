@@ -49,34 +49,23 @@ namespace WebUI.Controllers
                 var now = DateTime.Now;
                 int thisYear = now.Month >= 9 ? now.Year : (now.Year - 1);
 
-                var report = new SummarizeCompletedReport()
-                {
-                    CompletedThisYear = allAssignments
-                        .Where(a => a.LastCompleted >= new DateTime(thisYear, 9, 1))
-                        .ToList()
-                        .Count,
-                    CompletedLastYear = allAssignments
-                        .Where(a => a.LastCompleted >= new DateTime(thisYear-1, 9, 1)
-                            && a.LastCompleted < new DateTime(thisYear, 9, 1))
-                        .ToList()
-                        .Count,
-                    CompletedTwoYearsAgo = allAssignments
-                        .Where(a => a.LastCompleted >= new DateTime(thisYear-2, 9, 1)
-                            && a.LastCompleted < new DateTime(thisYear-1, 9, 1))
-                        .ToList()
-                        .Count,
-                    CompletedThreeYearsAgo = allAssignments
-                        .Where(a => a.LastCompleted >= new DateTime(thisYear-3, 9, 1)
-                            && a.LastCompleted < new DateTime(thisYear-2, 9, 1))
-                        .ToList()
-                        .Count,
-                    CompletedFourYearsAgo = allAssignments
-                        .Where(a => a.LastCompleted >= new DateTime(thisYear-4, 9, 1)
-                            && a.LastCompleted < new DateTime(thisYear-3, 9, 1))
-                        .ToList()
-                        .Count
+                var report = new SummarizeCompletedReport();
 
-                };
+                for (int i = 0; i <= 10; i++)
+                {
+                    int year = thisYear - i;
+                    report.SummaryItems.Add(
+                        new SummaryItem
+                        {
+                            Name = $"{year}-{year + 1}",
+                            Value = allAssignments
+                                .Where(a => a.LastCompleted >= new DateTime(year, 9, 1)
+                                && a.LastCompleted < new DateTime(year + 1, 9, 1))
+                                .ToList()
+                                .Count
+                                .ToString()
+                        });
+                }
 
                 return View(report);
             }
