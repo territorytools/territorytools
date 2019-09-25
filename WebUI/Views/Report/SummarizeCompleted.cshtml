@@ -1,31 +1,19 @@
 @model SummarizeCompletedReport;
 @{
-    ViewData["Title"] = "Summarize Completed";
+    ViewData["Title"] = "Yearly Totals";
 }
     <div class="container mt-3" style="max-width:600px;">
-        <h3>Summary of territory completion</h3>
+        <h3>@ViewData["Title"]</h3>
+        <p>Service Years Start September 1, End August 31</p>
         <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="pr-2 pl-2" style="min-width:60px;">Name</div>
-            <div class="pr-2 pl-2 flex-grow-1">Value</div>
+            <div class="pr-2 pl-2" style="min-width:100px;">Service Year</div>
+            <div class="pr-2 pl-2" style="min-width:100px;">Territories Completed</div>
         </div>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="p-2" style="min-width:60px;"><strong>Completed This Year</strong></div>
-            <div class="p-2" style="min-width:60px;"><strong>@Model.CompletedThisYear</strong></div>
-        </div>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="p-2" style="min-width:60px;"><strong>Completed Last Year</strong></div>
-            <div class="p-2" style="min-width:60px;"><strong>@Model.CompletedLastYear</strong></div>
-        </div>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="p-2" style="min-width:60px;"><strong>Completed Two Years Ago</strong></div>
-            <div class="p-2" style="min-width:60px;"><strong>@Model.CompletedTwoYearsAgo</strong></div>
-        </div>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="p-2" style="min-width:60px;"><strong>Completed Three Years Ago</strong></div>
-            <div class="p-2" style="min-width:60px;"><strong>@Model.CompletedThreeYearsAgo</strong></div>
-        </div>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="p-2" style="min-width:60px;"><strong>Completed Four Years Ago</strong></div>
-            <div class="p-2" style="min-width:60px;"><strong>@Model.CompletedFourYearsAgo</strong></div>
-        </div>
+        @foreach (var item in @Model.SummaryItems)
+        {
+              <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                   <div class="p-2" style="min-width:100px;"><strong>@item.Name</strong></div>
+                   <div class="p-2" style="min-width:100px;"><strong>@item.Value</strong></div>
+              </div>
+        }
     </div>
