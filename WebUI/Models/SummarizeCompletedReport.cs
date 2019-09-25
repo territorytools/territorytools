@@ -1,11 +1,15 @@
+using System.Collections.Generic;
+
 namespace WebUI
 {
     public class SummarizeCompletedReport
     {
-        public int CompletedThisYear { get; set; }
-        public int CompletedLastYear { get; set; }
-        public int CompletedTwoYearsAgo { get; set; }
-        public int CompletedThreeYearsAgo { get; set; }
-        public int CompletedFourYearsAgo { get; set; }
+        public List<SummaryItem> SummaryItems = new List<SummaryItem>();
+    }
+
+    public class SummaryItem
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 }
