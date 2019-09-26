@@ -83,19 +83,9 @@ namespace WebUI.Controllers
                 throw;
             }
         }
+
         public IActionResult Privacy()
         {
-            return View();
-        }
-
-        [Authorize]
-        public IActionResult Reports()
-        {
-            if (!IsAdmin())
-            {
-                return Forbid();
-            }
-
             return View();
         }
 
@@ -112,79 +102,6 @@ namespace WebUI.Controllers
                         ?? HttpContext.TraceIdentifier
                 }
             );
-        }
-
-        [Authorize]
-        public IActionResult NeverCompleted()
-        {
-            try
-            {
-                if (!IsAdmin())
-                {
-                    return Forbid();
-                }
-
-                var publishers = GetUsers(account, user, password)
-                    .OrderBy(u => u.Name)
-                    .ToList();
-
-                var assignments = GetAllAssignments(account, user, password)
-                    // Territories never worked
-                    .Where(a => a.LastCompleted == null && a.SignedOut == null)
-                    .OrderBy(a => a.Description)
-                    .ThenBy(a => a.Number)
-                    .ToList();
-
-                var report = new NeverCompletedReport()
-                {
-                    Publishers = publishers,
-                    Assignments = assignments
-                };
-
-                return View(report);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [Authorize]
-        public IActionResult Available()
-        {
-            try
-            {
-                if (!IsAdmin())
-                {
-                    return Forbid();
-                }
-
-                var users = GetUsers(account, user, password)
-                    .OrderBy(u => u.Name)
-                    .ToList();
-
-                var assignments = GetAllAssignments(account, user, password)
-                    .Where(a => string.Equals(
-                        a.Status, 
-                        "Available", 
-                        StringComparison.OrdinalIgnoreCase)) 
-                    .OrderBy(a => a.LastCompleted)
-                    .ThenBy(a => a.Number)
-                    .ToList();
-
-                var report = new NeverCompletedReport()
-                {
-                    // TODO: Rename Publishers to Users
-                    Publishers = users,
-                    Assignments = assignments
-                };
-
-                return View(report);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         [Authorize]
