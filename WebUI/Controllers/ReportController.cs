@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
@@ -31,6 +32,42 @@ namespace WebUI.Controllers
             }
 
             return View();
+        }
+
+        [Authorize]
+        public IActionResult ByPublisher()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var groups = GetAllAssignments(account, user, password)
+                    .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
+                    .GroupBy(a => a.SignedOutTo)
+                    .ToList();
+
+                var publishers = new List<Publisher>();
+                foreach (var group in groups.OrderBy(g => g.Key))
+                {
+                    var pub = new Publisher() { Name = group.Key };
+                    var ordered = group.OrderByDescending(a => a.SignedOut);
+                    foreach (var item in ordered)
+                    {
+                        pub.Territories.Add(item);
+                    }
+
+                    publishers.Add(pub);
+                }
+
+                return View(publishers);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [Authorize]

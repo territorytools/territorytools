@@ -188,42 +188,6 @@ namespace WebUI.Controllers
         }
 
         [Authorize]
-        public IActionResult ByPublisher()
-        {
-            try
-            {
-                if (!IsAdmin())
-                {
-                    return Forbid();
-                }
-
-                var groups = GetAllAssignments(account, user, password)
-                    .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
-                    .GroupBy(a => a.SignedOutTo)
-                    .ToList();
-
-                var publishers = new List<Publisher>();
-                foreach (var group in groups.OrderBy(g => g.Key))
-                {
-                    var pub = new Publisher() { Name = group.Key };
-                    var ordered = group.OrderByDescending(a => a.SignedOut);
-                    foreach (var item in ordered)
-                    {
-                        pub.Territories.Add(item);
-                    }
-
-                    publishers.Add(pub);
-                }
-
-                return View(publishers);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [Authorize]
         [Route("t/{number}")]
         public IActionResult AssignSingleTerritory(string number)
         {
