@@ -17,6 +17,12 @@ namespace WebUI.Areas.Identity.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+
+            builder.Entity<ItemCategory>()
+                .HasOne(i => i.Item)
+                .WithMany(c => c.ItemCategories)
+                .HasForeignKey(i => i.ItemID)
+                .HasConstraintName("ForeignKey_ItemCategory_Item");
         }
     }
 }
