@@ -34,6 +34,11 @@ namespace AlbaClient.AlbaServer
             return @"/assigned";
         }
 
+        public static string GetUserManagementPage()
+        {
+            return @"/ts?mod=users&cmd=usersSearch&q=&sort=user_name&order=asc";
+        }
+
         public static string RequestToAddNew(Territory territory)
         {
             return @"/ts?mod=territories&cmd=add&kind=0"
