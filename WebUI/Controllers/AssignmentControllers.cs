@@ -169,11 +169,13 @@ namespace WebUI.Controllers
         }
 
         [HttpGet("[action]")]
-        public LoadAssignmentsResult LoadAssignments()
+        public IActionResult LoadAssignments()
         {
             Load();
 
-            return new LoadAssignmentsResult() { Successful = true };
+            // TODO: Use with React or other UI
+            // return new LoadAssignmentsResult() { Successful = true };
+            return Redirect("/Home/Load");
         }
 
         [HttpGet("[action]")]
