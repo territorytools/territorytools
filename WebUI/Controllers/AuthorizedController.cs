@@ -19,6 +19,8 @@ namespace WebUI.Controllers
 {
     public class AuthorizedController : Controller
     {
+        string k1MagicString = LogUserOntoAlba.k1MagicString;
+
         protected readonly IStringLocalizer<AuthorizedController> localizer;
 
         protected string account;
@@ -48,29 +50,14 @@ namespace WebUI.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        protected void LoadData()
+        protected void LoadAssignmentData()
         {
             if (io.File.Exists(options.AlbaAssignmentsHtmlPath))
             {
                 io.File.Delete(options.AlbaAssignmentsHtmlPath);
             }
 
-            //if (io.File.Exists("users.html"))
-            //{
-            //    io.File.Delete("users.html");
-            //}
-
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
-
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
+            var client = AuthClient();
 
             var credentials = new Credentials(account, user, password, k1MagicString);
 
@@ -100,17 +87,7 @@ namespace WebUI.Controllers
                 io.File.Delete(options.AlbaUsersHtmlPath);
             }
 
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
-
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
+            var client = AuthClient();
 
             var credentials = new Credentials(account, user, password, k1MagicString);
 
@@ -124,27 +101,36 @@ namespace WebUI.Controllers
             io.File.WriteAllText(options.AlbaUsersHtmlPath, usersHtml);
         }
 
+        protected void LoadUserManagementData()
+        {
+            if (io.File.Exists(options.AlbaUserManagementHtmlPath))
+            {
+                io.File.Delete(options.AlbaUserManagementHtmlPath);
+            }
+
+            var client = AuthClient();
+
+            var credentials = new Credentials(account, user, password, k1MagicString);
+
+            client.Authorize(credentials);
+
+            var json = client.DownloadString(
+                RelativeUrlBuilder.GetUserManagementPage());
+
+            string html = AlbaJsonResultParser.ParseDataHtml(json, "users");
+
+            io.File.WriteAllText(options.AlbaUserManagementHtmlPath, html);
+        }
+
         protected IEnumerable<Assignment> GetAllAssignments(string account, string user, string password)
         {
             if (!io.File.Exists(options.AlbaAssignmentsHtmlPath))
             {
-                LoadData();
+                LoadAssignmentData();
             }
 
-            //string k1MagicString = LogUserOntoAlba.k1MagicString;
-
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
-
             // TODO: Probably don't need a dependency on client here
-            var useCase = new DownloadTerritoryAssignments(client); 
+            var useCase = new DownloadTerritoryAssignments(AuthClient());
 
             //var credentials = new Credentials(account, user, password, k1MagicString);
 
@@ -184,6 +170,37 @@ namespace WebUI.Controllers
             return DownloadUsers.GetUsers(html);
         }
 
+        protected IEnumerable<AlbaUser> GetAlbaUsers()
+        {
+            if (!io.File.Exists(options.AlbaUserManagementHtmlPath))
+            {
+                LoadUserManagementData();
+            }
+
+            string html = io.File.ReadAllText(options.AlbaUserManagementHtmlPath);
+
+            var users = DownloadUserManagementData.GetUsers(html);
+
+            var albaUsers = new List<AlbaUser>();
+            foreach (var u in users)
+            {
+                albaUsers.Add(
+                    new AlbaUser
+                    {
+                        Id = u.Id,
+                        UserName = u.UserName,
+                        Name = u.Name,
+                        Email = u.Email,
+                        Role = u.Role,
+                        Telephone = u.Telephone,
+                        Created = u.Created,
+                    }
+                );
+            }
+
+            return albaUsers;
+        }
+
         protected bool IsAdmin()
         {
             if (User.Identity.IsAuthenticated)
@@ -207,6 +224,21 @@ namespace WebUI.Controllers
             }
 
             return false;
+        }
+
+        static AuthorizationClient AuthClient()
+        {
+            var webClient = new CookieWebClient();
+            var basePath = new ApplicationBasePath(
+                protocolPrefix: "https://",
+                site: "www.alba-website-here.com",
+                applicationPath: "/alba");
+
+            var client = new AuthorizationClient(
+                webClient: webClient,
+                basePath: basePath);
+
+            return client;
         }
     }
 }
