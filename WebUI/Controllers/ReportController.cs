@@ -186,7 +186,7 @@ namespace WebUI.Controllers
         }
 
         [Authorize]
-        public IActionResult Users()
+        public IActionResult AlbaUsers()
         {
             try
             {
@@ -195,7 +195,7 @@ namespace WebUI.Controllers
                     return Forbid();
                 }
 
-                var users = GetAlbaUsers(account, user, password)
+                var users = GetAlbaUsers()
                     .OrderBy(u => u.Name)
                     .ToList();
 
