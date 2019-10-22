@@ -354,5 +354,36 @@ namespace WebUI.Controllers
 
             System.IO.File.WriteAllText(options.AlbaUsersHtmlPath, usersHtml);
         }
+
+        void LoadUserManagementData()
+        {
+            if (System.IO.File.Exists(options.AlbaUsersHtmlPath))
+            {
+                System.IO.File.Delete(options.AlbaUsersHtmlPath);
+            }
+
+            string k1MagicString = LogUserOntoAlba.k1MagicString;
+
+            var webClient = new CookieWebClient();
+            var basePath = new ApplicationBasePath(
+                protocolPrefix: "https://",
+                site: "www.alba-website-here.com",
+                applicationPath: "/alba");
+
+            var client = new AuthorizationClient(
+                webClient: webClient,
+                basePath: basePath);
+
+            var credentials = new Credentials(account, user, password, k1MagicString);
+
+            client.Authorize(credentials);
+
+            var assignedHtml = client.DownloadString(
+                RelativeUrlBuilder.GetTerritoryAssignmentsPage());
+
+            string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
+
+            System.IO.File.WriteAllText(options.AlbaUsersHtmlPath, usersHtml);
+        }
     }
 }
