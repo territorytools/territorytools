@@ -5,6 +5,9 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Reports">Reports</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="Index">Reports</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" href="http://bellevuemandarin.org">Schedules</a>
     </li>
 }
