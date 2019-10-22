@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebUI.Models;
 
 namespace WebUI.Areas.Identity.Data
 {
@@ -18,11 +19,7 @@ namespace WebUI.Areas.Identity.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
 
-            //builder.Entity<ItemCategory>()
-            //    .HasOne(i => i.Item)
-            //    .WithMany(c => c.ItemCategories)
-            //    .HasForeignKey(i => i.ItemID)
-            //    .HasConstraintName("ForeignKey_ItemCategory_Item");
+            builder.Entity<AlbaUser>();
         }
     }
 }

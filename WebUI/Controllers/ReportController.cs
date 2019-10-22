@@ -184,5 +184,27 @@ namespace WebUI.Controllers
                 throw;
             }
         }
+
+        [Authorize]
+        public IActionResult Users()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var users = GetAlbaUsers(account, user, password)
+                    .OrderBy(u => u.Name)
+                    .ToList();
+
+                return View(users);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

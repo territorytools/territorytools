@@ -184,6 +184,28 @@ namespace WebUI.Controllers
             return DownloadUsers.GetUsers(html);
         }
 
+        protected IEnumerable<AlbaUser> GetAlbaUsers(string account, string user, string password)
+        {
+            string html = io.File.ReadAllText(options.AlbaUsersHtmlPath);
+
+            var users = DownloadUsers.GetUsers(html);
+
+            var albaUsers = new List<AlbaUser>();
+            foreach (var u in users)
+            {
+                albaUsers.Add(
+                    new AlbaUser
+                    {
+                        Id = u.Id,
+                        Name = u.Name,
+                        Email = u.Email
+                    }
+                );
+            }
+
+            return albaUsers;
+        }
+
         protected bool IsAdmin()
         {
             if (User.Identity.IsAuthenticated)
