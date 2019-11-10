@@ -51,8 +51,7 @@ services:
             && echo date > /data/certbot_certificates_copied.txt
             echo 'Sleep for 12 hours...' ;
             sleep 12h ;
-        done
-      "
+        done"
   vault:
     image: vault
     container_name: vault
@@ -71,8 +70,6 @@ services:
     build:
       context: .
       dockerfile: ./WebUI/Dockerfile
-    ports:
-      - "5000:5000"
     volumes:
       - "${DataVolume}:/data"
     environment:
