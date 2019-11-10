@@ -8,8 +8,7 @@ services:
       context: .
       dockerfile: ./WebUI/Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "5000:5000"
     volumes:
       - "${DataVolume}:/data"
     environment:
@@ -34,3 +33,6 @@ services:
       - LetsEncrypt:OrganizationUnit=$LetsEncryptOrganizationUnit
       - LetsEncrypt:State=$LetsEncryptState
       - DataVolume=$DataVolume
+      - HttpPort=$HttpPort
+      - SslPort=$SslPort
+      - NoSsl=$NoSsl
