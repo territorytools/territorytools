@@ -34,3 +34,6 @@ services:
       - LetsEncrypt:OrganizationUnit=$LetsEncryptOrganizationUnit
       - LetsEncrypt:State=$LetsEncryptState
       - DataVolume=$DataVolume
+      - HttpPort=$HttpPort
+      - SslPort=$SslPort
+      - NoSsl=$NoSsl
