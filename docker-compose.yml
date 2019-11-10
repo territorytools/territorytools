@@ -1,6 +1,70 @@
 version: '3.4'
 
-services:
+services:  
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    volumes:
+      - ./app-nginx:/app
+      - ./data:/data
+      - ./data/nginx/etc/nginx:/etc/nginx
+      - ./data/certbot/etc/letsencrypt:/etc/letsencrypt
+      - ./data/shared/var/www/static:/var/www/static
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8200:8200"
+    links:
+      - vault
+      - web
+    environment:
+      - domain=$domain
+      - certbot_email=$certbot_email
+  certbot:
+    container_name: certbot
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./app-certbot:/app
+      - ./data:/data
+      - ./data/certbot/etc/letsencrypt:/etc/letsencrypt
+      - ./data/shared/var/www/static:/var/www/static
+    depends_on: 
+      - nginx
+    environment:
+      - domain=$domain
+      - certbot_email=$certbot_email
+    entrypoint: /bin/sh -c "
+        while :; 
+        do
+          if [ -s /etc/letsencrypt/live/primary_domain/privkey.pem ] ; 
+            then echo 'Certificates exist, attempting renewal...' ; 
+              certbot renew --test-cert ; 
+            else echo 'Certificates do not exist, getting certificates for the first time...'; 
+              certbot certonly --test-cert --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $domain -n --agree-tos -m $certbot_email ; 
+            fi ;
+            cp /etc/letsencrypt/live/primary_domain/privkey.pem /data/privkey.pem 
+            && cp /etc/letsencrypt/live/primary_domain/fullchain.pem /data/fullchain.pem 
+            && echo date > /data/certbot_certificates_copied.txt
+            echo 'Sleep for 12 hours...' ;
+            sleep 12h ;
+        done
+      "
+  vault:
+    image: vault
+    container_name: vault
+    restart: always
+    volumes:
+      - ./data/vault/certs:/vault/certs
+      - ./data/vault/logs:/vault/logs
+      - ./data/vault/file:/vault/file
+      - ./data/vault/config:/vault/config
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json
   web:
     container_name: territorytools
     restart: always
