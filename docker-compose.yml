@@ -38,13 +38,17 @@ services:
       - domain=$domain
       - certbot_email=$certbot_email
     entrypoint: /bin/sh -c "
+        if [ $tweb_environment == 'production' ] ;
+        then export certbot_test_cert_flag='' ;
+        else export certbot_test_cert_flag='--test-cert' ;
+        fi ;
         while :; 
         do
           if [ -s /etc/letsencrypt/live/primary_domain/privkey.pem ] ; 
             then echo 'Certificates exist, attempting renewal...' ; 
-              certbot renew --test-cert ; 
+              certbot renew $certbot_test_cert_flag ; 
             else echo 'Certificates do not exist, getting certificates for the first time...'; 
-              certbot certonly --test-cert --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $domain -n --agree-tos -m $certbot_email ; 
+              certbot certonly $certbot_test_cert_flag --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $domain -n --agree-tos -m $certbot_email ; 
             fi ;
             cp /etc/letsencrypt/live/primary_domain/privkey.pem /data/privkey.pem 
             && cp /etc/letsencrypt/live/primary_domain/fullchain.pem /data/fullchain.pem 
