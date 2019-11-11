@@ -48,7 +48,7 @@ services:
             fi ;
             cp /etc/letsencrypt/live/primary_domain/privkey.pem /data/privkey.pem 
             && cp /etc/letsencrypt/live/primary_domain/fullchain.pem /data/fullchain.pem 
-            && echo date > /data/certbot_certificates_copied.txt
+            && date > /data/certbot_certificates_copied.txt ;
             echo 'Sleep for 12 hours...' ;
             sleep 12h ;
         done"
