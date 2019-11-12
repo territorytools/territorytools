@@ -68,9 +68,17 @@ services:
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.json
+  cron:
+    container_name: cron-1
+    restart: unless-stopped
+    build:
+      context: ./cron
+    entrypoint: ""
+    user: root
+    command: crond -f -d 8
   web:
     container_name: territorytools
-    restart: always
+    restart: unless-stopped
     build:
       context: .
       dockerfile: ./WebUI/Dockerfile
