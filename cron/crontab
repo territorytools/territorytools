@@ -1,0 +1,3 @@
+# min hour day month weekday command
+*/1 * * * * /bin/date
+*/1 * * * * curl http://territorytools:5000/tick
