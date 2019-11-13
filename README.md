@@ -7,6 +7,10 @@ Command:
     
     tar -zcvf archive-name.tar.gz directory-name
 
+# Getting secrets
+This is an example path:
+https://territory.bellevuemandarin.org:8200/v1/kv/data/territory-web/alba-service-accounts/youraccountname
+
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
 1.	Installation process
