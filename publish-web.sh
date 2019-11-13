@@ -1,5 +1,5 @@
 cd /root/TerritoryWeb
 cp ../.env ./
 docker-compose build web
-docker-compose up web -d
+docker-compose -d up web
 exit
