@@ -36,6 +36,9 @@ services:
       - nginx
     environment:
       - domain=$domain
+      - vault_domain=$vault_domain
+      - web_domain=$web_domain
+      - web_staging_domain=$web_staging_domain
       - certbot_email=$certbot_email
     entrypoint: /bin/sh -c "
         if [ $tweb_environment == 'production' ] ;
@@ -78,6 +81,39 @@ services:
     command: crond -f -d 8
   web:
     container_name: territorytools
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./WebUI/Dockerfile
+    volumes:
+      - "${DataVolume}:/data"
+    environment:
+      - ASPNETCORE_URLS=$ASPNETCORE_URLS
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - Authentication:Google:ClientId=$GoogleClientId
+      - Authentication:Google:ClientSecret=$GoogleClientSecret
+      - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
+      - AuthorizedUsers=$AuthorizedUsers
+      - AdminUsers=$AdminUsers
+      - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
+      - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaUser=$AlbaUser
+      - AlbaPassword=$AlbaPassword
+      - AlbaAccount=$AlbaAccount
+      - LetsEncrypt:Email=$LetsEncryptEmail
+      - LetsEncrypt:UseStaging=$LetsEncryptUseStaging
+      - LetsEncrypt:Domains=$LetsEncryptDomains
+      - LetsEncrypt:CountryName=$LetsEncryptCountryName
+      - LetsEncrypt:Locality=$LetsEncryptLocality
+      - LetsEncrypt:Organization=$LetsEncryptOrganization
+      - LetsEncrypt:OrganizationUnit=$LetsEncryptOrganizationUnit
+      - LetsEncrypt:State=$LetsEncryptState
+      - DataVolume=$DataVolume
+      - HttpPort=$HttpPort
+      - SslPort=$SslPort
+      - NoSsl=$NoSsl
+  web-staging:
+    container_name: tweb-staging
     restart: unless-stopped
     build:
       context: .
