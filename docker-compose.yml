@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:  
-  nginx:
-    container_name: nginx
+  proxy:
+    container_name: tt-proxy
     restart: unless-stopped
     volumes:
       - ./app-nginx:/app
@@ -16,7 +16,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8200:8200"
     links:
       - vault
       - web
@@ -27,7 +26,7 @@ services:
       - web_staging_domain=$web_staging_domain
       - certbot_email=$certbot_email
   certbot:
-    container_name: certbot
+    container_name: tt-certbot
     image: certbot/certbot
     restart: unless-stopped
     volumes:
@@ -36,7 +35,7 @@ services:
       - ./data/certbot/etc/letsencrypt:/etc/letsencrypt
       - ./data/shared/var/www/static:/var/www/static
     depends_on: 
-      - nginx
+      - proxy
     environment:
       - domain=$domain
       - vault_domain=$vault_domain
@@ -64,7 +63,7 @@ services:
         done"
   vault:
     image: vault
-    container_name: vault
+    container_name: tt-vault
     restart: always
     volumes:
       - ./data/vault/certs:/vault/certs
@@ -75,7 +74,7 @@ services:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.json
   cron:
-    container_name: cron-1
+    container_name: tt-cron
     restart: unless-stopped
     build:
       context: ./cron
