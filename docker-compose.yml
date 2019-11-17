@@ -54,7 +54,7 @@ services:
             then echo 'Certificates exist, attempting renewal...' ; 
               certbot renew $certbot_test_cert_flag ; 
             else echo 'Certificates do not exist, getting certificates for the first time...'; 
-              certbot certonly $certbot_test_cert_flag --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $domain -n --agree-tos -m $certbot_email ; 
+              certbot certonly $certbot_test_cert_flag --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $web_domain --domain $web_staging_domain --domain $vault_domain -n --agree-tos -m $certbot_email ; 
             fi ;
             cp /etc/letsencrypt/live/primary_domain/privkey.pem /data/privkey.pem 
             && cp /etc/letsencrypt/live/primary_domain/fullchain.pem /data/fullchain.pem 
