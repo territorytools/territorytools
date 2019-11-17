@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.5'
 
 services:  
   proxy:
@@ -13,6 +13,8 @@ services:
     build:
       context: .
       dockerfile: proxy/Dockerfile
+    networks:
+      - main      
     ports:
       - "80:80"
       - "443:443"
@@ -36,6 +38,8 @@ services:
       - ./data/shared/var/www/static:/var/www/static
     depends_on: 
       - proxy
+    networks:
+      - main      
     environment:
       - domain=$domain
       - vault_domain=$vault_domain
@@ -81,6 +85,8 @@ services:
     entrypoint: ""
     user: root
     command: crond -f -d 8
+    networks:
+      - main    
   web:
     container_name: tt-web
     restart: unless-stopped
@@ -89,6 +95,8 @@ services:
       dockerfile: ./WebUI/Dockerfile
     volumes:
       - "${DataVolume}:/data"
+    networks:
+      - main      
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
@@ -122,6 +130,8 @@ services:
       dockerfile: ./WebUI/Dockerfile
     volumes:
       - "${DataVolume}:/data"
+    networks:
+      - main      
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
@@ -157,6 +167,9 @@ services:
       - MSSQL_PID=Express
       - ACCEPT_EULA=Y
       - SA_PASSWORD=$SA_PASSWORD
+    networks:
+      - main
+
 networks:
-  default:
+  main:
     name: tt-network
