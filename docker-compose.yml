@@ -83,7 +83,7 @@ services:
     user: root
     command: crond -f -d 8
   web:
-    container_name: tweb
+    container_name: tt-web
     restart: unless-stopped
     build:
       context: .
@@ -116,7 +116,7 @@ services:
       - SslPort=$SslPort
       - NoSsl=$NoSsl
   web-staging:
-    container_name: tweb-staging
+    container_name: tt-web-staging
     restart: unless-stopped
     build:
       context: .
@@ -148,3 +148,13 @@ services:
       - HttpPort=$HttpPort
       - SslPort=$SslPort
       - NoSsl=$NoSsl
+  db:
+    container_name: tt-db
+    image: "microsoft/mssql-server-linux"
+    restart: always
+    volumes:
+      - "./data/db:/var/opt/mssql"
+    environment:
+      - MSSQL_PID=Express
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=$SA_PASSWORD

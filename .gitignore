@@ -340,6 +340,7 @@ WebUI/users.html
 
 data/vault/file/
 data/certbot/etc/
+data/db/
 data/certbot_certificates_copied.txt
 data/nginx.conf
 *.pem
