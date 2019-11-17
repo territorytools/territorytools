@@ -12,6 +12,17 @@ This is an example path:
 https://territory.bellevuemandarin.org:8200/v1/kv/data/territory-web/alba-service-accounts/youraccountname
 
 # Getting Started
+To run the staging environment, run the following command from a production folder:
+
+    cd Production-TerritoryWeb
+    docker-compose up web-staging 
+
+## Staging Site
+To run the staging environment, run the following command from a separate folder:
+
+    cd Staging-TerritoryWeb
+    docker-compose up web-staging 
+
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
 1.	Installation process
 2.	Software dependencies
