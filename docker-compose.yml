@@ -83,7 +83,7 @@ services:
     user: root
     command: crond -f -d 8
   web:
-    container_name: territorytools
+    container_name: tweb
     restart: unless-stopped
     build:
       context: .
