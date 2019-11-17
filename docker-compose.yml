@@ -22,6 +22,9 @@ services:
       - web
     environment:
       - domain=$domain
+      - vault_domain=$vault_domain
+      - web_domain=$web_domain
+      - web_staging_domain=$web_staging_domain
       - certbot_email=$certbot_email
   certbot:
     container_name: certbot
