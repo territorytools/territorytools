@@ -1,8 +1,8 @@
-version: '3.4'
+version: '3.5'
 
 services:  
-  nginx:
-    container_name: nginx
+  proxy:
+    container_name: tt-proxy
     restart: unless-stopped
     volumes:
       - ./app-nginx:/app
@@ -13,18 +13,22 @@ services:
     build:
       context: .
       dockerfile: proxy/Dockerfile
+    networks:
+      - main      
     ports:
       - "80:80"
       - "443:443"
-      - "8200:8200"
     links:
       - vault
       - web
     environment:
       - domain=$domain
+      - vault_domain=$vault_domain
+      - web_domain=$web_domain
+      - web_staging_domain=$web_staging_domain
       - certbot_email=$certbot_email
   certbot:
-    container_name: certbot
+    container_name: tt-certbot
     image: certbot/certbot
     restart: unless-stopped
     volumes:
@@ -33,9 +37,14 @@ services:
       - ./data/certbot/etc/letsencrypt:/etc/letsencrypt
       - ./data/shared/var/www/static:/var/www/static
     depends_on: 
-      - nginx
+      - proxy
+    networks:
+      - main      
     environment:
       - domain=$domain
+      - vault_domain=$vault_domain
+      - web_domain=$web_domain
+      - web_staging_domain=$web_staging_domain
       - certbot_email=$certbot_email
     entrypoint: /bin/sh -c "
         if [ $tweb_environment == 'production' ] ;
@@ -48,7 +57,7 @@ services:
             then echo 'Certificates exist, attempting renewal...' ; 
               certbot renew $certbot_test_cert_flag ; 
             else echo 'Certificates do not exist, getting certificates for the first time...'; 
-              certbot certonly $certbot_test_cert_flag --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $domain -n --agree-tos -m $certbot_email ; 
+              certbot certonly $certbot_test_cert_flag --webroot --webroot-path /var/www/static --cert-name primary_domain --domain $web_domain --domain $web_staging_domain --domain $vault_domain -n --agree-tos -m $certbot_email ; 
             fi ;
             cp /etc/letsencrypt/live/primary_domain/privkey.pem /data/privkey.pem 
             && cp /etc/letsencrypt/live/primary_domain/fullchain.pem /data/fullchain.pem 
@@ -58,8 +67,10 @@ services:
         done"
   vault:
     image: vault
-    container_name: vault
+    container_name: tt-vault
     restart: always
+    networks:
+      - main
     volumes:
       - ./data/vault/certs:/vault/certs
       - ./data/vault/logs:/vault/logs
@@ -69,21 +80,25 @@ services:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.json
   cron:
-    container_name: cron-1
+    container_name: tt-cron
     restart: unless-stopped
     build:
       context: ./cron
     entrypoint: ""
     user: root
     command: crond -f -d 8
+    networks:
+      - main    
   web:
-    container_name: territorytools
+    container_name: tt-web
     restart: unless-stopped
     build:
       context: .
       dockerfile: ./WebUI/Dockerfile
     volumes:
       - "${DataVolume}:/data"
+    networks:
+      - main      
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
@@ -109,3 +124,54 @@ services:
       - HttpPort=$HttpPort
       - SslPort=$SslPort
       - NoSsl=$NoSsl
+  web-staging:
+    container_name: tt-web-staging
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./WebUI/Dockerfile
+    volumes:
+      - "${DataVolume}:/data"
+    networks:
+      - main      
+    environment:
+      - ASPNETCORE_URLS=$ASPNETCORE_URLS
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - Authentication:Google:ClientId=$GoogleClientId
+      - Authentication:Google:ClientSecret=$GoogleClientSecret
+      - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
+      - AuthorizedUsers=$AuthorizedUsers
+      - AdminUsers=$AdminUsers
+      - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
+      - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaUser=$AlbaUser
+      - AlbaPassword=$AlbaPassword
+      - AlbaAccount=$AlbaAccount
+      - LetsEncrypt:Email=$LetsEncryptEmail
+      - LetsEncrypt:UseStaging=$LetsEncryptUseStaging
+      - LetsEncrypt:Domains=$LetsEncryptDomains
+      - LetsEncrypt:CountryName=$LetsEncryptCountryName
+      - LetsEncrypt:Locality=$LetsEncryptLocality
+      - LetsEncrypt:Organization=$LetsEncryptOrganization
+      - LetsEncrypt:OrganizationUnit=$LetsEncryptOrganizationUnit
+      - LetsEncrypt:State=$LetsEncryptState
+      - DataVolume=$DataVolume
+      - HttpPort=$HttpPort
+      - SslPort=$SslPort
+      - NoSsl=$NoSsl
+  db:
+    container_name: tt-db
+    image: "microsoft/mssql-server-linux"
+    restart: always
+    volumes:
+      - "./data/db:/var/opt/mssql"
+    environment:
+      - MSSQL_PID=Express
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=$SA_PASSWORD
+    networks:
+      - main
+
+networks:
+  main:
+    name: tt-network
