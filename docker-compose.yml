@@ -157,3 +157,6 @@ services:
       - MSSQL_PID=Express
       - ACCEPT_EULA=Y
       - SA_PASSWORD=$SA_PASSWORD
+networks:
+  default:
+    name: tt-network
