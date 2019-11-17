@@ -69,6 +69,8 @@ services:
     image: vault
     container_name: tt-vault
     restart: always
+    networks:
+      - main
     volumes:
       - ./data/vault/certs:/vault/certs
       - ./data/vault/logs:/vault/logs
