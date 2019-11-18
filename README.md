@@ -15,7 +15,7 @@ https://territory.bellevuemandarin.org:8200/v1/kv/data/territory-web/alba-servic
 To run the staging environment, run the following command from a production folder:
 
     cd Production-TerritoryWeb
-    docker-compose up web-staging 
+    docker-compose --project-name Production-TerritoryWeb up web-staging 
 
 ## Staging Site
 To run the staging environment, run the following command from a separate folder:
