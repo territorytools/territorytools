@@ -5,11 +5,11 @@ services:
     container_name: tt-proxy
     restart: unless-stopped
     volumes:
-      - ./app-nginx:/app
-      - ./data:/data
-      - ./data/nginx/etc/nginx:/etc/nginx
-      - ./data/certbot/etc/letsencrypt:/etc/letsencrypt
-      - ./data/shared/var/www/static:/var/www/static
+      - ../app-nginx:/app
+      - ../data:/data
+      - ../data/nginx/etc/nginx:/etc/nginx
+      - ../data/certbot/etc/letsencrypt:/etc/letsencrypt
+      - ../data/shared/var/www/static:/var/www/static
     build:
       context: .
       dockerfile: proxy/Dockerfile
@@ -32,10 +32,10 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      - ./app-certbot:/app
-      - ./data:/data
-      - ./data/certbot/etc/letsencrypt:/etc/letsencrypt
-      - ./data/shared/var/www/static:/var/www/static
+      - ../app-certbot:/app
+      - ../data:/data
+      - ../data/certbot/etc/letsencrypt:/etc/letsencrypt
+      - ../data/shared/var/www/static:/var/www/static
     depends_on: 
       - proxy
     networks:
@@ -72,10 +72,10 @@ services:
     networks:
       - main
     volumes:
-      - ./data/vault/certs:/vault/certs
-      - ./data/vault/logs:/vault/logs
-      - ./data/vault/file:/vault/file
-      - ./data/vault/config:/vault/config
+      - ../data/vault/certs:/vault/certs
+      - ../data/vault/logs:/vault/logs
+      - ../data/vault/file:/vault/file
+      - ../data/vault/config:/vault/config
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.json
@@ -164,7 +164,7 @@ services:
     image: "microsoft/mssql-server-linux"
     restart: always
     volumes:
-      - "./data/db:/var/opt/mssql"
+      - "../data/db:/var/opt/mssql"
     environment:
       - MSSQL_PID=Express
       - ACCEPT_EULA=Y
