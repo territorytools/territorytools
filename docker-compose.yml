@@ -5,7 +5,6 @@ services:
     container_name: tt-proxy
     restart: unless-stopped
     volumes:
-      - ../app-nginx:/app
       - ../data:/data
       - ../data/nginx/etc/nginx:/etc/nginx
       - ../data/certbot/etc/letsencrypt:/etc/letsencrypt
@@ -66,9 +65,11 @@ services:
             sleep 12h ;
         done"
   vault:
-    image: vault
     container_name: tt-vault
     restart: always
+    build:
+      context: .
+      dockerfile: vault/Dockerfile
     networks:
       - main
     volumes:

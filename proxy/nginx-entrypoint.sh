@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export DOLLAR='$'
-envsubst < /data/nginx.template.conf > /data/nginx.conf ;
+envsubst < /app/nginx.template.conf > /data/nginx.conf ;
 if [ -s /data/fullchain.pem ] ;
 then echo 'Certificate exists, no need to create a self-signed certificate.' ;
 else echo 'No certificate found.  Generating temporary self signed certifcate...' ;
