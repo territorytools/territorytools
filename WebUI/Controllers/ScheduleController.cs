@@ -13,7 +13,7 @@ namespace WebUI.Controllers
         [Route("/tick")]
         public IActionResult Tick()
         {
-            return OK();
+            return Ok();
         }
     }
 }
