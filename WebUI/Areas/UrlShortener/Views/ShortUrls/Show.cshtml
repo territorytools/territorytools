@@ -1,0 +1,108 @@
+﻿@model WebUI.Areas.UrlShortener.Models.ShortUrl
+@{
+    ViewData["Title"] = "Details of a short URL";
+}
+
+<br />
+
+<div class="jumbotron">
+
+    <h1>QR Code Result</h1>
+
+    <br />
+
+    <p>URL Details</p>
+
+    <br />
+
+    <ul>
+        <li>
+            <span class="col-md-2">
+                <strong>URL Id:</strong>
+            </span>
+            @Model.Id
+        </li>
+        <li>
+            <span class="col-md-2">
+                <strong>Original URL:</strong>
+            </span>
+            <a id="original-url" href="@Model.OriginalUrl">
+                @Model.OriginalUrl
+            </a>
+        </li>
+        <!--li>
+            <span class="col-md-2">
+                <strong>Short URL:</strong>
+            </span>
+            <a id="short-url" asp-controller="ShortUrls" asp-action="RedirectTo" asp-route-path="@ViewData["Path"]">
+                https://@ViewData["HostName"]/@ViewData["Path"]
+            </a>
+        </li-->
+        <li>
+            <span class="col-md-2">
+                <strong>Shortened URL:</strong>
+            </span>
+            <input id="url-input" type="text" value="https://@ViewData["HostName"]/@ViewData["Path"]" style="margin-top:10px;width:250px;" />
+        </li>
+        <li>
+            <span class="col-md-2">
+                <strong>QR Code:</strong>
+            </span>
+            <div id="qrCode" style="margin-top:10px;"></div>
+        </li>
+    </ul>
+</div>
+
+
+<br />
+<div id="errorHelp" style="visibility:collapse;height:0;">
+    <p style="background-color:yellow;width:auto;">Your jw.org link is not designed for sharing.  Your QR Code has been generated but please consider using a sharing link instead</p>
+    <p>Look for and click this button</p>
+    <img src='https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/share-link-icon.png'>
+    <p>Don't copy it from the address bar.</p>
+    <img src='https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/not-address-bar.png'>
+    <p>See below for more detailed instructions</p>
+</div>
+
+
+<div>
+    <h3>How To Get a Sharing Link for a QR Code</h3>
+    <img src="https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/find-share-link.png">
+    <h3>From JW.org</h3>
+    <ol>
+        <li>Find the publication you want to send in your letter</li>
+        <li>Click the 'Share' button</li>
+        <img src="https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/share-link-icon.png">
+        <li>Copy the provided link address</li>
+        <img src="https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/copy-link.png">
+        <li>Come back here to the QR Code Generator and paste in your link</li>
+    </ol>
+</div>
+
+<script src="~/lib/qrcode/qrcode.js"></script>
+<script type="text/javascript">
+
+    function getQRCode() {
+        document.getElementById("qrCode").innerHTML = "";
+        document.getElementById("errorHelp").style.visibility = "collapse";
+        document.getElementById("errorHelp").style.height = "0";
+        var code = document.getElementById("original-url").value;
+        if (code != null && code != "https://www.jw.org/cmn-hant/" && code != "https://www.jw.org/cmn-hans/" && (code.includes("/jw.org/") || code.includes(".jw.org/"))) {
+            if (!code.includes("srcid=")) {
+                document.getElementById("errorHelp").style.visibility = "visible";
+                document.getElementById("errorHelp").style.height = "auto";
+            }
+        }
+        var shortUrl = document.getElementById("url-input").value;
+        new QRCode(document.getElementById("qrCode"),
+            {
+                text: shortUrl,
+                width: 150,
+                height: 150,
+                addQuietZone: true
+            });
+        document.getElementById("qrCodeUri").innerHTML = shortUrl;
+    }
+
+    getQRCode();
+</script>

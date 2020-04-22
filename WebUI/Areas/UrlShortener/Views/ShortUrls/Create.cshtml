@@ -1,0 +1,39 @@
+﻿@model WebUI.Areas.UrlShortener.Models.ShortUrl
+@{
+    ViewData["Title"] = "Create a new short URL";
+}
+
+<br />
+
+<div class="jumbotron">
+
+    <h1>QR Code Generator</h1>
+
+    <br />
+
+    <p>Paste a URL link below to generate a trackable QR Code with a shortened URL</p>
+
+    <br />
+
+    <form asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" method="post">
+        <div class="form-vertical">
+            <div class="input-group input-group-lg">
+                <input asp-for="OriginalUrl" class="form-control" placeholder="Paste the URL here..." />
+            </div>
+            <div class="input-group input-group-lg">
+                <input asp-for="UserName" class="form-control" value="@User.Identity.Name" />
+            </div>
+            <div class="input-group input-group-lg">
+                <input asp-for="Subject" class="form-control" placeholder="Enter a subject or publication name here..." />
+            </div>
+            <div class="input-group input-group-lg">
+                <input asp-for="Note" class="form-control" placeholder="Type a note here..." />
+            </div>
+            <div class="input-group input-group-lg">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="submit">Generate QR Code</button>
+                </span>
+            </div>
+        </div>
+    </form>
+</div>
