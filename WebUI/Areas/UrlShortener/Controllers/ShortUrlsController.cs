@@ -56,7 +56,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
 
         [HttpPost] 
         [ValidateAntiForgeryToken]
-        public IActionResult Create(string originalUrl, string userName, string subject, string note)
+        public IActionResult Create(string originalUrl, string subject, string note)
         {
             if (!IsUser())
             {
@@ -66,9 +66,9 @@ namespace WebUI.Areas.UrlShortener.Controllers
             var shortUrl = new ShortUrl
             {
                 OriginalUrl = originalUrl,
-                UserName = userName,
                 Subject = subject,
                 Note = note
+                UserName = User.Identity.Name,
             };
 
             TryValidateModel(shortUrl);
