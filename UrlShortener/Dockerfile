@@ -1,7 +1,7 @@
-﻿FROM mcr.microsoft.com/dotnet/core/aspnet:2.1 AS base
+﻿FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
 WORKDIR /src
 COPY . /src
 
