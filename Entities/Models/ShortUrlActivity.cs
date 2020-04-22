@@ -9,5 +9,6 @@ namespace WebUI.Areas.UrlShortener.Models
         public int ShortUrlId { get; set; }
         
         public DateTime TimeStamp { get; set; }
+        public string IPAddress { get; set; }
     }
 }

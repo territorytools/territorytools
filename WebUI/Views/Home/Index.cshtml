@@ -9,6 +9,9 @@
     <div class="text-center">
         @if (SignInManager.IsSignedIn(User))
         {
+            <a href="https://www.bellevuemandarin.org" class="btn btn-primary" type="submit">Bellevue Mandarin</a>
+            <a asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" class="btn btn-primary" type="submit">QR Code Generator</a>
+
             if (!string.IsNullOrWhiteSpace(Model.Name))
             {
                 <h3>@(Model.Name)</h3>
