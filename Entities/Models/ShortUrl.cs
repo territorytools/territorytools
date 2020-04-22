@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebUI.Areas.UrlShortener.Models
@@ -14,5 +15,7 @@ namespace WebUI.Areas.UrlShortener.Models
         public string Subject { get; set; }
         
         public string Note { get; set; }
+
+        public DateTime Created { get; set; } = DateTime.MinValue;
     }
 }

@@ -8,20 +8,8 @@
 <div class="jumbotron">
 
     <h1>QR Code Result</h1>
-
-    <br />
-
-    <p>URL Details</p>
-
-    <br />
-
+    <br/>
     <ul>
-        <li>
-            <span class="col-md-2">
-                <strong>URL Id:</strong>
-            </span>
-            @Model.Id
-        </li>
         <li>
             <span class="col-md-2">
                 <strong>Original URL:</strong>
@@ -51,10 +39,9 @@
             <div id="qrCode" style="margin-top:10px;"></div>
         </li>
     </ul>
+    <a asp-action="create" class="btn btn-primary" type="submit">Generate Another QR Code</a>
 </div>
 
-
-<br />
 <div id="errorHelp" style="visibility:collapse;height:0;">
     <p style="background-color:yellow;width:auto;">Your jw.org link is not designed for sharing.  Your QR Code has been generated but please consider using a sharing link instead</p>
     <p>Look for and click this button</p>
@@ -62,21 +49,6 @@
     <p>Don't copy it from the address bar.</p>
     <img src='https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/not-address-bar.png'>
     <p>See below for more detailed instructions</p>
-</div>
-
-
-<div>
-    <h3>How To Get a Sharing Link for a QR Code</h3>
-    <img src="https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/find-share-link.png">
-    <h3>From JW.org</h3>
-    <ol>
-        <li>Find the publication you want to send in your letter</li>
-        <li>Click the 'Share' button</li>
-        <img src="https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/share-link-icon.png">
-        <li>Copy the provided link address</li>
-        <img src="https://s3-us-west-2.amazonaws.com/downloads.md9.us/qrcodes/copy-link.png">
-        <li>Come back here to the QR Code Generator and paste in your link</li>
-    </ol>
 </div>
 
 <script src="~/lib/qrcode/qrcode.js"></script>

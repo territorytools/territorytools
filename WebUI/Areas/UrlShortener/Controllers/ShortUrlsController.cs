@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using System;
 using TerritoryTools.Entities;
 using WebUI.Areas.UrlShortener.Models;
 using WebUI.Areas.UrlShortener.Services;
@@ -56,7 +57,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
 
         [HttpPost] 
         [ValidateAntiForgeryToken]
-        public IActionResult Create(string originalUrl, string userName, string subject, string note)
+        public IActionResult Create(string originalUrl, string subject, string note)
         {
             if (!IsUser())
             {
@@ -66,9 +67,10 @@ namespace WebUI.Areas.UrlShortener.Controllers
             var shortUrl = new ShortUrl
             {
                 OriginalUrl = originalUrl,
-                UserName = userName,
                 Subject = subject,
-                Note = note
+                Note = note,
+                UserName = User.Identity.Name,
+                Created = DateTime.Now
             };
 
             TryValidateModel(shortUrl);
