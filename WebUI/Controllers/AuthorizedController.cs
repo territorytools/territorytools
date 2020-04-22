@@ -148,26 +148,37 @@ namespace WebUI.Controllers
 
         protected IEnumerable<cuc.User> GetUsers(string account, string user, string password)
         {
-            if (!io.File.Exists(options.AlbaUsersHtmlPath))
-            {
-                var adminUserNames = authorizationService.GetAdminUsers();
-                var users = new List<cuc.User>();
-                foreach (var name in adminUserNames)
-                {
-                    users.Add(
-                        new cuc.User
-                        {
-                            Email = name,
-                            Name = name,
-                        });
-                }
+            var users = new List<cuc.User>();
 
-                return users;
+            if (io.File.Exists(options.AlbaUsersHtmlPath))
+            {
+                string html = io.File.ReadAllText(options.AlbaUsersHtmlPath);
+                users = DownloadUsers.GetUsers(html);
+            }
+                
+            var adminUserNames = authorizationService.GetAdminUsers();
+            foreach (var name in adminUserNames)
+            {
+                users.Add(
+                    new cuc.User
+                    {
+                        Email = name,
+                        Name = name,
+                    });
             }
 
-            string html = io.File.ReadAllText(options.AlbaUsersHtmlPath);
+            var userNames = authorizationService.GetUsers();
+            foreach (var name in userNames)
+            {
+                users.Add(
+                    new cuc.User
+                    {
+                        Email = name,
+                        Name = name,
+                    });
+            }
 
-            return DownloadUsers.GetUsers(html);
+            return users;
         }
 
         protected IEnumerable<AlbaUser> GetAlbaUsers()

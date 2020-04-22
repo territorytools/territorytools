@@ -10,5 +10,7 @@ namespace WebUI
             = "/data/users.html";
         public string AlbaAssignmentsHtmlPath { get; set; }
             = "/data/assignments.html";
+
+        public string UrlShortenerDomain { get; set; }
     }
 }

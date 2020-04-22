@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.StaticFiles;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
+using WebUI.Areas.UrlShortener.Services;
 
 namespace WebUI
 {
@@ -44,7 +45,7 @@ namespace WebUI
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MainDbContextConnection")));
-
+            
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
@@ -71,14 +72,20 @@ namespace WebUI
                 Configuration["AlbaUser"],
                 Configuration["AlbaPassword"]));
 
+            services.AddScoped<IShortUrlService, ShortUrlService>();
+
             services.Configure<WebUIOptions>(Configuration);
 
+            var users = (Configuration["Users"] ?? string.Empty)
+               .Split(';')
+               .ToList(); 
+            
             var adminUsers = (Configuration["AdminUsers"] ?? string.Empty)
                 .Split(';')
                 .ToList();
 
             services.AddScoped<IAuthorizationService>(s =>
-                new TerritoryAuthorizationService(adminUsers));
+                new TerritoryAuthorizationService(users, adminUsers));
 
             if (!NoSsl)
             {
@@ -135,14 +142,33 @@ namespace WebUI
                 ContentTypeProvider = provider
             });
 
+            UpdateDatabase(app);
+
             app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "areas",
+                    template: "{area:exists}/{controller=ShortUrls}/{action=Index}");
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<MainDbContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
         }
 
         void ConfigureLetsEncryptServices(IServiceCollection services)

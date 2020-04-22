@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using WebUI.Areas.UrlShortener.Models;
 using WebUI.Models;
 
 namespace WebUI.Areas.Identity.Data
@@ -21,5 +22,8 @@ namespace WebUI.Areas.Identity.Data
 
             builder.Entity<AlbaUser>();
         }
+
+        public DbSet<ShortUrl> ShortUrls { get; set; }
+        public DbSet<ShortUrlActivity> ShortUrlActivity { get; set; }
     }
 }

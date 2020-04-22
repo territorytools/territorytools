@@ -99,13 +99,16 @@ services:
     volumes:
       - "${DataVolume}:/data"
     networks:
-      - main      
+      - main  
+    ports:
+      - "5000:5000"
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - Authentication:Google:ClientId=$GoogleClientId
       - Authentication:Google:ClientSecret=$GoogleClientSecret
       - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
+      - Users=$Users
       - AuthorizedUsers=$AuthorizedUsers
       - AdminUsers=$AdminUsers
       - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
@@ -125,6 +128,7 @@ services:
       - HttpPort=$HttpPort
       - SslPort=$SslPort
       - NoSsl=$NoSsl
+      - UrlShortenerDomain=$UrlShortenerDomain
   web-staging:
     container_name: tt-web-staging
     restart: unless-stopped
