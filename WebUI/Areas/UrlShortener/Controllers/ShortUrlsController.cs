@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using System;
 using TerritoryTools.Entities;
 using WebUI.Areas.UrlShortener.Models;
 using WebUI.Areas.UrlShortener.Services;
@@ -69,6 +70,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
                 Subject = subject,
                 Note = note,
                 UserName = User.Identity.Name,
+                Created = DateTime.Now
             };
 
             TryValidateModel(shortUrl);
