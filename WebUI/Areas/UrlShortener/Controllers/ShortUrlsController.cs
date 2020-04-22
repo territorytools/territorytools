@@ -67,7 +67,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
             {
                 OriginalUrl = originalUrl,
                 Subject = subject,
-                Note = note
+                Note = note,
                 UserName = User.Identity.Name,
             };
 
