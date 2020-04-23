@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,7 +45,7 @@ namespace UrlShortener
             // Reference: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.1
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = 
+                options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor 
                     | ForwardedHeaders.XForwardedProto;
             });
