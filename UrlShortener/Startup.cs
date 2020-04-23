@@ -40,7 +40,15 @@ namespace UrlShortener
             // Add framework services.
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+
+            // Reference: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.1
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = 
+                    ForwardedHeaders.XForwardedFor 
+                    | ForwardedHeaders.XForwardedProto;
+            });
+
             services.AddDbContext<MainDbContext>(options => options.UseSqlServer(
                 Configuration.GetValue<string>("UrlShortenerDbConnectionString")));
 
@@ -55,6 +63,8 @@ namespace UrlShortener
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseForwardedHeaders();
 
             if (env.IsDevelopment())
             {
