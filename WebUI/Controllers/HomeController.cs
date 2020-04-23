@@ -13,30 +13,20 @@ namespace WebUI.Controllers
 {
     public class HomeController : AuthorizedController
     {
-        // readonly IStringLocalizer<HomeController> localizer;
-
-        // string account;
-        // string user;
-        // string password;
-        // WebUI.Services.IAuthorizationService authorizationService;
+        readonly Services.IQRCodeActivityService qrCodeActivityService;
 
         public HomeController(
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            WebUI.Services.IAuthorizationService authorizationService,
-            Services.QRCodeActivityService qrCodeActivityService,
+            Services.IAuthorizationService authorizationService,
+            Services.IQRCodeActivityService qrCodeActivityService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 localizer,
                 credentials,
                 authorizationService,
                 optionsAccessor)
         {
-            // this.localizer = localizer;
-            // account = credentials.Account;
-            // user = credentials.User;
-            // password = credentials.Password;
-            // this.authorizationService = authorizationService;
-            // options = optionsAccessor.Value;
+            this.qrCodeActivityService = qrCodeActivityService;
         }
 
         public IActionResult Index()
@@ -74,7 +64,19 @@ namespace WebUI.Controllers
                     publisher.Territories.Add(item);
                 }
 
-                //context
+                var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
+                    myName);
+
+                foreach(var hit in qrCodeHits)
+                {
+                    publisher.QRCodeActivity.Add(
+                        new QRCodeHit
+                        {
+                            ShortUrl = hit.ShortUrl,
+                            Subject = hit.Subject,
+                            Note = hit.Note
+                        });
+                }
 
                 return View(publisher);
             }
