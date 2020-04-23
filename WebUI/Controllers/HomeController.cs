@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -14,39 +13,28 @@ namespace WebUI.Controllers
 {
     public class HomeController : AuthorizedController
     {
-        // readonly IStringLocalizer<HomeController> localizer;
-
-        // string account;
-        // string user;
-        // string password;
-        // WebUI.Services.IAuthorizationService authorizationService;
+        readonly Services.IQRCodeActivityService qrCodeActivityService;
 
         public HomeController(
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            WebUI.Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationService authorizationService,
+            Services.IQRCodeActivityService qrCodeActivityService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 localizer,
                 credentials,
                 authorizationService,
                 optionsAccessor)
         {
-            // this.localizer = localizer;
-            // account = credentials.Account;
-            // user = credentials.User;
-            // password = credentials.Password;
-            // this.authorizationService = authorizationService;
-            // options = optionsAccessor.Value;
+            this.qrCodeActivityService = qrCodeActivityService;
         }
-
-        readonly WebUIOptions options;
 
         public IActionResult Index()
         {
             try
             {
-                var publisher = new Publisher() 
-                { 
+                var publisher = new Publisher()
+                {
                     Email = User.Identity.Name
                 };
 
@@ -76,6 +64,25 @@ namespace WebUI.Controllers
                     publisher.Territories.Add(item);
                 }
 
+                var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
+                    publisher.Email);
+
+                foreach (var hit in qrCodeHits)
+                {
+                    publisher.QRCodeActivity.Add(
+                        new QRCodeHit
+                        {
+                            ShortUrl = hit.ShortUrl,
+                            OriginalUrl = hit.OriginalUrl,
+                            Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
+                            HitCount = hit.HitCount.ToString(),
+                            LastIPAddress = hit.LastIPAddress,
+                            LastTimeStamp = hit.LastTimeStamp?.ToString("yyyy-MM-dd HH:mm:ss"),
+                            Subject = hit.Subject,
+                            Note = hit.Note
+                        });
+                }
+
                 return View(publisher);
             }
             catch (Exception)
@@ -90,14 +97,14 @@ namespace WebUI.Controllers
         }
 
         [ResponseCache(
-            Duration = 0, 
-            Location = ResponseCacheLocation.None, 
+            Duration = 0,
+            Location = ResponseCacheLocation.None,
             NoStore = true)]
-        public IActionResult Error()
+        new public IActionResult Error()
         {
             return View(
-                new ErrorViewModel 
-                { 
+                new ErrorViewModel
+                {
                     RequestId = Activity.Current?.Id
                         ?? HttpContext.TraceIdentifier
                 }
@@ -121,8 +128,8 @@ namespace WebUI.Controllers
 
                 var assignment = GetAllAssignments(account, user, password)
                     .Where(a => string.Equals(
-                        a.Number, 
-                        number, 
+                        a.Number,
+                        number,
                         StringComparison.OrdinalIgnoreCase))
                     .SingleOrDefault();
 
@@ -157,7 +164,7 @@ namespace WebUI.Controllers
             return View();
         }
 
-        
+
         [Authorize]
         public IActionResult LoadUsers()
         {
@@ -178,8 +185,8 @@ namespace WebUI.Controllers
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(
                     new RequestCulture(culture)),
-                new CookieOptions 
-                { 
+                new CookieOptions
+                {
                     Expires = DateTimeOffset.UtcNow.AddYears(1)
                 }
             );
@@ -190,9 +197,9 @@ namespace WebUI.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-             var assignment = GetAllAssignments(account, user, password)
-                    .FirstOrDefault(a => a.Id == territoryId);
-            
+            var assignment = GetAllAssignments(account, user, password)
+                   .FirstOrDefault(a => a.Id == territoryId);
+
             assignment.SignedOutTo = userName;
 
             return View(assignment);

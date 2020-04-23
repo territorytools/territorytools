@@ -25,12 +25,7 @@ namespace UrlShortener.Controllers
                 return NotFound();
             }
 
-            string ip = _accessor
-                .ActionContext
-                .HttpContext
-                .Connection
-                .RemoteIpAddress
-                .ToString();
+            string ip = HttpContext.Connection.RemoteIpAddress.ToString();
 
             var shortUrl = _service.GetByPath(path, ip);
             if (shortUrl == null) 

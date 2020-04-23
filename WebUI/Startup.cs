@@ -73,6 +73,7 @@ namespace WebUI
                 Configuration["AlbaPassword"]));
 
             services.AddScoped<IShortUrlService, ShortUrlService>();
+            services.AddScoped<IQRCodeActivityService, QRCodeActivityService>();
 
             services.Configure<WebUIOptions>(Configuration);
 
