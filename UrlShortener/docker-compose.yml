@@ -5,8 +5,8 @@ services:
     container_name: url-shortener
     restart: unless-stopped
     build:
-      context: .
-      dockerfile: ./Dockerfile
+      context: ./UrlShortener
+      dockerfile: Dockerfile
     networks:
       - main
     ports:
