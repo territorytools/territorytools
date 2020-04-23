@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +24,7 @@ namespace WebUI.Controllers
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             WebUI.Services.IAuthorizationService authorizationService,
+            Services.QRCodeActivityService qrCodeActivityService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 localizer,
                 credentials,
@@ -38,8 +38,6 @@ namespace WebUI.Controllers
             // this.authorizationService = authorizationService;
             // options = optionsAccessor.Value;
         }
-
-        readonly WebUIOptions options;
 
         public IActionResult Index()
         {
@@ -76,6 +74,8 @@ namespace WebUI.Controllers
                     publisher.Territories.Add(item);
                 }
 
+                //context
+
                 return View(publisher);
             }
             catch (Exception)
@@ -93,7 +93,7 @@ namespace WebUI.Controllers
             Duration = 0, 
             Location = ResponseCacheLocation.None, 
             NoStore = true)]
-        public IActionResult Error()
+        new public IActionResult Error()
         {
             return View(
                 new ErrorViewModel 

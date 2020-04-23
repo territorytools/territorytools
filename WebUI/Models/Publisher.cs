@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using AlbaClient.Controllers.UseCases;
 
@@ -13,5 +10,7 @@ namespace WebUI
         public string Email { get; set; }
         public List<Assignment> Territories { get; set; } 
             = new List<Assignment>();
+        public List<QRCodeHit> QRCodeActivity { get; set; }
+            = new List<QRCodeHit>();
     }
 }
