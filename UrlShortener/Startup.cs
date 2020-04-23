@@ -45,6 +45,7 @@ namespace UrlShortener
             // Reference: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.1
             services.Configure<ForwardedHeadersOptions>(options =>
             {
+                options.KnownProxies.Add(IPAddress.Parse("::ffff:172.18.0.1"));
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor 
                     | ForwardedHeaders.XForwardedProto;
