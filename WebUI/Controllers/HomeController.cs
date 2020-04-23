@@ -33,8 +33,8 @@ namespace WebUI.Controllers
         {
             try
             {
-                var publisher = new Publisher() 
-                { 
+                var publisher = new Publisher()
+                {
                     Email = User.Identity.Name
                 };
 
@@ -65,14 +65,18 @@ namespace WebUI.Controllers
                 }
 
                 var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
-                    myName);
+                    publisher.Email);
 
-                foreach(var hit in qrCodeHits)
+                foreach (var hit in qrCodeHits)
                 {
                     publisher.QRCodeActivity.Add(
                         new QRCodeHit
                         {
                             ShortUrl = hit.ShortUrl,
+                            Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
+                            HitCount = hit.HitCount.ToString(),
+                            LastIPAddress = hit.LastIPAddress,
+                            LastTimeStamp = hit.LastTimeStamp?.ToString("yyyy-MM-dd HH:mm:ss"),
                             Subject = hit.Subject,
                             Note = hit.Note
                         });
@@ -92,14 +96,14 @@ namespace WebUI.Controllers
         }
 
         [ResponseCache(
-            Duration = 0, 
-            Location = ResponseCacheLocation.None, 
+            Duration = 0,
+            Location = ResponseCacheLocation.None,
             NoStore = true)]
         new public IActionResult Error()
         {
             return View(
-                new ErrorViewModel 
-                { 
+                new ErrorViewModel
+                {
                     RequestId = Activity.Current?.Id
                         ?? HttpContext.TraceIdentifier
                 }
@@ -123,8 +127,8 @@ namespace WebUI.Controllers
 
                 var assignment = GetAllAssignments(account, user, password)
                     .Where(a => string.Equals(
-                        a.Number, 
-                        number, 
+                        a.Number,
+                        number,
                         StringComparison.OrdinalIgnoreCase))
                     .SingleOrDefault();
 
@@ -159,7 +163,7 @@ namespace WebUI.Controllers
             return View();
         }
 
-        
+
         [Authorize]
         public IActionResult LoadUsers()
         {
@@ -180,8 +184,8 @@ namespace WebUI.Controllers
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(
                     new RequestCulture(culture)),
-                new CookieOptions 
-                { 
+                new CookieOptions
+                {
                     Expires = DateTimeOffset.UtcNow.AddYears(1)
                 }
             );
@@ -192,9 +196,9 @@ namespace WebUI.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-             var assignment = GetAllAssignments(account, user, password)
-                    .FirstOrDefault(a => a.Id == territoryId);
-            
+            var assignment = GetAllAssignments(account, user, password)
+                   .FirstOrDefault(a => a.Id == territoryId);
+
             assignment.SignedOutTo = userName;
 
             return View(assignment);
