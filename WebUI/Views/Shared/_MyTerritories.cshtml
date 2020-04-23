@@ -30,7 +30,7 @@
                 <div class="pr-2 pl-2" style="width:50px;">Addr.</div>
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
             </div>
-  
+
             @foreach (var assignment in Model.Territories)
             {
                 string signedOut = "";
@@ -55,9 +55,26 @@
                 </div>
             }
         </div>
+        <h4 style="text-align:center;">Your QR Codes</h4>
+        <div class="container mt-3" style="max-width:600px;">
+            <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                <div class="pr-2 pl-2" style="min-width:60px;">Short URL</div>
+                <div class="pr-2 pl-2" style="min-width:2000px;">Subject</div>
+                <div class="pr-2 pl-2 flex-grow-1">Note</div>
+            </div>
+
+            @foreach (var qrCode in Model.QRCodeActivity)
+            {
+                <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                    <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@qrCode.ShortUrl</strong></div>
+                    <div class="p-2" style="min-width:2000px;">@qrCode.Subject</div>
+                    <div class="p-2 flex-grow-1" style="width:150px;">@qrCode.Note</div>
+                </div>
+            }
+        </div>
     }
 }
 else
 {
- 
+
 }

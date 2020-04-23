@@ -9,7 +9,7 @@ namespace WebUI.Services
         List<QRCodeHit> QRCodeHitsForUser(string userName);
     }
 
-    public class QRCodeActivityService
+    public class QRCodeActivityService : IQRCodeActivityService
     {
         readonly MainDbContext context;
 
@@ -38,6 +38,7 @@ namespace WebUI.Services
 
     public class QRCodeHit
     {
+        public string ShortUrl { get; set; }
         public string UserName { get; set; }
         public string Subject { get; set; }
         public string Note { get; set; }
