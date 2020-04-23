@@ -73,6 +73,7 @@ namespace WebUI.Controllers
                         new QRCodeHit
                         {
                             ShortUrl = hit.ShortUrl,
+                            OriginalUrl = hit.OriginalUrl,
                             Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
                             HitCount = hit.HitCount.ToString(),
                             LastIPAddress = hit.LastIPAddress,
