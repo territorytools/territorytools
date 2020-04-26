@@ -36,7 +36,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                     <ul class="navbar-nav flex-grow">
+                    <ul class="navbar-nav flex-grow">
                         <!-- Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -70,9 +70,9 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             <div class="d-flex">
-            <div class="col-sm-6">
-                &copy; 2020 - Territory Tools - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </div>
+                <div class="col-sm-6">
+                    &copy; 2020 - Territory Tools - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -98,6 +98,15 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-164622447-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-164622447-1');
+    </script>
 
 </body>
 </html>
