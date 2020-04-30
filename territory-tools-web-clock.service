@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh's Data on Territory Tools Web
+Requires=territory-tools-web-clock.timer
+
+[Service]
+ExecStart=/bin/sh /root/TerritoryWeb/territory-tools-web-clock.sh
+WorkingDirectory=/root/TerritoryWeb
+
+[Install]
+WantedBy=multi-user.target
+
