@@ -32,3 +32,20 @@ TODO: Guide users through getting your code up and running on their own system. 
 # Build and Test
 TODO: Describe and show how to build your code and run the tests. 
 
+# Set Up Google Auth
+(You'll have to have a App set up already)
+Go to https://console.developers.google.com
+
+Click 'OAuth consent screen'
+
+Click Credentials
+
+Under OAuth 2.0 Client IDs find your app
+
+Under 'URIS' add the URI for your site
+
+Or you may be able to just find it here  
+https://console.developers.google.com/apis/credentials/oauthclient
+
+
+
