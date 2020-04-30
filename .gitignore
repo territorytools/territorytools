@@ -334,7 +334,7 @@ ASALocalRun/
 .vscode/tasks.json
 
 WebUI/DataVolume/
-
+WebUI/wwwroot/commit.txt
 WebUI/assignments.html
 WebUI/users.html
 
