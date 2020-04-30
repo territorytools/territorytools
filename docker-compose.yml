@@ -19,7 +19,7 @@ services:
       - "443:443"
     links:
       - vault
-      - web
+      - tt-web
     environment:
       - domain=$domain
       - vault_domain=$vault_domain
@@ -90,7 +90,7 @@ services:
     command: crond -f -d 8
     networks:
       - main    
-  web:
+  tt-web:
     container_name: tt-web
     restart: unless-stopped
     build:
@@ -129,7 +129,7 @@ services:
       - SslPort=$SslPort
       - NoSsl=$NoSsl
       - UrlShortenerDomain=$UrlShortenerDomain
-  web-test:
+  tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
     build:
