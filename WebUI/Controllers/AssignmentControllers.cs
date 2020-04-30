@@ -168,6 +168,13 @@ namespace WebUI.Controllers
             public bool Successful { get; set; }
         }
 
+        [Route("/Tick"))]
+        public void Tick()
+        {
+            logger.LogError("Loading Territory Assigments...")
+            Load();
+        }
+
         [HttpGet("[action]")]
         public IActionResult LoadAssignments()
         {
