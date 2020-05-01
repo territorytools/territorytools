@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
+using WebUI.Services;
 using AlbaClient;
 using AlbaClient.AlbaServer;
 using AlbaClient.Controllers.AlbaServer;
@@ -122,7 +123,7 @@ namespace WebUI.Controllers
             io.File.WriteAllText(options.AlbaUserManagementHtmlPath, html);
         }
 
-        protected IEnumerable<Assignment> GetAllAssignments(string account, string user, string password)
+        protected IEnumerable<Assignment> GetAllAssignments()
         {
             if (!io.File.Exists(options.AlbaAssignmentsHtmlPath))
             {
@@ -131,15 +132,6 @@ namespace WebUI.Controllers
 
             // TODO: Probably don't need a dependency on client here
             var useCase = new DownloadTerritoryAssignments(AuthClient());
-
-            //var credentials = new Credentials(account, user, password, k1MagicString);
-
-            //client.Authorize(credentials);
-
-            //var resultString = client.DownloadString(
-            //    RelativeUrlBuilder.GetTerritoryAssignments());
-
-            //html = TerritoryAssignmentParser.Parse(resultString);
 
             string html = io.File.ReadAllText(options.AlbaAssignmentsHtmlPath);
 
