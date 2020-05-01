@@ -171,7 +171,7 @@ namespace WebUI.Controllers
         [Route("/Tick")]
         public void Tick()
         {
-            logger.LogError("Loading Territory Assigments...")
+            logger.LogError("Loading Territory Assigments...");
             Load();
         }
 
