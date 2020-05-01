@@ -1,0 +1,7 @@
+﻿# GreetingResources.txt
+# A resource file in text format for a "Hello World" application.
+#
+# Initial prompt to the user.
+FrontPageExplanation=Beunos Dias
+# Format string to display the result.
+WelcomeBanner=Wilkommen
