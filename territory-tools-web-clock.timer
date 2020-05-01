@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh's data on Territory Tools Web
+Requires=territory-tools-web-clock.service
+
+[Timer]
+OnUnitInactiveSec=60m
+AccuracySec=15m
+
+[Install]
+WantedBy=timers.target
+
