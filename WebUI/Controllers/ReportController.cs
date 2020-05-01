@@ -5,13 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using WebUI.Models;
+using WebUI.Services;
 
 namespace WebUI.Controllers
 {
     [Authorize]
     public class ReportController : AuthorizedController
     {
+        IAccountLists accountLists;
         public ReportController(
+            IAccountLists accountLists,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
@@ -44,7 +48,7 @@ namespace WebUI.Controllers
                     return Forbid();
                 }
 
-                var groups = GetAllAssignments(account, user, password)
+                var groups = GetAllAssignments()
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
@@ -71,7 +75,7 @@ namespace WebUI.Controllers
         }
 
         [Authorize]
-        public IActionResult SummarizeCompleted()
+        public IActionResult YearlyCompletionSummary()
         {
             try
             {
@@ -80,7 +84,7 @@ namespace WebUI.Controllers
                     return Forbid();
                 }
 
-                var allAssignments = GetAllAssignments(account, user, password)
+                var allAssignments = GetAllAssignments()
                     .ToList();
 
                 var now = DateTime.Now;
@@ -112,6 +116,152 @@ namespace WebUI.Controllers
             }
         }
 
+        public class Summary
+        {
+            public string Period { get; set; }
+            public string Group { get; set; }
+            public string Area { get; set; }
+            public int Count { get; set; }
+            public int Addresses { get; internal set; }
+        }
+
+        [Authorize]
+        public IActionResult SummarizeCompleted()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var report = GeographicSummaryReportFrom(ServiceYearFrom);
+
+                return View(report);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        public IActionResult SummarizeCompletedFromNow()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var report = GeographicSummaryReportFrom(ThisYearFrom);
+
+                return View(report);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        public GeographicSummaryReport GeographicSummaryReportFrom(Func<DateTime, DateTime, DateTime> periodYearFrom)
+        {
+            try
+            {
+                var completed = GetAllAssignments()
+                    .Where(ast => ast.LastCompleted != null)
+                    .ToList();
+
+                var now = DateTime.Now;
+                var summaries = new List<Summary>();
+                foreach (var a in completed)
+                {
+                    DateTime periodStart = periodYearFrom((DateTime)a.LastCompleted, now)
+                        .Date;
+
+                    string prefix = a.Description.Substring(0, 3);
+
+                    string areaName = prefix;
+                    string groupName = "?";
+                    if (accountLists.Areas.TryGetValue(prefix, out Area area))
+                    {
+                        areaName = string.IsNullOrWhiteSpace(area.Name) ? prefix : area.Name;
+                        groupName = string.IsNullOrWhiteSpace(area.Group) ? "?" : area.Group;
+                    }
+
+                    summaries.Add(new Summary
+                    {
+                        Period = $"{periodStart.ToString("yyyy-MM-dd")}---{periodStart.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd")}",
+                        Area = areaName,
+                        Group = groupName,
+                        Addresses = a.Addresses
+                    });
+                }
+
+                var periods =
+                   from p in summaries
+                   orderby p.Period descending
+                   group p by p.Period into period
+                   from zones in
+                       (from z in period
+                        orderby z.Group
+                        group z by z.Group into zone
+                        from areas in
+                            (from a in zone
+                             orderby a.Area
+                             group a by a.Area)
+                        group areas by zone.Key)
+                   group zones by period.Key;
+
+
+                var report = new GeographicSummaryReport();
+
+                foreach (var period in periods)
+                {
+                    var periodView = new GeographicSummaryPeriod
+                    {
+                        Period = period.Key,
+                        Completed = period.Sum(p => p.Sum(z => z.Count())),
+                        Addresses = period.Sum(p => p.Sum(z => z.Sum(a => a.Addresses)))
+                    };
+
+                    report.Periods.Add(periodView);
+
+                    foreach (var zone in period)
+                    {
+                        var zoneView = new GeographicSummaryZone
+                        {
+                            Zone = zone.Key,
+                            Completed = zone.Sum(z => z.Count()),
+                            Addresses = zone.Sum(z => z.Sum(a => a.Addresses))
+                        };
+
+                        periodView.Zones.Add(zoneView);
+
+                        foreach (var area in zone)
+                        {
+                            var areaView = new GeographicSummaryArea
+                            {
+                                Area = area.Key,
+                                Completed = area.Count(),
+                                Addresses = area.Sum(a => a.Addresses)
+                            };
+
+                            zoneView.Areas.Add(areaView);
+                        }
+                    }
+                }
+
+                return report;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         [Authorize]
         public IActionResult NeverCompleted()
         {
@@ -126,7 +276,7 @@ namespace WebUI.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignments = GetAllAssignments(account, user, password)
+                var assignments = GetAllAssignments()
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null)
                     .OrderBy(a => a.Description)
@@ -161,7 +311,7 @@ namespace WebUI.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignments = GetAllAssignments(account, user, password)
+                var assignments = GetAllAssignments()
                     .Where(a => string.Equals(
                         a.Status,
                         "Available",
@@ -205,6 +355,26 @@ namespace WebUI.Controllers
             {
                 throw;
             }
+        }
+
+        DateTime ServiceYearFrom(DateTime date, DateTime now)
+        {
+            return date.Month >= 9
+                ? new DateTime(date.Year, 9, 1)
+                : new DateTime(date.Year - 1, 9, 1);
+        }
+
+        DateTime ThisYearFrom(DateTime date, DateTime now)
+        {
+            for (int i = 0; i < 99; i++)
+            {
+                if (date >= now.AddYears(-(i + 1)) && date <= now.AddYears(-i))
+                {
+                    return now.AddYears(-(i + 1));
+                }
+            }
+
+            return DateTime.MinValue;
         }
     }
 }

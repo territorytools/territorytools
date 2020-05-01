@@ -53,7 +53,7 @@ namespace WebUI.Controllers
 
                 string myName = me.Name;
 
-                var assignments = GetAllAssignments(account, user, password)
+                var assignments = GetAllAssignments()
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
@@ -126,7 +126,7 @@ namespace WebUI.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignment = GetAllAssignments(account, user, password)
+                var assignment = GetAllAssignments()
                     .Where(a => string.Equals(
                         a.Number,
                         number,
@@ -197,7 +197,7 @@ namespace WebUI.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-            var assignment = GetAllAssignments(account, user, password)
+            var assignment = GetAllAssignments()
                    .FirstOrDefault(a => a.Id == territoryId);
 
             assignment.SignedOutTo = userName;
@@ -208,7 +208,7 @@ namespace WebUI.Controllers
         [Authorize]
         public IActionResult UnassignSuccess(int territoryId)
         {
-            var assignment = GetAllAssignments(account, user, password)
+            var assignment = GetAllAssignments()
                    .FirstOrDefault(a => a.Id == territoryId);
 
             return View(assignment);
