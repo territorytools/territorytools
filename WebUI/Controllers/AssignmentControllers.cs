@@ -168,8 +168,9 @@ namespace WebUI.Controllers
             public bool Successful { get; set; }
         }
 
-        [Route("/Tick")]
-        public void Tick()
+        [AllowAnonymous]
+        [Route("/ClockTick")]
+        public void ClockTick()
         {
             logger.LogError("Loading Territory Assigments...");
             Load();
