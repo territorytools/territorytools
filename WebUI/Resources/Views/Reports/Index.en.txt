@@ -1,0 +1,64 @@
+# Territory Reports Index Page
+
+TitleTerritoryReports=Territory Reports
+LoadDataFromAlba=Load Data From Alba
+YearlyTotals=Yearly Totals
+TerritoriesNeverCompleted=Territories Never Completed
+AvailableTerritories=Available Territories
+CheckedOutByPublishers=Checked Out By Publishers
+AlbaUsers=Alba Users
+UpdateAssignmentCSVFiles=Update Assignment CSV Files
+DownloadAssignmentCSV=Download assignment.csv
+DownloadAddressesCSV=Download addresses.csv
+UpdateBorderKMLFiles=Update Border KML Files
+DownloadBordersKML=Download borders.kml
+BurnMap=Burn Map (Google My Maps)
+
+ReportSelectPublisher=Select Publisher
+ReportButtonAssign=Assign
+ReportButtonMap=Map
+ReportDescription=Description
+ReportAddresses=Addr.
+
+# Reports Page
+ReportsAccessDenied=Access Denied
+ReportsAccessDeniedMessage=You do not have access to this resource.
+
+#Reports/Yearly Totals
+
+TitleYearlyTotals=Yearly Totals
+YearlyTotalsMessage=Service Years Start September 1, End August 31
+YearlyTotalsServiceYear=Service Year
+YearlyTotalsTerritoriesCompleted=Territories Completed
+
+# Reports/Territories Never Completed
+
+TitleTerritoriesNeverCompleted=Territories that have never been worked
+
+# Reports/Available Territories
+
+TitleTerritoriesAvailable=Territories available to be checked out
+ReportCompleted=Completed
+
+# Reports/Checked Out By Publishers
+
+TitleTerritoriesCheckedOut=Territories grouped by publisher
+ReportAssigned=Assigned
+ReportButtonUnassign=Unassign
+
+# Reports/Alba Users
+
+TitleAlbaUsers=Alba Users
+AlbaUserID=ID
+AlbaUserName=User Name
+AlbaName=Name
+AlbaEMail=Email
+AlbaRole=Role
+
+#Reports/Download assignment.csv
+
+#Reports/Download addresses.txt
+
+#Reports/Download borders.kml
+
+#Reports/Burn Map (Google My Maps)
