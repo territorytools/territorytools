@@ -1,21 +1,23 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Reports";
+    ViewData["Title"] = Localizer["TitleTerritoryReports"];
 }
 
 <h3 class="display-4 text-center">Territory Reports</h3>
 <div class="container" style="max-width:500px;">
     <div class="d-flex flex-column">
-        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">Load Data From Alba</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">Yearly Totals</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">Territories Never Completed</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">Available Territories</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">Checked Out By Publishers</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AlbaUsers">Alba Users</a>
-        <a href="/api/Assignments/DownloadCsvFiles" class="p-2 m-2 btn btn-outline-secondary">Update Assignment CSV Files</a>
-        <a href="/assignments.csv" class="p-2 m-2 btn btn-outline-primary">Download assignment.csv</a>
-        <a href="/addresses.txt" class="p-2 m-2 btn btn-outline-primary">Download addresses.txt</a>
-        <a href="/api/Assignments/DownloadBorderKmlFiles" class="p-2 m-2 btn btn-outline-secondary">Update Border KML Files</a>
-        <a href="/borders.kml" class="p-2 m-2 btn btn-outline-primary">Download borders.kml</a>
-        <a href="https://drive.google.com/open?id=1kspVMzPGlh-4EMA8hNTBaCDArUGDWM_f&usp=sharing" class="p-2 m-2 btn btn-outline-primary" target="_blank">Burn Map (Google My Maps)</a>
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">@Localizer["LoadDataFromAlba"]Load Data From Alba</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">@Localizer["YearlyTotals"]Yearly Totals</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]Territories Never Completed</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]Available Territories</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]Checked Out By Publishers</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AlbaUsers">@Localizer["AlbaUsers"]Alba Users</a>
+        <a href="/api/Assignments/DownloadCsvFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateAssignmentCSVFiles"]Update Assignment CSV Files</a>
+        <a href="/assignments.csv" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadAssignmentCSV"]Download assignment.csv</a>
+        <a href="/addresses.txt" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadAddressesCSV"]Download addresses.txt</a>
+        <a href="/api/Assignments/DownloadBorderKmlFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateBorderKMLFiles"]Update Border KML Files</a>
+        <a href="/borders.kml" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadBordersKML"]Download borders.kml</a>
+        <a href="https://drive.google.com/open?id=1kspVMzPGlh-4EMA8hNTBaCDArUGDWM_f&usp=sharing" class="p-2 m-2 btn btn-outline-primary" target="_blank">@Localizer["BurnMap"]Burn Map (Google My Maps)</a>
     </div>
 </div>

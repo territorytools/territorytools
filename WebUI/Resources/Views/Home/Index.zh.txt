@@ -16,15 +16,3 @@ LoginAccountPassword=用户和密码
 # After loggedin (Home page)
 
 HomeQRCodeButton=制造二维码
-HomeYourTerritories=我的区域卡
-HomeDescription=称号
-HomeAssigned=分配时间
-HomeAddresses=地址数目
-HomeMapButton=地图
-
-# Units
-UnitDays=日
-UnitWeeks=周
-UnitMonths=月
-UnitYears=年
-UnitNever=没做过

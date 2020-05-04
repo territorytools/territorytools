@@ -1,0 +1,14 @@
+# My Territories List
+YourTerritories=我的区域卡
+Description=称号
+Assigned=分配时间
+Addresses=地址数目
+MapButton=地图
+# NoTerritoriesMessage=
+
+# Units
+UnitDays=日
+UnitWeeks=周
+UnitMonths=月
+UnitYears=年
+UnitNever=没做过
