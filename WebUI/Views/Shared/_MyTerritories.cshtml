@@ -35,22 +35,23 @@
             @foreach (var assignment in Model.Territories)
             {
                 string signedOut = "";
-                string daysUnit = Localizer["UnitDays"].ToString();
-                string monthsUnit = Localizer["UnitMonths"].ToString();
+                var unit = Localizer["UnitDays"];
+
                 int days = (int)(DateTime.Now - assignment.SignedOut)?.TotalDays;
                 if (days > 30)
                 {
                     int months = days / 30;
-                    signedOut = $"{months} {monthsUnit}";
+                    unit = Localizer["UnitMonths"];
+                    signedOut = $"{months}";
                 }
                 else
                 {
-                    signedOut = $"{days} {daysUnit}";
+                    signedOut = $"{days}";
                 }
                 <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
                     <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
                     <div class="p-2 flex-grow-1">@assignment.Description</div>
-                    <div class="p-2" style="width:150px;">@signedOut</div>
+                    <div class="p-2" style="width:150px;">@signedOut @unit</div>
                     <div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>
                     <div class="p-2" style="min-width:60px;">
                         <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">@Localizer["MapButton"]</a>
