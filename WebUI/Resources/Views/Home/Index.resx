@@ -117,27 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuTerritoryTools" xml:space="preserve">
-    <value>Territory Tools</value>
-  </data>
-  <data name="MenuHomeButton" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="MenuLoginButton" xml:space="preserve">
-    <value>Login</value>
-  </data>
-  <data name="MenuReports" xml:space="preserve">
-    <value>Reports</value>
-  </data>
-  <data name="MenuUser" xml:space="preserve">
-    <value>User</value>
-  </data>
-  <data name="MenuUserManageAccount" xml:space="preserve">
-    <value>Manage Account</value>
-  </data>
-  <data name="MenuUserSignOut" xml:space="preserve">
-    <value>Sign Out</value>
-  </data>
   <data name="LoginTerritoryTools" xml:space="preserve">
     <value>Territory Tools</value>
   </data>

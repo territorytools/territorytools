@@ -1,0 +1,8 @@
+# Shared Menu
+MenuTerritoryTools=區域工具
+MenuHomeButton=首頁
+MenuLoginButton=登錄
+MenuReports=報告
+MenuUser=用戶
+MenuUserManageAccount=管理賬戶
+MenuUserSignOut=退出

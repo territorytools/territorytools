@@ -1,12 +1,3 @@
-# Shared Menu
-MenuTerritoryTools=区域工具
-MenuHomeButton=首页
-MenuLoginButton=登录
-MenuReports=报告
-MenuUser=用户
-MenuUserManageAccount=管理账户
-MenuUserSignOut=退出
-
 # Login Page
 LoginTerritoryTools=区域工具
 LoginGreeting=欢饮! 这个网站区域的工具和报告。这不是公开的网站，必须先收到邀请才能有账户。

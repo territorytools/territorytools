@@ -117,28 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LoginTerritoryTools" xml:space="preserve">
-    <value>區域工具</value>
+  <data name="YourTerritories" xml:space="preserve">
+    <value>我的区域卡</value>
   </data>
-  <data name="LoginGreeting" xml:space="preserve">
-    <value>歡飲! 這個網站區域的工具和報告。這不是公開的網站,必須先收到邀請才能有賬戶。</value>
+  <data name="Description" xml:space="preserve">
+    <value>称号</value>
   </data>
-  <data name="LoginSignIn" xml:space="preserve">
-    <value>請登錄:</value>
+  <data name="Assigned" xml:space="preserve">
+    <value>分配时间</value>
   </data>
-  <data name="LoginAccountPassword" xml:space="preserve">
-    <value>用戶和密碼</value>
+  <data name="Addresses" xml:space="preserve">
+    <value>地址数目</value>
   </data>
-  <data name="HomeQRCodeButton" xml:space="preserve">
-    <value>製造二維碼</value>
+  <data name="MapButton" xml:space="preserve">
+    <value>地图</value>
   </data>
-  <data name="MenuUser" xml:space="preserve">
-    <value>用戶</value>
+  <data name="UnitDays" xml:space="preserve">
+    <value>日</value>
   </data>
-  <data name="MenuUserManageAccount" xml:space="preserve">
-    <value>管理賬戶</value>
+  <data name="UnitWeeks" xml:space="preserve">
+    <value>周</value>
   </data>
-  <data name="MenuUserSignOut" xml:space="preserve">
-    <value>退出</value>
+  <data name="UnitMonths" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="UnitYears" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="UnitNever" xml:space="preserve">
+    <value>没做过</value>
   </data>
 </root>

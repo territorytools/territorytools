@@ -1,12 +1,3 @@
-# Shared Menu
-MenuTerritoryTools=Territory Tools
-MenuHomeButton=Home
-MenuLoginButton=Login
-MenuReports=Reports
-MenuUser=User
-MenuUserManageAccount=Manage Account
-MenuUserSignOut=Sign Out
-
 # Login Page
 LoginTerritoryTools=Territory Tools
 LoginGreeting=Welcome! This site has tools and reports for territories. This is not a public site you must be invited to have an account.

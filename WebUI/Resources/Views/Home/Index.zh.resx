@@ -117,27 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuTerritoryTools" xml:space="preserve">
-    <value>区域工具</value>
-  </data>
-  <data name="MenuHomeButton" xml:space="preserve">
-    <value>首页</value>
-  </data>
-  <data name="MenuLoginButton" xml:space="preserve">
-    <value>登录</value>
-  </data>
-  <data name="MenuReports" xml:space="preserve">
-    <value>报告</value>
-  </data>
-  <data name="MenuUser" xml:space="preserve">
-    <value>用户</value>
-  </data>
-  <data name="MenuUserManageAccount" xml:space="preserve">
-    <value>管理账户</value>
-  </data>
-  <data name="MenuUserSignOut" xml:space="preserve">
-    <value>退出</value>
-  </data>
   <data name="LoginTerritoryTools" xml:space="preserve">
     <value>区域工具</value>
   </data>
