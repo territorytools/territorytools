@@ -24,7 +24,7 @@ ReportAddresses=Addr.
 ReportsAccessDenied=Access Denied
 ReportsAccessDeniedMessage=You do not have access to this resource.
 
-#Reports/Yearly Totals
+# Reports/Yearly Totals
 
 TitleYearlyTotals=Yearly Totals
 YearlyTotalsMessage=Service Years Start September 1, End August 31
@@ -55,10 +55,10 @@ AlbaName=Name
 AlbaEMail=Email
 AlbaRole=Role
 
-#Reports/Download assignment.csv
+# Reports/Download assignment.csv
 
-#Reports/Download addresses.txt
+# Reports/Download addresses.txt
 
-#Reports/Download borders.kml
+# Reports/Download borders.kml
 
-#Reports/Burn Map (Google My Maps)
+# Reports/Burn Map (Google My Maps)

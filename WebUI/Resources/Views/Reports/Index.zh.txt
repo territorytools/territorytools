@@ -24,7 +24,7 @@ ReportAddresses=地址数目
 ReportsAccessDenied=禁止进入
 ReportsAccessDeniedMessage=你需要许可才能进入
 
-#Reports/Yearly Totals
+# Reports/Yearly Totals
 
 TitleYearlyTotals=年度总计
 YearlyTotalsMessage=传道工作年度是9月1日开始，8月31日结束
@@ -55,10 +55,10 @@ AlbaName=名字
 AlbaEMail=电邮
 AlbaRole=角色
 
-#Reports/Download assignment.csv
+# Reports/Download assignment.csv
 
-#Reports/Download addresses.txt
+# Reports/Download addresses.txt
 
-#Reports/Download borders.kml
+# Reports/Download borders.kml
 
-#Reports/Burn Map (Google My Maps)
+# Reports/Burn Map (Google My Maps)
