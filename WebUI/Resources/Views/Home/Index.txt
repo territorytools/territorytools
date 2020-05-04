@@ -12,19 +12,8 @@ LoginTerritoryTools=Territory Tools
 LoginGreeting=Welcome! This site has tools and reports for territories. This is not a public site you must be invited to have an account.
 LoginSignIn=Please sign in:
 LoginAccountPassword=Account & Password
+LoginMissingEmail=We do not have a name for your email address!
 
 # After loggedin (Home page)
 
 HomeQRCodeButton=QR Code Generator
-HomeYourTerritories=Your Territories
-HomeDescription=Description
-HomeAssigned=Assigned
-HomeAddresses=Addr.
-HomeMapButton=Map
-
-# Units
-UnitDays=Days
-UnitWeeks=Weeks
-UnitMonths=Months
-UnitYears=Years
-UnitNever=Never
