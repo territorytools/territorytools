@@ -23,8 +23,8 @@ HomeAddresses=Addr.
 HomeMapButton=Map
 
 # Units
-Days=Days
-Weeks=Weeks
-Months=Months
-Years=Years
-Never=Never
+UnitDays=Days
+UnitWeeks=Weeks
+UnitMonths=Months
+UnitYears=Years
+UnitNever=Never

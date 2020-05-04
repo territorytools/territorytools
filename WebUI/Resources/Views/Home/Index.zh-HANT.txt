@@ -23,9 +23,9 @@ HomeAddresses=地址數目
 HomeMapButton=地圖
 
 # Units
-Days=日
-Weeks=週
-Months=月
-Years=年
-Never=沒做過
+UnitDays=日
+UnitWeeks=週
+UnitMonths=月
+UnitYears=年
+UnitNever=沒做過
 

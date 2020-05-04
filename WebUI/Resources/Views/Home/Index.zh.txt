@@ -23,8 +23,8 @@ HomeAddresses=地址数目
 HomeMapButton=地图
 
 # Units
-Days=日
-Weeks=周
-Months=月
-Years=年
-Never=没做过
+UnitDays=日
+UnitWeeks=周
+UnitMonths=月
+UnitYears=年
+UnitNever=没做过
