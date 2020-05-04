@@ -117,70 +117,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuTerritoryTools" xml:space="preserve">
-    <value>Territory Tools</value>
+  <data name="TitleTerritoryReports" xml:space="preserve">
+    <value>区域报告</value>
   </data>
-  <data name="MenuHomeButton" xml:space="preserve">
-    <value>Home</value>
+  <data name="LoadDataFromAlba" xml:space="preserve">
+    <value>更新Alba数据</value>
   </data>
-  <data name="MenuLoginButton" xml:space="preserve">
-    <value>Login</value>
+  <data name="YearlyTotals" xml:space="preserve">
+    <value>年度总计</value>
   </data>
-  <data name="MenuReports" xml:space="preserve">
-    <value>Reports</value>
+  <data name="TerritoriesNeverCompleted" xml:space="preserve">
+    <value>没做过的区域卡</value>
   </data>
-  <data name="MenuUser" xml:space="preserve">
-    <value>User</value>
+  <data name="AvailableTerritories" xml:space="preserve">
+    <value>可以分配的区域卡</value>
   </data>
-  <data name="MenuUserManageAccount" xml:space="preserve">
-    <value>Manage Account</value>
+  <data name="CheckedOutByPublishers" xml:space="preserve">
+    <value>传道员签出的区域卡</value>
   </data>
-  <data name="MenuUserSignOut" xml:space="preserve">
-    <value>Sign Out</value>
+  <data name="AlbaUsers" xml:space="preserve">
+    <value>Alba用户</value>
   </data>
-  <data name="LoginTerritoryTools" xml:space="preserve">
-    <value>Territory Tools</value>
+  <data name="UpdateAssignmentCSVFiles" xml:space="preserve">
+    <value>更新 Assignment CSV 文件</value>
   </data>
-  <data name="LoginGreeting" xml:space="preserve">
-    <value>Welcome! This site has tools and reports for territories. This is not a public site you must be invited to have an account.</value>
+  <data name="DownloadAssignmentCSV" xml:space="preserve">
+    <value>下载 assignment.csv</value>
   </data>
-  <data name="LoginSignIn" xml:space="preserve">
-    <value>Please sign in:</value>
+  <data name="DownloadAddressesCSV" xml:space="preserve">
+    <value>下载 addresses.csv</value>
   </data>
-  <data name="LoginAccountPassword" xml:space="preserve">
-    <value>Account &amp; Password</value>
+  <data name="UpdateBorderKMLFiles" xml:space="preserve">
+    <value>更新 Border KML 文件</value>
   </data>
-  <data name="HomeQRCodeButton" xml:space="preserve">
-    <value>QR Code Generator</value>
+  <data name="DownloadBordersKML" xml:space="preserve">
+    <value>下载 borders.kml</value>
   </data>
-  <data name="HomeYourTerritories" xml:space="preserve">
-    <value>Your Territories</value>
+  <data name="BurnMap" xml:space="preserve">
+    <value>火地图 (谷歌 “My Maps”)</value>
   </data>
-  <data name="HomeDescription" xml:space="preserve">
-    <value>Description</value>
+  <data name="ReportSelectPublisher" xml:space="preserve">
+    <value>选传道员</value>
   </data>
-  <data name="HomeAssigned" xml:space="preserve">
-    <value>Assigned</value>
+  <data name="ReportButtonAssign" xml:space="preserve">
+    <value>分配</value>
   </data>
-  <data name="HomeAddresses" xml:space="preserve">
-    <value>Addr.</value>
+  <data name="ReportButtonMap" xml:space="preserve">
+    <value>地址</value>
   </data>
-  <data name="HomeMapButton" xml:space="preserve">
-    <value>Map</value>
+  <data name="ReportDescription" xml:space="preserve">
+    <value>称号</value>
   </data>
-  <data name="UnitDays" xml:space="preserve">
-    <value>Days</value>
+  <data name="ReportAddresses" xml:space="preserve">
+    <value>地址数目</value>
   </data>
-  <data name="UnitWeeks" xml:space="preserve">
-    <value>Weeks</value>
+  <data name="ReportsAccessDenied" xml:space="preserve">
+    <value>禁止进入</value>
   </data>
-  <data name="UnitMonths" xml:space="preserve">
-    <value>Months</value>
+  <data name="ReportsAccessDeniedMessage" xml:space="preserve">
+    <value>你需要许可才能进入</value>
   </data>
-  <data name="UnitYears" xml:space="preserve">
-    <value>Years</value>
+  <data name="TitleYearlyTotals" xml:space="preserve">
+    <value>年度总计</value>
   </data>
-  <data name="UnitNever" xml:space="preserve">
-    <value>Never</value>
+  <data name="YearlyTotalsMessage" xml:space="preserve">
+    <value>传道工作年度是9月1日开始，8月31日结束</value>
+  </data>
+  <data name="YearlyTotalsServiceYear" xml:space="preserve">
+    <value>工作年度</value>
+  </data>
+  <data name="YearlyTotalsTerritoriesCompleted" xml:space="preserve">
+    <value>完成的区域卡</value>
+  </data>
+  <data name="TitleTerritoriesNeverCompleted" xml:space="preserve">
+    <value>没做过的区域卡</value>
+  </data>
+  <data name="TitleTerritoriesAvailable" xml:space="preserve">
+    <value>可以分配的区域卡</value>
+  </data>
+  <data name="ReportCompleted" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="TitleTerritoriesCheckedOut" xml:space="preserve">
+    <value>区域卡按传道员分组</value>
+  </data>
+  <data name="ReportAssigned" xml:space="preserve">
+    <value>分配</value>
+  </data>
+  <data name="ReportButtonUnassign" xml:space="preserve">
+    <value>取消分配</value>
+  </data>
+  <data name="TitleAlbaUsers" xml:space="preserve">
+    <value>Alba用户</value>
+  </data>
+  <data name="AlbaUserID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="AlbaUserName" xml:space="preserve">
+    <value>用户名</value>
+  </data>
+  <data name="AlbaName" xml:space="preserve">
+    <value>名字</value>
+  </data>
+  <data name="AlbaEMail" xml:space="preserve">
+    <value>电邮</value>
+  </data>
+  <data name="AlbaRole" xml:space="preserve">
+    <value>角色</value>
   </data>
 </root>

@@ -117,7 +117,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="WelcomeBanner" xml:space="preserve">
-    <value>G'Day</value>
+  <data name="TitleTerritoryReports" xml:space="preserve">
+    <value>Territory Reports</value>
+  </data>
+  <data name="LoadDataFromAlba" xml:space="preserve">
+    <value>Load Data From Alba</value>
+  </data>
+  <data name="YearlyTotals" xml:space="preserve">
+    <value>Yearly Totals</value>
+  </data>
+  <data name="TerritoriesNeverCompleted" xml:space="preserve">
+    <value>Territories Never Completed</value>
+  </data>
+  <data name="AvailableTerritories" xml:space="preserve">
+    <value>Available Territories</value>
+  </data>
+  <data name="CheckedOutByPublishers" xml:space="preserve">
+    <value>Checked Out By Publishers</value>
+  </data>
+  <data name="AlbaUsers" xml:space="preserve">
+    <value>Alba Users</value>
+  </data>
+  <data name="UpdateAssignmentCSVFiles" xml:space="preserve">
+    <value>Update Assignment CSV Files</value>
+  </data>
+  <data name="DownloadAssignmentCSV" xml:space="preserve">
+    <value>Download assignment.csv</value>
+  </data>
+  <data name="DownloadAddressesCSV" xml:space="preserve">
+    <value>Download addresses.csv</value>
+  </data>
+  <data name="UpdateBorderKMLFiles" xml:space="preserve">
+    <value>Update Border KML Files</value>
+  </data>
+  <data name="DownloadBordersKML" xml:space="preserve">
+    <value>Download borders.kml</value>
+  </data>
+  <data name="BurnMap" xml:space="preserve">
+    <value>Burn Map (Google My Maps)</value>
+  </data>
+  <data name="ReportSelectPublisher" xml:space="preserve">
+    <value>Select Publisher</value>
+  </data>
+  <data name="ReportButtonAssign" xml:space="preserve">
+    <value>Assign</value>
+  </data>
+  <data name="ReportButtonMap" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="ReportDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ReportAddresses" xml:space="preserve">
+    <value>Addr.</value>
+  </data>
+  <data name="ReportsAccessDenied" xml:space="preserve">
+    <value>Access Denied</value>
+  </data>
+  <data name="ReportsAccessDeniedMessage" xml:space="preserve">
+    <value>You do not have access to this resource.</value>
+  </data>
+  <data name="TitleYearlyTotals" xml:space="preserve">
+    <value>Yearly Totals</value>
+  </data>
+  <data name="YearlyTotalsMessage" xml:space="preserve">
+    <value>Service Years Start September 1, End August 31</value>
+  </data>
+  <data name="YearlyTotalsServiceYear" xml:space="preserve">
+    <value>Service Year</value>
+  </data>
+  <data name="YearlyTotalsTerritoriesCompleted" xml:space="preserve">
+    <value>Territories Completed</value>
+  </data>
+  <data name="TitleTerritoriesNeverCompleted" xml:space="preserve">
+    <value>Territories that have never been worked</value>
+  </data>
+  <data name="TitleTerritoriesAvailable" xml:space="preserve">
+    <value>Territories available to be checked out</value>
+  </data>
+  <data name="ReportCompleted" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="TitleTerritoriesCheckedOut" xml:space="preserve">
+    <value>Territories grouped by publisher</value>
+  </data>
+  <data name="ReportAssigned" xml:space="preserve">
+    <value>Assigned</value>
+  </data>
+  <data name="ReportButtonUnassign" xml:space="preserve">
+    <value>Unassign</value>
+  </data>
+  <data name="TitleAlbaUsers" xml:space="preserve">
+    <value>Alba Users</value>
+  </data>
+  <data name="AlbaUserID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="AlbaUserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="AlbaName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AlbaEMail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="AlbaRole" xml:space="preserve">
+    <value>Role</value>
   </data>
 </root>
