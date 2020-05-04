@@ -1,0 +1,64 @@
+# Territory Reports Index Page
+
+TitleTerritoryReports=区域报告
+LoadDataFromAlba=更新Alba数据
+YearlyTotals=年度总计
+TerritoriesNeverCompleted=没做过的区域卡
+AvailableTerritories=可以分配的区域卡
+CheckedOutByPublishers=传道员签出的区域卡
+AlbaUsers=Alba用户
+UpdateAssignmentCSVFiles=更新 Assignment CSV 文件
+DownloadAssignmentCSV=下载 assignment.csv
+DownloadAddressesCSV=下载 addresses.csv
+UpdateBorderKMLFiles=更新 Border KML 文件
+DownloadBordersKML=下载 borders.kml
+BurnMap=火地图 (谷歌 “My Maps”)
+
+ReportSelectPublisher=选传道员
+ReportButtonAssign=分配
+ReportButtonMap=地址
+ReportDescription=称号
+ReportAddresses=地址数目
+
+# Reports Page
+ReportsAccessDenied=禁止进入
+ReportsAccessDeniedMessage=你需要许可才能进入
+
+#Reports/Yearly Totals
+
+TitleYearlyTotals=年度总计
+YearlyTotalsMessage=传道工作年度是9月1日开始，8月31日结束
+YearlyTotalsServiceYear=工作年度
+YearlyTotalsTerritoriesCompleted=完成的区域卡
+
+# Reports/Territories Never Completed
+
+TitleTerritoriesNeverCompleted=没做过的区域卡
+
+# Reports/Available Territories
+
+TitleTerritoriesAvailable=可以分配的区域卡
+ReportCompleted=完成
+
+# Reports/Checked Out By Publishers
+
+TitleTerritoriesCheckedOut=区域卡按传道员分组
+ReportAssigned=分配
+ReportButtonUnassign=取消分配
+
+# Reports/Alba Users
+
+TitleAlbaUsers=Alba用户
+AlbaUserID=ID
+AlbaUserName=用户名
+AlbaName=名字
+AlbaEMail=电邮
+AlbaRole=角色
+
+#Reports/Download assignment.csv
+
+#Reports/Download addresses.txt
+
+#Reports/Download borders.kml
+
+#Reports/Burn Map (Google My Maps)
