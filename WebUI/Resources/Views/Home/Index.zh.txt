@@ -1,0 +1,30 @@
+# Shared Menu
+MenuTerritoryTools=区域工具
+MenuHomeButton=首页
+MenuLoginButton=登录
+MenuReports=报告
+MenuUser=用户
+MenuUserManageAccount=管理账户
+MenuUserSignOut=退出
+
+# Login Page
+LoginTerritoryTools=区域工具
+LoginGreeting=欢饮! 这个网站区域的工具和报告。这不是公开的网站，必须先收到邀请才能有账户。
+LoginSignIn=请登录:
+LoginAccountPassword=用户和密码
+
+# After loggedin (Home page)
+
+HomeQRCodeButton=制造二维码
+HomeYourTerritories=我的区域卡
+HomeDescription=称号
+HomeAssigned=分配时间
+HomeAddresses=地址数目
+HomeMapButton=地图
+
+# Units
+Days=日
+Weeks=周
+Months=月
+Years=年
+Never=没做过
