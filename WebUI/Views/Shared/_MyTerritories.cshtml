@@ -35,15 +35,17 @@
             @foreach (var assignment in Model.Territories)
             {
                 string signedOut = "";
+                string daysUnit = Localizer["UnitDays"].ToString();
+                string monthsUnit = Localizer["UnitMonths"].ToString();
                 int days = (int)(DateTime.Now - assignment.SignedOut)?.TotalDays;
                 if (days > 30)
                 {
                     int months = days / 30;
-                    signedOut = $"{months} {Localizer["UnitMonths"]}";
+                    signedOut = $"{months} {monthsUnit}";
                 }
                 else
                 {
-                    signedOut = $"{days}  {Localizer["UnitDays"]}";
+                    signedOut = $"{days} {daysUnit}";
                 }
                 <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
                     <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
