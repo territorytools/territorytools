@@ -153,34 +153,4 @@
   <data name="HomeQRCodeButton" xml:space="preserve">
     <value>制造二维码</value>
   </data>
-  <data name="HomeYourTerritories" xml:space="preserve">
-    <value>我的区域卡</value>
-  </data>
-  <data name="HomeDescription" xml:space="preserve">
-    <value>称号</value>
-  </data>
-  <data name="HomeAssigned" xml:space="preserve">
-    <value>分配时间</value>
-  </data>
-  <data name="HomeAddresses" xml:space="preserve">
-    <value>地址数目</value>
-  </data>
-  <data name="HomeMapButton" xml:space="preserve">
-    <value>地图</value>
-  </data>
-  <data name="UnitDays" xml:space="preserve">
-    <value>日</value>
-  </data>
-  <data name="UnitWeeks" xml:space="preserve">
-    <value>周</value>
-  </data>
-  <data name="UnitMonths" xml:space="preserve">
-    <value>月</value>
-  </data>
-  <data name="UnitYears" xml:space="preserve">
-    <value>年</value>
-  </data>
-  <data name="UnitNever" xml:space="preserve">
-    <value>没做过</value>
-  </data>
 </root>

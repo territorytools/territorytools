@@ -150,37 +150,10 @@
   <data name="LoginAccountPassword" xml:space="preserve">
     <value>Account &amp; Password</value>
   </data>
+  <data name="LoginMissingEmail" xml:space="preserve">
+    <value>We do not have a name for your email address!</value>
+  </data>
   <data name="HomeQRCodeButton" xml:space="preserve">
     <value>QR Code Generator</value>
-  </data>
-  <data name="HomeYourTerritories" xml:space="preserve">
-    <value>Your Territories</value>
-  </data>
-  <data name="HomeDescription" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="HomeAssigned" xml:space="preserve">
-    <value>Assigned</value>
-  </data>
-  <data name="HomeAddresses" xml:space="preserve">
-    <value>Addr.</value>
-  </data>
-  <data name="HomeMapButton" xml:space="preserve">
-    <value>Map</value>
-  </data>
-  <data name="UnitDays" xml:space="preserve">
-    <value>Days</value>
-  </data>
-  <data name="UnitWeeks" xml:space="preserve">
-    <value>Weeks</value>
-  </data>
-  <data name="UnitMonths" xml:space="preserve">
-    <value>Months</value>
-  </data>
-  <data name="UnitYears" xml:space="preserve">
-    <value>Years</value>
-  </data>
-  <data name="UnitNever" xml:space="preserve">
-    <value>Never</value>
   </data>
 </root>
