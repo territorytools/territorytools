@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault;
+﻿using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TerritoryShell
 {
@@ -48,13 +46,17 @@ namespace TerritoryShell
             // 4. Go to the KeyVault
             // 5. Click on Access Policies, add a principle, find the name you created in step 1
             // 6. Give it read/write permission in the vault
-            /* The next four lines of code show you how to use AppAuthentication library to fetch secrets from your key vault */
             try
             {
-                keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+                keyVaultClient = new KeyVaultClient(
+                    new KeyVaultClient.AuthenticationCallback(GetToken));
 
-                SecretBundle secret = Task.Run(() => keyVaultClient.GetSecretAsync(BASESECRETURI +
-                    @"/secrets/" + name)).ConfigureAwait(false).GetAwaiter().GetResult();
+                SecretBundle secret = Task
+                    .Run(() => keyVaultClient.GetSecretAsync(
+                        $"{BASESECRETURI}/secrets/{name}"))
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
 
                 return secret.Value;
             }
@@ -71,26 +73,17 @@ namespace TerritoryShell
 
             var attribs = new SecretAttributes
             {
-                Enabled = true//,
-                //Expires = DateTime.UtcNow.AddYears(2), // if you want to expire the info
-                //NotBefore = DateTime.UtcNow.AddDays(1) // if you want the info to 
-                // start being available later
+                Enabled = true
             };
 
             IDictionary<string, string> alltags = new Dictionary<string, string>();
-            //alltags.Add("Test1", "This is a test1 value");
-            //alltags.Add("Test2", "This is a test2 value");
-            //alltags.Add("CanBeAnything", "Including a long encrypted string if you choose");
-            //string TestName = "TestSecret";
-            //string TestValue = "searchValue"; // this is what you will use to search for the item later
-            string contentType = "SecretInfo"; // whatever you want to categorize it by; you name it
 
              SecretBundle bundle = await keyVaultClient.SetSecretAsync(
                 vaultBaseUrl: BASESECRETURI,
                 secretName: name,
                 value: value,
                 tags: alltags,
-                contentType: contentType,
+                contentType: string.Empty,
                 secretAttributes: attribs); ;
 
             Console.WriteLine($"Secret written to key vault: {name}");
