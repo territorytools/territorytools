@@ -13,7 +13,7 @@ namespace TerritoryShell
             if (args.Length == 3)
             {
                 Console.WriteLine($"Getting a vault secret for {name}....");
-                string secret = VaultClient.GetSecret(clientId, clientSecret, name);
+                string secret = AzureKeyVaultClient.GetSecret(clientId, clientSecret, name);
 
                 Console.WriteLine($"Secret: {secret}");
             }
@@ -22,7 +22,7 @@ namespace TerritoryShell
                 Console.WriteLine($"Writing a vault secret for {name}....");
                 
                 string value = args[3];
-                VaultClient.WriteSecret(clientId, clientSecret, name, value);
+                AzureKeyVaultClient.WriteSecret(clientId, clientSecret, name, value);
             }
 
             Console.WriteLine("Press any key to quit...");
