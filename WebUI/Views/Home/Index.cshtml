@@ -10,7 +10,7 @@
         @if (SignInManager.IsSignedIn(User))
         {
             <!--a href="https://www.bellevuemandarin.org" class="btn btn-primary" type="submit">Bellevue Mandarin</a-->
-            <a asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" class="btn btn-primary" type="submit">QR Code Generator</a>
+            <a asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" class="btn btn-primary" type="submit">@Localizer["HomeQRCodeButton"]</a>
 
             if (!string.IsNullOrWhiteSpace(Model.Name))
             {
@@ -19,15 +19,15 @@
             else
             {
                 <h5>@Model.Email</h5>
-                <p>We do not have a name for your email address!</p>
+                <p>@Localizer["LoginMissingEmail"]</p>
             }
         }
         else
         {
             <img src="mstile-144x144.png">
-            <h1 class="display-4">Territory Tools</h1>
-            <p>@Localizer["FrontPageExplanation"]</p>
-            <p>@Localizer["PleaseLogIn"]</p>
+            <h1 class="display-4">@Localizer["LoginTerritoryTools"]</h1>
+            <p>@Localizer["LoginGreeting"]</p>
+            <p>@Localizer["LoginSignIn"]</p>
             <form id="external-account" action="~/Identity/Account/ExternalLogin?returnUrl=%2F" method="post" class="form-horizontal">
                 <div>
                     <p>
@@ -37,7 +37,7 @@
                         <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/ms-symbollockup_signin_light.png" /></button>
                     </p>
                     <p>
-                        <a href="~/Identity/Account/LoginPassword" class="btn btn-info m-2">Account &amp; Password</a>
+                        <a href="~/Identity/Account/LoginPassword" class="btn btn-info m-2">@Localizer["LoginAccountPassword"]</a>
                     </p>
                 </div>
             </form>

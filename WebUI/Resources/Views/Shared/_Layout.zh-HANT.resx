@@ -117,7 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="WelcomeBanner" xml:space="preserve">
-    <value>G'Day</value>
+  <data name="MenuTerritoryTools" xml:space="preserve">
+    <value>區域工具</value>
+  </data>
+  <data name="MenuHomeButton" xml:space="preserve">
+    <value>首頁</value>
+  </data>
+  <data name="MenuLoginButton" xml:space="preserve">
+    <value>登錄</value>
+  </data>
+  <data name="MenuReports" xml:space="preserve">
+    <value>報告</value>
+  </data>
+  <data name="MenuUser" xml:space="preserve">
+    <value>用戶</value>
+  </data>
+  <data name="MenuUserManageAccount" xml:space="preserve">
+    <value>管理賬戶</value>
+  </data>
+  <data name="MenuUserSignOut" xml:space="preserve">
+    <value>退出</value>
   </data>
 </root>
