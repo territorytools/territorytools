@@ -1,21 +1,22 @@
 @using Microsoft.AspNetCore.Identity
-@using AlbaClient.Controllers.UseCases;
+@using Microsoft.AspNetCore.Mvc.Localization
 @using WebUI;
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject IViewLocalizer Localizer
 @model Publisher;
 @{
-    ViewData["Title"] = "Your Territories";
+    ViewData["Title"] = Localizer["YourTerritories"];
 }
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <h4 style="text-align:center;">Your Territories</h4>
+    <h4 style="text-align:center;">@Localizer["YourTerritories"]</h4>
     if (Model == null || Model.Territories.Count == 0)
     {
         <div class="container mt-3" style="max-width:600px;">
             <div class="d-flex mb-2" style="border-top: 1px solid #aaa;">
-                <div class="pr-2 pl-2 flex-grow-1" style="text-align:center;">You do not have any territories checked out.</div>
+                <div class="pr-2 pl-2 flex-grow-1" style="text-align:center;">@Localizer["NoTerritoriesMessage"]</div>
             </div>
         </div>
     }
@@ -24,33 +25,36 @@
         <div class="container mt-3" style="max-width:600px;">
             <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
                 <div class="pr-2 pl-2" style="min-width:60px;">#</div>
-                <div class="pr-2 pl-2 flex-grow-1">Description</div>
+                <div class="pr-2 pl-2 flex-grow-1">@Localizer["Description"]</div>
                 <div class="pr-2 pl-2 flex-grow-1"></div>
-                <div class="pr-2 pl-2" style="width:150px;">Assigned</div>
-                <div class="pr-2 pl-2" style="width:50px;">Addr.</div>
+                <div class="pr-2 pl-2" style="width:150px;">@Localizer["Assigned"]</div>
+                <div class="pr-2 pl-2" style="width:50px;">@Localizer["Addresses"]</div>
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
             </div>
 
             @foreach (var assignment in Model.Territories)
             {
                 string signedOut = "";
+                var unit = Localizer["UnitDays"];
+
                 int days = (int)(DateTime.Now - assignment.SignedOut)?.TotalDays;
                 if (days > 30)
                 {
                     int months = days / 30;
-                    signedOut = $"{months} months";
+                    unit = Localizer["UnitMonths"];
+                    signedOut = $"{months}";
                 }
                 else
                 {
-                    signedOut = $"{days} days";
+                    signedOut = $"{days}";
                 }
                 <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
                     <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
                     <div class="p-2 flex-grow-1">@assignment.Description</div>
-                    <div class="p-2" style="width:150px;">@signedOut</div>
+                    <div class="p-2" style="width:150px;">@signedOut @unit</div>
                     <div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>
                     <div class="p-2" style="min-width:60px;">
-                        <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Map</a>
+                        <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">@Localizer["MapButton"]</a>
                     </div>
                 </div>
             }

@@ -1,0 +1,8 @@
+# Shared Menu
+MenuTerritoryTools=区域工具
+MenuHomeButton=首页
+MenuLoginButton=登录
+MenuReports=报告
+MenuUser=用户
+MenuUserManageAccount=管理账户
+MenuUserSignOut=退出
