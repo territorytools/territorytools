@@ -14,19 +14,22 @@ namespace TerritoryShell
         static string _clientId;
         static string _clientSecret;
 
-        public static string GetSecret(string clientId, string clientSecret, string name)
+        public static string GetSecret(
+            string clientId, 
+            string clientSecret, 
+            string name)
         {
             _clientId = clientId;
             _clientSecret = clientSecret;
 
-            Task<string> task = GetSecretFrom(name);
-            
-            string message = task.Result;
-            
-            return message;
+            return GetSecretFrom(name); 
         }
 
-        public static void WriteSecret(string clientId, string clientSecret, string key, string value)
+        public static void WriteSecret(
+            string clientId, 
+            string clientSecret, 
+            string key, 
+            string value)
         {
             _clientId = clientId;
             _clientSecret = clientSecret;
@@ -34,18 +37,18 @@ namespace TerritoryShell
             WriteKeyVault(key, value);
         }
 
-        public static async Task<string> GetSecretFrom(string name)
+        // Resources
+        // https://www.codeproject.com/Tips/1430794/Using-Csharp-NET-to-Read-and-Write-from-Azure-Key
+        // https://docs.microsoft.com/en-us/azure/key-vault/general/tutorial-net-create-vault-azure-web-app#log-in-to-azure
+        // Prerequisites
+        // 1. Create an 'App Registration'
+        // 2. Click on 'Certifcates & secrets'
+        // 3. Click 'New client secret', name it whatever, it's not used here
+        // 4. Go to the KeyVault
+        // 5. Click on Access Policies, add a principle, find the name you created in step 1
+        // 6. Give it read/write permission in the vault
+        public static string GetSecretFrom(string name)
         {
-            // Resources
-            // https://www.codeproject.com/Tips/1430794/Using-Csharp-NET-to-Read-and-Write-from-Azure-Key
-            // https://docs.microsoft.com/en-us/azure/key-vault/general/tutorial-net-create-vault-azure-web-app#log-in-to-azure
-            // Prerequisites
-            // 1. Create an 'App Registration'
-            // 2. Click on 'Certifcates & secrets'
-            // 3. Click 'New client secret', name it whatever, it's not used here
-            // 4. Go to the KeyVault
-            // 5. Click on Access Policies, add a principle, find the name you created in step 1
-            // 6. Give it read/write permission in the vault
             try
             {
                 keyVaultClient = new KeyVaultClient(
@@ -69,20 +72,19 @@ namespace TerritoryShell
 
         private static async void WriteKeyVault(string name, string value)
         {
-            keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+            keyVaultClient = new KeyVaultClient(
+                new KeyVaultClient.AuthenticationCallback(GetToken));
 
             var attribs = new SecretAttributes
             {
                 Enabled = true
             };
 
-            IDictionary<string, string> alltags = new Dictionary<string, string>();
-
-             SecretBundle bundle = await keyVaultClient.SetSecretAsync(
+            SecretBundle bundle = await keyVaultClient.SetSecretAsync(
                 vaultBaseUrl: BASESECRETURI,
                 secretName: name,
                 value: value,
-                tags: alltags,
+                tags: new Dictionary<string, string>(),
                 contentType: string.Empty,
                 secretAttributes: attribs); ;
 
@@ -96,10 +98,14 @@ namespace TerritoryShell
         {
             var authContext = new AuthenticationContext(authority);
             var clientCred = new ClientCredential(_clientId, _clientSecret);
-            AuthenticationResult result = await authContext.AcquireTokenAsync(resource, clientCred);
+            AuthenticationResult result = await authContext
+                .AcquireTokenAsync(resource, clientCred);
 
             if (result == null)
-                throw new InvalidOperationException("Failed to obtain the JWT token");
+            {
+                throw new InvalidOperationException(
+                    "Failed to obtain the JWT token");
+            }
 
             return result.AccessToken;
         }
