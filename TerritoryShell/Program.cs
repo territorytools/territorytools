@@ -6,9 +6,25 @@ namespace TerritoryShell
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Getting a vault secret....");
-            string secret = VaultClient.GetSecret(args[0], args[1]);
-            Console.WriteLine($"Secret: {secret}");
+            string clientId = args[0];
+            string clientSecret = args[1];
+            string name = args[2];
+
+            if (args.Length == 3)
+            {
+                Console.WriteLine($"Getting a vault secret for {name}....");
+                string secret = VaultClient.GetSecret(clientId, clientSecret, name);
+
+                Console.WriteLine($"Secret: {secret}");
+            }
+            else if (args.Length == 4)
+            {
+                Console.WriteLine($"Writing a vault secret for {name}....");
+                
+                string value = args[3];
+                VaultClient.WriteSecret(clientId, clientSecret, name, value);
+            }
+
             Console.WriteLine("Press any key to quit...");
             Console.ReadKey();
         }
