@@ -16,19 +16,27 @@ namespace TerritoryShell
         static string _clientId;
         static string _clientSecret;
 
-        public static string GetSecret(string clientId, string clientSecret)
+        public static string GetSecret(string clientId, string clientSecret, string name)
         {
             _clientId = clientId;
             _clientSecret = clientSecret;
 
-            var client = new VaultClient();
-            Task<string> task = VaultClient.GetSecretFrom(clientId, clientSecret);
+            Task<string> task = GetSecretFrom(name);
             
             string message = task.Result;
             
             return message;
         }
-        public static async Task<string> GetSecretFrom(string clientId, string clientSecret)
+
+        public static void WriteSecret(string clientId, string clientSecret, string key, string value)
+        {
+            _clientId = clientId;
+            _clientSecret = clientSecret;
+
+            WriteKeyVault(key, value);
+        }
+
+        public static async Task<string> GetSecretFrom(string name)
         {
             // Resources
             // https://www.codeproject.com/Tips/1430794/Using-Csharp-NET-to-Read-and-Write-from-Azure-Key
@@ -43,14 +51,10 @@ namespace TerritoryShell
             /* The next four lines of code show you how to use AppAuthentication library to fetch secrets from your key vault */
             try
             {
-                //var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                //var keyVaultClient = new KeyVaultClient(
-                //    new KeyVaultClient.AuthenticationCallback(
-                //        azureServiceTokenProvider.KeyVaultTokenCallback));
                 keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
 
                 SecretBundle secret = Task.Run(() => keyVaultClient.GetSecretAsync(BASESECRETURI +
-                    @"/secrets/" + "alba-account-user-seattleeastchinese")).ConfigureAwait(false).GetAwaiter().GetResult();
+                    @"/secrets/" + name)).ConfigureAwait(false).GetAwaiter().GetResult();
 
                 return secret.Value;
             }
@@ -63,6 +67,8 @@ namespace TerritoryShell
 
         private static async void WriteKeyVault(string name, string value)
         {
+            keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+
             var attribs = new SecretAttributes
             {
                 Enabled = true//,
@@ -79,7 +85,7 @@ namespace TerritoryShell
             //string TestValue = "searchValue"; // this is what you will use to search for the item later
             string contentType = "SecretInfo"; // whatever you want to categorize it by; you name it
 
-            SecretBundle bundle = await keyVaultClient.SetSecretAsync(
+             SecretBundle bundle = await keyVaultClient.SetSecretAsync(
                 vaultBaseUrl: BASESECRETURI,
                 secretName: name,
                 value: value,
