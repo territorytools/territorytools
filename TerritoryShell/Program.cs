@@ -1,4 +1,5 @@
 ﻿using System;
+using TerritoryTools.Vault;
 
 namespace TerritoryShell
 {
