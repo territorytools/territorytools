@@ -6,9 +6,9 @@ namespace WebUI.Models
     public class AlbaUser
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string UserName { get; set; }
-        public int AccountId { get; set; }
+        public Guid AccountId { get; set; }
         public AlbaAccount Account { get; set; }
         public string Email { get; set; }
         public string Telephone { get; set; }
