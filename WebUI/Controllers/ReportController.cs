@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using WebUI.Models;
 using WebUI.Services;
 
 namespace WebUI.Controllers
