@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
 using TerritoryTools.Entities;
+using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
 using WebUI.Areas.UrlShortener.Services;
 using WebUI.Controllers;
@@ -19,15 +20,17 @@ namespace WebUI.Areas.UrlShortener.Controllers
         private readonly string _hostName;
 
         public ShortUrlsController(
+            MainDbContext database,
             IShortUrlService service, 
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             WebUI.Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
-               localizer,
-               credentials,
-               authorizationService,
-               optionsAccessor)
+                database,
+                localizer,
+                credentials,
+                authorizationService,
+                optionsAccessor)
         {
             this.service = service;
             _hostName = optionsAccessor.Value.UrlShortenerDomain;

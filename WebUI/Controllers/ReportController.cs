@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using WebUI.Services;
+using WebUI.Areas.Identity.Data;
 
 namespace WebUI.Controllers
 {
@@ -14,11 +15,13 @@ namespace WebUI.Controllers
     {
         IAccountLists accountLists;
         public ReportController(
-            IAccountLists accountLists,
+            MainDbContext database,
+            //IAccountLists accountLists,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                database,
                 localizer,
                 credentials,
                 authorizationService,

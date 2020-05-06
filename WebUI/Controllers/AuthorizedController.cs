@@ -15,6 +15,9 @@ using Microsoft.Extensions.Options;
 using io = System.IO;
 using Microsoft.AspNetCore.Http;
 using static WebUI.BasicStrings;
+using TerritoryTools.Vault;
+using WebUI.Areas.Identity.Data;
+using System.Linq;
 
 namespace WebUI.Controllers
 {
@@ -23,18 +26,20 @@ namespace WebUI.Controllers
         string k1MagicString = LogUserOntoAlba.k1MagicString;
 
         protected readonly IStringLocalizer<AuthorizedController> localizer;
-
+        protected readonly MainDbContext database;
         protected string account;
         protected string user;
         protected string password;
         protected WebUI.Services.IAuthorizationService authorizationService;
 
         public AuthorizedController(
+            MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             WebUI.Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor)
         {
+            this.database = database;
             this.localizer = localizer;
             account = credentials.Account;
             user = credentials.User;
@@ -90,7 +95,32 @@ namespace WebUI.Controllers
 
             var client = AuthClient();
 
-            var credentials = new Credentials(account, user, password, k1MagicString);
+            var vault = new AzureKeyVaultClient(
+                clientId: options.AzureAppId,
+                clientSecret: options.AzureClientSecret,
+                "territorywebvault");
+
+            string currentUserName = User.Identity.Name.ToUpper();
+            var identityUser = database
+                .Users
+                .SingleOrDefault(u => u.NormalizedEmail == currentUserName);
+
+            var territoryUser = database
+                .TerritoryUser
+                .SingleOrDefault(u => u.AspNetUserId == identityUser.Id);
+
+            var accountLink = database
+                .TerritoryUserAlbaAccountLink
+                .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
+
+            string id = accountLink.AlbaAccountId.ToString();
+
+            string acct = vault.GetSecret($"alba-account-name-{id}");
+            string usr = vault.GetSecret($"alba-account-user-{id}");
+            string pwd = vault.GetSecret($"alba-account-password-{id}");
+
+            //var credentials = new Credentials(account, user, password, k1MagicString);
+            var credentials = new Credentials(acct, usr, pwd, k1MagicString);
 
             client.Authorize(credentials);
 
