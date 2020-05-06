@@ -76,10 +76,16 @@ namespace WebUI.Controllers
                 RelativeUrlBuilder.GetTerritoryAssignments());
 
             string assignmentsHtml = TerritoryAssignmentParser.Parse(assignmentsJson);
+            string path = string.Format(
+                options.AlbaAssignmentsHtmlPath,
+                credentials.AlbaAccountId);
 
-            io.File.WriteAllText(
-                options.AlbaAssignmentsHtmlPath, 
-                assignmentsHtml);
+            if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
+            {
+                io.Directory.CreateDirectory(io.Path.GetDirectoryName(path));
+            }
+
+            io.File.WriteAllText(path, assignmentsHtml);
 
             //var assignedHtml = client.DownloadString(
             //    RelativeUrlBuilder.GetTerritoryAssignmentsPage());
@@ -133,8 +139,16 @@ namespace WebUI.Controllers
                 RelativeUrlBuilder.GetUserManagementPage());
 
             string html = AlbaJsonResultParser.ParseDataHtml(json, "users");
+            string path = string.Format(
+                options.AlbaUserManagementHtmlPath,
+                credentials.AlbaAccountId);
 
-            io.File.WriteAllText(options.AlbaUserManagementHtmlPath, html);
+            if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
+            {
+                io.Directory.CreateDirectory(io.Path.GetDirectoryName(path));
+            }
+
+            io.File.WriteAllText(path, html);
         }
 
         protected IEnumerable<Assignment> GetAllAssignments()
