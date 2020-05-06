@@ -349,7 +349,10 @@ namespace WebUI.Controllers
                     return Forbid();
                 }
 
-                var users = GetAlbaUsers()
+                Guid albaAccountId = albaCredentialService
+                    .GetAlbaAccountIdFor(User.Identity.Name);
+
+                var users = GetAlbaUsers(albaAccountId)
                     .OrderBy(u => u.Name)
                     .ToList();
 
