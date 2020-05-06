@@ -1,4 +1,4 @@
-﻿namespace TerritoryShell
+﻿namespace TerritoryTools.Vault
 {
     public interface IVaultClient
     {
