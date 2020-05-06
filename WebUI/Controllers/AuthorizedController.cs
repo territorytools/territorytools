@@ -113,13 +113,12 @@ namespace WebUI.Controllers
                 .TerritoryUserAlbaAccountLink
                 .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
 
-            string id = accountLink.AlbaAccountId.ToString();
+            string albaAccountId = accountLink.AlbaAccountId.ToString();
 
-            string acct = vault.GetSecret($"alba-account-name-{id}");
-            string usr = vault.GetSecret($"alba-account-user-{id}");
-            string pwd = vault.GetSecret($"alba-account-password-{id}");
+            string acct = vault.GetSecret($"alba-account-name-{albaAccountId}");
+            string usr = vault.GetSecret($"alba-account-user-{albaAccountId}");
+            string pwd = vault.GetSecret($"alba-account-password-{albaAccountId}");
 
-            //var credentials = new Credentials(account, user, password, k1MagicString);
             var credentials = new Credentials(acct, usr, pwd, k1MagicString);
 
             client.Authorize(credentials);
@@ -128,8 +127,13 @@ namespace WebUI.Controllers
                 RelativeUrlBuilder.GetTerritoryAssignmentsPage());
 
             string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
+            string path = string.Format(options.AlbaUsersHtmlPath, albaAccountId);
+            if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
+            {
+                io.Directory.CreateDirectory(io.Path.GetDirectoryName(path));
+            }
 
-            io.File.WriteAllText(options.AlbaUsersHtmlPath, usersHtml);
+            io.File.WriteAllText(path, usersHtml);
         }
 
         protected void LoadUserManagementData()
