@@ -173,7 +173,7 @@ namespace WebUI.Controllers
             return users;
         }
 
-        protected IEnumerable<AlbaUser> GetAlbaUsers()
+        protected IEnumerable<AlbaUserView> GetAlbaUsers()
         {
             if (!io.File.Exists(options.AlbaUserManagementHtmlPath))
             {
@@ -184,11 +184,11 @@ namespace WebUI.Controllers
 
             var users = DownloadUserManagementData.GetUsers(html);
 
-            var albaUsers = new List<AlbaUser>();
+            var albaUsers = new List<AlbaUserView>();
             foreach (var u in users)
             {
                 albaUsers.Add(
-                    new AlbaUser
+                    new AlbaUserView
                     {
                         Id = u.Id,
                         UserName = u.UserName,
