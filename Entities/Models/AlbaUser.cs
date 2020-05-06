@@ -7,6 +7,7 @@ namespace WebUI.Models
     {
         [Key]
         public Guid Id { get; set; }
+        public int IdInAlba { get; set; }
         public string UserName { get; set; }
         public Guid AccountId { get; set; }
         public AlbaAccount Account { get; set; }
