@@ -7,7 +7,7 @@ namespace WebUI
         public string AlbaUserManagementHtmlPath { get; set; }
             = "/data/user-management.html";
         public string AlbaUsersHtmlPath { get; set; } 
-            = "/data/users.html";
+            = "/data/alba/accounts/{0}/users.html";
         public string AlbaAssignmentsHtmlPath { get; set; }
             = "/data/assignments.html";
         public string AzureAppId { get; set; }
