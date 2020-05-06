@@ -12,16 +12,19 @@ namespace WebUI.Migrations
                 name: "PK_AlbaUser",
                 table: "AlbaUser");
 
+            migrationBuilder.DropColumn(
+                name: "Id",
+                table: "AlbaUser");
+
             migrationBuilder.RenameTable(
                 name: "AlbaUser",
                 newName: "AlbaUsers");
 
-            migrationBuilder.AlterColumn<Guid>(
+            migrationBuilder.AddColumn<Guid>(
                 name: "Id",
                 table: "AlbaUsers",
                 nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.AddColumn<Guid>(
                 name: "AccountId",
@@ -165,11 +168,10 @@ namespace WebUI.Migrations
                 name: "AlbaUsers",
                 newName: "AlbaUser");
 
-            migrationBuilder.AlterColumn<int>(
+            migrationBuilder.AddColumn<int>(
                 name: "Id",
                 table: "AlbaUser",
-                nullable: false,
-                oldClrType: typeof(Guid))
+                nullable: false)
                 .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             migrationBuilder.AddPrimaryKey(
