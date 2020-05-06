@@ -18,6 +18,7 @@ using static WebUI.BasicStrings;
 using TerritoryTools.Vault;
 using WebUI.Areas.Identity.Data;
 using System.Linq;
+using System;
 
 namespace WebUI.Controllers
 {
@@ -95,31 +96,7 @@ namespace WebUI.Controllers
 
             var client = AuthClient();
 
-            var vault = new AzureKeyVaultClient(
-                clientId: options.AzureAppId,
-                clientSecret: options.AzureClientSecret,
-                "territorywebvault");
-
-            string currentUserName = User.Identity.Name.ToUpper();
-            var identityUser = database
-                .Users
-                .SingleOrDefault(u => u.NormalizedEmail == currentUserName);
-
-            var territoryUser = database
-                .TerritoryUser
-                .SingleOrDefault(u => u.AspNetUserId == identityUser.Id);
-
-            var accountLink = database
-                .TerritoryUserAlbaAccountLink
-                .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
-
-            string albaAccountId = accountLink.AlbaAccountId.ToString();
-
-            string acct = vault.GetSecret($"alba-account-name-{albaAccountId}");
-            string usr = vault.GetSecret($"alba-account-user-{albaAccountId}");
-            string pwd = vault.GetSecret($"alba-account-password-{albaAccountId}");
-
-            var credentials = new Credentials(acct, usr, pwd, k1MagicString);
+            Credentials credentials = GetCredentialsFrom(userName: User.Identity.Name); 
 
             client.Authorize(credentials);
 
@@ -127,7 +104,10 @@ namespace WebUI.Controllers
                 RelativeUrlBuilder.GetTerritoryAssignmentsPage());
 
             string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
-            string path = string.Format(options.AlbaUsersHtmlPath, albaAccountId);
+            string path = string.Format(
+                options.AlbaUsersHtmlPath, 
+                credentials.AlbaAccountId);
+
             if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
             {
                 io.Directory.CreateDirectory(io.Path.GetDirectoryName(path));
@@ -261,6 +241,38 @@ namespace WebUI.Controllers
             }
 
             return false;
+        }
+
+        Credentials GetCredentialsFrom(string userName)
+        {
+            var vault = new AzureKeyVaultClient(
+                clientId: options.AzureAppId,
+                clientSecret: options.AzureClientSecret,
+                "territorywebvault");
+
+            var identityUser = database
+                .Users
+                .SingleOrDefault(u => u.NormalizedEmail == userName);
+
+            var territoryUser = database
+                .TerritoryUser
+                .SingleOrDefault(u => u.AspNetUserId == identityUser.Id);
+
+            var accountLink = database
+                .TerritoryUserAlbaAccountLink
+                .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
+
+            Guid albaAccountId = accountLink.AlbaAccountId;
+            string acct = vault.GetSecret($"alba-account-name-{albaAccountId}");
+            string usr = vault.GetSecret($"alba-account-user-{albaAccountId}");
+            string pwd = vault.GetSecret($"alba-account-password-{albaAccountId}");
+
+            var credentials = new Credentials(acct, usr, pwd, k1MagicString)
+            {
+                AlbaAccountId = albaAccountId
+            };
+
+            return credentials;
         }
 
         static AuthorizationClient AuthClient()
