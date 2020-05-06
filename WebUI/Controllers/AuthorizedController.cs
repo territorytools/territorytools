@@ -15,17 +15,13 @@ using Microsoft.Extensions.Options;
 using io = System.IO;
 using Microsoft.AspNetCore.Http;
 using static WebUI.BasicStrings;
-using TerritoryTools.Vault;
 using WebUI.Areas.Identity.Data;
-using System.Linq;
 using System;
 
 namespace WebUI.Controllers
 {
     public class AuthorizedController : Controller
     {
-        string k1MagicString = LogUserOntoAlba.k1MagicString;
-
         protected readonly IStringLocalizer<AuthorizedController> localizer;
         protected readonly MainDbContext database;
         protected string account;
@@ -62,23 +58,23 @@ namespace WebUI.Controllers
 
         protected void LoadAssignmentData()
         {
-            if (io.File.Exists(options.AlbaAssignmentsHtmlPath))
+            var credentials = GetCredentialsFrom(User.Identity.Name);
+            string path = string.Format(
+                options.AlbaAssignmentsHtmlPath,
+                credentials.AlbaAccountId);
+
+            if (io.File.Exists(path))
             {
-                io.File.Delete(options.AlbaAssignmentsHtmlPath);
+                io.File.Delete(path);
             }
 
             var client = AuthClient();
-            var credentials = GetCredentialsFrom(User.Identity.Name);
-
             client.Authorize(credentials);
 
             var assignmentsJson = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignments());
 
             string assignmentsHtml = TerritoryAssignmentParser.Parse(assignmentsJson);
-            string path = string.Format(
-                options.AlbaAssignmentsHtmlPath,
-                credentials.AlbaAccountId);
 
             if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
             {
@@ -97,23 +93,23 @@ namespace WebUI.Controllers
 
         protected void LoadUserData()
         {
-            if (io.File.Exists(options.AlbaUsersHtmlPath))
+            var credentials = GetCredentialsFrom(User.Identity.Name); 
+            string path = string.Format(
+                options.AlbaUsersHtmlPath, 
+                credentials.AlbaAccountId);
+
+            if (io.File.Exists(path))
             {
-                io.File.Delete(options.AlbaUsersHtmlPath);
+                io.File.Delete(path);
             }
 
             var client = AuthClient();
-            var credentials = GetCredentialsFrom(User.Identity.Name); 
-
             client.Authorize(credentials);
 
             var assignedHtml = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignmentsPage());
 
             string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
-            string path = string.Format(
-                options.AlbaUsersHtmlPath, 
-                credentials.AlbaAccountId);
 
             if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
             {
@@ -125,23 +121,23 @@ namespace WebUI.Controllers
 
         protected void LoadUserManagementData()
         {
-            if (io.File.Exists(options.AlbaUserManagementHtmlPath))
+            var credentials = GetCredentialsFrom(User.Identity.Name);
+            string path = string.Format(
+               options.AlbaUserManagementHtmlPath,
+               credentials.AlbaAccountId);
+
+            if (io.File.Exists(path))
             {
-                io.File.Delete(options.AlbaUserManagementHtmlPath);
+                io.File.Delete(path);
             }
 
             var client = AuthClient();
-            var credentials = GetCredentialsFrom(User.Identity.Name);
-
             client.Authorize(credentials);
 
             var json = client.DownloadString(
                 RelativeUrlBuilder.GetUserManagementPage());
 
             string html = AlbaJsonResultParser.ParseDataHtml(json, "users");
-            string path = string.Format(
-                options.AlbaUserManagementHtmlPath,
-                credentials.AlbaAccountId);
 
             if (!io.Directory.Exists(io.Path.GetDirectoryName(path)))
             {
@@ -153,7 +149,12 @@ namespace WebUI.Controllers
 
         protected IEnumerable<Assignment> GetAllAssignments()
         {
-            if (!io.File.Exists(options.AlbaAssignmentsHtmlPath))
+            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            string path = string.Format(
+               options.AlbaAssignmentsHtmlPath,
+               albaAccountId);
+
+            if (!io.File.Exists(path))
             {
                 LoadAssignmentData();
             }
@@ -161,7 +162,7 @@ namespace WebUI.Controllers
             // TODO: Probably don't need a dependency on client here
             var useCase = new DownloadTerritoryAssignments(AuthClient());
 
-            string html = io.File.ReadAllText(options.AlbaAssignmentsHtmlPath);
+            string html = io.File.ReadAllText(path);
 
             return useCase.GetAssignments(html);
         }
@@ -170,10 +171,19 @@ namespace WebUI.Controllers
         {
             var users = new List<cuc.User>();
 
-            if (io.File.Exists(options.AlbaUsersHtmlPath))
+            string currentUser = User.Identity.Name;
+            if (!string.IsNullOrWhiteSpace(currentUser))
             {
-                string html = io.File.ReadAllText(options.AlbaUsersHtmlPath);
-                users = DownloadUsers.GetUsers(html);
+                Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(currentUser);
+                string path = string.Format(
+                   options.AlbaUsersHtmlPath,
+                   albaAccountId);
+
+                if (io.File.Exists(path))
+                {
+                    string html = io.File.ReadAllText(path);
+                    users = DownloadUsers.GetUsers(html);
+                }
             }
                 
             var adminUserNames = authorizationService.GetAdminUsers();
@@ -201,14 +211,18 @@ namespace WebUI.Controllers
             return users;
         }
 
-        protected IEnumerable<AlbaUserView> GetAlbaUsers()
+        protected IEnumerable<AlbaUserView> GetAlbaUsers(Guid albaAccountId)
         {
-            if (!io.File.Exists(options.AlbaUserManagementHtmlPath))
+            string path = string.Format(
+                options.AlbaUserManagementHtmlPath,
+                albaAccountId);
+
+            if (!io.File.Exists(path))
             {
                 LoadUserManagementData();
             }
 
-            string html = io.File.ReadAllText(options.AlbaUserManagementHtmlPath);
+            string html = io.File.ReadAllText(path);
 
             var users = DownloadUserManagementData.GetUsers(html);
 

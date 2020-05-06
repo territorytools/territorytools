@@ -11,6 +11,7 @@ namespace WebUI.Services
     public interface IAlbaCredentialService
     {
         Credentials GetCredentialsFrom(string userName);
+        Guid GetAlbaAccountIdFor(string userName);
     }
 
     public class AlbaCredentialAzureVaultService : IAlbaCredentialService
@@ -37,9 +38,25 @@ namespace WebUI.Services
                 clientSecret: secret,
                 vaultName: vaultName);
 
+            Guid id = GetAlbaAccountIdFor(userName);
+           
+            string acct = vault.GetSecret($"alba-account-name-{id}");
+            string usr = vault.GetSecret($"alba-account-user-{id}");
+            string pwd = vault.GetSecret($"alba-account-password-{id}");
+
+            var credentials = new Credentials(acct, usr, pwd, LogUserOntoAlba.k1MagicString)
+            {
+                AlbaAccountId = id
+            };
+
+            return credentials;
+        }
+
+        public Guid GetAlbaAccountIdFor(string userName)
+        {
             var identityUser = database
-                .Users
-                .SingleOrDefault(u => u.NormalizedEmail == userName);
+               .Users
+               .SingleOrDefault(u => u.NormalizedEmail == userName);
 
             var territoryUser = database
                 .TerritoryUser
@@ -49,17 +66,7 @@ namespace WebUI.Services
                 .TerritoryUserAlbaAccountLink
                 .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
 
-            Guid albaAccountId = accountLink.AlbaAccountId;
-            string acct = vault.GetSecret($"alba-account-name-{albaAccountId}");
-            string usr = vault.GetSecret($"alba-account-user-{albaAccountId}");
-            string pwd = vault.GetSecret($"alba-account-password-{albaAccountId}");
-
-            var credentials = new Credentials(acct, usr, pwd, LogUserOntoAlba.k1MagicString)
-            {
-                AlbaAccountId = albaAccountId
-            };
-
-            return credentials;
+            return accountLink.AlbaAccountId;
         }
     }
 }
