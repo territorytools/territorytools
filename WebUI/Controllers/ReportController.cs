@@ -20,11 +20,13 @@ namespace WebUI.Controllers
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
+            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
                 credentials,
                 authorizationService,
+                albaCredentialService,
                 optionsAccessor)
         {
         }
