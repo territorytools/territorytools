@@ -8,6 +8,7 @@ using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
 using WebUI.Areas.UrlShortener.Services;
 using WebUI.Controllers;
+using WebUI.Services;
 
 namespace WebUI.Areas.UrlShortener.Controllers
 {
@@ -25,11 +26,13 @@ namespace WebUI.Areas.UrlShortener.Controllers
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             WebUI.Services.IAuthorizationService authorizationService,
+            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
                 credentials,
                 authorizationService,
+                albaCredentialService,
                 optionsAccessor)
         {
             this.service = service;

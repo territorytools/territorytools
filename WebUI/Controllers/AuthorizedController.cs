@@ -31,13 +31,15 @@ namespace WebUI.Controllers
         protected string account;
         protected string user;
         protected string password;
-        protected WebUI.Services.IAuthorizationService authorizationService;
+        protected IAuthorizationService authorizationService;
+        protected IAlbaCredentialService albaCredentialService;
 
         public AuthorizedController(
             MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            WebUI.Services.IAuthorizationService authorizationService,
+            IAuthorizationService authorizationService,
+            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             this.database = database;
@@ -46,6 +48,7 @@ namespace WebUI.Controllers
             user = credentials.User;
             password = credentials.Password;
             this.authorizationService = authorizationService;
+            this.albaCredentialService = albaCredentialService;
             options = optionsAccessor.Value;
         }
 
@@ -65,8 +68,7 @@ namespace WebUI.Controllers
             }
 
             var client = AuthClient();
-
-            var credentials = new Credentials(account, user, password, k1MagicString);
+            var credentials = GetCredentialsFrom(User.Identity.Name);
 
             client.Authorize(credentials);
 
@@ -95,8 +97,7 @@ namespace WebUI.Controllers
             }
 
             var client = AuthClient();
-
-            Credentials credentials = GetCredentialsFrom(userName: User.Identity.Name); 
+            var credentials = GetCredentialsFrom(User.Identity.Name); 
 
             client.Authorize(credentials);
 
@@ -124,8 +125,7 @@ namespace WebUI.Controllers
             }
 
             var client = AuthClient();
-
-            var credentials = new Credentials(account, user, password, k1MagicString);
+            var credentials = GetCredentialsFrom(User.Identity.Name);
 
             client.Authorize(credentials);
 
@@ -245,34 +245,7 @@ namespace WebUI.Controllers
 
         Credentials GetCredentialsFrom(string userName)
         {
-            var vault = new AzureKeyVaultClient(
-                clientId: options.AzureAppId,
-                clientSecret: options.AzureClientSecret,
-                "territorywebvault");
-
-            var identityUser = database
-                .Users
-                .SingleOrDefault(u => u.NormalizedEmail == userName);
-
-            var territoryUser = database
-                .TerritoryUser
-                .SingleOrDefault(u => u.AspNetUserId == identityUser.Id);
-
-            var accountLink = database
-                .TerritoryUserAlbaAccountLink
-                .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
-
-            Guid albaAccountId = accountLink.AlbaAccountId;
-            string acct = vault.GetSecret($"alba-account-name-{albaAccountId}");
-            string usr = vault.GetSecret($"alba-account-user-{albaAccountId}");
-            string pwd = vault.GetSecret($"alba-account-password-{albaAccountId}");
-
-            var credentials = new Credentials(acct, usr, pwd, k1MagicString)
-            {
-                AlbaAccountId = albaAccountId
-            };
-
-            return credentials;
+            return albaCredentialService.GetCredentialsFrom(userName);
         }
 
         static AuthorizationClient AuthClient()

@@ -88,6 +88,8 @@ namespace WebUI
             services.AddScoped<IAuthorizationService>(s =>
                 new TerritoryAuthorizationService(users, adminUsers));
 
+            services.AddScoped<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
+
             if (!NoSsl)
             {
                 //ConfigureLetsEncryptServices(services);
