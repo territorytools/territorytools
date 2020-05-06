@@ -10,7 +10,8 @@ namespace WebUI
             = "/data/users.html";
         public string AlbaAssignmentsHtmlPath { get; set; }
             = "/data/assignments.html";
-
+        public string AzureAppId { get; set; }
+        public string AzureClientSecret { get; set; }
         public string UrlShortenerDomain { get; set; }
     }
 }
