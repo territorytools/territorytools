@@ -18,5 +18,5 @@ WelcomeBanner=这里
 
 ﻿# How to Create .resx Files in PowerShell
 ````
- ls *.txt | % { resgen $_.Name $_.Name.Replace(".txt", ".resx") }
+ ls *.txt -Recurse | % { resgen $_.FullName $_.FullName.Replace(".txt", ".resx") }
  ````
