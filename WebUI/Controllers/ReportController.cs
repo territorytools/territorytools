@@ -16,7 +16,7 @@ namespace WebUI.Controllers
         IAccountLists accountLists;
         public ReportController(
             MainDbContext database,
-            //IAccountLists accountLists,
+            IAccountLists accountLists,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
@@ -29,6 +29,7 @@ namespace WebUI.Controllers
                 albaCredentialService,
                 optionsAccessor)
         {
+            this.accountLists = accountLists;
         }
 
         [Authorize]
