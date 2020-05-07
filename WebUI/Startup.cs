@@ -85,6 +85,9 @@ namespace WebUI
                 .Split(';')
                 .ToList();
 
+            services.AddSingleton<IAccountLists>(l => new AccountLists(
+                Configuration["TT_AreaNames"] ?? string.Empty));
+
             services.AddScoped<IAuthorizationService>(s =>
                 new TerritoryAuthorizationService(users, adminUsers));
 

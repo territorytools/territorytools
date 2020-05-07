@@ -5,22 +5,16 @@
 }
 
 <h3 class="display-4 text-center">@Localizer["TitleTerritoryReports"]</h3>
-<h3 class="display-4 text-center">Territory Reports</h3>
 <div class="container" style="max-width:500px;">
     <div class="d-flex flex-column">
         <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">@Localizer["LoadDataFromAlba"]</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">Geographic Completion Summary (Service Years)</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompletedFromNow">Geographic Completion Summary (From Today)</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="YearlyCompletionSummary">Yearly Totals</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">@Localizer["YearlyTotals"]</a>
+        @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">@Localizer["YearlyTotals"]</a>*@
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">Geographic Completion Summary (Service Years)</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompletedFromNow">Geographic Completion Summary (From Today)</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="YearlyCompletionSummary">Yearly Totals</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="YearlyCompletionSummary">@Localizer["YearlyTotals"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">@Localizer["GeographicCompletionSummaryServiceYears"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompletedFromNow">@Localizer["GeographicCompletionSummaryFromNow"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AlbaUsers">@Localizer["AlbaUsers"]</a>
         <a href="/api/Assignments/DownloadCsvFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateAssignmentCSVFiles"]</a>
         <a href="/assignments.csv" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadAssignmentCSV"]</a>
