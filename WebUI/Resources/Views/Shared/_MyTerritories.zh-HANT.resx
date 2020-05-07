@@ -132,6 +132,9 @@
   <data name="MapButton" xml:space="preserve">
     <value>地圖</value>
   </data>
+  <data name="NoTerritoriesMessage" xml:space="preserve">
+    <value>You do not have any territories checked out.</value>
+  </data>
   <data name="UnitDays" xml:space="preserve">
     <value>日</value>
   </data>

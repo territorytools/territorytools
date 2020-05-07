@@ -135,6 +135,12 @@
   <data name="CheckedOutByPublishers" xml:space="preserve">
     <value>傳道員簽出的區域卡</value>
   </data>
+  <data name="GeographicCompletionSummaryServiceYears" xml:space="preserve">
+    <value>Geographic Completion Summary (Service Years)</value>
+  </data>
+  <data name="GeographicCompletionSummaryFromNow" xml:space="preserve">
+    <value>Geographic Completion Summary (From Today)</value>
+  </data>
   <data name="AlbaUsers" xml:space="preserve">
     <value>Alba用戶</value>
   </data>
