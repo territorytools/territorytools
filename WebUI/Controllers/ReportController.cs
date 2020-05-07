@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using WebUI.Models;
 using WebUI.Services;
+using WebUI.Areas.Identity.Data;
 
 namespace WebUI.Controllers
 {
@@ -15,14 +15,18 @@ namespace WebUI.Controllers
     {
         IAccountLists accountLists;
         public ReportController(
-            IAccountLists accountLists,
+            MainDbContext database,
+            //IAccountLists accountLists,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
+            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                database,
                 localizer,
                 credentials,
                 authorizationService,
+                albaCredentialService,
                 optionsAccessor)
         {
         }
@@ -345,7 +349,10 @@ namespace WebUI.Controllers
                     return Forbid();
                 }
 
-                var users = GetAlbaUsers()
+                Guid albaAccountId = albaCredentialService
+                    .GetAlbaAccountIdFor(User.Identity.Name);
+
+                var users = GetAlbaUsers(albaAccountId)
                     .OrderBy(u => u.Name)
                     .ToList();
 

@@ -7,8 +7,8 @@ namespace WebUI.Models
     {
         [Key]
         public int TerritoryUserAlbaAccountLinkId { get; set; }
-        public int TerritoryUserId { get; set; }
-        public int AlbaAccountId { get; set; }
+        public Guid TerritoryUserId { get; set; }
+        public Guid AlbaAccountId { get; set; }
         public string Role { get; set; }
         public TerritoryUser TerritoryUser { get; set; }
         public AlbaAccount AlbaAccount { get; set; }

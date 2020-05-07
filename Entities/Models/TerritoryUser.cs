@@ -7,7 +7,7 @@ namespace WebUI.Models
     public class TerritoryUser 
     {
         [Key]
-        public virtual int Id { get; set; }
+        public virtual Guid Id { get; set; }
         public string Alias { get; set; }
         public string Email { get; set; }
         public string Telephone { get; set; }
