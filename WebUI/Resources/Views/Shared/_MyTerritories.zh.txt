@@ -4,7 +4,7 @@ Description=称号
 Assigned=分配时间
 Addresses=地址数目
 MapButton=地图
-# NoTerritoriesMessage=
+NoTerritoriesMessage=You do not have any territories checked out.
 
 # Units
 UnitDays=日
