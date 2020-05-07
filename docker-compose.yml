@@ -129,6 +129,8 @@ services:
       - SslPort=$SslPort
       - NoSsl=$NoSsl
       - UrlShortenerDomain=$UrlShortenerDomain
+      - AzureAppId=$AzureAppId
+      - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
   tt-web-test:
     container_name: tt-web-test
@@ -169,6 +171,8 @@ services:
       - SslPort=$SslPort
       - NoSsl=$NoSsl
       - UrlShortenerDomain=$UrlShortenerDomain
+      - AzureAppId=$AzureAppId
+      - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
   db:
     container_name: tt-db
