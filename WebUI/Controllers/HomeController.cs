@@ -78,6 +78,7 @@ namespace WebUI.Controllers
                     publisher.QRCodeActivity.Add(
                         new QRCodeHit
                         {
+                            Id = hit.Id,
                             ShortUrl = hit.ShortUrl,
                             OriginalUrl = hit.OriginalUrl,
                             Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),

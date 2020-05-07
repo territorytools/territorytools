@@ -59,34 +59,52 @@
                 </div>
             }
         </div>
+    }
+
+    if (Model == null || Model.QRCodeActivity.Count == 0)
+    {
+        <div class="container mt-3" style="max-width:600px;">
+            <div class="d-flex mb-2" style="border-top: 1px solid #aaa;">
+                <div class="pr-2 pl-2 flex-grow-1" style="text-align:center;">@Localizer["NoTerritoriesMessage"]</div>
+            </div>
+        </div>
+    }
+    else
+    {
         <h4 style="text-align:center;">Your QR Codes (@Model.QRCodeActivity.Count)</h4>
         <div class="container mt-3" style="max-width:600px;">
             <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-                <div class="pr-2 pl-2" style="min-width:60px;">Short URL</div>
+                <div class="pr-2 pl-2" style="min-width:60px;">Link</div>
                 <div class="pr-2 pl-2" style="min-width:60px;">Hits</div>
-                <div class="pr-2 pl-2" style="min-width:120px;">Last Time</div>
-                <div class="pr-2 pl-2" style="min-width:100px;">Last IP</div>
+                <div class="pr-2 pl-2" style="min-width:180px;">Last Time</div>
+                <div class="pr-2 pl-2" style="min-width:200px;">Subject</div>
+                @*<div class="pr-2 pl-2" style="min-width:100px;">Last IP</div>*@
             </div>
-            <div class="d-flex mb-0">    
+            @*<div class="d-flex mb-0">
                 <div class="pr-2 pl-2" style="min-width:200px;">Subject</div>
                 <div class="pr-2 pl-2 flex-grow-1">Note</div>
-            </div>
+            </div>*@
 
             @foreach (var qrCode in Model.QRCodeActivity)
             {
-                <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-                    <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@qrCode.ShortUrl</strong></div>
-                    <div class="p-2" style="min-width:60px;">@qrCode.HitCount</div>
-                    <div class="p-2" style="min-width:120px;">@qrCode.LastTimeStamp</div>
-                    <div class="p-2" style="min-width:100px;">@qrCode.LastIPAddress</div>
-                </div>
-                <div class="d-flex mb-0">
-                    <div class="p-2 flex-grow-1" style="width:150px;"><a href='@qrCode.OriginalUrl'>@qrCode.OriginalUrl</a></div>
-                </div>
-                <div class="d-flex mb-0">
-                    <div class="p-2" style="min-width:200px;">@qrCode.Subject</div>
-                    <div class="p-2 flex-grow-1" style="width:150px;">@qrCode.Note</div>
-                </div>
+        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+            <div class="p-2" style="min-width:60px;">
+                <a asp-area="UrlShortener" asp-controller="ShortUrlsController" asp-action="Show" asp-route-id="@qrCode.Id">
+                    <strong style="font-family:courier;">@qrCode.ShortUrl</strong>
+                </a>
+            </div>
+            <div class="p-2" style="min-width:60px;">@qrCode.HitCount</div>
+            <div class="p-2" style="min-width:180px;">@qrCode.LastTimeStamp</div>
+            <div class="p-2" style="min-width:200px;">@qrCode.Subject</div>
+            @*<div class="p-2" style="min-width:100px;">@qrCode.LastIPAddress</div>*@
+        </div>
+                @*<div class="d-flex mb-0">
+                        <div class="p-2 flex-grow-1" style="width:150px;"><a href='@qrCode.OriginalUrl'>@qrCode.OriginalUrl</a></div>
+                    </div>
+                    <div class="d-flex mb-0">
+                        <div class="p-2" style="min-width:200px;">@qrCode.Subject</div>
+                        <div class="p-2 flex-grow-1" style="width:150px;">@qrCode.Note</div>
+                    </div>*@
             }
         </div>
     }
