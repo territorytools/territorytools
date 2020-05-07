@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using WebUI.Models;
+using WebUI.Areas.Identity.Data;
+using WebUI.Services;
 
 namespace WebUI.Controllers
 {
@@ -16,14 +18,18 @@ namespace WebUI.Controllers
         readonly Services.IQRCodeActivityService qrCodeActivityService;
 
         public HomeController(
+            MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
+            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                database,
                 localizer,
                 credentials,
                 authorizationService,
+                albaCredentialService,
                 optionsAccessor)
         {
             this.qrCodeActivityService = qrCodeActivityService;
