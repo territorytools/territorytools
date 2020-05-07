@@ -129,6 +129,7 @@ services:
       - SslPort=$SslPort
       - NoSsl=$NoSsl
       - UrlShortenerDomain=$UrlShortenerDomain
+      - TT_AreaNames=$TT_AreaNames
   tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
@@ -168,6 +169,7 @@ services:
       - SslPort=$SslPort
       - NoSsl=$NoSsl
       - UrlShortenerDomain=$UrlShortenerDomain
+      - TT_AreaNames=$TT_AreaNames
   db:
     container_name: tt-db
     image: "microsoft/mssql-server-linux"
