@@ -69,7 +69,7 @@ namespace WebUI.Controllers
             }
 
             var client = AuthClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             var assignmentsJson = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignments());
@@ -104,7 +104,7 @@ namespace WebUI.Controllers
             }
 
             var client = AuthClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             var assignedHtml = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignmentsPage());
@@ -132,7 +132,7 @@ namespace WebUI.Controllers
             }
 
             var client = AuthClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             var json = client.DownloadString(
                 RelativeUrlBuilder.GetUserManagementPage());
