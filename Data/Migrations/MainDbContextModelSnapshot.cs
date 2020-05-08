@@ -223,15 +223,38 @@ namespace WebUI.Migrations
                     b.ToTable("ShortUrlActivity");
                 });
 
+            modelBuilder.Entity("WebUI.Models.AlbaAccount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AccountName");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<int>("IdInAlba");
+
+                    b.Property<string>("LongName");
+
+                    b.Property<DateTime>("Updated");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AlbaAccounts");
+                });
+
             modelBuilder.Entity("WebUI.Models.AlbaUser", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("AccountId");
 
                     b.Property<DateTime>("Created");
 
                     b.Property<string>("Email");
+
+                    b.Property<int>("IdInAlba");
 
                     b.Property<DateTime?>("LastSignIn");
 
@@ -247,7 +270,64 @@ namespace WebUI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AlbaUser");
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("AlbaUsers");
+                });
+
+            modelBuilder.Entity("WebUI.Models.TerritoryUser", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Alias");
+
+                    b.Property<string>("AspNetUserId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("GivenName");
+
+                    b.Property<DateTime?>("LastSignIn");
+
+                    b.Property<string>("Role");
+
+                    b.Property<string>("Surname");
+
+                    b.Property<string>("Telephone");
+
+                    b.Property<DateTime>("Updated");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TerritoryUser");
+                });
+
+            modelBuilder.Entity("WebUI.Models.TerritoryUserAlbaAccountLink", b =>
+                {
+                    b.Property<int>("TerritoryUserAlbaAccountLinkId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<Guid>("AlbaAccountId");
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<string>("Role");
+
+                    b.Property<Guid>("TerritoryUserId");
+
+                    b.Property<DateTime>("Updated");
+
+                    b.HasKey("TerritoryUserAlbaAccountLinkId");
+
+                    b.HasIndex("AlbaAccountId");
+
+                    b.HasIndex("TerritoryUserId");
+
+                    b.ToTable("TerritoryUserAlbaAccountLink");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -292,6 +372,30 @@ namespace WebUI.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebUI.Models.AlbaUser", b =>
+                {
+                    b.HasOne("WebUI.Models.AlbaAccount", "Account")
+                        .WithMany("Users")
+                        .HasForeignKey("AccountId")
+                        .HasConstraintName("ForeignKey_User_Account")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebUI.Models.TerritoryUserAlbaAccountLink", b =>
+                {
+                    b.HasOne("WebUI.Models.AlbaAccount", "AlbaAccount")
+                        .WithMany("TerritoryUserLinks")
+                        .HasForeignKey("AlbaAccountId")
+                        .HasConstraintName("ForeignKey_AlbaAccount_TerritoryUser_Link")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebUI.Models.TerritoryUser", "TerritoryUser")
+                        .WithMany("AlbaAccountLinks")
+                        .HasForeignKey("TerritoryUserId")
+                        .HasConstraintName("ForeignKey_TerritoryUser_AlbaAccount_Link")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

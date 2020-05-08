@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using cuc = Controllers.UseCases;
 using Microsoft.Extensions.Options;
+using WebUI.Services;
 
 namespace WebUI.Controllers
 {
@@ -18,20 +19,17 @@ namespace WebUI.Controllers
     [Route("api/[controller]")]
     public class AssignmentsController : Controller
     {
-        string account;
-        string user;
-        string password;
+        readonly IAlbaCredentialService albaCredentialService;
         readonly ILogger logger;
         readonly WebUIOptions options;
 
         public AssignmentsController(
+            IAlbaCredentialService albaCredentialService,
             IAlbaCredentials credentials,
             ILogger<AssignmentsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
-            account = credentials.Account;
-            user = credentials.User;
-            password = credentials.Password;
+            this.albaCredentialService = albaCredentialService;
             this.logger = logger;
             options = optionsAccessor.Value;
         }
@@ -39,20 +37,9 @@ namespace WebUI.Controllers
         [HttpGet("[action]")]
         public IActionResult Assign(int territoryId, int userId)
         {
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
-
-            var credentials = new Credentials(account, user, password, k1MagicString);
-
+            var client = AuthorizationClient();
             client.Authorize(credentials);
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -60,7 +47,7 @@ namespace WebUI.Controllers
             string result = client.DownloadString(
                 $"/ts?mod=assigned&cmd=assign&id={territoryId}&date={date}&user={userId}");
 
-            var myUser = GetUsers(account, user, password)
+            var myUser = GetUsersFor(credentials.AlbaAccountId)
                 .FirstOrDefault(u => u.Id == userId);
             
             string userName = "Somebody";
@@ -76,20 +63,9 @@ namespace WebUI.Controllers
         [HttpGet("[action]")]
         public IActionResult Unassign(int territoryId)
         {
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
-
-            var credentials = new Credentials(account, user, password, k1MagicString);
-
+            var client = AuthorizationClient();
             client.Authorize(credentials);
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -103,7 +79,7 @@ namespace WebUI.Controllers
         [HttpGet("[action]")]
         public IEnumerable<Assignment> All(string account, string user, string password)
         {
-            return GetAllAssignments(account, user, password);
+            return GetAllAssignments();
         }
 
         [HttpGet("[action]")]
@@ -111,7 +87,7 @@ namespace WebUI.Controllers
         {
             try
             {
-                return GetAllAssignments(account, user, password)
+                return GetAllAssignments()
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null) 
                     .OrderBy(a => a.Description)
@@ -136,7 +112,7 @@ namespace WebUI.Controllers
         {
             try
             {
-                var groups = GetAllAssignments(account, user, password)
+                var groups = GetAllAssignments()
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
@@ -173,13 +149,15 @@ namespace WebUI.Controllers
         public void ClockTick()
         {
             logger.LogError("Loading Territory Assigments...");
-            Load();
+            // TODO: Fix clock tick, need a user or something here
+            //Load();
         }
 
         [HttpGet("[action]")]
         public IActionResult LoadAssignments()
         {
-            Load();
+            Guid id = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            Load(id);
 
             // TODO: Use with React or other UI
             // return new LoadAssignmentsResult() { Successful = true };
@@ -189,19 +167,14 @@ namespace WebUI.Controllers
         [HttpGet("[action]")]
         public IActionResult DownloadCsvFiles()
         {
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
+            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
 
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
+            var client = AuthorizationClient();
 
             var downloader = new DownloadTerritoryAssignments(client);
 
-            string html = System.IO.File.ReadAllText(options.AlbaAssignmentsHtmlPath);
+            string html = System.IO.File.ReadAllText(path);
 
             string csvFilePath = "wwwroot/assignments.csv";
             if (System.IO.File.Exists(csvFilePath))
@@ -209,7 +182,7 @@ namespace WebUI.Controllers
                 System.IO.File.Delete(csvFilePath);
             }
 
-            if (System.IO.File.Exists(options.AlbaAssignmentsHtmlPath))
+            if (System.IO.File.Exists(path))
             {
                 downloader.SaveAs(html, csvFilePath);
             }
@@ -224,18 +197,9 @@ namespace WebUI.Controllers
         [HttpGet("[action]")]
         public IActionResult DownloadBorderKmlFiles()
         {
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
-
-            var credentials = new Credentials(account, user, password, LogUserOntoAlba.k1MagicString);
-
+            var client = AuthorizationClient();
             client.Authorize(credentials);
 
             string filePath = "wwwroot/borders.kml";
@@ -251,28 +215,20 @@ namespace WebUI.Controllers
             return Redirect("/Home/Reports");
         }
 
-        private void Load()
+        private void Load(Guid albaAccountId)
         {
-            if (System.IO.File.Exists(options.AlbaAssignmentsHtmlPath))
+            string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
+
+            if (System.IO.File.Exists(path))
             {
-                System.IO.File.Delete(options.AlbaAssignmentsHtmlPath);
+                System.IO.File.Delete(path);
             }
 
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
-
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
+            var client = AuthorizationClient();
 
             var useCase = new DownloadTerritoryAssignments(client);
 
-            var credentials = new Credentials(account, user, password, k1MagicString);
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             client.Authorize(credentials);
 
@@ -281,78 +237,57 @@ namespace WebUI.Controllers
 
             string html = TerritoryAssignmentParser.Parse(resultString);
 
-            System.IO.File.WriteAllText(options.AlbaAssignmentsHtmlPath, html);
+            System.IO.File.WriteAllText(path, html);
         }
 
-        IEnumerable<Assignment> GetAllAssignments(string account, string user, string password)
+        IEnumerable<Assignment> GetAllAssignments()
         {
-            if (!System.IO.File.Exists(options.AlbaAssignmentsHtmlPath))
+            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+
+            string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
+
+            if (!System.IO.File.Exists(path))
             {
-                Load();
+                Load(albaAccountId);
             }
 
-            //string k1MagicString = LogUserOntoAlba.k1MagicString;
-
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
+            var client = AuthorizationClient();
 
             // TODO: Probably don't need a dependency on client here
             var useCase = new DownloadTerritoryAssignments(client); 
 
-            //var credentials = new Credentials(account, user, password, k1MagicString);
-
-            //client.Authorize(credentials);
-
-            //var resultString = client.DownloadString(
-            //    RelativeUrlBuilder.GetTerritoryAssignments());
-
-            //html = TerritoryAssignmentParser.Parse(resultString);
-
-            string html = System.IO.File.ReadAllText(options.AlbaAssignmentsHtmlPath);
+            string html = System.IO.File.ReadAllText(path);
 
             return useCase.GetAssignments(html);
         }
 
-        IEnumerable<cuc.User> GetUsers(string account, string user, string password)
+        IEnumerable<cuc.User> GetUsersFor(Guid albaAccountId)
         {
-            if (!System.IO.File.Exists(options.AlbaUsersHtmlPath))
+            string path = string.Format(options.AlbaUsersHtmlPath, albaAccountId);
+
+            if (!System.IO.File.Exists(path))
             {
-                LoadUserData();
+                LoadUserData(albaAccountId);
             }
 
-            string html = System.IO.File.ReadAllText(options.AlbaUsersHtmlPath);
+            string html = System.IO.File.ReadAllText(path);
 
             return cuc.DownloadUsers.GetUsers(html);
         }
 
-        void LoadUserData()
+        void LoadUserData(Guid albaAccountId)
         {
-            if (System.IO.File.Exists(options.AlbaUsersHtmlPath))
+            string path = string.Format(options.AlbaUsersHtmlPath, albaAccountId);
+
+            if (System.IO.File.Exists(path))
             {
-                System.IO.File.Delete(options.AlbaUsersHtmlPath);
+                System.IO.File.Delete(path);
             }
 
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
+            // TODO: Get credentials with albaAccountId
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
-                applicationPath: "/alba");
-
-            var client = new AuthorizationClient(
-                webClient: webClient,
-                basePath: basePath);
-
-            var credentials = new Credentials(account, user, password, k1MagicString);
-
+            var client = AuthorizationClient();
             client.Authorize(credentials);
 
             var assignedHtml = client.DownloadString(
@@ -360,18 +295,11 @@ namespace WebUI.Controllers
 
             string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
 
-            System.IO.File.WriteAllText(options.AlbaUsersHtmlPath, usersHtml);
+            System.IO.File.WriteAllText(path, usersHtml);
         }
 
-        void LoadUserManagementData()
+        private static AuthorizationClient AuthorizationClient()
         {
-            if (System.IO.File.Exists(options.AlbaUsersHtmlPath))
-            {
-                System.IO.File.Delete(options.AlbaUsersHtmlPath);
-            }
-
-            string k1MagicString = LogUserOntoAlba.k1MagicString;
-
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
                 protocolPrefix: "https://",
@@ -382,16 +310,7 @@ namespace WebUI.Controllers
                 webClient: webClient,
                 basePath: basePath);
 
-            var credentials = new Credentials(account, user, password, k1MagicString);
-
-            client.Authorize(credentials);
-
-            var assignedHtml = client.DownloadString(
-                RelativeUrlBuilder.GetTerritoryAssignmentsPage());
-
-            string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
-
-            System.IO.File.WriteAllText(options.AlbaUsersHtmlPath, usersHtml);
+            return client;
         }
     }
 }

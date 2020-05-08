@@ -1,0 +1,8 @@
+# Shared Menu
+MenuTerritoryTools=Territory Tools
+MenuHomeButton=Home
+MenuLoginButton=Login
+MenuReports=Reports
+MenuUser=User
+MenuUserManageAccount=Manage Account
+MenuUserSignOut=Sign Out
