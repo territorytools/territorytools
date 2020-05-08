@@ -10,11 +10,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controllers", "..\Alba\Cont
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Alba", "Alba", "{A6F36FAF-0514-4D57-8F32-A943CE2C3021}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "..\Data\Data.csproj", "{E097EB7C-B144-473C-8A1D-D48E3919C724}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "..\Data\Data.csproj", "{E097EB7C-B144-473C-8A1D-D48E3919C724}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "..\Entities\Entities.csproj", "{99923235-E6AB-40C0-B2EB-411B79D83C5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "..\Entities\Entities.csproj", "{99923235-E6AB-40C0-B2EB-411B79D83C5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener", "..\UrlShortener\UrlShortener.csproj", "{57E5C7F5-5D67-4337-9849-B0A383F589B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerritoryShell", "..\TerritoryShell\TerritoryShell.csproj", "{878066D8-D0B6-417A-AFBB-4EA1E6924881}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{57E5C7F5-5D67-4337-9849-B0A383F589B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57E5C7F5-5D67-4337-9849-B0A383F589B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57E5C7F5-5D67-4337-9849-B0A383F589B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{878066D8-D0B6-417A-AFBB-4EA1E6924881}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{878066D8-D0B6-417A-AFBB-4EA1E6924881}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{878066D8-D0B6-417A-AFBB-4EA1E6924881}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{878066D8-D0B6-417A-AFBB-4EA1E6924881}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

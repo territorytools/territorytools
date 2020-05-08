@@ -15,3 +15,8 @@ FrontPageExplanation=你好 什么 什么
 # Format string to display the result.
 WelcomeBanner=这里
 ````
+
+﻿# How to Create .resx Files in PowerShell
+````
+ ls *.txt -Recurse | % { resgen $_.FullName $_.FullName.Replace(".txt", ".resx") }
+ ````

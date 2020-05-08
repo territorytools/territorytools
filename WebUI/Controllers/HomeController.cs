@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using WebUI.Models;
+using WebUI.Areas.Identity.Data;
+using WebUI.Services;
 
 namespace WebUI.Controllers
 {
@@ -16,14 +18,18 @@ namespace WebUI.Controllers
         readonly Services.IQRCodeActivityService qrCodeActivityService;
 
         public HomeController(
+            MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
+            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                database,
                 localizer,
                 credentials,
                 authorizationService,
+                albaCredentialService,
                 optionsAccessor)
         {
             this.qrCodeActivityService = qrCodeActivityService;
@@ -53,7 +59,7 @@ namespace WebUI.Controllers
 
                 string myName = me.Name;
 
-                var assignments = GetAllAssignments(account, user, password)
+                var assignments = GetAllAssignments()
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
@@ -72,6 +78,7 @@ namespace WebUI.Controllers
                     publisher.QRCodeActivity.Add(
                         new QRCodeHit
                         {
+                            Id = hit.Id,
                             ShortUrl = hit.ShortUrl,
                             OriginalUrl = hit.OriginalUrl,
                             Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -126,7 +133,7 @@ namespace WebUI.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignment = GetAllAssignments(account, user, password)
+                var assignment = GetAllAssignments()
                     .Where(a => string.Equals(
                         a.Number,
                         number,
@@ -197,7 +204,7 @@ namespace WebUI.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-            var assignment = GetAllAssignments(account, user, password)
+            var assignment = GetAllAssignments()
                    .FirstOrDefault(a => a.Id == territoryId);
 
             assignment.SignedOutTo = userName;
@@ -208,7 +215,7 @@ namespace WebUI.Controllers
         [Authorize]
         public IActionResult UnassignSuccess(int territoryId)
         {
-            var assignment = GetAllAssignments(account, user, password)
+            var assignment = GetAllAssignments()
                    .FirstOrDefault(a => a.Id == territoryId);
 
             return View(assignment);

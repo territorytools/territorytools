@@ -19,11 +19,35 @@ namespace WebUI.Areas.Identity.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+            
+            builder.Entity<TerritoryUserAlbaAccountLink>()
+               .HasOne(uaa => uaa.TerritoryUser)
+               .WithMany(u => u.AlbaAccountLinks)
+               .HasForeignKey(uaa => uaa.TerritoryUserId)
+               .HasConstraintName("ForeignKey_TerritoryUser_AlbaAccount_Link");
+
+            builder.Entity<TerritoryUserAlbaAccountLink>()
+                .HasOne(uaa => uaa.AlbaAccount)
+                .WithMany(a => a.TerritoryUserLinks)
+                .HasForeignKey(uaa => uaa.AlbaAccountId)
+                .HasConstraintName("ForeignKey_AlbaAccount_TerritoryUser_Link");
+
+            builder.Entity<AlbaUser>()
+                .HasOne(u => u.Account)
+                .WithMany(a => a.Users)
+                .HasForeignKey(u => u.AccountId)
+                .HasConstraintName("ForeignKey_User_Account");
+
+            builder.Entity<AlbaAccount>();
 
             builder.Entity<AlbaUser>();
         }
 
         public DbSet<ShortUrl> ShortUrls { get; set; }
         public DbSet<ShortUrlActivity> ShortUrlActivity { get; set; }
+        public DbSet<AlbaAccount> AlbaAccounts { get; set; }
+        public DbSet<AlbaUser> AlbaUsers { get; set; }
+        public DbSet<TerritoryUser> TerritoryUser { get; set; }
+        public DbSet<TerritoryUserAlbaAccountLink> TerritoryUserAlbaAccountLink { get; set; }
     }
 }

@@ -1,0 +1,3 @@
+# Authorized Menu
+MenuReports=報告
+

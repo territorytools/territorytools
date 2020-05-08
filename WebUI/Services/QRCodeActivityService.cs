@@ -27,7 +27,7 @@ namespace WebUI.Services
                 .Where(url => string.Equals(
                     url.UserName,
                     userName,
-                    System.StringComparison.OrdinalIgnoreCase))
+                    StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             var hits = new List<QRCodeHit>();
@@ -48,6 +48,7 @@ namespace WebUI.Services
                 hits.Add(
                     new QRCodeHit
                     {
+                        Id = url.Id,
                         ShortUrl = AlphaNumberId.ToAlphaNumberId(url.Id),
                         OriginalUrl = url.OriginalUrl,
                         Created = url.Created,
@@ -67,6 +68,7 @@ namespace WebUI.Services
 
     public class QRCodeHit
     {
+        public int Id { get; set; }
         public string ShortUrl { get; set; }
         public string OriginalUrl { get; set; }
         public DateTime Created { get; set; }

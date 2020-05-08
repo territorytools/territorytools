@@ -1,10 +1,12 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Localization
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject IViewLocalizer Localizer
 
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="Index">Reports</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="Index">@Localizer["MenuReports"]</a>
     </li>
 }
