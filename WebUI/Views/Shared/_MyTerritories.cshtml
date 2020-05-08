@@ -61,17 +61,17 @@
         </div>
     }
 
+    <h4 style="text-align:center;">Your QR Codes (@Model.QRCodeActivity.Count)</h4>
     if (Model == null || Model.QRCodeActivity.Count == 0)
     {
         <div class="container mt-3" style="max-width:600px;">
             <div class="d-flex mb-2" style="border-top: 1px solid #aaa;">
-                <div class="pr-2 pl-2 flex-grow-1" style="text-align:center;">@Localizer["NoTerritoriesMessage"]</div>
+                <div class="pr-2 pl-2 flex-grow-1" style="text-align:center;">@Localizer["NoQRCodesMessage"]</div>
             </div>
         </div>
     }
     else
     {
-        <h4 style="text-align:center;">Your QR Codes (@Model.QRCodeActivity.Count)</h4>
         <div class="container mt-3" style="max-width:600px;">
             <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
                 <div class="pr-2 pl-2" style="min-width:60px;">Link</div>
