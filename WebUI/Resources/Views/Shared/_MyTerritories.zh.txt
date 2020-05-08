@@ -5,6 +5,7 @@ Assigned=分配时间
 Addresses=地址数目
 MapButton=地图
 NoTerritoriesMessage=You do not have any territories checked out.
+NoQRCodesMessage=You have not generated any QR Codes.
 
 # Units
 UnitDays=日

@@ -5,6 +5,7 @@ Assigned=Assigned
 Addresses=Addr.
 MapButton=Map
 NoTerritoriesMessage=You do not have any territories checked out.
+NoQRCodesMessage=You have not generated any QR Codes.
 
 # Units
 UnitDays=Days
