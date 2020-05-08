@@ -4,12 +4,11 @@ namespace AlbaClient.Models
 {
     public class Credentials
     {
-        public Credentials(string account, string user, string password, string k1MagicString)
+        public Credentials(string account, string user, string password)
         {
             Account = account;
             User = user;
             Password = password;
-            K1MagicString = k1MagicString;
         }
 
         public string Account;
