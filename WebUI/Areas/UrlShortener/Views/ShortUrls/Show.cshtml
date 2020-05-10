@@ -13,45 +13,56 @@
         <div class="form-vertical">
             <input asp-for="Id" hidden />
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
+                <span class="col-md-3">
                     <strong>QR Code:</strong>
                 </span>
                 <div id="qrCode"></div>
             </div>
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
+                <span class="col-md-3">
                     <strong>Short URL:</strong>
                 </span>
                 <span>@Model.ShortUrl</span>
             </div>
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
+                <span class="col-md-3">
                     <strong>Original URL:</strong>
                 </span>
                 <a href="@Model.OriginalUrl">@Model.OriginalUrl</a>
             </div>
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
+                <span class="col-md-3">
+                    <strong>Scan Count:</strong>
+                </span>
+                <span>@Model.HitCount</span>
+            </div>
+            <div class="input-group input-group-lg p-3">
+                <span class="col-md-3">
+                    <strong>Last Scan:</strong>
+                </span>
+                <span>@Model.LastHit</span>
+            </div>
+            <div class="input-group input-group-lg p-3">
+                <span class="col-md-3">
                     <strong>Subject:</strong>
                 </span>
                 <input asp-for="Subject" class="form-control" placeholder="Enter a subject or publication name here..." />
             </div>
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
+                <span class="col-md-3">
                     <strong>Letter Link:</strong>
-                <a href="@Model.LetterLink">open</a>
+                    <a href="@Model.LetterLink">open</a>
                 </span>
                 <input asp-for="LetterLink" class="form-control" placeholder="Paste a link to the letter you sent (Optional)"></input>
             </div>
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
+                <span class="col-md-3">
                     <strong>Notes:</strong>
                 </span>
                 <textarea asp-for="Note" rows="7" class="form-control" placeholder="Type a note here..."></textarea>
             </div>
             <div class="input-group input-group-lg p-3">
-                <span class="col-md-2">
-
+                <span class="col-md-3">
                 </span>
                 <span class="input-group-btn ">
                     <button class="btn btn-primary" type="submit">Save Changes</button>
@@ -61,7 +72,6 @@
     </form>
 
 </div>
-
 
 <div id="errorHelp" style="visibility:collapse;height:0;">
     <p style="background-color:yellow;width:auto;">Your jw.org link is not designed for sharing.  Your QR Code has been generated but please consider using a sharing link instead</p>
@@ -78,15 +88,6 @@
 
     function getQRCode() {
         document.getElementById("qrCode").innerHTML = "";
-        document.getElementById("errorHelp").style.visibility = "collapse";
-        document.getElementById("errorHelp").style.height = "0";
-        //var code = document.getElementById("original-url").value;
-        //if (code != null && code != "https://www.jw.org/cmn-hant/" && code != "https://www.jw.org/cmn-hans/" && (code.includes("/jw.org/") || code.includes(".jw.org/"))) {
-        //    if (!code.includes("srcid=")) {
-        //        document.getElementById("errorHelp").style.visibility = "visible";
-        //        document.getElementById("errorHelp").style.height = "auto";
-        //    }
-        //}
         var shortUrl = document.getElementById("url-input").value;
         new QRCode(document.getElementById("qrCode"),
             {
