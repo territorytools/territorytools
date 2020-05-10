@@ -6,8 +6,6 @@ namespace AlbaClient.Controllers.UseCases
 {
     public class LogUserOntoAlba
     {
-        public const string k1MagicString = "94dd9e08c129c785f7f256e82fbe0a30e6d1ae40";
-
         private IClientView view;
         private AuthorizationClient client;
 
@@ -19,9 +17,12 @@ namespace AlbaClient.Controllers.UseCases
 
         public void Logon()
         {
-            var credentials = new Credentials(view.AccountBoxText, view.UserBoxText, view.PasswordBoxText, k1MagicString);
+            var credentials = new Credentials(
+                view.AccountBoxText, 
+                view.UserBoxText, 
+                view.PasswordBoxText);
 
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             view.LoadTerritoriesButtonEnabled = true;
             view.UploadKmlFilesButtonEnabled = true;
