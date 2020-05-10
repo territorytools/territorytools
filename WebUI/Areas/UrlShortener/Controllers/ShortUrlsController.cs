@@ -147,14 +147,27 @@ namespace WebUI.Areas.UrlShortener.Controllers
             string hostName = _hostName ?? Request.Host.ToString();
             string path = AlphaNumberId.ToAlphaNumberId(url.Id);
             string shortUrlPath = $"https://{hostName}/{path}";
-            ViewData["HostName"] = hostName;
-            ViewData["Path"] = path;
+            //ViewData["HostName"] = hostName;
+            //ViewData["Path"] = path;
+
+            var activity = database
+                   .ShortUrlActivity
+                   .Where(a => a.ShortUrlId == url.Id)
+                   .OrderBy(a => a.TimeStamp);
+
+            int hitCount = activity.Count();
+
+            var lastHit = hitCount > 0 
+                ? activity.Max(h => h.TimeStamp) 
+                : (DateTime?)null;
 
             var model = new ShortUrlShow
             {
                 Id = url.Id,
                 OriginalUrl = url.OriginalUrl,
                 ShortUrl = shortUrlPath,
+                HitCount = hitCount,
+                LastHit = lastHit,
                 Subject = url.Subject,
                 LetterLink = url.LetterLink,
                 Note = url.Note
