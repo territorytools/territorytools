@@ -19,18 +19,36 @@
             </a>
         </li>
         <!--li>
-            <span class="col-md-2">
-                <strong>Short URL:</strong>
-            </span>
-            <a id="short-url" asp-controller="ShortUrls" asp-action="RedirectTo" asp-route-path="@ViewData["Path"]">
-                https://@ViewData["HostName"]/@ViewData["Path"]
-            </a>
-        </li-->
+        <span class="col-md-2">
+            <strong>Short URL:</strong>
+        </span>
+        <a id="short-url" asp-controller="ShortUrls" asp-action="RedirectTo" asp-route-path="@ViewData["Path"]">
+            https://@ViewData["HostName"]/@ViewData["Path"]
+        </a>
+    </li-->
         <li>
             <span class="col-md-2">
                 <strong>Shortened URL:</strong>
             </span>
             <input id="url-input" type="text" value="https://@ViewData["HostName"]/@ViewData["Path"]" style="margin-top:10px;width:250px;" />
+        </li>
+        <li>
+            <span class="col-md-2">
+                <strong>Subject:</strong>
+            </span>
+            <span>@Model.Subject</span>
+        </li>
+        <li>
+            <span class="col-md-2">
+                <strong>LetterLink:</strong>
+            </span>
+            <a href="@Model.LetterLink">@Model.LetterLink</a>
+        </li>
+        <li>
+            <span class="col-md-2">
+                <strong>Note:</strong>
+            </span>
+            <span>@Model.Note</span>
         </li>
         <li>
             <span class="col-md-2">
