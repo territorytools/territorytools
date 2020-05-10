@@ -63,7 +63,11 @@ namespace WebUI.Areas.UrlShortener.Controllers
 
         [HttpPost] 
         [ValidateAntiForgeryToken]
-        public IActionResult Create(string originalUrl, string subject, string note)
+        public IActionResult Create(
+            string originalUrl, 
+            string subject, 
+            string letterLink, 
+            string note)
         {
             if (!IsUser())
             {
@@ -74,6 +78,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
             {
                 OriginalUrl = originalUrl,
                 Subject = subject,
+                LetterLink = letterLink,
                 Note = note,
                 UserName = User.Identity.Name,
                 Created = DateTime.Now
