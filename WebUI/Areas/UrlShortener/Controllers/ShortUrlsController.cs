@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Ocsp;
 using System;
+using System.Linq;
 using TerritoryTools.Entities;
 using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
@@ -63,7 +65,11 @@ namespace WebUI.Areas.UrlShortener.Controllers
 
         [HttpPost] 
         [ValidateAntiForgeryToken]
-        public IActionResult Create(string originalUrl, string subject, string note)
+        public IActionResult Create(
+            string originalUrl, 
+            string subject, 
+            string letterLink, 
+            string note)
         {
             if (!IsUser())
             {
@@ -74,6 +80,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
             {
                 OriginalUrl = originalUrl,
                 Subject = subject,
+                LetterLink = letterLink,
                 Note = note,
                 UserName = User.Identity.Name,
                 Created = DateTime.Now
@@ -88,6 +95,34 @@ namespace WebUI.Areas.UrlShortener.Controllers
             }
 
             return View(shortUrl);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Update(ShortUrlUpdateRequest update)
+        {
+            if (!IsUser())
+            {
+                return Forbid();
+            }
+
+            TryValidateModel(update);
+            if (ModelState.IsValid)
+            {
+                var existing = service.GetById(update.Id);
+
+                existing.Subject = update.Subject;
+                existing.LetterLink = update.LetterLink;
+                existing.Note = update.Note;
+                
+                service.Update(existing);
+
+                return RedirectToAction(
+                    actionName: nameof(Show), 
+                    routeValues: new { id = update.Id });
+            }
+
+            return Forbid();
         }
 
         [HttpGet]
@@ -109,10 +144,36 @@ namespace WebUI.Areas.UrlShortener.Controllers
                 return NotFound();
             }
 
-            ViewData["HostName"] = _hostName ?? Request.Host.ToString();
-            ViewData["Path"] = AlphaNumberId.ToAlphaNumberId(url.Id);
+            string hostName = _hostName ?? Request.Host.ToString();
+            string path = AlphaNumberId.ToAlphaNumberId(url.Id);
+            string shortUrlPath = $"https://{hostName}/{path}";
+            //ViewData["HostName"] = hostName;
+            //ViewData["Path"] = path;
 
-            return View(url);
+            var activity = database
+                   .ShortUrlActivity
+                   .Where(a => a.ShortUrlId == url.Id)
+                   .OrderBy(a => a.TimeStamp);
+
+            int hitCount = activity.Count();
+
+            var lastHit = hitCount > 0 
+                ? activity.Max(h => h.TimeStamp) 
+                : (DateTime?)null;
+
+            var model = new ShortUrlShow
+            {
+                Id = url.Id,
+                OriginalUrl = url.OriginalUrl,
+                ShortUrl = shortUrlPath,
+                HitCount = hitCount,
+                LastHit = lastHit,
+                Subject = url.Subject,
+                LetterLink = url.LetterLink,
+                Note = url.Note
+            };
+
+            return View(model);
         }
 
         [HttpGet("/UrlShortener/ShortUrls/RedirectTo/{path:required}")]

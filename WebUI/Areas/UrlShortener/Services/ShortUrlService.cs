@@ -52,5 +52,11 @@ namespace WebUI.Areas.UrlShortener.Services
 
             return url.Id;
         }
+
+        public void Update(ShortUrl shortUrl)
+        {
+            context.ShortUrls.Update(shortUrl);
+            context.SaveChanges();
+        }
     }
 }

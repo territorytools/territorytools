@@ -1,4 +1,5 @@
 ﻿using AlbaClient.Models;
+using Controllers.UseCases;
 
 namespace AlbaClient.AlbaServer
 {
@@ -22,12 +23,14 @@ namespace AlbaClient.AlbaServer
 
         public ApplicationBasePath BasePath;
 
-        public void Authorize(Credentials credentials)
+        public void Authenticate(Credentials credentials)
         {
             webClient = GetWebClientWithCookies(credentials);
 
             // We need to load the logon page first to get this client recognized by the server.
-            GetLogonPage(); // TODO: Get the k1 magic string from the login page
+            string html = GetLogonPage();
+
+            credentials.K1MagicString = ExtractAuthK1.ExtractFrom(html);
 
             SubmitCredentials(credentials);
         }
@@ -40,14 +43,14 @@ namespace AlbaClient.AlbaServer
             return webClient;
         }
 
-        private void GetLogonPage()
+        private string GetLogonPage()
         {
-            DownloadString("/");
+            return DownloadString("/");
         }
 
         private void SubmitCredentials(Credentials credentials)
         {
-            var result = DownloadString(RelativeUrlBuilder.Authenticate(credentials));
+            var result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
 
             LogonResultChecker.CheckForErrors(result);
         }

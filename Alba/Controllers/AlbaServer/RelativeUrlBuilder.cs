@@ -6,7 +6,7 @@ namespace AlbaClient.AlbaServer
 {
     public class RelativeUrlBuilder
     {
-        public static string Authenticate(Credentials credentials)
+        public static string AuthenticationUrlFrom(Credentials credentials)
         {
             return @"/gk.php?"
                + "an=" + credentials.Account

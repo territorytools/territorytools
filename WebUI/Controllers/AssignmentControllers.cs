@@ -40,7 +40,7 @@ namespace WebUI.Controllers
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizationClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -66,7 +66,7 @@ namespace WebUI.Controllers
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizationClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
 
@@ -200,7 +200,7 @@ namespace WebUI.Controllers
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizationClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             string filePath = "wwwroot/borders.kml";
 
@@ -230,7 +230,7 @@ namespace WebUI.Controllers
 
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             var resultString = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignments());
@@ -288,7 +288,7 @@ namespace WebUI.Controllers
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizationClient();
-            client.Authorize(credentials);
+            client.Authenticate(credentials);
 
             var assignedHtml = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignmentsPage());

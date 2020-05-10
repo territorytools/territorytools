@@ -44,7 +44,7 @@ namespace WebUI.Services
             string usr = vault.GetSecret($"alba-account-user-{id}");
             string pwd = vault.GetSecret($"alba-account-password-{id}");
 
-            var credentials = new Credentials(acct, usr, pwd, LogUserOntoAlba.k1MagicString)
+            var credentials = new Credentials(acct, usr, pwd)
             {
                 AlbaAccountId = id
             };
