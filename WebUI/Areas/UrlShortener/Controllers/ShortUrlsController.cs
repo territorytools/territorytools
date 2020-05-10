@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Ocsp;
 using System;
+using System.Linq;
 using TerritoryTools.Entities;
 using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
@@ -95,6 +97,34 @@ namespace WebUI.Areas.UrlShortener.Controllers
             return View(shortUrl);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Update(ShortUrlUpdateRequest update)
+        {
+            if (!IsUser())
+            {
+                return Forbid();
+            }
+
+            TryValidateModel(update);
+            if (ModelState.IsValid)
+            {
+                var existing = service.GetById(update.Id);
+
+                existing.Subject = update.Subject;
+                existing.LetterLink = update.LetterLink;
+                existing.Note = update.Note;
+                
+                service.Update(existing);
+
+                return RedirectToAction(
+                    actionName: nameof(Show), 
+                    routeValues: new { id = update.Id });
+            }
+
+            return Forbid();
+        }
+
         [HttpGet]
         public IActionResult Show(int? id)
         {
@@ -114,10 +144,23 @@ namespace WebUI.Areas.UrlShortener.Controllers
                 return NotFound();
             }
 
-            ViewData["HostName"] = _hostName ?? Request.Host.ToString();
-            ViewData["Path"] = AlphaNumberId.ToAlphaNumberId(url.Id);
+            string hostName = _hostName ?? Request.Host.ToString();
+            string path = AlphaNumberId.ToAlphaNumberId(url.Id);
+            string shortUrlPath = $"https://{hostName}/{path}";
+            ViewData["HostName"] = hostName;
+            ViewData["Path"] = path;
 
-            return View(url);
+            var model = new ShortUrlShow
+            {
+                Id = url.Id,
+                OriginalUrl = url.OriginalUrl,
+                ShortUrl = shortUrlPath,
+                Subject = url.Subject,
+                LetterLink = url.LetterLink,
+                Note = url.Note
+            };
+
+            return View(model);
         }
 
         [HttpGet("/UrlShortener/ShortUrls/RedirectTo/{path:required}")]
