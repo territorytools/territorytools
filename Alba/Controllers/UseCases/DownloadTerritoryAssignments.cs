@@ -1,9 +1,11 @@
 ﻿using AlbaClient.AlbaServer;
 using AlbaClient.Controllers.AlbaServer;
 using CsvHelper;
+using CsvHelper.Configuration;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace AlbaClient.Controllers.UseCases
@@ -36,7 +38,7 @@ namespace AlbaClient.Controllers.UseCases
         public void SaveAs(List<Assignment> assignments, string fileName)
         {
             using (var writer = new StreamWriter(fileName))
-            using (var csv = new CsvWriter(writer))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 csv.WriteRecords(assignments);
             }

@@ -80,6 +80,7 @@ namespace AlbaClient.WinFormsUI
         public bool DownloadAllAddressesButtonEnabled { set => throw new NotImplementedException(); }
         public bool DownloadTerritoryAssignmentsButtonEnabled { set => throw new NotImplementedException(); }
         public bool DownloadUsersButtonEnabled { set => throw new NotImplementedException(); }
+        public bool UploadAddressesButtonEnabled { set => throw new NotImplementedException(); }
 
         public string OpenKmlFileDialog(string fileExt)
         {
