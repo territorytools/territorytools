@@ -4,6 +4,7 @@ using CsvHelper;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -34,7 +35,8 @@ namespace Controllers.UseCases
             List<User> users = GetUsers(GetUsersHtml(resultString));
 
             using (var writer = new StreamWriter(fileName))
-            using (var csv = new CsvWriter(writer))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+
             {
                 csv.WriteRecords(users);
             }

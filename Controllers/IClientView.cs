@@ -23,6 +23,8 @@
         bool DownloadTerritoryAssignmentsButtonEnabled { set; }
 
         bool DownloadUsersButtonEnabled { set; }
+        
+        bool UploadAddressesButtonEnabled { set; }
 
         string OpenKmlFileDialog(string fileExt);
 
