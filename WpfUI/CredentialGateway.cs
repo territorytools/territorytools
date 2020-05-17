@@ -29,6 +29,17 @@ namespace AlbaClient.WpfUI
             }
         }
 
+        public string GetKeyValue(string key)
+        {
+            return Settings.Default[key] as string;
+        }
+
+        public void SetKeyValue(string key, string value)
+        {
+            Settings.Default[key] = value;
+        }
+
+
         public void Save()
         {
             Settings.Default.Save();

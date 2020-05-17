@@ -2,11 +2,11 @@
 
 namespace AlbaClient.Controllers.UseCases
 {
-    public class DownloadAddresses
+    public class DownloadAddressExport
     {
         private AuthorizationClient client;
 
-        public DownloadAddresses(AuthorizationClient client)
+        public DownloadAddressExport(AuthorizationClient client)
         {
             this.client = client;
         }
