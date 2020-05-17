@@ -1,12 +1,7 @@
 ﻿using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.AlbaServer;
-using CsvHelper;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Newtonsoft.Json.Linq;
 
 namespace Controllers.UseCases
 {
@@ -38,12 +33,6 @@ namespace Controllers.UseCases
                 RelativeUrlBuilder.GetUserManagementPage());
 
             List<AlbaHtmlUser> users = GetUsers(html);
-
-            //using (var writer = new StreamWriter(fileName))
-            //using (var csv = new CsvWriter(writer))
-            //{
-            //    csv.WriteRecords(users);
-            //}
         }
 
         public static List<AlbaHtmlUser> GetUsers(string html)

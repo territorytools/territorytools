@@ -68,7 +68,7 @@ namespace AlbaClient
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
                 string fileName = view.GetKmlFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
 
-                new DownloadAddresses(client).SaveAs(fileName);
+                new DownloadAddressExport(client).SaveAs(fileName);
 
                 view.AppendResultText($"Saved to: {fileName}");
             }
