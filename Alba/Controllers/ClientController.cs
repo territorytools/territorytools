@@ -1,6 +1,9 @@
 ﻿using AlbaClient.AlbaServer;
+using AlbaClient.AzureMaps;
 using AlbaClient.Controllers.UseCases;
 using AlbaClient.Models;
+using AlbaClient.Nominatim;
+using Controllers.AlbaServer;
 using Controllers.UseCases;
 using System;
 
@@ -17,7 +20,7 @@ namespace AlbaClient
 
             client = new AuthorizationClient(
                 new CookieWebClient(),
-                new ApplicationBasePath("http://", "www.alba-website-here.com", "/alba"));
+                new ApplicationBasePath("https://", "www.alba-website-here.com", "/alba"));
         }
 
         public void UploadKmlButtonClick()
@@ -26,6 +29,79 @@ namespace AlbaClient
             int.TryParse(view.UploadDelayMs, out delay);
 
             new UploadKmlFile(view, client, delay).Upload();
+        }
+
+        public void ImportAddressButtonClick(string path)
+        {
+            new ImportAddress(view, client, 0).Upload(path);
+        }
+
+        public void GeocodeAddressesClick(string path, string key)
+        {
+            try
+            {
+                GeocodeCsvAddressesFrom(path, key);
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+            }
+        }
+
+        private void GeocodeCsvAddressesFrom(string path, string key)
+        {
+            var amWebClient = new CookieWebClient();
+            var amBasePath = new ApplicationBasePath(
+                protocolPrefix: "https://",
+                site: "atlas.microsoft.com",
+                applicationPath: "/");
+
+            var amClient = new AzureMapsClient(
+               webClient: amWebClient,
+               basePath: amBasePath,
+               subscriptionKey: key);
+
+            int geocoded = 0;
+            int alreadyGeocode = 0;
+            var addresses = LoadCsvAddresses.LoadFrom(path);
+            foreach (var address in addresses)
+            {
+                if (address.Latitude == null
+                    || address.Longitude == null
+                    || address.Latitude == 0
+                    || address.Longitude == 0)
+                {
+                    var coordinates = new AzureMapsmGeocodeAddress(view, amClient)
+                        .Geocode(address);
+
+                    address.Latitude = coordinates.Latitude;
+                    address.Longitude = coordinates.Longitude;
+
+                    geocoded++;
+                }
+                else
+                {
+                    alreadyGeocode++;
+                }
+            }
+
+            view.AppendResultText($"\nTotal Addresses: {(geocoded + alreadyGeocode)}");
+            view.AppendResultText($"\nGeocoded: {geocoded}");
+            view.AppendResultText($"\nAlready Geocoded (Skipped): {alreadyGeocode}");
+
+            var newPath = view.GetKmlFileNameToSaveAs(path, "csv");
+            if (string.IsNullOrWhiteSpace(newPath))
+            {
+                // Cancelled
+                view.AppendResultText($"\nGeocoding not saved.");
+
+                return; 
+            }
+
+            LoadCsvAddresses.SaveTo(addresses, newPath);
+
+            view.AppendResultText($"\nGeocoding saved to {newPath}");
+
         }
 
         public void LogonButtonClick()

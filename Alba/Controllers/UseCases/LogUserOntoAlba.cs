@@ -29,6 +29,7 @@ namespace AlbaClient.Controllers.UseCases
             view.DownloadAllAddressesButtonEnabled = true;
             view.DownloadTerritoryAssignmentsButtonEnabled = true;
             view.DownloadUsersButtonEnabled = true;
+            view.UploadAddressesButtonEnabled = true;
 
             view.AppendResultText(Environment.NewLine + "Logged on successfully." + Environment.NewLine);
         }
