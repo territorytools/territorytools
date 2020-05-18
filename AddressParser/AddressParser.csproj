@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>TerritoryTools.Common.AddressParser</RootNamespace>
+    <AssemblyName>TerritoryTools.Common.AddressParser</AssemblyName>
+  </PropertyGroup>
+
+</Project>
