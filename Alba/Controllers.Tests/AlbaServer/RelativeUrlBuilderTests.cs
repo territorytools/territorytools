@@ -10,9 +10,9 @@ namespace AlbaClient.Tests.AlbaServer
         [Test]
         public void Authorize_WithAllCredentials_ReturnsCorrectHash()
         {
-            var credentials = new Credentials("account1", "user1", "P@ssw0rd", "magic string");
+            var credentials = new Credentials("account1", "user1", "P@ssw0rd");
 
-            var url = RelativeUrlBuilder.Authenticate(credentials);
+            var url = RelativeUrlBuilder.AuthenticationUrlFrom(credentials);
 
             Assert.AreEqual("299b4751fd4cb89d05329e0e9bfb1a97f5bbedbf", ExtractHashFrom(url));
         }
