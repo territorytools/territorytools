@@ -18,7 +18,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener", "..\UrlShort
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerritoryShell", "..\TerritoryShell\TerritoryShell.csproj", "{878066D8-D0B6-417A-AFBB-4EA1E6924881}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerritoryWeb", "..\TerritoryWeb\TerritoryWeb.csproj", "{28E4A1C7-7203-48E3-AB6E-2AFAF000E294}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerritoryWeb", "..\TerritoryWeb\TerritoryWeb.csproj", "{28E4A1C7-7203-48E3-AB6E-2AFAF000E294}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressParser", "..\Common\AddressParser\AddressParser.csproj", "{A61E2204-2B70-4F54-B071-9B671716FFA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFCE9E8A-8B3C-4066-888B-2DA1D7DB1492}"
+	ProjectSection(SolutionItems) = preProject
+		.filenesting.json = .filenesting.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +65,10 @@ Global
 		{28E4A1C7-7203-48E3-AB6E-2AFAF000E294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28E4A1C7-7203-48E3-AB6E-2AFAF000E294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28E4A1C7-7203-48E3-AB6E-2AFAF000E294}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A61E2204-2B70-4F54-B071-9B671716FFA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A61E2204-2B70-4F54-B071-9B671716FFA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A61E2204-2B70-4F54-B071-9B671716FFA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A61E2204-2B70-4F54-B071-9B671716FFA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
