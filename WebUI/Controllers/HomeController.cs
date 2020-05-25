@@ -92,9 +92,9 @@ namespace WebUI.Controllers
 
                 return View(publisher);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                return NotFound(e.Message);
             }
         }
 
