@@ -58,13 +58,31 @@ namespace WebUI.Services
                .Users
                .SingleOrDefault(u => u.NormalizedEmail == userName);
 
+            if(identityUser == null)
+            {
+                throw new Exception(
+                    $"An identity with the user name '{userName}' does not exist!");
+            }
+
             var territoryUser = database
                 .TerritoryUser
                 .SingleOrDefault(u => u.AspNetUserId == identityUser.Id);
 
+            if (territoryUser == null)
+            {
+                throw new Exception(
+                    $"A territory user with identity user ID '{identityUser.Id}' does not exist!");
+            }
+
             var accountLink = database
                 .TerritoryUserAlbaAccountLink
                 .FirstOrDefault(l => l.TerritoryUserId == territoryUser.Id);
+
+            if (accountLink == null)
+            {
+                throw new Exception(
+                    $"An Alba account link for territory user id '{territoryUser.Id}' does not exist!");
+            }
 
             return accountLink.AlbaAccountId;
         }
