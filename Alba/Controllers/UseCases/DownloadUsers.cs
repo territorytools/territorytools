@@ -42,12 +42,12 @@ namespace Controllers.UseCases
             }
         }
 
-        public static string GetUsersHtml(string jsonString)
+        public static string GetUsersHtml(string javaScriptString)
         {
             string innerHtml = string.Empty;
 
             var doc = new HtmlDocument();
-            doc.LoadHtml(jsonString);
+            doc.LoadHtml(javaScriptString);
             string starter = "var userSelect = \"";
             var rowNodes = doc.DocumentNode.SelectNodes("//html/body/script");
             if (rowNodes != null)

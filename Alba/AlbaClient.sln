@@ -9,7 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsUI", "WinFormsUI\Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfUI", "WpfUI\WpfUI.csproj", "{E27558FE-D333-45B0-BEB0-92D9D5EEBB78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controllers.Tests", "Controllers.Tests\Controllers.Tests.csproj", "{A8E71BAA-F799-40CA-9783-56EDA31DD48C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controllers.Tests", "Controllers.Tests\Controllers.Tests.csproj", "{A8E71BAA-F799-40CA-9783-56EDA31DD48C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbaConsole", "AlbaConsole\AlbaConsole.csproj", "{66E1D63E-9931-4F6C-9017-0877F808FB70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alba.IntegrationTests", "Alba.IntegrationTests\Alba.IntegrationTests.csproj", "{1169E365-7157-49AC-B10C-8D7649E668E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfUILibrary", "WpfUILibrary\WpfUILibrary.csproj", "{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +57,30 @@ Global
 		{A8E71BAA-F799-40CA-9783-56EDA31DD48C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8E71BAA-F799-40CA-9783-56EDA31DD48C}.Release|x86.ActiveCfg = Release|Any CPU
 		{A8E71BAA-F799-40CA-9783-56EDA31DD48C}.Release|x86.Build.0 = Release|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Debug|x86.Build.0 = Debug|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Release|x86.ActiveCfg = Release|Any CPU
+		{66E1D63E-9931-4F6C-9017-0877F808FB70}.Release|x86.Build.0 = Release|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Debug|x86.Build.0 = Debug|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Release|x86.ActiveCfg = Release|Any CPU
+		{1169E365-7157-49AC-B10C-8D7649E668E2}.Release|x86.Build.0 = Release|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Debug|x86.Build.0 = Debug|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Release|x86.ActiveCfg = Release|Any CPU
+		{7244F94A-25C0-43F2-B2C5-BA5E035F37D0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

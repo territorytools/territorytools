@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace AlbaClient.Controllers.UseCases
 {
@@ -35,12 +36,32 @@ namespace AlbaClient.Controllers.UseCases
             
             SaveAs(assignments, fileName);
         }
+
         public void SaveAs(List<Assignment> assignments, string fileName)
         {
             using (var writer = new StreamWriter(fileName))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
                 csv.WriteRecords(assignments);
+            }
+        }
+
+        public static List<Assignment> LoadFromCsv(string path)
+        {
+            var list = new List<Assignment>();
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return list;
+            }
+
+            using (var reader = new StreamReader(path))
+            using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.Delimiter = ",";
+                csv.Configuration.BadDataFound = null;
+                csv.Configuration.HeaderValidated = null;
+                csv.Configuration.MissingFieldFound = null;
+                return csv.GetRecords<Assignment>().ToList();
             }
         }
 

@@ -4,6 +4,7 @@ using AlbaClient.Controllers.UseCases;
 using AlbaClient.Models;
 using Controllers.AlbaServer;
 using Controllers.ExtraFileFormats;
+using Controllers.S13;
 using Controllers.UseCases;
 using System;
 using System.Collections.Generic;
@@ -100,6 +101,14 @@ namespace AlbaConsole
                 {
                     FilterStatus(Arguments);
                 }
+                else if (string.Equals(command, "pivot-s-13"))
+                {
+                    PivotS13(Arguments);
+                }
+                else if (string.Equals(command, "last-completed"))
+                {
+                    LastCompleted(Arguments);
+                }
             }
             catch (NormalException e)
             {
@@ -161,7 +170,7 @@ namespace AlbaConsole
 
             var client = AlbaClient();
 
-            client.Authorize(GetCredentials());
+            client.Authenticate(GetCredentials());
 
             var useCase = new DownloadTerritoryAssignments(client);
 
@@ -234,6 +243,136 @@ namespace AlbaConsole
             Console.WriteLine($"After Filter Count: {filtered.Count}");
 
             LoadTsvAlbaAddresses.SaveTo(filtered, outputPath);
+        }
+
+        static void PivotS13(List<string> args)
+        {
+            Console.WriteLine("Pivoting S-13 form...");
+            if (args.Count != 4)
+            {
+                throw new NormalException("Wrong number of arguments!  Usage: alba pivot-s-13 <s-13-csv-input-file> <alba-assignments-csv-input-file> <s-13-csv-output-file>");
+            }
+
+            string inputPath = args[1];
+            string albaTerritoryAssignmentsPath = args[2];
+            string outputPath = args[3];
+
+            Console.WriteLine($"Input File Path: {inputPath}");
+            Console.WriteLine($"Alba Assignment File Path: {albaTerritoryAssignmentsPath}");
+            Console.WriteLine($"Output File Path: {outputPath}");
+
+            Console.WriteLine("Loading...");
+            var rows = PivotAssignmentRowsToS13Columns.LoadFrom(inputPath);
+
+            Console.WriteLine("Removing entries with Checked-In and Checked-Out both blank...");
+            var cleaned = rows
+                .Where(r => !string.IsNullOrWhiteSpace(r.CheckedIn)
+                    || !string.IsNullOrWhiteSpace(r.CheckedOut))
+                .ToList();
+
+            Console.WriteLine("Pivoting...");
+            var columns = PivotAssignmentRowsToS13Columns.PivotFrom(cleaned);
+
+            Console.WriteLine("Adding unworked territories...");
+            var assignments = DownloadTerritoryAssignments.LoadFromCsv(albaTerritoryAssignmentsPath);
+            var errors = new List<string>();
+            foreach (var assignment in assignments)
+            {
+                try
+                {
+                    int assignmentNumber = int.Parse(assignment.Number);
+
+                    if (!columns.Exists(c => string.Equals(c.Territory, assignmentNumber.ToString(), StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var newCol = new S13Column
+                        {
+                            Territory = assignment.Number
+                        };
+
+                        newCol.Entries.Add(new S13Entry { Publisher = "Never Worked" });
+                        columns.Add(newCol);
+                    }
+                }
+                catch(Exception e)
+                {
+                    errors.Add($"Number: {assignment.Number}: {e.Message}");
+                }
+            }
+
+            foreach(string error in errors)
+            {
+                Console.WriteLine(error);
+            }
+
+            var orderedColumns = columns.OrderBy(c => int.Parse(c.Territory)).ToList();
+
+            Console.WriteLine("Saving data to new file...");
+            PivotAssignmentRowsToS13Columns.SaveTo(orderedColumns, outputPath);
+        }
+
+        static void LastCompleted(List<string> args)
+        {
+            Console.WriteLine("Generating 'last completed' from S-13 form...");
+            if (args.Count != 4)
+            {
+                throw new NormalException("Wrong number of arguments!  Usage: alba last-completed <s-13-csv-input-file> <alba-assignments-csv-input-file> <s-13-csv-output-file>");
+            }
+
+            string inputPath = args[1];
+            string albaTerritoryAssignmentsPath = args[2];
+            string outputPath = args[3];
+
+            Console.WriteLine($"Input File Path: {inputPath}");
+            Console.WriteLine($"Alba Assignment File Path: {albaTerritoryAssignmentsPath}");
+            Console.WriteLine($"Output File Path: {outputPath}");
+
+            Console.WriteLine("Loading...");
+            var rows = PivotAssignmentRowsToS13Columns.LoadFrom(inputPath);
+
+            Console.WriteLine("Removing entries with Checked-In blank...");
+            var cleaned = rows
+                .Where(r => !string.IsNullOrWhiteSpace(r.CheckedIn))
+                .ToList();
+
+            var parsed = PivotAssignmentRowsToS13Columns.LastCompletedFrom(cleaned);
+
+            Console.WriteLine("Adding unworked territories...");
+            var albaAssignments = DownloadTerritoryAssignments.LoadFromCsv(albaTerritoryAssignmentsPath);
+            var errors = new List<string>();
+            foreach (var assignment in albaAssignments)
+            {
+                try
+                {
+                    int number = int.Parse(assignment.Number);
+
+                    if (!parsed.Exists(c => string.Equals(c.Territory, number.ToString(), StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var t = new TerritoryLastCompleted
+                        {
+                            Territory = assignment.Number,
+                            TimesWorked = 0,
+                            Publisher = "Never Completed",
+                        };
+
+                        parsed.Add(t);
+                    }
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"Number: {assignment.Number}: {e.Message}");
+                }
+            }
+
+            foreach (string error in errors)
+            {
+                Console.WriteLine(error);
+            }
+
+            Console.WriteLine("Sorting by number...");
+            var ordered = parsed.OrderBy(c => int.Parse(c.Territory)).ToList();
+
+            Console.WriteLine("Saving data to new file...");
+            PivotAssignmentRowsToS13Columns.SaveTo(ordered, outputPath);
         }
 
         static void CountAddresses(List<string> args)
@@ -584,8 +723,7 @@ namespace AlbaConsole
             return new Credentials(
                 account,
                 user,
-                password,
-                LogUserOntoAlba.k1MagicString);
+                password);
         }
     }
 }
