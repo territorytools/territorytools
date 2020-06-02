@@ -7,7 +7,7 @@ namespace AlbaClient.Controllers.AlbaServer
 {
     public class AddressView
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Group { get; set; }
         public string TerritoryDescriptionOrStatus { get; set; }
         public string Status { get; set; }
@@ -53,10 +53,8 @@ namespace AlbaClient.Controllers.AlbaServer
         public static List<AddressView> GetAddresses(string html)
         {
             var users = new List<AddressView>();
-
-            // TODO: Copy one of the other HTML parsers
-
-            throw new NotImplementedException();
+            // TODO: This doesn't seem worth implementing now
+            return users;
         }
     }
 }
