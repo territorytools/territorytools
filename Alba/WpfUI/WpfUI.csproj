@@ -138,7 +138,7 @@
       <Project>{2f83b15e-2cdb-44af-bd61-28b6c4ebba69}</Project>
       <Name>Entities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\WpfUILibrary\WpfUILibrary.csproj">
+    <ProjectReference Include="..\WpfUILibrary\WpfUILibrary.csproj">
       <Project>{7244f94a-25c0-43f2-b2c5-ba5e035f37d0}</Project>
       <Name>WpfUILibrary</Name>
     </ProjectReference>
