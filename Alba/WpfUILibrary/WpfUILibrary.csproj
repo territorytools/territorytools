@@ -66,6 +66,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICredentialGateway.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -78,6 +79,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\AddressParser\AddressParser.csproj">
+      <Project>{b7f4e828-3f42-4b94-971f-aec264d18037}</Project>
+      <Name>AddressParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Controllers\Controllers.csproj">
       <Project>{d8df3398-d98d-4565-bf6c-f8aa1855e69a}</Project>
       <Name>Controllers</Name>

@@ -1,5 +1,5 @@
 ﻿using AlbaClient.WpfUI.Properties;
-using TerritoryTools.Entities;
+using AlbaClient.WpfUILibrary;
 
 namespace AlbaClient.WpfUI
 {
