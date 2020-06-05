@@ -30,7 +30,7 @@
     <PublisherName>Marc Durham</PublisherName>
     <SuiteName>Territory Tools</SuiteName>
     <MinimumRequiredVersion>0.2.3.2</MinimumRequiredVersion>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>0.2.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -128,16 +128,11 @@
     <AppDesigner Include="Properties\" />
     <None Include="Publish.ps1" />
     <None Include="TerritoryTools.pfx" />
-    <None Include="WpfUI_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MinistryEntities\Entities.csproj">
-      <Project>{2f83b15e-2cdb-44af-bd61-28b6c4ebba69}</Project>
-      <Name>Entities</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WpfUILibrary\WpfUILibrary.csproj">
       <Project>{7244f94a-25c0-43f2-b2c5-ba5e035f37d0}</Project>
       <Name>WpfUILibrary</Name>
@@ -148,9 +143,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -178,7 +173,7 @@
       <Version>1.11.8</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.2</Version>
+      <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
