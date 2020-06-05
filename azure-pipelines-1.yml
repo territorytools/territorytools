@@ -17,9 +17,11 @@ variables:
 steps:
 - task: NuGetToolInstaller@1
 
-- task: NuGetCommand@2
+- task: MSBuild@1
   inputs:
-    restoreSolution: '$(solution)'
+    solution: 'Alba/WpfUI/WpfUI.csproj'
+    msbuildArguments: '/Target:Restore'
+    
 - task: MSBuild@1
   inputs:
     solution: 'Alba/WpfUI/WpfUI.csproj'
