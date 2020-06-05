@@ -30,8 +30,8 @@
     <PublisherName>Marc Durham</PublisherName>
     <SuiteName>Territory Tools</SuiteName>
     <MinimumRequiredVersion>0.2.3.2</MinimumRequiredVersion>
-    <ApplicationRevision>5</ApplicationRevision>
-    <ApplicationVersion>0.2.3.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>0.2.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
