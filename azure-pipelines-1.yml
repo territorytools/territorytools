@@ -20,14 +20,13 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
-
-- task: VSBuild@1
+- task: MSBuild@1
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    solution: 'Alba/WpfUI/WpfUI.csproj'
+    msbuildArguments: '/Target:Publish'
 
-- task: VSTest@2
+- task: PublishPipelineArtifact@1
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    targetPath: '$(Build.SourcesDirectory)/Alba/WpfUI/bin/Debug/app.publish'
+    artifact: 'ClickOncePublish'
+    publishLocation: 'pipeline'
