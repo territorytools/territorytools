@@ -21,7 +21,11 @@ steps:
   inputs:
     solution: 'Alba/WpfUI/WpfUI.csproj'
     msbuildArguments: '/Target:Restore'
-    
+
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'TerritoryTools.pfx'
+
 - task: MSBuild@1
   inputs:
     solution: 'Alba/WpfUI/WpfUI.csproj'
