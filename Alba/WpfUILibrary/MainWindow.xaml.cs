@@ -2,8 +2,6 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
-// TODO: Maybe we need this
-//using System.Windows.Forms.Integration;
 using System.Windows.Input;
 
 namespace AlbaClient.WpfUILibrary
@@ -199,8 +197,6 @@ namespace AlbaClient.WpfUILibrary
 
         public void ShowMainWindow()
         {
-			// TODO: Maybe we need this
-            //ElementHost.EnableModelessKeyboardInterop(this);
             this.Show();
         }
 
