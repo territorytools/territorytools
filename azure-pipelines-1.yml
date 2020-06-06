@@ -29,6 +29,11 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: 'Alba/WpfUI/WpfUI.csproj'
+    msbuildArguments: '/Target:Build'
+
+- task: MSBuild@1
+  inputs:
+    solution: 'Alba/WpfUI/WpfUI.csproj'
     msbuildArguments: '/Target:Publish'
 
 - task: PublishPipelineArtifact@1
