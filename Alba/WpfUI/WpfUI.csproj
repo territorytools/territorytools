@@ -6,6 +6,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <IsWebBootstrapper>true</IsWebBootstrapper>
+	<TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -26,6 +27,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+	<ManifestCertificateThumbprint>384A539C9341BB720AF952F79EB10B8F18EA50A1</ManifestCertificateThumbprint>
     <ManifestKeyFile>TerritoryTools.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
