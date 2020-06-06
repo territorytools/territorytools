@@ -2,9 +2,9 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Forms.Integration;
+// TODO: Maybe we need this
+//using System.Windows.Forms.Integration;
 using System.Windows.Input;
-using TerritoryTools.Entities;
 
 namespace AlbaClient.WpfUILibrary
 {
@@ -199,7 +199,8 @@ namespace AlbaClient.WpfUILibrary
 
         public void ShowMainWindow()
         {
-            ElementHost.EnableModelessKeyboardInterop(this);
+			// TODO: Maybe we need this
+            //ElementHost.EnableModelessKeyboardInterop(this);
             this.Show();
         }
 
