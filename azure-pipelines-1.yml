@@ -29,7 +29,7 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: 'Alba/WpfUI/WpfUI.csproj'
-    msbuildArguments: '/Target:Build'
+    msbuildArguments: '/Target:Build' /p:Configuration=Release
 
 - task: MSBuild@1
   inputs:
