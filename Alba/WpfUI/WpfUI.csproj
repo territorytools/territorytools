@@ -1,11 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
 	<UseWpf>true</UseWpf>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Background</UpdateMode>
+    <UpdateInterval>1</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>http://downloads.md9.us/</InstallUrl>
+    <ProductName>Alba Sync Tool</ProductName>
+    <PublisherName>Marc Durham</PublisherName>
+    <SuiteName>Territory Tools</SuiteName>
+    <MinimumRequiredVersion>0.2.3.2</MinimumRequiredVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>0.2.6.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <ManifestKeyFile>TerritoryTools.pfx</ManifestKeyFile>
+    <GenerateManifests>true</GenerateManifests>
+    <SignManifests>true</SignManifests>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <ApplicationIcon>TerritoryTools.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.1" />
 	  <PackageReference Include="HtmlAgilityPack" Version="1.11.8" />
@@ -15,5 +41,4 @@
 	<ProjectReference Include="..\WpfUILibrary\WpfUILibrary.csproj" />
 	<ProjectReference Include="..\Controllers\Controllers.csproj" />
   </ItemGroup>
-
 </Project>
