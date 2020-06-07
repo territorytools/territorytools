@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
+    <AssemblyName>AlbaSyncTool</AssemblyName>
 	<UseWpf>true</UseWpf>
   </PropertyGroup>
   <PropertyGroup>
@@ -26,24 +27,13 @@
     <ApplicationVersion>0.2.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
     <ManifestKeyFile>../../TerritoryTools.pfx</ManifestKeyFile>
 	  <!--<NoWin32Manifest>true</NoWin32Manifest>-->
     <ApplicationIcon>TerritoryTools.ico</ApplicationIcon>
     
     <GenerateManifests>true</GenerateManifests>
     <TargetZone>LocalIntranet</TargetZone>
-    <PublisherName>Microsoft</PublisherName>
-    <ProductName>CmdLineDemo</ProductName>
-    <PublishUrl>http://localhost/CmdLineDemo</PublishUrl>
-    <Install>true</Install>
-    <ApplicationVersion>1.0.0.*</ApplicationVersion>
-    <ApplicationRevision>1</ApplicationRevision>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateRequired>false</UpdateRequired>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+
     <UpdateUrlEnabled>false</UpdateUrlEnabled>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -57,4 +47,50 @@
 	<ProjectReference Include="..\WpfUILibrary\WpfUILibrary.csproj" />
 	<ProjectReference Include="..\Controllers\Controllers.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EntryPoint Include="AlbaSyncTool.exe"/>
+    <Dependency Include="Controllers.dll">
+      <AssemblyType>Managed</AssemblyType>
+      <DependencyType>Install</DependencyType>
+    </Dependency>
+    <Dependency Include="WpfUILibrary.dll">
+      <AssemblyType>Managed</AssemblyType>
+      <DependencyType>Install</DependencyType>
+    </Dependency>
+    <Dependency Include="CommandLine.dll">
+      <DependencyType>Install</DependencyType>
+    </Dependency>
+    <Dependency Include="CsvHelper.dll">
+      <DependencyType>Install</DependencyType>
+    </Dependency>
+    <Dependency Include="HtmlAgilityPack.dll">
+      <DependencyType>Install</DependencyType>
+    </Dependency>
+    <Dependency Include="Newtonsoft.Json.dll">
+      <DependencyType>Install</DependencyType>
+    </Dependency>    
+    <IconFile Include="AlbaSyncTool.ico"/>
+    <ConfigFile Include="app.config">
+      <TargetPath>AlbaSyncTool.exe.config</TargetPath>
+    </ConfigFile>
+    <BaseManifest Include="app.manifest"/>
+  </ItemGroup>
+  <Target Name="Publish">
+    <GenerateApplicationManifest
+               AssemblyName="AlbaSyncTool.exe"
+               AssemblyVersion="1.0.0.0"
+               ConfigFile="@(ConfigFile)"
+               Dependencies="@(Dependency)"
+               Description="TestApp"
+               EntryPoint="@(EntryPoint)"
+               Files="@(File)"
+               IconFile="@(IconFile)"
+               InputManifest="@(BaseManifest)"
+               OutputManifest="AlbaSyncTool.exe.manifest">
+      <Output
+          ItemName="ApplicationManifest"
+          TaskParameter="OutputManifest"/>
+    </GenerateApplicationManifest>
+
+  </Target>
 </Project>

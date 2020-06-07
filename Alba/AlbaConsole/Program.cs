@@ -65,6 +65,10 @@ namespace AlbaConsole
                 {
                     DownloadAddresses(Arguments);
                 }
+                else if (string.Equals(command, "download-assignments"))
+                {
+                    DownloadAssignments(Arguments);
+                }
                 else if (string.Equals(command, "count-addresses"))
                 {
                     CountAddresses(Arguments);
@@ -139,9 +143,13 @@ namespace AlbaConsole
         static void PrintUsage()
         {
             Console.WriteLine("Alba Client Console");
-            Console.WriteLine("Usage: alba <command> <parameters>");
+            Console.WriteLine("Usage: alba.exe <command> <parameters>");
             Console.WriteLine("Command: show-credentials");
             Console.WriteLine("Command: download-addresses <alba-csv-output-file>");
+            Console.WriteLine("Command: download-assignments <alba-csv-output-file>");
+            // TODO: Download borders as KML command
+            // TODO: Download users command
+            // TODO: Upload commands
             Console.WriteLine("Command: filter-language <language1,language2...> <alba-csv-input-file> <alba-csv-output-file>");
             Console.WriteLine("Command: filter-status <status> <alba-csv-input-file> <alba-csv-output-file>");
             Console.WriteLine("Command: sort-addresses <alba-tsv-input-file> <alba-tsv-output-file>");
@@ -150,7 +158,7 @@ namespace AlbaConsole
             Console.WriteLine("Command: normalize-addresses <alba-tsv-input-file> <alba-tsv-output-file>");
             Console.WriteLine("Command: match-addresses <alba-tsv-input-file> <alba-tsv-match-file> <alba-tsv-output-file>");
             Console.WriteLine("Command: exclude-addresses <alba-tsv-input-file> <alba-tsv-exclusion-file> <alba-tsv-output-file>");
-            Console.WriteLine("Set credentials as environment variables:");
+            Console.WriteLine("For download commands you must set credentials as environment variables:");
             Console.WriteLine("  Variables: alba_account, alba_user, alba_password");
             Console.WriteLine("  Windows: set alba_account=mygroup");
             Console.WriteLine("  PowerShell: $Env:alba_account=\"mygroup\"");
@@ -172,8 +180,28 @@ namespace AlbaConsole
 
             client.Authenticate(GetCredentials());
 
-            var useCase = new DownloadTerritoryAssignments(client);
+            var useCase = new DownloadAddressExport(client);
 
+            useCase.SaveAs(filePath);
+        }
+
+        static void DownloadAssignments(List<string> args)
+        {
+            if (args.Count < 2)
+            {
+                throw new Exception("Not enough arguments!  Usage: alba download-assignments <alba-csv-output-file>");
+            }
+
+            Console.WriteLine("Downloading assignments...");
+
+            string filePath = args[1];
+
+            var client = AlbaClient();
+
+            client.Authenticate(GetCredentials());
+
+            var useCase = new DownloadTerritoryAssignments(client);
+            
             useCase.SaveAs(filePath);
         }
 
