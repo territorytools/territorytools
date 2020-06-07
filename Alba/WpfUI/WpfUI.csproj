@@ -27,11 +27,26 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <ManifestKeyFile>TerritoryTools.pfx</ManifestKeyFile>
-    <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
-    <NoWin32Manifest>true</NoWin32Manifest>
+    <ManifestKeyFile>../../TerritoryTools.pfx</ManifestKeyFile>
+	  <!--<NoWin32Manifest>true</NoWin32Manifest>-->
     <ApplicationIcon>TerritoryTools.ico</ApplicationIcon>
+    
+    <GenerateManifests>true</GenerateManifests>
+    <TargetZone>LocalIntranet</TargetZone>
+    <PublisherName>Microsoft</PublisherName>
+    <ProductName>CmdLineDemo</ProductName>
+    <PublishUrl>http://localhost/CmdLineDemo</PublishUrl>
+    <Install>true</Install>
+    <ApplicationVersion>1.0.0.*</ApplicationVersion>
+    <ApplicationRevision>1</ApplicationRevision>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateRequired>false</UpdateRequired>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdateUrlEnabled>false</UpdateUrlEnabled>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.1" />
