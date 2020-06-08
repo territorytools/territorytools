@@ -1,4 +1,4 @@
-﻿Import-Module ./ClickOnce-Module.psm1
+﻿Import-Module ..\..\ClickOnceDeploymentScripts\ClickOnce-Module.psm1
 
 Write-Host "Building Project..."
 #msbuild.exe AlbaClientWpfUI.csproj /p:Configuration=Release
