@@ -41,7 +41,7 @@ try {
         -AppShortName "AlbaSyncTool" `
         -IconFile "TerritoryTools.ico" `
         -Publisher "Marc Durham" `
-        -OutputFolder "/Publish" `
+        -OutputFolder "$($Env:Build_ArtifactStagingDirectory)" `
         -BinaryReleaseFolder "bin/Release/net472" `
         -CertFile "TerritoryTools.pfx" `
         -DeploymentRootUrl "http://downloads.md9.us" `
