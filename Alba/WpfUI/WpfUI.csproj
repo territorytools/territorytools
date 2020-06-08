@@ -3,37 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>AlbaSyncTool</AssemblyName>
-	<UseWpf>true</UseWpf>
-  </PropertyGroup>
-  <PropertyGroup>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-	<TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Background</UpdateMode>
-    <UpdateInterval>1</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://downloads.md9.us/</InstallUrl>
-    <ProductName>Alba Sync Tool</ProductName>
-    <SuiteName>Territory Tools</SuiteName>
-    <PublisherName>Marc Durham</PublisherName>
-    <MinimumRequiredVersion>0.2.3.2</MinimumRequiredVersion>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>0.2.6.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
-    <ManifestKeyFile>../../TerritoryTools.pfx</ManifestKeyFile>
-    <ApplicationIcon>TerritoryTools.ico</ApplicationIcon>    
-    <GenerateManifests>true</GenerateManifests>
-    <TargetZone>LocalIntranet</TargetZone>
-    <UpdateUrlEnabled>false</UpdateUrlEnabled>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+  	<UseWpf>true</UseWpf>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="TerritoryTools.ico">
