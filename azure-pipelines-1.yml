@@ -43,7 +43,7 @@ steps:
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.SourcesDirectory)/Alba/WpfUI/Publish'
+    targetPath: '$(Build.ArtifactStagingDirectory)'
     artifact: 'ClickOncePublish'
     publishLocation: 'pipeline'
 
