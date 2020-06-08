@@ -3,6 +3,8 @@
 Write-Host "Building Project..."
 #msbuild.exe AlbaClientWpfUI.csproj /p:Configuration=Release
 
+mkdir "Publish"
+
 Write-Host ""
 # Optional Extra Commands Here
 # Write-Host "Compressing UserManual folder..."
@@ -41,7 +43,7 @@ try {
         -AppShortName "AlbaSyncTool" `
         -IconFile "TerritoryTools.ico" `
         -Publisher "Marc Durham" `
-        -OutputFolder "$($Env:Build_ArtifactStagingDirectory)" `
+        -OutputFolder "Publish" `
         -BinaryReleaseFolder "bin/Release/net472" `
         -CertFile "TerritoryTools.pfx" `
         -DeploymentRootUrl "http://downloads.md9.us" `
