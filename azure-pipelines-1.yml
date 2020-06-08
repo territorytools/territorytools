@@ -39,6 +39,7 @@ steps:
 - task: PowerShell@2
   inputs:
     filePath: '$(Build.SourcesDirectory)/Alba/WpfUI/Publish.ps1'
+    workingDirectory: '$(Build.SourcesDirectory)/Alba/WpfUI'
 
 - task: PublishPipelineArtifact@1
   inputs:
