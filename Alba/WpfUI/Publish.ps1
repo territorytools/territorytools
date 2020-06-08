@@ -12,39 +12,37 @@ Write-Host ""
 Write-Host "Preparing list of files to publish..." 
 # The first file is the "Entry Point" file, your main .exe.
 $files = `
-    "AlbaBackupClient.exe", `
-    "AlbaBackupClient.exe.config", `
-    "AlbaBackupClient.pdb", `
+    "AlbaSyncTool.exe", `
+    "AlbaSyncTool.exe.config", `
+    "AlbaSyncTool.pdb", `
     "Controllers.dll", `
     "Controllers.dll.config", `
     "Controllers.pdb", `
+    "CommandLine.dll", `
     "CsvHelper.dll", `
-    "TerritoryTools.ico", `
     "HtmlAgilityPack.dll", `
-    "HtmlAgilityPack.pdb", `
     "Microsoft.Bcl.AsyncInterfaces.dll", `
     "Newtonsoft.Json.dll", `
-    "StreetTypes.txt", `
     "System.Runtime.CompilerServices.Unsafe.dll", `
     "System.Threading.Tasks.Extensions.dll", `
     "System.ValueTuple.dll", `
-    "TerritoryTools.Entities.dll", `
-    "TerritoryTools.Entities.dll.config", `
-    "TerritoryTools.Entities.pdb", `
-    "UnitTypes.txt", `
     "WpfUILibrary.dll", `
     "WpfUILibrary.dll.config", `
-    "WpfUILibrary.pdb"
+    "WpfUILibrary.pdb", `
+    "StreetTypes.txt", `
+    "UnitTypes.txt", `
+    "TerritoryTools.ico"
 
 try {
     Write-Host "Publish ClickOnce files..." 
     $publishedPaths = Publish-ClickOnce `
         -Files $files `
-        -AppLongName "Alba Backup Client" `
-        -AppShortName "AlbaBackupClient" `
+        -AppLongName "Alba Sync Tool" `
+        -AppShortName "AlbaSyncTool" `
         -IconFile "TerritoryTools.ico" `
         -Publisher "Marc Durham" `
         -OutputFolder "/Publish" `
+        -BinaryReleaseFolder "bin/Release/net472" `
         -CertFile "../../TerritoryTools.pfx" `
         -DeploymentRootUrl "http://downloads.md9.us" `
         -FileExtension ".csv" `
