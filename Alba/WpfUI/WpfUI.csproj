@@ -20,24 +20,32 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://downloads.md9.us/</InstallUrl>
     <ProductName>Alba Sync Tool</ProductName>
-    <PublisherName>Marc Durham</PublisherName>
     <SuiteName>Territory Tools</SuiteName>
+    <PublisherName>Marc Durham</PublisherName>
     <MinimumRequiredVersion>0.2.3.2</MinimumRequiredVersion>
     <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>0.2.6.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <ManifestKeyFile>../../TerritoryTools.pfx</ManifestKeyFile>
-	  <!--<NoWin32Manifest>true</NoWin32Manifest>-->
-    <ApplicationIcon>TerritoryTools.ico</ApplicationIcon>
-    
+    <ApplicationIcon>TerritoryTools.ico</ApplicationIcon>    
     <GenerateManifests>true</GenerateManifests>
     <TargetZone>LocalIntranet</TargetZone>
-
     <UpdateUrlEnabled>false</UpdateUrlEnabled>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="TerritoryTools.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="StreetTypes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="UnitTypes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.1" />
 	  <PackageReference Include="HtmlAgilityPack" Version="1.11.8" />
@@ -47,50 +55,4 @@
 	<ProjectReference Include="..\WpfUILibrary\WpfUILibrary.csproj" />
 	<ProjectReference Include="..\Controllers\Controllers.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <EntryPoint Include="AlbaSyncTool.exe"/>
-    <Dependency Include="Controllers.dll">
-      <AssemblyType>Managed</AssemblyType>
-      <DependencyType>Install</DependencyType>
-    </Dependency>
-    <Dependency Include="WpfUILibrary.dll">
-      <AssemblyType>Managed</AssemblyType>
-      <DependencyType>Install</DependencyType>
-    </Dependency>
-    <Dependency Include="CommandLine.dll">
-      <DependencyType>Install</DependencyType>
-    </Dependency>
-    <Dependency Include="CsvHelper.dll">
-      <DependencyType>Install</DependencyType>
-    </Dependency>
-    <Dependency Include="HtmlAgilityPack.dll">
-      <DependencyType>Install</DependencyType>
-    </Dependency>
-    <Dependency Include="Newtonsoft.Json.dll">
-      <DependencyType>Install</DependencyType>
-    </Dependency>    
-    <IconFile Include="AlbaSyncTool.ico"/>
-    <ConfigFile Include="app.config">
-      <TargetPath>AlbaSyncTool.exe.config</TargetPath>
-    </ConfigFile>
-    <BaseManifest Include="app.manifest"/>
-  </ItemGroup>
-  <Target Name="Publish">
-    <GenerateApplicationManifest
-               AssemblyName="AlbaSyncTool.exe"
-               AssemblyVersion="1.0.0.0"
-               ConfigFile="@(ConfigFile)"
-               Dependencies="@(Dependency)"
-               Description="TestApp"
-               EntryPoint="@(EntryPoint)"
-               Files="@(File)"
-               IconFile="@(IconFile)"
-               InputManifest="@(BaseManifest)"
-               OutputManifest="AlbaSyncTool.exe.manifest">
-      <Output
-          ItemName="ApplicationManifest"
-          TaskParameter="OutputManifest"/>
-    </GenerateApplicationManifest>
-
-  </Target>
 </Project>
