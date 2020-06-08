@@ -26,6 +26,11 @@ steps:
   inputs:
     secureFile: 'TerritoryTools.pfx'
 
+- task: CopyFiles@2
+  inputs:
+    Contents: 'TerritoryTools.pfx'
+    TargetFolder: '$(Build.SourcesDirectory)/Alba/WpfUI'
+
 - task: MSBuild@1
   inputs:
     solution: 'Alba/WpfUI/WpfUI.csproj'
