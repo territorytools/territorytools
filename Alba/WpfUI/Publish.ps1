@@ -43,7 +43,7 @@ try {
         -Publisher "Marc Durham" `
         -OutputFolder "/Publish" `
         -BinaryReleaseFolder "bin/Release/net472" `
-        -CertFile "../../TerritoryTools.pfx" `
+        -CertFile "TerritoryTools.pfx" `
         -DeploymentRootUrl "http://downloads.md9.us" `
         -FileExtension ".csv" `
         -FileExtDescription "Alba Address Import CSV File" `
