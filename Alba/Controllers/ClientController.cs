@@ -2,8 +2,6 @@
 using AlbaClient.AzureMaps;
 using AlbaClient.Controllers.UseCases;
 using AlbaClient.Models;
-using AlbaClient.Nominatim;
-using Controllers.AlbaServer;
 using Controllers.UseCases;
 using System;
 
@@ -12,15 +10,10 @@ namespace AlbaClient
     public class ClientController
     {
         private IClientView view;
-        private AuthorizationClient client;
 
         public ClientController(IClientView view)
         {
             this.view = view;
-
-            client = new AuthorizationClient(
-                new CookieWebClient(),
-                new ApplicationBasePath("https://", "www.alba-website-here.com", "/alba"));
         }
 
         public void UploadKmlButtonClick()
@@ -28,12 +21,12 @@ namespace AlbaClient
             int delay = 1000;
             int.TryParse(view.UploadDelayMs, out delay);
 
-            new UploadKmlFile(view, client, delay).Upload();
+            new UploadKmlFile(view, Client(), delay).Upload();
         }
 
         public void ImportAddressButtonClick(string path)
         {
-            new ImportAddress(view, client, 0).Upload(path);
+            new ImportAddress(view, Client(), 0).Upload(path);
         }
 
         public void GeocodeAddressesClick(string path, string key)
@@ -46,6 +39,13 @@ namespace AlbaClient
             {
                 view.ShowMessageBox(e.Message);
             }
+        }
+
+        AuthorizationClient Client()
+        {
+            return new AuthorizationClient(
+                new CookieWebClient(),
+                new ApplicationBasePath("https://", view.AlbaHostText, "/alba"));
         }
 
         private void GeocodeCsvAddressesFrom(string path, string key)
@@ -124,7 +124,7 @@ namespace AlbaClient
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
                 string fileName = view.GetKmlFileNameToSaveAs($"TerritoryBorders.{timeStamp}", "kml");
 
-                var territories = new DownloadKmlFile(client)
+                var territories = new DownloadKmlFile(Client())
                     .SaveAs(fileName);
 
                 territories.ForEach(t => view.AppendResultText(Environment.NewLine + t.ToString()));
@@ -144,7 +144,7 @@ namespace AlbaClient
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
                 string fileName = view.GetKmlFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
 
-                new DownloadAddressExport(client).SaveAs(fileName);
+                new DownloadAddressExport(Client()).SaveAs(fileName);
 
                 view.AppendResultText($"Saved to: {fileName}");
             }
@@ -163,7 +163,7 @@ namespace AlbaClient
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
                 string fileName = view.GetKmlFileNameToSaveAs($"Assignments.{timeStamp}", "csv");
 
-                new DownloadTerritoryAssignments(client).SaveAs(fileName);
+                new DownloadTerritoryAssignments(Client()).SaveAs(fileName);
 
                 view.AppendResultText($"Saved to: {fileName}");
 
@@ -186,7 +186,7 @@ namespace AlbaClient
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
                 string fileName = view.GetKmlFileNameToSaveAs($"Users.{timeStamp}", "csv");
 
-                new DownloadUsers(client).SaveAs(fileName);
+                new DownloadUsers(Client()).SaveAs(fileName);
 
                 view.AppendResultText($"Saved to: {fileName}");
 
@@ -209,7 +209,7 @@ namespace AlbaClient
         {
             try
             {
-                new LogUserOntoAlba(view, client).Logon();
+                new LogUserOntoAlba(view, Client()).Logon();
             }
             catch (Exception err)
             {

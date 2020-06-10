@@ -1,5 +1,6 @@
 ﻿using AlbaClient.WpfUI.Properties;
 using AlbaClient.WpfUILibrary;
+using WpfUI.Properties;
 
 namespace AlbaClient.WpfUI
 {
@@ -26,6 +27,18 @@ namespace AlbaClient.WpfUI
             set
             {
                 Settings.Default.UserName = value;
+            }
+        }
+
+        public string AlbaHost 
+        {
+            get
+            {
+                return Settings.Default.AlbaHost;
+            }
+            set
+            {
+                Settings.Default.AlbaHost = value;
             }
         }
 
