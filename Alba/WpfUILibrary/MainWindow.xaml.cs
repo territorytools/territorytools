@@ -14,6 +14,7 @@ namespace AlbaClient.WpfUILibrary
         {
             InitializeComponent();
             controller = new ClientController(this);
+            albaHostBox.Text = credentialGateway.AlbaHost;
             accountBox.Text = credentialGateway.AccountName;
             userBox.Text = credentialGateway.UserName;
             CredentialGateway = credentialGateway;
@@ -24,6 +25,7 @@ namespace AlbaClient.WpfUILibrary
 
         private void logonButton_Click(object sender, RoutedEventArgs e)
         {
+            CredentialGateway.AlbaHost = albaHostBox.Text;
             CredentialGateway.AccountName = accountBox.Text;
             CredentialGateway.UserName = userBox.Text;
             CredentialGateway.Save();
@@ -90,6 +92,11 @@ namespace AlbaClient.WpfUILibrary
         public void ClearResultText()
         {
             statusBox.Text = string.Empty;
+        }
+
+        public string AlbaHostText
+        {
+            get { return albaHostBox.Text; }
         }
 
         public string AccountBoxText
@@ -236,6 +243,11 @@ namespace AlbaClient.WpfUILibrary
         private void azureMapsKeyChanged(object sender, RoutedEventArgs args)
         {
             CredentialGateway.SetKeyValue("AzureMapsSubscriptionKey", azureMapsKey.Password);
+        }
+
+        private void accountBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
     }
 }
