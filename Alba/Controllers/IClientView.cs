@@ -6,6 +6,8 @@
 
         void ClearResultText();
 
+        string AlbaHostText { get;  }
+
         string AccountBoxText { get; }
         
         string UserBoxText { get; }
