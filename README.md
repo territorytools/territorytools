@@ -1,5 +1,8 @@
 # Introduction 
-Territory Web is a web site that suppliments the Alba territory system with a few reports and a territory check-out page.
+Territory Tools currently has the following 
+- **Territory Web** is a web site that suppliments the Alba territory system with a few reports and a territory check-out page.
+- **Alba Sync Tool** Windows app that downloads borders, addresses, and assignments so that they can be manipulated in csv or spreadsheet files.
+- **Alba Console** Console version of **Alba Sync Tool** that can run in Windows, Linux, and macOS terminals and shells.
 
 # Compressing The Vault Folder
 Location is data/vault
