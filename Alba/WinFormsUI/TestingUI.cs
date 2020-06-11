@@ -82,6 +82,8 @@ namespace AlbaClient.WinFormsUI
         public bool DownloadUsersButtonEnabled { set => throw new NotImplementedException(); }
         public bool UploadAddressesButtonEnabled { set => throw new NotImplementedException(); }
 
+        public string AlbaHostText => throw new NotImplementedException();
+
         public string OpenKmlFileDialog(string fileExt)
         {
             if (openKmlFileDialog.ShowDialog() == DialogResult.OK)
