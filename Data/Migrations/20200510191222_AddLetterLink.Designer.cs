@@ -10,8 +10,8 @@ using WebUI.Areas.Identity.Data;
 namespace WebUI.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20200614013314_AddAlbaAndShortUrlTables")]
-    partial class AddAlbaAndShortUrlTables
+    [Migration("20200510191222_AddLetterLink")]
+    partial class AddLetterLink
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

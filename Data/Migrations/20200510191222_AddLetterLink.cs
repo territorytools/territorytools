@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebUI.Migrations
 {
-    public partial class AddAlbaAndShortUrlTables : Migration
+    public partial class AddLetterLink : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
