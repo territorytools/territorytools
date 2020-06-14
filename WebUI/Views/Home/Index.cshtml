@@ -11,6 +11,7 @@
         {
             <!--a href="https://www.bellevuemandarin.org" class="btn btn-primary" type="submit">Bellevue Mandarin</a-->
             <a asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" class="btn btn-primary" type="submit">@Localizer["HomeQRCodeButton"]</a>
+            <a asp-controller="TerritoryUser" asp-action="Invitation" class="btn btn-primary" type="submit">@Localizer["InviteUser"]</a>
 
             if (!string.IsNullOrWhiteSpace(Model.Name))
             {
@@ -34,8 +35,8 @@
                         <button type="submit" class="btn p-0" name="provider" value="Google" title="Log in using your Google account"><img src="/btn_google_signin_dark_normal_web.png" /></button>
                     </p>
                     <!-- <p>
-                        <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/ms-symbollockup_signin_light.png" /></button>
-                    </p> -->
+                    <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/ms-symbollockup_signin_light.png" /></button>
+                </p> -->
                     <p>
                         <a href="~/Identity/Account/LoginPassword" class="btn btn-info m-2">@Localizer["LoginAccountPassword"]</a>
                     </p>
