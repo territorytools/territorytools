@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -38,56 +39,48 @@ namespace WebUI.Controllers
             {
                 var invitation = new TerritoryUserInvitation
                 {
-                    Email = User.Identity.Name
                 };
 
-                //if (!IsUser())
-                //{
-                //    return View(publisher);
-                //}
-
-                //var users = GetUsers(account, user, password);
-                //var me = users.FirstOrDefault(u => string.Equals(u.Email, User.Identity.Name, StringComparison.OrdinalIgnoreCase));
-
-                //if (me == null)
-                //{
-                //    return NotFound();
-                //}
-
-                //string myName = me.Name;
-
-                //var assignments = GetAllAssignments()
-                //    .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
-                //    .ToList();
-
-                //publisher.Name = myName;
-
-                //foreach (var item in assignments.OrderByDescending(a => a.SignedOut))
-                //{
-                //    publisher.Territories.Add(item);
-                //}
-
-                //var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
-                //    publisher.Email);
-
-                //foreach (var hit in qrCodeHits)
-                //{
-                //    publisher.QRCodeActivity.Add(
-                //        new QRCodeHit
-                //        {
-                //            Id = hit.Id,
-                //            ShortUrl = hit.ShortUrl,
-                //            OriginalUrl = hit.OriginalUrl,
-                //            Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
-                //            HitCount = hit.HitCount.ToString(),
-                //            LastIPAddress = hit.LastIPAddress,
-                //            LastTimeStamp = hit.LastTimeStamp?.ToString("yyyy-MM-dd HH:mm:ss"),
-                //            Subject = hit.Subject,
-                //            Note = hit.Note
-                //        });
-                //}
-
                 return View(null);
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Invitation(TerritoryUserInvitation invitation)
+        {
+            if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
+            {
+                return RedirectToAction(nameof(AlreadyInvited), invitation);
+            }
+
+            var now = DateTime.Now;
+
+            var user = new TerritoryUser
+            {
+                Id = Guid.NewGuid(),
+                Email = invitation.Email,
+                Surname = invitation.Surname,
+                GivenName = invitation.GivenName,
+                Created = now,
+                Updated = now,
+                Role = "Invited"
+            };
+
+            database.TerritoryUser.Add(user);
+            database.SaveChanges();
+
+            return Ok();
+        }
+
+        public IActionResult AlreadyInvited(TerritoryUserInvitation invitation)
+        {
+            try
+            {
+                return View(invitation);
             }
             catch (Exception e)
             {
