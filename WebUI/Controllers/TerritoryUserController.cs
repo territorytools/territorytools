@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -9,13 +10,14 @@ using WebUI.Services;
 
 namespace WebUI.Controllers
 {
+    [Authorize]
     public class TerritoryUserController : AuthorizedController
     {
         public TerritoryUserController(
             MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            IAuthorizationService authorizationService,
+            Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) 
             : base(
@@ -30,6 +32,11 @@ namespace WebUI.Controllers
 
         public IActionResult Index()
         {
+            if (!IsUser())
+            {
+                return Forbid();
+            }
+
             return View();
         }
 
@@ -37,6 +44,11 @@ namespace WebUI.Controllers
         {
             try
             {
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
                 var invitation = new TerritoryUserInvitation
                 {
                 };
@@ -52,6 +64,11 @@ namespace WebUI.Controllers
         [HttpPost]
         public IActionResult Invitation(TerritoryUserInvitation invitation)
         {
+            if (!IsUser())
+            {
+                return Forbid();
+            }
+
             if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
             {
                 return RedirectToAction(nameof(AlreadyInvited), invitation);
@@ -80,6 +97,11 @@ namespace WebUI.Controllers
         {
             try
             {
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
                 return View(invitation);
             }
             catch (Exception e)
