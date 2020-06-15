@@ -4,6 +4,8 @@ namespace WebUI
 {
     public class WebUIOptions
     {
+        // The FQDN of the alba host, example: alba-host.org
+        public string AlbaHost { get; set; }
         public string AlbaUserManagementHtmlPath { get; set; }
             = "/data/alba/accounts/{0}/user-management.html";
         public string AlbaUsersHtmlPath { get; set; } 

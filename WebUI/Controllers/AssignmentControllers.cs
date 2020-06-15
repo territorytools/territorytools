@@ -298,12 +298,12 @@ namespace WebUI.Controllers
             System.IO.File.WriteAllText(path, usersHtml);
         }
 
-        private static AuthorizationClient AuthorizationClient()
+        private AuthorizationClient AuthorizationClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
                 protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
+                site: options.AlbaHost,
                 applicationPath: "/alba");
 
             var client = new AuthorizationClient(

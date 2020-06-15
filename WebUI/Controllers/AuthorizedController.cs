@@ -276,12 +276,12 @@ namespace WebUI.Controllers
             return albaCredentialService.GetCredentialsFrom(userName);
         }
 
-        static AuthorizationClient AuthClient()
+        AuthorizationClient AuthClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
                 protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
+                site: options.AlbaHost,
                 applicationPath: "/alba");
 
             var client = new AuthorizationClient(
