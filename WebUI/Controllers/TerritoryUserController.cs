@@ -49,11 +49,7 @@ namespace WebUI.Controllers
                     return Forbid();
                 }
 
-                var invitation = new TerritoryUserInvitation
-                {
-                };
-
-                return View(null);
+                return View();
             }
             catch (Exception e)
             {
@@ -108,6 +104,79 @@ namespace WebUI.Controllers
             {
                 return NotFound(e.Message);
             }
+        }
+
+        public IActionResult LinkAlbaAccount()
+        {
+            try
+            {
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
+                return View();
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult LinkAlbaAccount(LinkAlbaAccount link)
+        {
+            if (!IsUser())
+            {
+                return Forbid();
+            }
+
+            var user = database
+                .TerritoryUser
+                .FirstOrDefault(u => BasicStrings.StringsEqual(u.Email, link.TerritoryUserEmail));
+                
+            if (user == null)
+            {
+                throw new Exception($"Territory User Email '{link.TerritoryUserEmail}' not found!");
+            }
+
+            var accountName = database
+                .AlbaAccounts
+                .FirstOrDefault(a => BasicStrings.StringsEqual(a.AccountName, link.AccountName));
+
+            if (accountName != null)
+            {
+                throw new Exception($"Alba account '{link.AccountName}' already exists!");
+            }
+
+            // TODO: Check if credentials work
+
+            var now = DateTime.Now;
+
+            var account = new AlbaAccount
+            {
+                Id = Guid.NewGuid(),
+                AccountName = link.AccountName,
+                Created = now,
+                Updated = now,
+                LongName = link.AccountName
+            };
+
+            database.AlbaAccounts.Add(account);
+            database.SaveChanges();
+
+            var userLink = new TerritoryUserAlbaAccountLink
+            {
+                AlbaAccountId = account.Id,
+                TerritoryUserId = user.Id,
+                Created = now,
+                Updated = now
+            };
+
+            database.TerritoryUserAlbaAccountLink.Add(userLink);
+            database.SaveChanges();
+
+            return Ok();
         }
     }
 }
