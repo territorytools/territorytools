@@ -9,9 +9,7 @@
     <div class="text-center">
         @if (SignInManager.IsSignedIn(User))
         {
-            <!--a href="https://www.bellevuemandarin.org" class="btn btn-primary" type="submit">Bellevue Mandarin</a-->
             <a asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" class="btn btn-primary" type="submit">@Localizer["HomeQRCodeButton"]</a>
-            <a asp-controller="TerritoryUser" asp-action="Invitation" class="btn btn-primary" type="submit">@Localizer["InviteUser"]</a>
 
             if (!string.IsNullOrWhiteSpace(Model.Name))
             {
