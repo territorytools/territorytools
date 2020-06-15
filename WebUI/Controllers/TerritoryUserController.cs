@@ -1,14 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using WebUI.Areas.Identity.Data;
 using WebUI.Models;
+using WebUI.Services;
 
 namespace WebUI.Controllers
 {
-    public class TerritoryUserController : Controller
+    public class TerritoryUserController : AuthorizedController
     {
+        public TerritoryUserController(
+            MainDbContext database,
+            IStringLocalizer<AuthorizedController> localizer,
+            IAlbaCredentials credentials,
+            IAuthorizationService authorizationService,
+            IAlbaCredentialService albaCredentialService,
+            IOptions<WebUIOptions> optionsAccessor) 
+            : base(
+                database,
+                localizer,
+                credentials,
+                authorizationService,
+                albaCredentialService,
+                optionsAccessor)
+        {
+        }
+
         public IActionResult Index()
         {
             return View();

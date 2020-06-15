@@ -8,6 +8,8 @@ namespace WebUI.Models
 {
     public class TerritoryUserInvitation
     {
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
         public string Surname { get; set; }
         public string GivenName { get; set; }
