@@ -11,6 +11,8 @@ namespace WebUI.Areas.Identity.Pages.Account.Manage
 
         public static string ExternalLogins => "ExternalLogins";
 
+        public static string InviteUser => "InviteUser";
+
         public static string PersonalData => "PersonalData";
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
