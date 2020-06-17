@@ -1,5 +1,4 @@
-﻿using AlbaClient.Controllers.UseCases;
-using AlbaClient.Models;
+﻿using AlbaClient.Models;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;

@@ -9,6 +9,7 @@ namespace WebUI.Models
         [Key]
         public Guid Id { get; set; }
         public int IdInAlba { get; set; }
+        public string HostName { get; set; }
         public string AccountName { get; set; }
         public string LongName { get; set; }
         public List<AlbaUser> Users { get; set; }
