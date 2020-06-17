@@ -166,6 +166,7 @@ namespace WebUI.Controllers
             var account = new AlbaAccount
             {
                 Id = Guid.NewGuid(),
+                HostName = link.Host,
                 AccountName = link.AccountName,
                 Created = now,
                 Updated = now,
