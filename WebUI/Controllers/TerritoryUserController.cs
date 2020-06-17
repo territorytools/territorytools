@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using WebUI.Areas.Identity.Data;
@@ -131,13 +132,24 @@ namespace WebUI.Controllers
                 return Forbid();
             }
 
+            var now = DateTime.Now;
+
             var user = database
                 .TerritoryUser
                 .FirstOrDefault(u => BasicStrings.StringsEqual(u.Email, link.TerritoryUserEmail));
                 
             if (user == null)
             {
-                throw new Exception($"Territory User Email '{link.TerritoryUserEmail}' not found!");
+                user = new TerritoryUser
+                {
+                    Id = Guid.NewGuid(),
+                    Email = link.TerritoryUserEmail,
+                    Created = now,
+                    Updated = now,
+                };
+
+                database.TerritoryUser.Add(user);
+                database.SaveChanges();
             }
 
             var accountName = database
@@ -150,8 +162,6 @@ namespace WebUI.Controllers
             }
 
             // TODO: Check if credentials work
-
-            var now = DateTime.Now;
 
             var account = new AlbaAccount
             {
