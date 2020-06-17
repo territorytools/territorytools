@@ -6,7 +6,7 @@ namespace WebUI.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name ="Territory User Email")]
+        [Display(Name ="Territory Tools User Email")]
         public string TerritoryUserEmail { get; set; }
         
         [Required]
