@@ -33,13 +33,14 @@ namespace AlbaClient.AlbaServer
             credentials.K1MagicString = ExtractAuthK1.ExtractFrom(html);
 
             SubmitCredentials(credentials);
+
+            webClient.AddCookie("Alba3", "", BasePath.ApplicationPath, BasePath.Site);
         }
 
         private IWebClient GetWebClientWithCookies(Credentials credentials)
         {
             webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
             webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
-
             return webClient;
         }
 
