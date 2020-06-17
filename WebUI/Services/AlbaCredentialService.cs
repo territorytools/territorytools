@@ -11,6 +11,7 @@ namespace WebUI.Services
     {
         Credentials GetCredentialsFrom(string userName);
         Guid GetAlbaAccountIdFor(string userName);
+        void SaveCredentials(Credentials credentials);
     }
 
     public class AlbaCredentialAzureVaultService : IAlbaCredentialService
@@ -49,6 +50,20 @@ namespace WebUI.Services
             };
 
             return credentials;
+        }
+
+        public void SaveCredentials(Credentials credentials)
+        {
+            var vault = new AzureKeyVaultClient(
+                clientId: appId,
+                clientSecret: secret,
+                vaultName: vaultName);
+
+            Guid id = credentials.AlbaAccountId;
+
+            vault.WriteSecret($"alba-account-name-{id}", credentials.Account);
+            vault.WriteSecret($"alba-account-user-{id}", credentials.User);
+            vault.WriteSecret($"alba-account-password-{id}", credentials.Password);
         }
 
         public Guid GetAlbaAccountIdFor(string userName)

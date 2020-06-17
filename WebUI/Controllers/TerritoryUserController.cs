@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AlbaClient.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -175,6 +176,16 @@ namespace WebUI.Controllers
 
             database.AlbaAccounts.Add(account);
             database.SaveChanges();
+
+            var credentials = new Credentials(
+                account: link.AccountName,
+                user: link.UserName,
+                password: link.Password)
+            {
+                AlbaAccountId = account.Id
+            };
+
+            albaCredentialService.SaveCredentials(credentials);
 
             var userLink = new TerritoryUserAlbaAccountLink
             {
