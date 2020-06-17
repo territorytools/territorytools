@@ -186,7 +186,7 @@ namespace WebUI.Controllers
                     DateTime periodStart = periodYearFrom((DateTime)a.LastCompleted, now)
                         .Date;
 
-                    string prefix = a.Description.Substring(0, 3);
+                    string prefix = a.Description?.Substring(0, 3);
 
                     string areaName = prefix;
                     string groupName = "?";

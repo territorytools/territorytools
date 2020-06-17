@@ -167,14 +167,15 @@ namespace AlbaConsole
 
         static void DownloadAddresses(List<string> args)
         {
-            if (args.Count < 2)
+            if (args.Count < 3)
             {
-                throw new Exception("Not enough arguments!  Usage: alba download-addresses <alba-csv-output-file>");
+                throw new Exception("Not enough arguments!  Usage: alba download-addresses <alba-account-id> <alba-csv-output-file>");
             }
 
             Console.WriteLine("Downloading addresses...");
 
             string filePath = args[1];
+            int accountId = int.Parse(args[2]);
 
             var client = AlbaClient();
 
@@ -182,7 +183,7 @@ namespace AlbaConsole
 
             var useCase = new DownloadAddressExport(client);
 
-            useCase.SaveAs(filePath);
+            useCase.SaveAs(filePath, accountId);
         }
 
         static void DownloadAssignments(List<string> args)

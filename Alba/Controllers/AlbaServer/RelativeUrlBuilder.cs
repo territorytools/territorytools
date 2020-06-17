@@ -20,9 +20,9 @@ namespace AlbaClient.AlbaServer
             return @"/ts?mod=territories&cmd=search&kinds%5B%5D=0&kinds%5B%5D=1&kinds%5B%5D=2&q=&sort=number&order=asc"; 
         }
 
-        public static string ExportAllAddresses()
+        public static string ExportAllAddresses(int accountId)
         {
-            return @"/ts?mod=addresses&cmd=search&acids=940&exp=true&npp=25&cp=1&tid=0&lid=0&display=1%2C2%2C3%2C4%2C5%2C6&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
+            return $"/ts?mod=addresses&cmd=search&acids={accountId}&exp=true&npp=25&cp=1&tid=0&lid=0&display=1%2C2%2C3%2C4%2C5%2C6&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
         }
 
         public static string GetTerritoryAssignments()

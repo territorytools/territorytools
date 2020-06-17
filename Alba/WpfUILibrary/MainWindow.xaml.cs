@@ -47,7 +47,7 @@ namespace AlbaClient.WpfUILibrary
         private void downloadAllAddressesButton_Click(object sender, RoutedEventArgs e)
         {
             Cursor = Cursors.Wait;
-            controller.DownloadAllAddressesButtonClick();
+            controller.DownloadAllAddressesButtonClick(this.accountIdBox.Text);
             Cursor = Cursors.Arrow;
         }
 

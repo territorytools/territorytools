@@ -135,7 +135,7 @@ namespace AlbaClient
             }
         }
 
-        public void DownloadAllAddressesButtonClick()
+        public void DownloadAllAddressesButtonClick(string accountId)
         {
             try
             {
@@ -144,9 +144,16 @@ namespace AlbaClient
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
                 string fileName = view.GetKmlFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
 
-                new DownloadAddressExport(Client()).SaveAs(fileName);
+                if (int.TryParse(accountId, out int id))
+                {
+                    new DownloadAddressExport(Client()).SaveAs(fileName, id);
 
-                view.AppendResultText($"Saved to: {fileName}");
+                    view.AppendResultText($"Saved to: {fileName}");
+                }
+                else
+                {
+                    view.ShowMessageBox($"Invalid account id {id}");
+                }    
             }
             catch (Exception err)
             {

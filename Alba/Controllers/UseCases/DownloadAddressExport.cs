@@ -11,10 +11,10 @@ namespace AlbaClient.Controllers.UseCases
             this.client = client;
         }
 
-        public void SaveAs(string fileName)
+        public void SaveAs(string fileName, int accountId)
         {
             var resultString = client.DownloadString(
-                RelativeUrlBuilder.ExportAllAddresses());
+                RelativeUrlBuilder.ExportAllAddresses(accountId));
 
             string text = AddressExportParser.Parse(resultString);
 

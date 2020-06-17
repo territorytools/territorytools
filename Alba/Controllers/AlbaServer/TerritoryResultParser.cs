@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System;
 using AlbaClient.Models;
 
 namespace AlbaClient.AlbaServer
@@ -9,6 +10,11 @@ namespace AlbaClient.AlbaServer
     {
         public static List<Territory> Parse(string value)
         {
+            if(value.StartsWith("Sorry, you have been signed out."))
+            {
+                throw new Exception("Sorry, you have been signed out.");
+            }
+
             var nodes = JObject.Parse(value);
             var borders = nodes.SelectToken("data.borders") as JObject;
             var territories = new List<Territory>();
