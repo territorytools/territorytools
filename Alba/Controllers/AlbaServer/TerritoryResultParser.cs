@@ -27,21 +27,49 @@ namespace AlbaClient.AlbaServer
 
         private static Territory TerritoryFrom(JProperty property) 
         {
-            var border = JsonConvert.DeserializeObject<Border>(property.Value.ToString());
-            var newTerritory = new Territory(property.Name)
+            try
             {
-                Number = border.tt.Substring(0, border.tt.IndexOf(" ")),
-                CountOfAddresses = border.num,
-                Description = border.tt.Substring(border.tt.IndexOf(" ") + 1),
-                CityArea = border.tt.Substring(border.tt.IndexOf(" ") + 1).Substring(0, 6),
-                CityCode = border.tt.Substring(border.tt.IndexOf(" ") + 1).Substring(0, 3),
-                ZipCodeSuffix = border.tt.Substring(border.tt.IndexOf(" ") + 1).Substring(3, 3)
-            };
+                var border = JsonConvert.DeserializeObject<Border>(property.Value.ToString());
+                var newTerritory = new Territory(property.Name)
+                {
+                    CountOfAddresses = border.num
+                };
 
-            foreach (float[] coord in border.pl)
-                newTerritory.Border.Vertices.Add(new Vertex(coord[0], coord[1]));
+                string text = border.tt;
 
-            return newTerritory;
+                newTerritory.Number = text.Length >0 && text.Contains(" ") 
+                    ? text.Substring(0, text.IndexOf(" ")) 
+                    : string.Empty;
+
+                newTerritory.Description = text.Length > 1 && text.Contains(" ") 
+                    ? text.Substring(text.IndexOf(" ") + 1) 
+                    : string.Empty;
+
+                newTerritory.CityArea = !string.IsNullOrWhiteSpace(newTerritory.Description) 
+                        && newTerritory.Description.Trim().Length == 6
+                    ? newTerritory.Description.Substring(0, 6)
+                    : string.Empty;
+
+                newTerritory.CityCode = !string.IsNullOrWhiteSpace(newTerritory.CityArea)
+                        && newTerritory.CityArea.Length == 6
+                    ? newTerritory.CityArea.Substring(0, 3)
+                    : string.Empty;
+
+                newTerritory.ZipCodeSuffix = !string.IsNullOrWhiteSpace(newTerritory.CityArea)
+                        && newTerritory.CityArea.Length == 6
+                    ? newTerritory.CityArea.Substring(3, 3)
+                    : string.Empty;
+
+                foreach (float[] coord in border.pl)
+                    newTerritory.Border.Vertices.Add(new Vertex(coord[0], coord[1]));
+
+                return newTerritory;
+            }
+            catch(Exception e)
+            {
+                string beginning = property.Value.ToString();
+                throw new Exception($"Error parsing border at {beginning.Substring(0, 256)}", e);
+            }
         }
     }
 }
