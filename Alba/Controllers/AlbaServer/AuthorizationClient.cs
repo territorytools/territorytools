@@ -5,7 +5,8 @@ namespace AlbaClient.AlbaServer
 {
     public class AuthorizationClient 
     {
-        private string baseUrl;
+        private const string SessionKeyName = "Alba3";
+
         private IWebClient webClient;
 
         /// <summary>
@@ -18,30 +19,23 @@ namespace AlbaClient.AlbaServer
         {
             this.webClient = webClient;
             BasePath = basePath;
-            baseUrl = basePath.BaseUrl;
         }
 
         public ApplicationBasePath BasePath;
 
         public void Authenticate(Credentials credentials)
         {
-            webClient = GetWebClientWithCookies(credentials);
-
-            // We need to load the logon page first to get this client recognized by the server.
+            // We need to load the logon page first to get the session key
             string html = GetLogonPage();
 
             credentials.K1MagicString = ExtractAuthK1.ExtractFrom(html);
+            credentials.SessionKeyValue = webClient.GetCookieValue(SessionKeyName);
 
-            SubmitCredentials(credentials);
-
-            webClient.AddCookie("Alba3", "", BasePath.ApplicationPath, BasePath.Site);
-        }
-
-        private IWebClient GetWebClientWithCookies(Credentials credentials)
-        {
             webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
             webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
-            return webClient;
+            webClient.AddCookie(SessionKeyName, credentials.SessionKeyValue, "/", BasePath.Site);
+
+            SubmitCredentials(credentials);
         }
 
         private string GetLogonPage()

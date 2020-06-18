@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using AlbaClient.Models;
 
@@ -7,6 +8,7 @@ namespace AlbaClient
     public class CookieWebClient : WebClient, IWebClient
     {
         Uri _responseUri;
+        CookieCollection cookies;
 
         public Uri ResponseUri
         {
@@ -27,7 +29,7 @@ namespace AlbaClient
                 return base.GetWebRequest(address);
 
             request.CookieContainer = CookieContainer;
-
+            
             return request;
         }
 
@@ -36,12 +38,36 @@ namespace AlbaClient
             WebResponse response = base.GetWebResponse(request);
             _responseUri = response.ResponseUri;
 
+            var httpResponse = response as HttpWebResponse;
+            if (httpResponse != null)
+            {
+                if(cookies == null)
+                {
+                    cookies = new CookieCollection();
+                }
+
+                foreach(var cookie in httpResponse.Cookies)
+                {
+                    cookies.Add((Cookie)cookie);
+                }
+            }
+
             return response;
         }
 
         public void AddCookie(string name, string value, string path, string domain)
         {
             CookieContainer.Add(new Cookie(name, value, path, domain));
+        }
+
+        public string GetCookieValue(string name)
+        {
+            if (cookies == null)
+            {
+                return null;
+            }
+
+            return cookies[name].Value;
         }
 
         public new string DownloadString(string url)
