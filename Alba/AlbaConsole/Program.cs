@@ -8,6 +8,7 @@ using Controllers.S13;
 using Controllers.UseCases;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TerritoryTools.Entities;
 using TerritoryTools.Entities.AddressParsers;
@@ -113,6 +114,10 @@ namespace AlbaConsole
                 {
                     LastCompleted(Arguments);
                 }
+                else if (string.Equals(command, "take"))
+                {
+                    Take(Arguments);
+                }
             }
             catch (NormalException e)
             {
@@ -151,6 +156,7 @@ namespace AlbaConsole
             // TODO: Download users command
             // TODO: Upload commands
             Console.WriteLine("Command: filter-language <language1,language2...> <alba-csv-input-file> <alba-csv-output-file>");
+            Console.WriteLine("Command: list-languages <alba-tsv-input-file> ");
             Console.WriteLine("Command: filter-status <status> <alba-csv-input-file> <alba-csv-output-file>");
             Console.WriteLine("Command: sort-addresses <alba-tsv-input-file> <alba-tsv-output-file>");
             Console.WriteLine("Command: count-addresses <alba-tsv-input-file>");
@@ -158,6 +164,7 @@ namespace AlbaConsole
             Console.WriteLine("Command: normalize-addresses <alba-tsv-input-file> <alba-tsv-output-file>");
             Console.WriteLine("Command: match-addresses <alba-tsv-input-file> <alba-tsv-match-file> <alba-tsv-output-file>");
             Console.WriteLine("Command: exclude-addresses <alba-tsv-input-file> <alba-tsv-exclusion-file> <alba-tsv-output-file>");
+            Console.WriteLine("Command: take <number-of-lines> <input-file>");
             Console.WriteLine("For download commands you must set credentials as environment variables:");
             Console.WriteLine("  Variables: alba_account, alba_user, alba_password");
             Console.WriteLine("  Windows: set alba_account=mygroup");
@@ -419,6 +426,34 @@ namespace AlbaConsole
             var addresses = LoadTsvAlbaAddresses.LoadFrom(inputPath);
 
             Console.WriteLine($"Address Count: {addresses.Count()}");
+        }
+
+        static void Take(List<string> args)
+        {
+            Console.WriteLine("Take a number of lines (excluding header)");
+            if (args.Count < 4)
+            {
+                throw new NormalException("Not enough arguments!  Usage: alba take <number-of-lines> <alba-tsv-input-file> <output-file>");
+            }
+
+            int lines = int.Parse(args[1]);
+            string inputPath = args[2];
+            string outputPath = args[3];
+
+            Console.WriteLine($"Number of lines to take: {lines}");
+            Console.WriteLine($"Input File Path: {inputPath}");
+            Console.WriteLine($"Output File Path: {outputPath}");
+
+            var f = File.OpenText(inputPath);
+            var o = File.CreateText(outputPath);
+            for(int i = 0; i <= lines; i++) 
+            {
+                o.WriteLine(f.ReadLine());
+            }
+
+            o.Flush();
+            o.Close();
+            f.Close();
         }
 
         static void NormalizeAddresses(List<string> args)
