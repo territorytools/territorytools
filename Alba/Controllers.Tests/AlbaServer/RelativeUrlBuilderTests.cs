@@ -11,10 +11,11 @@ namespace AlbaClient.Tests.AlbaServer
         public void Authorize_WithAllCredentials_ReturnsCorrectHash()
         {
             var credentials = new Credentials("account1", "user1", "P@ssw0rd");
+            credentials.K1MagicString = "test-string-to-hash-with";
 
             var url = RelativeUrlBuilder.AuthenticationUrlFrom(credentials);
 
-            Assert.AreEqual("299b4751fd4cb89d05329e0e9bfb1a97f5bbedbf", ExtractHashFrom(url));
+            Assert.AreEqual("ce24996002987b88a0cab15bf7538b4ee649ce19", ExtractHashFrom(url));
         }
 
         private static string ExtractHashFrom(string url)
