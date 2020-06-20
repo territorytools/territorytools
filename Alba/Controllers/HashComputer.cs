@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Alba.Controllers
+namespace TerritoryTools.Alba.Controllers
 {
     public class HashComputer
     {

@@ -1,4 +1,4 @@
-﻿namespace Alba.Controllers.AlbaServer
+﻿namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     /// <summary>
     /// One of the objects for deserializing the reponse to asking for all territories from Alba.

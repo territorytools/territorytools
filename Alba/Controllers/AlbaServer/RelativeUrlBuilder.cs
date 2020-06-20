@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Web;
-using Alba.Controllers.Models;
+using TerritoryTools.Alba.Controllers.Models;
 using Controllers.AlbaServer;
 
-namespace Alba.Controllers.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class RelativeUrlBuilder
     {

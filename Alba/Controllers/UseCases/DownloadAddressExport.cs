@@ -1,7 +1,7 @@
-﻿using Alba.Controllers.AlbaServer;
-using Alba.Controllers;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers;
 
-namespace Alba.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadAddressExport
     {

@@ -4,6 +4,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PublishChromeDriver>true</PublishChromeDriver>
     <IsPackable>false</IsPackable>
+    <RootNamespace>TerritoryTools.Web.MainSite.SeleniumTests</RootNamespace>
+    <AssemblyName>TerritoryTools.Web.MainSite.SeleniumTests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

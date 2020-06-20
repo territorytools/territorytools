@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using Alba.Controllers.AlbaServer;
-using Alba.Controllers.Models;
+using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Models;
 
 namespace AlbaClient.Tests.AlbaServer
 {

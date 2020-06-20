@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Alba.Controllers.Models;
+using TerritoryTools.Alba.Controllers.Models;
 
-namespace Alba.Controllers.Kml
+namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class TerritoryToKmlConverter
     {

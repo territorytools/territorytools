@@ -1,7 +1,7 @@
-﻿using Alba.Controllers.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 using Controllers.UseCases;
 
-namespace Alba.Controllers.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class AuthorizationClient 
     {

@@ -4,6 +4,8 @@
     <TargetFramework>net472</TargetFramework>
 	<UseWpf>true</UseWpf>
 	<UseWinForms>true</UseWinForms>
+	<RootNamespace>TerritoryTools.Alba.SyncTool.Library</RootNamespace>
+	<AssemblyName>TerritoryTools.Alba.SyncTool.Library</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,10 +1,10 @@
-﻿using Alba.Controllers.AlbaServer;
-using Alba.Controllers.Kml;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Kml;
 using System;
 using System.Linq;
 using System.Threading;
 
-namespace Alba.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class UploadKmlFile
     {

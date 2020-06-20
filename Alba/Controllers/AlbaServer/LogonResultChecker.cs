@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace Alba.Controllers.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class LogonResultChecker
     {

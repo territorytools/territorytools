@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Alba.Controllers.Kml;
+using TerritoryTools.Alba.Controllers.Kml;
 
 namespace AlbaClient.Tests.Kml
 {

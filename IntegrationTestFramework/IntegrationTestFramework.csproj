@@ -5,8 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A4A3BBEC-6F77-41FE-840F-21C16EAAC050}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>IntegrationTestFramework</RootNamespace>
-    <AssemblyName>IntegrationTestFramework</AssemblyName>
+    <RootNamespace>TerritoryTools.IntegrationTestFramework</RootNamespace>
+    <AssemblyName>TerritoryTools.IntegrationTestFramework</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>

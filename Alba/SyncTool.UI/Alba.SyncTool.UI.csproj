@@ -4,6 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>AlbaSyncTool</AssemblyName>
   	<UseWpf>true</UseWpf>
+  	<RootNamespace>TerritoryTools.Alba.SyncTool.UI</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="TerritoryTools.ico">

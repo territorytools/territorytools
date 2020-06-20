@@ -1,4 +1,4 @@
-﻿namespace Alba.Controllers.Models
+﻿namespace TerritoryTools.Alba.Controllers.Models
 {
     /// <summary>
     /// Coordinates

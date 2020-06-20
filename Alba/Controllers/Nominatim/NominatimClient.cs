@@ -1,6 +1,6 @@
-﻿using Alba.Controllers.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 
-namespace Alba.Controllers.Nominatim
+namespace TerritoryTools.Alba.Controllers.Nominatim
 {
     public class NominatimClient 
     {

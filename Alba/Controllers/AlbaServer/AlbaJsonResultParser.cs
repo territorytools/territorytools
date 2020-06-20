@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace Alba.Controllers.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class AlbaJsonResultParser
     {

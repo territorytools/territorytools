@@ -1,7 +1,7 @@
-﻿using Alba.SyncTool.Library;
+﻿using TerritoryTools.Alba.SyncTool.Library;
 using System.Windows;
 
-namespace Alba.SyncTool.UI
+namespace TerritoryTools.Alba.SyncTool.UI
 {
     /// <summary>
     /// Interaction logic for Splash.xaml

@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <IsPackable>false</IsPackable>
+    <RootNamespace>TerritoryTools.Alba.Controllers.Tests</RootNamespace>
+    <AssemblyName>TerritoryTools.Alba.Controllers.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,12 +1,12 @@
-﻿using Alba.Controllers.AlbaServer;
-using Alba.Controllers.Kml;
-using Alba.Controllers.Models;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Kml;
+using TerritoryTools.Alba.Controllers.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Alba.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadKmlFile
     {

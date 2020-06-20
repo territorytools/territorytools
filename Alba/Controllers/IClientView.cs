@@ -1,4 +1,4 @@
-﻿namespace Alba.Controllers
+﻿namespace TerritoryTools.Alba.Controllers
 {
     public interface IClientView
     {

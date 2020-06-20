@@ -1,7 +1,7 @@
-﻿using Alba.SyncTool.UI.Properties;
-using Alba.SyncTool.Library;
+﻿using TerritoryTools.Alba.SyncTool.UI.Properties;
+using TerritoryTools.Alba.SyncTool.Library;
 
-namespace Alba.SyncTool.UI
+namespace TerritoryTools.Alba.SyncTool.UI
 {
     public class CredentialGateway : ICredentialGateway
     {

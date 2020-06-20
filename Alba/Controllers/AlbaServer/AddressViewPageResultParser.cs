@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace Alba.Controllers.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class AddressView
     {

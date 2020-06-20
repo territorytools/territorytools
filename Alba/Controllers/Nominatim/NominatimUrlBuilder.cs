@@ -1,6 +1,6 @@
 ﻿using Controllers.AlbaServer;
 
-namespace Alba.Controllers.Nominatim
+namespace TerritoryTools.Alba.Controllers.Nominatim
 {
     public class NominatimUrlBuilder
     {

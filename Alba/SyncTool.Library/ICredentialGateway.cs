@@ -1,4 +1,4 @@
-﻿namespace Alba.SyncTool.Library
+﻿namespace TerritoryTools.Alba.SyncTool.Library
 {
     public interface ICredentialGateway
     {

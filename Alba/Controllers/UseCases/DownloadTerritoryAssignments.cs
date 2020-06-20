@@ -1,4 +1,4 @@
-﻿using Alba.Controllers.AlbaServer;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
 using CsvHelper;
 using CsvHelper.Configuration;
 using HtmlAgilityPack;
@@ -8,7 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace Alba.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadTerritoryAssignments
     {

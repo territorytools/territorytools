@@ -1,11 +1,11 @@
-﻿using Alba.Controllers;
+﻿using TerritoryTools.Alba.Controllers;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Alba.SyncTool.Library
+namespace TerritoryTools.Alba.SyncTool.Library
 {
     public partial class MainWindow : Window, IClientView
     {

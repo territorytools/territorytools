@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Alba.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class Assignment
     {

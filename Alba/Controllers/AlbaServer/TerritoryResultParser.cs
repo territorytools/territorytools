@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System;
-using Alba.Controllers.Models;
+using TerritoryTools.Alba.Controllers.Models;
 
-namespace Alba.Controllers.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class TerritoryResultParser
     {

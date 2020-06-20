@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>TerritoryTools.Alba.Controllers</RootNamespace>
+    <AssemblyName>TerritoryTools.Alba.Controllers</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

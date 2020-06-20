@@ -1,4 +1,4 @@
-﻿<Window x:Class="Alba.SyncTool.Library.MainWindow"
+﻿<Window x:Class="TerritoryTools.Alba.SyncTool.Library.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Alba Sync Tool" Height="582.294" Width="632" ResizeMode="CanResizeWithGrip" >

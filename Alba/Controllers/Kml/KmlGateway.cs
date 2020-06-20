@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace Alba.Controllers.Kml
+namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class KmlGateway
     {
