@@ -1,6 +1,5 @@
-﻿using AlbaClient.WpfUI.Properties;
+﻿using Alba.SyncTool.UI.Properties;
 using AlbaClient.WpfUILibrary;
-using Alba.SyncTool.UI.Properties;
 
 namespace AlbaClient.WpfUI
 {
