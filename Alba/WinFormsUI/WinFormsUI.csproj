@@ -88,9 +88,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\AddressParser\AddressParser.csproj">
-      <Project>{d228a2d4-3cae-4e01-9dbd-439f6eaf23e3}</Project>
-      <Name>AddressParser</Name>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj">
+      <Project>{40BE6412-A6D2-433F-82A9-E568D0E60EC3}</Project>
+      <Name>Common.AddressParser</Name>
     </ProjectReference>
     <ProjectReference Include="..\Controllers\Controllers.csproj">
       <Project>{d8df3398-d98d-4565-bf6c-f8aa1855e69a}</Project>

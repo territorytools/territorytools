@@ -22,8 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Alba\Controllers\Controllers.csproj" />
-    <ProjectReference Include="..\Data\Data.csproj" />
-    <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\Web\Data\Data.csproj" />
   </ItemGroup>
 
 </Project>

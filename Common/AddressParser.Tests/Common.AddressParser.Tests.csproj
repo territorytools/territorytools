@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AddressParser\AddressParser.csproj" />
+    <ProjectReference Include="..\AddressParser\Common.AddressParser.csproj" />
   </ItemGroup>
 
 </Project>
