@@ -23,7 +23,7 @@
 	  <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
     <PackageReference Include="NAppUpdate.Framework" Version="0.5.1" />
-	<ProjectReference Include="..\WpfUILibrary\Alba.WpfUILibrary.csproj" />
+	<ProjectReference Include="..\WpfUILibrary\Alba.SyncTool.Library.csproj" />
 	<ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
   </ItemGroup>
   <ItemGroup>
