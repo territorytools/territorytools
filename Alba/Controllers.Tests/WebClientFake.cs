@@ -7,10 +7,16 @@
         }
 
         public string DownloadStringReturns;
+        public string GetCookieValueReturns;
 
         public string DownloadString(string url)
         {
             return DownloadStringReturns;
+        }
+
+        public string GetCookieValue(string name)
+        {
+            return GetCookieValueReturns;
         }
     }
 }

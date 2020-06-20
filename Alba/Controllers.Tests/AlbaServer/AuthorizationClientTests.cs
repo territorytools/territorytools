@@ -11,7 +11,7 @@ namespace AlbaClient.Tests.AlbaServer
         public void Authorize_WithAuthenticatedTrue_NoException()
         {
             GetClientThatReturns(@"{""authenticated"":true}")
-               .Authorize(BlankCredentials());
+               .Authenticate(BlankCredentials());
         }
 
         [Test]
@@ -19,7 +19,7 @@ namespace AlbaClient.Tests.AlbaServer
         {
             Assert.That (
                 () => GetClientThatReturns (@"{""authenticated"":false}")
-                    .Authorize (BlankCredentials ()),
+                    .Authenticate(BlankCredentials ()),
                 Throws.TypeOf (typeof (AuthorizationException)));
         }
 
@@ -28,7 +28,7 @@ namespace AlbaClient.Tests.AlbaServer
         {
             Assert.That (
                 () => GetClientThatReturns(@"{""log"":[""Query OK"",""Fetch OK""],""error"":[""Incorrect password.""]}")
-                    .Authorize(BlankCredentials()),
+                    .Authenticate(BlankCredentials()),
                 Throws.TypeOf (typeof (AuthorizationException)));
         }
 
@@ -37,7 +37,7 @@ namespace AlbaClient.Tests.AlbaServer
         {
             Assert.That (
                 () => GetClientThatReturns(@"{""error"":[""Invalid keys"",{""an"":""dd"",""us"":""d"",""k2"":""128dc45a5ffe04f7ea0f6ab683df07849b903485""}]}")
-                    .Authorize(BlankCredentials()),
+                    .Authenticate(BlankCredentials()),
                 Throws.TypeOf (typeof (AuthorizationException)));
         }
 
@@ -46,7 +46,7 @@ namespace AlbaClient.Tests.AlbaServer
         {
             Assert.That (
                 () => GetClientThatReturns(@"{""log"":[""Query OK""],""error"":[""Account name and/or user name are unknown. Typo perhaps?""]}")
-                    .Authorize(BlankCredentials()),
+                    .Authenticate(BlankCredentials()),
                 Throws.TypeOf (typeof (AuthorizationException)));
         }
 
@@ -64,7 +64,7 @@ namespace AlbaClient.Tests.AlbaServer
 
         private static Credentials BlankCredentials()
         {
-            return new Credentials("", "", "", "");
+            return new Credentials("", "", "");
         }
     }
 }
