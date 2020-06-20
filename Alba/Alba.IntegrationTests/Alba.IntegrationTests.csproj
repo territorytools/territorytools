@@ -40,9 +40,9 @@
       <Project>{a4a3bbec-6f77-41fe-840f-21c16eaac050}</Project>
       <Name>IntegrationTestFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Controllers\Controllers.csproj">
-      <Project>{D8DF3398-D98D-4565-BF6C-F8AA1855E69A}</Project>
-      <Name>Controllers</Name>
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
+      <Project>{7F57A37D-8DB5-45F6-95E4-D2F1BD58739C}</Project>
+      <Name>Alba.Controllers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

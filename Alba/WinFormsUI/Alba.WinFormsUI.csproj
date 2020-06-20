@@ -92,9 +92,9 @@
       <Project>{40BE6412-A6D2-433F-82A9-E568D0E60EC3}</Project>
       <Name>Common.AddressParser</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Controllers\Controllers.csproj">
-      <Project>{d8df3398-d98d-4565-bf6c-f8aa1855e69a}</Project>
-      <Name>Controllers</Name>
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
+      <Project>{7F57A37D-8DB5-45F6-95E4-D2F1BD58739C}</Project>
+      <Name>Alba.Controllers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
