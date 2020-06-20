@@ -198,7 +198,7 @@ namespace WebUI.Controllers
 
                     summaries.Add(new Summary
                     {
-                        Period = $"{periodStart.ToString("yyyy-MM-dd")}---{periodStart.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd")}",
+                        Period = $"{periodStart:yyyy-MM-dd}---{periodStart.AddYears(1).AddDays(-1):yyyy-MM-dd}",
                         Area = areaName,
                         Group = groupName,
                         Addresses = a.Addresses
