@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using AlbaClient.Controllers.UseCases;
+using Alba.Controllers.UseCases;
 using Controllers.UseCases;
 
 namespace WebUI

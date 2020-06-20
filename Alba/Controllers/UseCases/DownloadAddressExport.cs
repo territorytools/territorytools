@@ -1,6 +1,7 @@
-﻿using AlbaClient.AlbaServer;
+﻿using Alba.Controllers.AlbaServer;
+using Alba.Controllers;
 
-namespace AlbaClient.Controllers.UseCases
+namespace Alba.Controllers.UseCases
 {
     public class DownloadAddressExport
     {

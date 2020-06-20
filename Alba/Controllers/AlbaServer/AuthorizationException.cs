@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AlbaClient.AlbaServer
+namespace Alba.Controllers.AlbaServer
 {
     public class AuthorizationException : Exception
     {

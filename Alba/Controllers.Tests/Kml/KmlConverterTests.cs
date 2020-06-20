@@ -2,8 +2,8 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
-using AlbaClient.Models;
-using AlbaClient.Kml;
+using Alba.Controllers.Models;
+using Alba.Controllers.Kml;
 
 namespace AlbaClient.Tests.KmlGateways
 {

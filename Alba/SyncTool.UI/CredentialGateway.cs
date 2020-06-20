@@ -1,7 +1,7 @@
 ﻿using Alba.SyncTool.UI.Properties;
-using AlbaClient.WpfUILibrary;
+using Alba.SyncTool.Library;
 
-namespace AlbaClient.WpfUI
+namespace Alba.SyncTool.UI
 {
     public class CredentialGateway : ICredentialGateway
     {

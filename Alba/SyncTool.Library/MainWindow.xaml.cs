@@ -1,10 +1,11 @@
-﻿using Microsoft.Win32;
+﻿using Alba.Controllers;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace AlbaClient.WpfUILibrary
+namespace Alba.SyncTool.Library
 {
     public partial class MainWindow : Window, IClientView
     {

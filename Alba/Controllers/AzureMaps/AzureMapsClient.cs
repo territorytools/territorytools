@@ -1,7 +1,7 @@
-﻿using AlbaClient.Models;
+﻿using Alba.Controllers.Models;
 using System;
 
-namespace AlbaClient.AzureMaps
+namespace Alba.Controllers.AzureMaps
 {
     public class AzureMapsClient 
     {

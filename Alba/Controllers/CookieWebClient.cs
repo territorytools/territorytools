@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using AlbaClient.Models;
+using Alba.Controllers.Models;
 
-namespace AlbaClient
+namespace Alba.Controllers
 {
     public class CookieWebClient : WebClient, IWebClient
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AlbaClient.Controllers.UseCases
+namespace Alba.Controllers.UseCases
 {
     public class Assignment
     {

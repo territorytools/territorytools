@@ -1,4 +1,4 @@
-﻿namespace AlbaClient.WpfUILibrary
+﻿namespace Alba.SyncTool.Library
 {
     public interface ICredentialGateway
     {

@@ -1,6 +1,6 @@
-﻿using AlbaClient.Models;
+﻿using Alba.Controllers.Models;
 
-namespace AlbaClient.Nominatim
+namespace Alba.Controllers.Nominatim
 {
     public class NominatimClient 
     {

@@ -1,9 +1,9 @@
-﻿using AlbaClient.AzureMaps;
+﻿using Alba.Controllers.AzureMaps;
 using Controllers.AlbaServer;
 using Controllers.AzureMaps;
 using Newtonsoft.Json;
 
-namespace AlbaClient.Controllers.UseCases
+namespace Alba.Controllers.UseCases
 {
     public class AzureMapsmGeocodeAddress
     {

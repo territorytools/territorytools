@@ -1,4 +1,4 @@
-﻿namespace AlbaClient.Models
+﻿namespace Alba.Controllers.Models
 {
     public class ApplicationBasePath
     {

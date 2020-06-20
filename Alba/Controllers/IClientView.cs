@@ -1,4 +1,4 @@
-﻿namespace AlbaClient
+﻿namespace Alba.Controllers
 {
     public interface IClientView
     {

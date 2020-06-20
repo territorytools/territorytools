@@ -1,7 +1,7 @@
-﻿using AlbaClient.WpfUILibrary;
+﻿using Alba.SyncTool.Library;
 using System.Windows;
 
-namespace AlbaClient.WpfUI
+namespace Alba.SyncTool.UI
 {
     /// <summary>
     /// Interaction logic for Splash.xaml

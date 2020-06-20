@@ -1,5 +1,4 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.AlbaServer;
+﻿using Alba.Controllers.AlbaServer;
 using CsvHelper;
 using CsvHelper.Configuration;
 using HtmlAgilityPack;
@@ -9,7 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace AlbaClient.Controllers.UseCases
+namespace Alba.Controllers.UseCases
 {
     public class DownloadTerritoryAssignments
     {

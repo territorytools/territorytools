@@ -1,7 +1,7 @@
-﻿using AlbaClient.Models;
+﻿using Alba.Controllers.Models;
 using Controllers.UseCases;
 
-namespace AlbaClient.AlbaServer
+namespace Alba.Controllers.AlbaServer
 {
     public class AuthorizationClient 
     {

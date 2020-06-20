@@ -1,11 +1,11 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.AzureMaps;
-using AlbaClient.Controllers.UseCases;
-using AlbaClient.Models;
+﻿using Alba.Controllers.AlbaServer;
+using Alba.Controllers.AzureMaps;
+using Alba.Controllers.UseCases;
+using Alba.Controllers.Models;
 using Controllers.UseCases;
 using System;
 
-namespace AlbaClient
+namespace Alba.Controllers
 {
     public class ClientController
     {

@@ -1,13 +1,12 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.AlbaServer;
-using AlbaClient.Kml;
-using AlbaClient.Models;
+﻿using Alba.Controllers.AlbaServer;
+using Alba.Controllers.Kml;
+using Alba.Controllers.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AlbaClient.Controllers.UseCases
+namespace Alba.Controllers.UseCases
 {
     public class DownloadKmlFile
     {

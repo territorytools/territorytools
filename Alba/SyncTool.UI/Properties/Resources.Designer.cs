@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AlbaClient.WpfUI.Properties {
+namespace Alba.SyncTool.UI.Properties {
     using System;
     
     

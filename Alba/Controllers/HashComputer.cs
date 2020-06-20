@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace AlbaClient
+namespace Alba.Controllers
 {
     public class HashComputer
     {

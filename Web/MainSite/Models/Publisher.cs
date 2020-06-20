@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-using AlbaClient.Controllers.UseCases;
+using Alba.Controllers.UseCases;
 
 namespace WebUI
 {

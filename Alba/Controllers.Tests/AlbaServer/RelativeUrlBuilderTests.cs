@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using AlbaClient.Models;
-using AlbaClient.AlbaServer;
+using Alba.Controllers.Models;
+using Alba.Controllers.AlbaServer;
 
 namespace AlbaClient.Tests.AlbaServer
 {

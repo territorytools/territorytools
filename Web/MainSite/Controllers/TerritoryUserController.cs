@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using AlbaClient.Models;
+using Alba.Controllers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace AlbaClient.Models
+namespace Alba.Controllers.Models
 {
     public class Territory
     {

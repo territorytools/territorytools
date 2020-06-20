@@ -1,10 +1,10 @@
-﻿using AlbaClient.AlbaServer;
+﻿using Alba.Controllers.AlbaServer;
 using Controllers.AlbaServer;
 using CsvHelper;
 using System.Globalization;
 using System.IO;
 
-namespace AlbaClient.Controllers.UseCases
+namespace Alba.Controllers.UseCases
 {
     public class ImportAddress
     {

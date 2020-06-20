@@ -1,4 +1,4 @@
-﻿using AlbaClient.Models;
+﻿using Alba.Controllers.Models;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;

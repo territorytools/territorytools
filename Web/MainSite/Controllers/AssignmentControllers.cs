@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AlbaClient;
-using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.AlbaServer;
-using AlbaClient.Controllers.UseCases;
-using AlbaClient.Models;
+using Alba.Controllers;
+using Alba.Controllers.AlbaServer;
+using Alba.Controllers.UseCases;
+using Alba.Controllers.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;

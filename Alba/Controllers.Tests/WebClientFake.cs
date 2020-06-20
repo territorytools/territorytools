@@ -1,4 +1,6 @@
-﻿namespace AlbaClient.Tests
+﻿using Alba.Controllers;
+
+namespace AlbaClient.Tests
 {
     public class WebClientFake : IWebClient
     {

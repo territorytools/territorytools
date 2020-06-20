@@ -1,4 +1,4 @@
-﻿namespace AlbaClient.AlbaServer
+﻿namespace Alba.Controllers.AlbaServer
 {
     public class LogonResult
     {

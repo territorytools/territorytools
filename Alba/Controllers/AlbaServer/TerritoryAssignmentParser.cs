@@ -1,4 +1,4 @@
-﻿namespace AlbaClient.Controllers.AlbaServer
+﻿namespace Alba.Controllers.AlbaServer
 {
     public class TerritoryAssignmentParser
     {
