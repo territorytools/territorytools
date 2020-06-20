@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1169E365-7157-49AC-B10C-8D7649E668E2}</ProjectGuid>
+    <ProjectGuid>{A4A3BBEC-6F77-41FE-840F-21C16EAAC050}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Alba.IntegrationTests</RootNamespace>
-    <AssemblyName>Alba.IntegrationTests</AssemblyName>
+    <RootNamespace>IntegrationTestFramework</RootNamespace>
+    <AssemblyName>IntegrationTestFramework</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -32,26 +32,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="KmlGatewayIntegrationTests.cs" />
-    <Compile Include="KmlIntegrationTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\IntegrationTestFramework\IntegrationTestFramework.csproj">
-      <Project>{a4a3bbec-6f77-41fe-840f-21c16eaac050}</Project>
-      <Name>IntegrationTestFramework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Controllers\Controllers.csproj">
-      <Project>{D8DF3398-D98D-4565-BF6C-F8AA1855E69A}</Project>
-      <Name>Controllers</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AlbaTest.kml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
+    <Compile Include="Assert.cs" />
+    <Compile Include="AssertFailedException.cs" />
+    <Compile Include="TestAttribute.cs" />
+    <Compile Include="TestFixtureAttribute.cs" />
+    <Compile Include="Test.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
