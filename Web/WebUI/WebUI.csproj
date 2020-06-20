@@ -21,8 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Alba\Controllers\Controllers.csproj" />
-    <ProjectReference Include="..\Web\Data\Data.csproj" />
+    <ProjectReference Include="..\..\Alba\Controllers\Controllers.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
 </Project>
