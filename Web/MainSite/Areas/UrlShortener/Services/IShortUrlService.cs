@@ -12,6 +12,8 @@ namespace WebUI.Areas.UrlShortener.Services
 
         int Save(ShortUrl shortUrl);
 
+        int Save(ShortUrlCreationRequest shortUrl);
+
         void Update(ShortUrl shortUrl);
     }
 }

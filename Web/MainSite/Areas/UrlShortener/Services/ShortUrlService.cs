@@ -1,4 +1,6 @@
+using Org.BouncyCastle.Ocsp;
 using System;
+using System.Linq;
 using TerritoryTools.Entities;
 using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
@@ -47,6 +49,39 @@ namespace WebUI.Areas.UrlShortener.Services
 
         public int Save(ShortUrl url)
         {
+            context.ShortUrls.Add(url);
+            context.SaveChanges();
+
+            return url.Id;
+        }
+
+        public int Save(ShortUrlCreationRequest request)
+        {
+            var host = context
+                .ShortUrlHosts
+                .SingleOrDefault(
+                    h => string.Equals(
+                        h.Name,
+                        request.HostName,
+                        StringComparison.OrdinalIgnoreCase));
+
+            if (host == null)
+            {
+                throw new Exception($"Host name '{request.HostName}' does not exist!");
+            }
+
+            var url = new ShortUrl
+            {
+                HostId = host.Id,
+                Path = request.Path,
+                OriginalUrl = request.OriginalUrl,
+                LetterLink = request.LetterLink,
+                Note = request.Note,
+                UserName = request.UserName,
+                Subject = request.Subject,
+                Created = DateTime.Now
+            };
+
             context.ShortUrls.Add(url);
             context.SaveChanges();
 

@@ -6,7 +6,7 @@ namespace UrlShortener.Services
     {
         ShortUrl GetById(int id);
 
-        ShortUrl GetByPath(string path, string ip);
+        ShortUrl GetByPath(string path, string ip, string host);
 
         ShortUrl GetByOriginalUrl(string originalUrl);
 

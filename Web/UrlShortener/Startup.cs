@@ -23,6 +23,7 @@ namespace UrlShortener
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddUserSecrets<Program>()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -52,8 +53,8 @@ namespace UrlShortener
                     | ForwardedHeaders.XForwardedProto;
             });
 
-            services.AddDbContext<MainDbContext>(options => options.UseSqlServer(
-                Configuration.GetValue<string>("UrlShortenerDbConnectionString")));
+            string cons = Configuration.GetValue<string>("ConnectionStrings:MainDbContextConnection");
+            services.AddDbContext<MainDbContext>(options => options.UseSqlServer(cons));
 
             services.AddScoped<IShortUrlService, ShortUrlService>();
 

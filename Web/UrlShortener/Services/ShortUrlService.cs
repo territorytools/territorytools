@@ -19,7 +19,7 @@ namespace UrlShortener.Services
             return context.ShortUrls.Find(id);
         }
 
-        public ShortUrl GetByPath(string path, string ip)
+        public ShortUrl GetByPath(string path, string ip, string host)
         {
             int id = AlphaNumberId.ToIntegerId(path);
             var activity = new ShortUrlActivity
