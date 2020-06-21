@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using UrlShortener.Services;
+using TerritoryTools.Web.Data.Services;
 
 namespace UrlShortener.Controllers
 {
@@ -25,9 +25,10 @@ namespace UrlShortener.Controllers
                 return NotFound();
             }
 
+            string host = Request.Host.Host;
             string ip = HttpContext.Connection.RemoteIpAddress.ToString();
 
-            var shortUrl = _service.GetByPath(path, ip);
+            var shortUrl = _service.GetByPath(path, ip, host);
             if (shortUrl == null) 
             {
                 return NotFound();

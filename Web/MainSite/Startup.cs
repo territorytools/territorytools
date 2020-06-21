@@ -1,23 +1,21 @@
-﻿using System;
-using System.Linq;
+﻿using Certes;
+using FluffySpoon.AspNet.LetsEncrypt;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using FluffySpoon.AspNet.LetsEncrypt;
-using Certes;
+using System;
+using System.Globalization;
+using System.Linq;
+using TerritoryTools.Web.Data.Services;
 using WebUI.Areas.Identity.Data;
 using WebUI.Services;
-using Microsoft.AspNetCore.Mvc.Razor;
-using System.Globalization;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.StaticFiles;
-using System.IO;
-using Microsoft.Extensions.FileProviders;
-using WebUI.Areas.UrlShortener.Services;
 
 namespace WebUI
 {
