@@ -10,6 +10,8 @@ namespace WebUI.Areas.UrlShortener.Models
 
         public string HostName { get; set; }
 
+        public string Path { get; set; }
+
         public string ShortUrl { get; set; }
 
         public int HitCount { get; set; }

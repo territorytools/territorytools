@@ -68,6 +68,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(
             string hostName,
+            string path,
             string originalUrl,
             string subject,
             string letterLink,
@@ -77,9 +78,11 @@ namespace WebUI.Areas.UrlShortener.Controllers
             {
                 return Forbid();
             }
+
             var request = new ShortUrlCreationRequest
             {
                 HostName = hostName,
+                Path = path,
                 OriginalUrl = originalUrl,
                 Subject = subject,
                 LetterLink = letterLink,
@@ -165,6 +168,8 @@ namespace WebUI.Areas.UrlShortener.Controllers
             var model = new ShortUrlShow
             {
                 Id = url.Id,
+                HostName = hostName,
+                Path = url.Path,
                 OriginalUrl = url.OriginalUrl,
                 ShortUrl = shortUrlPath,
                 HitCount = hitCount,
