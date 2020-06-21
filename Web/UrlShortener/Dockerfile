@@ -7,10 +7,10 @@ COPY ./Web/UrlShortener /src/UrlShortener
 COPY ./Web/Data /src/Data
 COPY ./Web/Entities /src/Entities
 
-RUN dotnet build Web/UrlShortener/Web.UrlShortener.csproj -c Release -o /app
+RUN dotnet build UrlShortener/Web.UrlShortener.csproj -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish Web/UrlShortener/Web.UrlShortener.csproj -c Release -o /app
+RUN dotnet publish UrlShortener/Web.UrlShortener.csproj -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
