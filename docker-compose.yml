@@ -191,7 +191,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./UrlShortener/Dockerfile
+      dockerfile: ./Web/UrlShortener/Dockerfile
     networks:
       - main
     ports:
@@ -204,7 +204,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./UrlShortener/Dockerfile
+      dockerfile: ./Web/UrlShortener/Dockerfile
     networks:
       - main
     ports:
