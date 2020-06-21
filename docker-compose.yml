@@ -95,7 +95,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./WebUI/Dockerfile
+      dockerfile: ./Web/MainSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
     networks:
@@ -137,7 +137,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./WebUI/Dockerfile
+      dockerfile: ./Web/MainSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
     networks:
