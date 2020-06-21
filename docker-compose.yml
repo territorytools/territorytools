@@ -186,8 +186,8 @@ services:
       - SA_PASSWORD=$SA_PASSWORD
     networks:
       - main
-  url_shortener:
-    container_name: url-shortener
+  tt-url:
+    container_name: tt-url
     restart: unless-stopped
     build:
       context: .
@@ -199,6 +199,20 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      
+  tt-url-test:
+    container_name: tt-url-test
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./UrlShortener/Dockerfile
+    networks:
+      - main
+    ports:
+      - "6010:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      
+    
 
 networks:
   main:
