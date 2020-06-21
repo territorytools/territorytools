@@ -41,9 +41,16 @@ namespace WebUI.Areas.Identity.Data
             builder.Entity<AlbaAccount>();
 
             builder.Entity<AlbaUser>();
+
+            builder.Entity<ShortUrl>()
+             .HasOne(u => u.Host)
+             .WithMany(a => a.Urls)
+             .HasForeignKey(u => u.HostId)
+             .HasConstraintName("ForeignKey_ShortUrl_Host");
         }
 
         public DbSet<ShortUrl> ShortUrls { get; set; }
+        public DbSet<ShortUrlHost> ShortUrlHosts { get; set; }
         public DbSet<ShortUrlActivity> ShortUrlActivity { get; set; }
         public DbSet<AlbaAccount> AlbaAccounts { get; set; }
         public DbSet<AlbaUser> AlbaUsers { get; set; }
