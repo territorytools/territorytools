@@ -1,4 +1,4 @@
-﻿@model WebUI.Areas.UrlShortener.Models.ShortUrl
+﻿@model WebUI.Areas.UrlShortener.Models.ShortUrlCreationRequest
 @{
     ViewData["Title"] = "Create a new short URL";
 }
@@ -17,6 +17,9 @@
 
     <form asp-area="UrlShortener" asp-controller="ShortUrls" asp-action="Create" method="post">
         <div class="form-vertical">
+            <div class="input-group input-group-lg">
+                <input asp-for="HostName" class="form-control" placeholder="Domain name here..." />
+            </div>
             <div class="input-group input-group-lg">
                 <input asp-for="OriginalUrl" class="form-control" placeholder="Paste the URL here..." />
             </div>

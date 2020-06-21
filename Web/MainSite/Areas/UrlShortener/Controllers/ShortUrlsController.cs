@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Linq;
 using TerritoryTools.Entities;
-using TerritoryTools.Web.Data.Services;
 using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
+using WebUI.Areas.UrlShortener.Services;
 using WebUI.Controllers;
 using WebUI.Services;
 
@@ -65,9 +66,10 @@ namespace WebUI.Areas.UrlShortener.Controllers
         [HttpPost] 
         [ValidateAntiForgeryToken]
         public IActionResult Create(
-            string originalUrl, 
-            string subject, 
-            string letterLink, 
+            string hostName,
+            string originalUrl,
+            string subject,
+            string letterLink,
             string note)
         {
             if (!IsUser())
@@ -75,25 +77,25 @@ namespace WebUI.Areas.UrlShortener.Controllers
                 return Forbid();
             }
 
-            var shortUrl = new ShortUrl
+            var request = new ShortUrlCreationRequest
             {
+                HostName = hostName,
                 OriginalUrl = originalUrl,
                 Subject = subject,
                 LetterLink = letterLink,
                 Note = note,
                 UserName = User.Identity.Name,
-                Created = DateTime.Now
             };
 
-            TryValidateModel(shortUrl);
+            TryValidateModel(request);
             if (ModelState.IsValid)
             {
-                service.Save(shortUrl);
+                int urlId = service.Save(request);
 
-                return RedirectToAction(actionName: nameof(Show), routeValues: new { id = shortUrl.Id });
+                return RedirectToAction(actionName: nameof(Show), routeValues: new { id = urlId });
             }
 
-            return View(shortUrl);
+            return View(request);
         }
 
         [HttpPost]
