@@ -6,9 +6,10 @@ using Org.BouncyCastle.Ocsp;
 using System;
 using System.Linq;
 using TerritoryTools.Entities;
+using TerritoryTools.Web.Data.Models;
+using TerritoryTools.Web.Data.Services;
 using WebUI.Areas.Identity.Data;
 using WebUI.Areas.UrlShortener.Models;
-using WebUI.Areas.UrlShortener.Services;
 using WebUI.Controllers;
 using WebUI.Services;
 
@@ -76,7 +77,6 @@ namespace WebUI.Areas.UrlShortener.Controllers
             {
                 return Forbid();
             }
-
             var request = new ShortUrlCreationRequest
             {
                 HostName = hostName,
