@@ -40,6 +40,13 @@ namespace WebUI.Migrations
                 table: "ShortUrls",
                 column: "HostId");
 
+            migrationBuilder.Sql(
+                $"INSERT INTO ShortUrlHosts (Name, AllowNewUrls, Created) " +
+                $"VALUES ('localhost', 1, '{DateTime.Now}')");
+
+            migrationBuilder.Sql(
+                $"UPDATE ShortUrls SET HostId = (SELECT MAX(Id) FROM ShortUrlHosts)");
+
             migrationBuilder.AddForeignKey(
                 name: "ForeignKey_ShortUrl_Host",
                 table: "ShortUrls",

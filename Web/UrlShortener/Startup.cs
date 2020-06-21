@@ -53,7 +53,7 @@ namespace UrlShortener
             });
 
             services.AddDbContext<MainDbContext>(options => options.UseSqlServer(
-                Configuration.GetValue<string>("UrlShortenerDbConnectionString")));
+                Configuration.GetValue<string>("MainDbContextConnection")));
 
             services.AddScoped<IShortUrlService, ShortUrlService>();
 
