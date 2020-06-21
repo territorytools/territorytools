@@ -6,13 +6,6 @@ namespace WebUI.Areas.UrlShortener.Models
     public class ShortUrl
     {
         public int Id { get; set; }
-
-        public int HostId { get; set; }
-
-        public ShortUrlHost Host { get; set; }
-
-        [Required]
-        public string Path { get; set; }
         
         [Required]
         public string OriginalUrl { get; set; }

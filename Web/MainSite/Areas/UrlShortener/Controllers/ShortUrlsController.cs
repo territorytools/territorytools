@@ -66,10 +66,9 @@ namespace WebUI.Areas.UrlShortener.Controllers
         [HttpPost] 
         [ValidateAntiForgeryToken]
         public IActionResult Create(
-            string hostName,
-            string originalUrl,
-            string subject,
-            string letterLink,
+            string originalUrl, 
+            string subject, 
+            string letterLink, 
             string note)
         {
             if (!IsUser())
@@ -77,22 +76,22 @@ namespace WebUI.Areas.UrlShortener.Controllers
                 return Forbid();
             }
 
-            var request = new ShortUrlCreationRequest
+            var shortUrl = new ShortUrl
             {
-                HostName = hostName,
                 OriginalUrl = originalUrl,
                 Subject = subject,
                 LetterLink = letterLink,
                 Note = note,
                 UserName = User.Identity.Name,
+                Created = DateTime.Now
             };
 
-            TryValidateModel(request);
+            TryValidateModel(shortUrl);
             if (ModelState.IsValid)
             {
-                int urlId = service.Save(request);
+                service.Save(shortUrl);
 
-                return RedirectToAction(actionName: nameof(Show), routeValues: new { id = urlId });
+                return RedirectToAction(actionName: nameof(Show), routeValues: new { id = shortUrl.Id });
             }
 
             return View(shortUrl);

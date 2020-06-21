@@ -3,7 +3,6 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>TerritoryTools.Web.UrlShortener</RootNamespace>
     <AssemblyName>TerritoryTools.Web.UrlShortener</AssemblyName>
-    <UserSecretsId>01e98577-e633-4d2e-8292-9bdf40e8623c</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
