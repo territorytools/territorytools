@@ -60,8 +60,13 @@ namespace WebUI.Areas.UrlShortener.Controllers
             {
                 return Forbid();
             }
+            
+            var request = new ShortUrlCreationRequest
+            {
+                HostList = service.GetHostList()
+            };
 
-            return View();
+            return View(request);
         }
 
         [HttpPost] 

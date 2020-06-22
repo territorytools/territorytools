@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data.Models;
@@ -102,6 +103,14 @@ namespace TerritoryTools.Web.Data.Services
             context.SaveChanges();
 
             return url.Id;
+        }
+
+        public List<ShortUrlHost> GetHostList()
+        {
+            return context
+                .ShortUrlHosts
+                .Where(u => u.AllowNewUrls)
+                .ToList();
         }
 
         private ShortUrlHost HostByName(string name)

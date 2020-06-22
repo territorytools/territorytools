@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TerritoryTools.Web.Data.Models;
 using WebUI.Areas.UrlShortener.Models;
 
@@ -18,5 +19,7 @@ namespace TerritoryTools.Web.Data.Services
         int Save(ShortUrlCreationRequest shortUrl);
 
         void Update(ShortUrl shortUrl);
+
+        List<ShortUrlHost> GetHostList();
     }
 }
