@@ -159,8 +159,8 @@
   <data name="DownloadBordersKML" xml:space="preserve">
     <value>下载 borders.kml</value>
   </data>
-  <data name="BurnMap" xml:space="preserve">
-    <value>火地图 (谷歌 “My Maps”)</value>
+  <data name="CompletionMapUrl" xml:space="preserve">
+    <value>地图 (谷歌 “My Maps”)</value>
   </data>
   <data name="ReportSelectPublisher" xml:space="preserve">
     <value>选传道员</value>
