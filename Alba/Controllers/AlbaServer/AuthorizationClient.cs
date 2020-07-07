@@ -13,7 +13,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         /// Connects to Alba and authorizes a user.
         /// </summary>
         /// <param name="protocolPrefix">Example: "http://"</param>
-        /// <param name="site">The DNS name where the Alba applicaton is hosted.  Example: www.baseloc.com</param>
+        /// <param name="site">The FQDN name where the Alba applicaton is hosted.  Example: www.my-alba-host.com</param>
         /// <param name="applicationPath">Example: "/alba"</param>
         public AuthorizationClient(IWebClient webClient, ApplicationBasePath basePath)
         {

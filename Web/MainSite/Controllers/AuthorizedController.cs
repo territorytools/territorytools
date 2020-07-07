@@ -47,7 +47,7 @@ namespace WebUI.Controllers
             options = optionsAccessor.Value;
         }
 
-        readonly WebUIOptions options;
+        protected readonly WebUIOptions options;
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -81,13 +81,6 @@ namespace WebUI.Controllers
             }
 
             io.File.WriteAllText(path, assignmentsHtml);
-
-            //var assignedHtml = client.DownloadString(
-            //    RelativeUrlBuilder.GetTerritoryAssignmentsPage());
-
-            //string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
-
-            //WriteAllText("users.html", assignmentsHtml);
         }
 
         protected void LoadUserData()

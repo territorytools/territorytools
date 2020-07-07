@@ -40,6 +40,8 @@ namespace WebUI.Controllers
                 return Forbid();
             }
 
+            ViewData["CompletionMapUrl"] = options.CompletionMapUrl;
+
             return View();
         }
 
