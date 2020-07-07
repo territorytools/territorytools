@@ -29,9 +29,6 @@ namespace TerritoryTools.Alba.Controllers.Nominatim
 
         private IWebClient GetWebClientWithCookies(Credentials credentials)
         {
-            //webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
-            //webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
-
             return webClient;
         }
 
