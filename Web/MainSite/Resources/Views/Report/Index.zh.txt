@@ -14,7 +14,7 @@ DownloadAssignmentCSV=下载 assignment.csv
 DownloadAddressesCSV=下载 addresses.csv
 UpdateBorderKMLFiles=更新 Border KML 文件
 DownloadBordersKML=下载 borders.kml
-BurnMap=火地图 (谷歌 “My Maps”)
+CompletionMapUrl=地图 (谷歌 “My Maps”)
 
 ReportSelectPublisher=选传道员
 ReportButtonAssign=分配

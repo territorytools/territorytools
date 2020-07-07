@@ -14,7 +14,7 @@ DownloadAssignmentCSV=Download assignment.csv
 DownloadAddressesCSV=Download addresses.csv
 UpdateBorderKMLFiles=Update Border KML Files
 DownloadBordersKML=Download borders.kml
-BurnMap=Burn Map (Google My Maps)
+CompletionMapUrl=Completion Map (Google My Maps)
 
 ReportSelectPublisher=Select Publisher
 ReportButtonAssign=Assign

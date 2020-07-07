@@ -1,5 +1,3 @@
-using System;
-
 namespace WebUI
 {
     public class WebUIOptions
@@ -15,5 +13,6 @@ namespace WebUI
         public string AzureAppId { get; set; }
         public string AzureClientSecret { get; set; }
         public string UrlShortenerDomain { get; set; }
+        public string CompletionMapUrl { get; set; }
     }
 }
