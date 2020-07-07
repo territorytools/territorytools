@@ -113,6 +113,7 @@ services:
       - AdminUsers=$AdminUsers
       - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
       - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaHost=$AlbaHost
       - AlbaUser=$AlbaUser
       - AlbaPassword=$AlbaPassword
       - AlbaAccount=$AlbaAccount
@@ -132,6 +133,7 @@ services:
       - AzureAppId=$AzureAppId
       - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
+      - CompletionMapUrl=$CompletionMapUrl
   tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
@@ -155,6 +157,7 @@ services:
       - AdminUsers=$AdminUsers
       - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
       - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaHost=$AlbaHost
       - AlbaUser=$AlbaUser
       - AlbaPassword=$AlbaPassword
       - AlbaAccount=$AlbaAccount
@@ -174,6 +177,7 @@ services:
       - AzureAppId=$AzureAppId
       - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
+      - CompletionMapUrl=$CompletionMapUrl
   db:
     container_name: tt-db
     image: "microsoft/mssql-server-linux"
