@@ -190,7 +190,7 @@ namespace WebUI.Controllers
                 downloader.SaveAs(csvFilePath);
             }
 
-            return Redirect("/Home/Reports");
+            return Redirect("/Report/Index");
         }
 
         [HttpGet("[action]")]
@@ -211,7 +211,7 @@ namespace WebUI.Controllers
             var territories = new DownloadKmlFile(client)
                 .SaveAs(filePath);
 
-            return Redirect("/Home/Reports");
+            return Redirect("/Report/Index");
         }
 
         private void Load(Guid albaAccountId)
