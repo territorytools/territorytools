@@ -1,7 +1,5 @@
-﻿using AlbaClient;
-using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.UseCases;
-using AlbaClient.Models;
+﻿using AlbaConsole;
+using CommandLine;
 using Controllers.AlbaServer;
 using Controllers.ExtraFileFormats;
 using Controllers.S13;
@@ -10,10 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TerritoryTools.Alba.Controllers;
+using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Models;
+using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Entities;
 using TerritoryTools.Entities.AddressParsers;
 
-namespace AlbaConsole
+namespace TerritoryTools.Alba.Cli
 {
     class Program
     {
@@ -24,6 +26,15 @@ namespace AlbaConsole
         {
             try
             {
+                var result = Parser.Default
+                    .ParseArguments<DownloadAddressesOptions>(args)
+                    .WithParsed(options =>
+                    {
+                        options.DownloadAddresses(options.FilePath, options.AccountId);
+                    });
+                    
+                    
+                /*
                 if (args.Length < 1)
                 {
                     PrintUsage();
@@ -31,7 +42,7 @@ namespace AlbaConsole
                 }
 
                 Arguments = args.ToList();
-
+                
                 if (string.Equals(Arguments[0], "debug", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine("Press any key to continue");
@@ -118,6 +129,7 @@ namespace AlbaConsole
                 {
                     Take(Arguments);
                 }
+                */
             }
             catch (NormalException e)
             {
@@ -130,7 +142,7 @@ namespace AlbaConsole
             }
         }
 
-        private static AuthorizationClient AlbaClient()
+        public static AuthorizationClient AlbaClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
@@ -170,27 +182,6 @@ namespace AlbaConsole
             Console.WriteLine("  Windows: set alba_account=mygroup");
             Console.WriteLine("  PowerShell: $Env:alba_account=\"mygroup\"");
             Console.WriteLine("  Linux/macOS: export alba_account=mygroup");
-        }
-
-        static void DownloadAddresses(List<string> args)
-        {
-            if (args.Count < 3)
-            {
-                throw new Exception("Not enough arguments!  Usage: alba download-addresses <alba-account-id> <alba-csv-output-file>");
-            }
-
-            Console.WriteLine("Downloading addresses...");
-
-            string filePath = args[1];
-            int accountId = int.Parse(args[2]);
-
-            var client = AlbaClient();
-
-            client.Authenticate(GetCredentials());
-
-            var useCase = new DownloadAddressExport(client);
-
-            useCase.SaveAs(filePath, accountId);
         }
 
         static void DownloadAssignments(List<string> args)
@@ -771,7 +762,7 @@ namespace AlbaConsole
             Console.WriteLine($"Count: {langGroups.Count()}");
         }
 
-        static Credentials GetCredentials()
+        public static Credentials GetCredentials()
         {
             string account = Environment.GetEnvironmentVariable("alba_account");
             string user = Environment.GetEnvironmentVariable("alba_user");
