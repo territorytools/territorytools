@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>alba</AssemblyName>
+    <RootNamespace>TerritoryTools.Alba.Cli</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -36,7 +36,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             SaveAs(assignments, fileName);
         }
 
-        public void SaveAs(List<Assignment> assignments, string fileName)
+        public static void SaveAs(List<Assignment> assignments, string fileName)
         {
             using (var writer = new StreamWriter(fileName))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))

@@ -48,6 +48,5 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             return 0;
         }
-
     }
 }

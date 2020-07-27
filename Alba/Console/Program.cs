@@ -29,11 +29,13 @@ namespace TerritoryTools.Alba.Cli
             {
                 var result = Parser.Default.ParseArguments<
                     DownloadAddressesOptions,
-                    DownloadAssignmentsOptions>
+                    DownloadAssignmentsOptions,
+                    RemoveAssignedTerritoriesOptions>
                     (args)
                    .MapResult(
                      (DownloadAddressesOptions opts) => opts.Run(),
                      (DownloadAssignmentsOptions opts) => opts.Run(),
+                     (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
                      errs => 1);
 
                 /*
