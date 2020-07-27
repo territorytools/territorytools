@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TerritoryTools.Alba.Cli.Verbs;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.Models;
@@ -26,14 +27,15 @@ namespace TerritoryTools.Alba.Cli
         {
             try
             {
-                var result = Parser.Default
-                    .ParseArguments<DownloadAddressesOptions>(args)
-                    .WithParsed(options =>
-                    {
-                        options.DownloadAddresses(options.FilePath, options.AccountId);
-                    });
-                    
-                    
+                var result = Parser.Default.ParseArguments<
+                    DownloadAddressesOptions,
+                    DownloadAssignmentsOptions>
+                    (args)
+                   .MapResult(
+                     (DownloadAddressesOptions opts) => opts.Run(),
+                     (DownloadAssignmentsOptions opts) => opts.Run(),
+                     errs => 1);
+
                 /*
                 if (args.Length < 1)
                 {
@@ -183,27 +185,7 @@ namespace TerritoryTools.Alba.Cli
             Console.WriteLine("  PowerShell: $Env:alba_account=\"mygroup\"");
             Console.WriteLine("  Linux/macOS: export alba_account=mygroup");
         }
-
-        static void DownloadAssignments(List<string> args)
-        {
-            if (args.Count < 2)
-            {
-                throw new Exception("Not enough arguments!  Usage: alba download-assignments <alba-csv-output-file>");
-            }
-
-            Console.WriteLine("Downloading assignments...");
-
-            string filePath = args[1];
-
-            var client = AlbaClient();
-
-            client.Authenticate(GetCredentials());
-
-            var useCase = new DownloadTerritoryAssignments(client);
-            
-            useCase.SaveAs(filePath);
-        }
-
+       
         static void FilterLanguage(List<string> args)
         {
             Console.WriteLine("Filtering Languages");
