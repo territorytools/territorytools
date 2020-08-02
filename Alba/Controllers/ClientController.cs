@@ -224,6 +224,61 @@ namespace TerritoryTools.Alba.Controllers
             }
         }
 
+        public string DownloadLanguages()
+        {
+            try
+            {
+                view.AppendResultText("Download Languages Result:" + Environment.NewLine + Environment.NewLine);
+
+                string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
+                string fileName = view.GetKmlFileNameToSaveAs($"Languages.{timeStamp}", "html");
+
+                new LanguageDownloader(AuthenticatedClient())
+                    .SaveAs(fileName);
+
+                view.AppendResultText($"Saved to: {fileName}");
+
+                return fileName;
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+
+                return null;
+            }
+        }
+
+        public string LoadLanguages()
+        {
+            try
+            {
+                view.AppendResultText("Load Languages Result:" + Environment.NewLine + Environment.NewLine);
+
+                string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
+
+                string fileName = view.OpenKmlFileDialog("html");
+
+                view.AppendResultText($"File Loaded: {fileName}");
+
+                view.AppendResultText("Parsing language file...");
+
+                var languages = LanguageDownloader.LoadLanguagesFrom(fileName);
+
+                foreach (var language in languages)
+                {
+                    view.AppendResultText($"    {language.Id}: {language.Name}");
+                }
+
+                return fileName;
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+
+                return null;
+            }
+        }
+
         public void credentialsBoxesEnterKeyPressed()
         {
             LogOn();

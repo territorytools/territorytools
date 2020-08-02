@@ -80,9 +80,28 @@ namespace TerritoryTools.Alba.SyncTool.Library
             Cursor = Cursors.Arrow;
         }
 
+        private void downloadLanguages_Click(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+
+            controller.DownloadLanguages();
+
+            Cursor = Cursors.Arrow;
+        }
+
+        private void loadLanguages_Click(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+
+            controller.LoadLanguages();
+
+            Cursor = Cursors.Arrow;
+        }
+
         private void clearButton_Click(object sender, RoutedEventArgs e)
         {
             statusBox.Text = string.Empty;
+            LoadTerritoriesButtonEnabled = true;
         }
 
         public void AppendResultText(string text)
@@ -117,7 +136,11 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
         public bool LoadTerritoriesButtonEnabled
         {
-            set { downloadTerritoriesButton.IsEnabled = value; }
+            set 
+            { 
+                downloadTerritoriesButton.IsEnabled = value;
+                downloadLanguagesButton.IsEnabled = value;
+            }
         }
 
         public bool UploadKmlFilesButtonEnabled
@@ -129,7 +152,6 @@ namespace TerritoryTools.Alba.SyncTool.Library
         {
             set { uploadAddressesButton.IsEnabled = value; }
         }
-
 
         public bool DownloadAllAddressesButtonEnabled
         {
@@ -156,10 +178,10 @@ namespace TerritoryTools.Alba.SyncTool.Library
         public string OpenKmlFileDialog(string fileExt)
         {
             openKmlFileDialog.AddExtension = true;
-            openKmlFileDialog.DefaultExt = "csv";
+            openKmlFileDialog.DefaultExt = fileExt;
 
             if (openKmlFileDialog.ShowDialog() ?? false)
-                return $"{openKmlFileDialog.FileName}.{openKmlFileDialog.DefaultExt}";
+                return openKmlFileDialog.FileName;
             else
                 return string.Empty;
         }
@@ -178,6 +200,10 @@ namespace TerritoryTools.Alba.SyncTool.Library
             else if (string.Equals(fileExt, "txt", StringComparison.OrdinalIgnoreCase))
             {
                 saveKmlFileDialog.Filter = "Tab Separated Values|*.txt";
+            }
+            else if (string.Equals(fileExt, "html", StringComparison.OrdinalIgnoreCase))
+            {
+                saveKmlFileDialog.Filter = "HTML File|*.html";
             }
             else
             {

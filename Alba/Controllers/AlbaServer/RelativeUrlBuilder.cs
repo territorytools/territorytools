@@ -85,16 +85,6 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return formatted.Replace(" ", "+").Replace(",", "%2C");
         }
 
-        public static string EditAddress(AlbaAddressImport address)
-        {
-            string formatted = $"/ts?mod=addresses&cmd=edit" +
-                $"&lat={address.Latitude}" +
-                $"&lng={address.Longitude}" +
-                $"&id={address.Address_ID}";
-
-            return formatted.Replace(" ", "+").Replace(",", "%2C");
-        }
-
         public static string SaveAddress(AlbaAddressImport address)
         {
             // Status codes
@@ -104,13 +94,6 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             // 4 Moved
             // 5 Duplicate
             // 6 Not valid
-
-            // Chinese language codes
-            // 83 Chinese
-            //5  Chiense Cantonese
-            // 188 Chines Fukien
-            // 4 Chiense Mandarin
-            // 5 Chiense Cantonese
 
             string formatted = $"/ts?mod=addresses&cmd=save" +
                 $"&id={address.Address_ID}" +
@@ -131,6 +114,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&notes_private={address.Notes_private}";
 
             return formatted.Replace(" ", "+").Replace(",", "%2C");
+        }
+
+        public static string GetLanguages()
+        {
+            return $"/addresses2";
         }
 
         private static string CoordinatesFrom(Territory territory)

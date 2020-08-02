@@ -27,8 +27,6 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 return;
             }
 
-           // string path = view.OpenKmlFileDialog("csv");
-
             if (string.IsNullOrWhiteSpace(path))
                 return;
 
@@ -40,9 +38,6 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 foreach (var address in addresses)
                 {
-                    var editUrl = RelativeUrlBuilder.EditAddress(address);
-                    var editResultString = client.DownloadString(editUrl);
-
                     var saveUrl = RelativeUrlBuilder.SaveAddress(address);
                     var resultString = client.DownloadString(saveUrl);
 
