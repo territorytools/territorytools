@@ -4,18 +4,19 @@ using CsvHelper;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class ImportAddress
     {
         private AuthorizationClient client;
-        private int delay;
+        private int msDelay;
 
-        public ImportAddress(AuthorizationClient client, int delay)
+        public ImportAddress(AuthorizationClient client, int msDelay)
         {
             this.client = client;
-            this.delay = delay;
+            this.msDelay = msDelay;
         }
 
         public void Upload(string path, string languageFilePath)
@@ -38,6 +39,8 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 foreach (var address in addresses)
                 {
+                    Thread.Sleep(msDelay);
+
                     int languageId = languages
                         .First(l => string.Equals(
                             l.Name, 

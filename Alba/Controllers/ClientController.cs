@@ -35,7 +35,7 @@ namespace TerritoryTools.Alba.Controllers
 
                 string addressFilePath = view.OpenFileDialog(
                     fileExt: "csv",
-                    title: "Open Address File to Upload");
+                    title: "Open Alba Address CSV File to Upload");
 
                 if (string.IsNullOrWhiteSpace(languageFilePath) 
                     || string.IsNullOrWhiteSpace(addressFilePath))
@@ -43,7 +43,7 @@ namespace TerritoryTools.Alba.Controllers
                     return;
                 }
 
-                new ImportAddress(AuthenticatedClient(), 0)
+                new ImportAddress(AuthenticatedClient(), 1000)
                     .Upload(addressFilePath, languageFilePath);
             }
             catch (UserException e)
