@@ -76,6 +76,63 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return formatted.Replace(" ", "+").Replace(",", "%2C");
         }
 
+        public static string SaveAddressNotePrivate(AlbaAddressImport address)
+        {
+            string formatted = $"/ts?mod=addresses&cmd=save" +
+                $"&id={address.Address_ID}" +
+                $"&notes_private={address.Notes_private}";
+
+            return formatted.Replace(" ", "+").Replace(",", "%2C");
+        }
+
+        public static string EditAddress(AlbaAddressImport address)
+        {
+            string formatted = $"/ts?mod=addresses&cmd=edit" +
+                $"&lat={address.Latitude}" +
+                $"&lng={address.Longitude}" +
+                $"&id={address.Address_ID}";
+
+            return formatted.Replace(" ", "+").Replace(",", "%2C");
+        }
+
+        public static string SaveAddress(AlbaAddressImport address)
+        {
+            // Status codes
+            // 1 New
+            // 2 Valid
+            // 3 Do not call
+            // 4 Moved
+            // 5 Duplicate
+            // 6 Not valid
+
+            // Chinese language codes
+            // 83 Chinese
+            //5  Chiense Cantonese
+            // 188 Chines Fukien
+            // 4 Chiense Mandarin
+            // 5 Chiense Cantonese
+
+            string formatted = $"/ts?mod=addresses&cmd=save" +
+                $"&id={address.Address_ID}" +
+                $"&lat={address.Latitude}" +
+                $"&lng={address.Longitude}" +
+                $"&territory_id={address.Territory_ID ?? 0}" +
+                $"&status=1" +
+                $"&language_id=4" +
+                $"&full_name={address.Name}" +
+                $"&suite={address.Suite}" +
+                $"&address={address.Address}" +
+                $"&city={address.City}" +
+                $"&province={address.Province}" +
+                $"&country={address.Country}" +
+                $"&postcode={address.Postal_code}" +
+                $"&telephone={address.Telephone}" +
+                $"&notes={address.Notes}" +
+                $"&notes_private={address.Notes_private}";
+
+            return formatted.Replace(" ", "+").Replace(",", "%2C");
+        }
+
         private static string CoordinatesFrom(Territory territory)
         {
             var coordinates = new List<string>();

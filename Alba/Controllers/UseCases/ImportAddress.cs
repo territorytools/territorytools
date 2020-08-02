@@ -35,15 +35,18 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             using (var reader = new StreamReader(path))
             using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = ",";
+                csv.Configuration.Delimiter = "\t";
                 csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 foreach (var address in addresses)
                 {
-                    var url = RelativeUrlBuilder.ImportAddress(address);
-                    var resultString = client.DownloadString(url);
-                    // TODO: Need to geocode
+                    var editUrl = RelativeUrlBuilder.EditAddress(address);
+                    var editResultString = client.DownloadString(editUrl);
 
+                    var saveUrl = RelativeUrlBuilder.SaveAddress(address);
+                    var resultString = client.DownloadString(saveUrl);
+
+                    // TODO: Need to geocode
                 }
             }
         }
