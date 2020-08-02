@@ -175,7 +175,7 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
         private OpenFileDialog openKmlFileDialog = new OpenFileDialog();
 
-        public string OpenKmlFileDialog(string fileExt)
+        public string OpenFileDialog(string fileExt)
         {
             openKmlFileDialog.AddExtension = true;
             openKmlFileDialog.DefaultExt = fileExt;
@@ -188,7 +188,7 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
         private SaveFileDialog saveKmlFileDialog = new SaveFileDialog();
 
-        public string GetKmlFileNameToSaveAs(string defaultFileName, string fileExt)
+        public string GetFileNameToSaveAs(string defaultFileName, string fileExt)
         {
             saveKmlFileDialog.AddExtension = true;
             saveKmlFileDialog.DefaultExt = fileExt;

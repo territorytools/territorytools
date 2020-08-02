@@ -91,7 +91,7 @@ namespace TerritoryTools.Alba.Controllers
             view.AppendResultText($"\nGeocoded: {geocoded}");
             view.AppendResultText($"\nAlready Geocoded (Skipped): {alreadyGeocode}");
 
-            var newPath = view.GetKmlFileNameToSaveAs(path, "csv");
+            var newPath = view.GetFileNameToSaveAs(path, "csv");
             if (string.IsNullOrWhiteSpace(newPath))
             {
                 // Cancelled
@@ -124,7 +124,7 @@ namespace TerritoryTools.Alba.Controllers
                 view.AppendResultText("Territory Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"TerritoryBorders.{timeStamp}", "kml");
+                string fileName = view.GetFileNameToSaveAs($"TerritoryBorders.{timeStamp}", "kml");
 
                 var territories = new DownloadKmlFile(AuthenticatedClient())
                     .SaveAs(fileName);
@@ -144,7 +144,7 @@ namespace TerritoryTools.Alba.Controllers
                 view.AppendResultText("Download All Addresses Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
+                string fileName = view.GetFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
 
                 if (int.TryParse(accountId, out int id))
                 {
@@ -183,7 +183,7 @@ namespace TerritoryTools.Alba.Controllers
                 view.AppendResultText("Download Territory Assignments Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Assignments.{timeStamp}", "csv");
+                string fileName = view.GetFileNameToSaveAs($"Assignments.{timeStamp}", "csv");
 
                 new DownloadTerritoryAssignments(AuthenticatedClient())
                     .SaveAs(fileName);
@@ -207,7 +207,7 @@ namespace TerritoryTools.Alba.Controllers
                 view.AppendResultText("Download Users Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Users.{timeStamp}", "csv");
+                string fileName = view.GetFileNameToSaveAs($"Users.{timeStamp}", "csv");
 
                 new DownloadUsers(AuthenticatedClient())
                     .SaveAs(fileName);
@@ -231,7 +231,7 @@ namespace TerritoryTools.Alba.Controllers
                 view.AppendResultText("Download Languages Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Languages.{timeStamp}", "html");
+                string fileName = view.GetFileNameToSaveAs($"Languages.{timeStamp}", "html");
 
                 new LanguageDownloader(AuthenticatedClient())
                     .SaveAs(fileName);
@@ -256,7 +256,7 @@ namespace TerritoryTools.Alba.Controllers
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
 
-                string fileName = view.OpenKmlFileDialog("html");
+                string fileName = view.OpenFileDialog("html");
 
                 view.AppendResultText($"File Loaded: {fileName}");
 

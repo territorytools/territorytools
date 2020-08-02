@@ -28,9 +28,9 @@
         
         bool UploadAddressesButtonEnabled { set; }
 
-        string OpenKmlFileDialog(string fileExt);
+        string OpenFileDialog(string fileExt);
 
-        string GetKmlFileNameToSaveAs(string defaultFileName, string fileExt);
+        string GetFileNameToSaveAs(string defaultFileName, string fileExt);
 
         void ShowMessageBox(string message);
 

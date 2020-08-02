@@ -27,7 +27,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 return;
             }
 
-            string fileName = view.OpenKmlFileDialog("kml");
+            string fileName = view.OpenFileDialog("kml");
 
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
