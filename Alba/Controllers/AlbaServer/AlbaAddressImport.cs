@@ -18,5 +18,28 @@
         public string Telephone { get; set; } 
         public string Notes { get; set; } 
         public string Notes_private { get; set; }
+
+        public static AlbaAddressImport From(AlbaAddressExport export)
+        {
+            return new AlbaAddressImport
+            {
+                Address_ID= export.Address_ID,
+                Territory_ID= export.Territory_ID,
+                Language= export.Language,
+                Status= export.Status,
+                Name= export.Name,
+                Suite= export.Suite,
+                Address= export.Address,
+                City= export.City,
+                Province= export.Province,
+                Postal_code= export.Postal_code,
+                Country= export.Country,
+                Latitude= export.Latitude,
+                Longitude= export.Longitude,
+                Telephone= export.Telephone,
+                Notes= export.Notes,
+                Notes_private= export.Notes_private
+            };
+        }
     }
 }

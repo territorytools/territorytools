@@ -27,20 +27,24 @@ namespace TerritoryTools.Alba.Cli
         {
             try
             {
-                var result = Parser.Default.ParseArguments<
-                    DownloadAddressesOptions,
-                    DownloadAssignmentsOptions,
-                    DownloadLanguagesOptions,
-                    ParseLanguageFileOptions,
-                    RemoveAssignedTerritoriesOptions>
+                var result = Parser
+                    .Default
+                    .ParseArguments<
+                        DownloadAddressesOptions,
+                        DownloadAssignmentsOptions,
+                        DownloadLanguagesOptions,
+                        ParseLanguageFileOptions,
+                        AddPhoneNumbersOptions,
+                        RemoveAssignedTerritoriesOptions >
                     (args)
-                   .MapResult(
-                     (DownloadAddressesOptions opts) => opts.Run(),
-                     (DownloadAssignmentsOptions opts) => opts.Run(),
-                     (DownloadLanguagesOptions opts) => opts.Run(),
-                     (ParseLanguageFileOptions opts) => opts.Run(),
-                     (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
-                     errs => 1);
+                    .MapResult(
+                        (DownloadAddressesOptions opts) => opts.Run(),
+                        (DownloadAssignmentsOptions opts) => opts.Run(),
+                        (DownloadLanguagesOptions opts) => opts.Run(),
+                        (ParseLanguageFileOptions opts) => opts.Run(),
+                        (AddPhoneNumbersOptions opts) => opts.Run(),
+                        (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
+                    errs => 1);
 
                 /*
                 if (args.Length < 1)

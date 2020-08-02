@@ -1,0 +1,86 @@
+﻿using CommandLine;
+using CommandLine.Text;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Alba.ListServices;
+using Controllers.UseCases;
+using Controllers.AlbaServer;
+
+namespace TerritoryTools.Alba.Cli.Verbs
+{
+    [Verb(
+       "add-phone-numbers",
+       HelpText = "Add phone numbers to Alba CSV")]
+    public class AddPhoneNumbersOptions
+    {
+        [Option(
+           "phone-numbers",
+           Required = true,
+           HelpText = "Input phone number file path from list services (List Services/Alba +Phones1, Phone2 CSV)")]
+        [Value(0)]
+        public string PhoneNumbers { get; set; }
+        
+        [Option(
+          "addresses",
+          Required = true,
+          HelpText = "Input latest Alba address file path (Alba CSV)")]
+        [Value(0)]
+        public string Addresses { get; set; }
+
+        [Option(
+            "output",
+            Required = true,
+            HelpText = "Output Alba address file path (Alba CSV)")]
+        [Value(0)]
+        public string OutputFilePath { get; set; }
+
+        [Usage(ApplicationAlias = "alba")]
+        public static IEnumerable<Example> Examples
+        {
+            get
+            {
+                return new List<Example>() {
+                    new Example(
+                        "Add phone numbers example",
+                        new AddPhoneNumbersOptions {
+                            PhoneNumbers = "phone-numbers.csv",
+                            Addresses = "addresses.csv",
+                            OutputFilePath = "for-alba.csv"
+                        }
+                    )
+                };
+            }
+        }
+
+        public int Run()
+        {
+            Console.WriteLine("Loading List Services address with phone numbers records...");
+
+            var phoneNumbers = AddressCsvLoader.LoadFrom(PhoneNumbers);
+            var addresses = AlbaAddressExport.LoadFrom(Addresses);
+
+            Console.WriteLine($"Phone Number Record Count: {phoneNumbers.Count()}");
+
+            var results = AddressCsvLoader.AddPhoneNumbers1And2(
+                numbers: phoneNumbers,
+                addresses: addresses);
+
+            foreach (var address in results.SuccessfulAddresses)
+            {
+                Console.WriteLine($"{address.Address}: {address.Notes}");
+            }
+
+            Console.WriteLine("Errors:");
+            foreach(var error in results.Errors)
+            {
+                Console.WriteLine($"{error.Address_ID}: {error.Address} {error.Phone1}, {error.Phone2}");
+            }
+
+            LoadCsvAddresses.SaveTo(results.SuccessfulAddresses, OutputFilePath);
+
+            return 0;
+        }
+    }
+}

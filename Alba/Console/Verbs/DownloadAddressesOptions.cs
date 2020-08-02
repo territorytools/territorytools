@@ -42,9 +42,9 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             client.Authenticate(Program.GetCredentials());
 
-            var useCase = new DownloadAddressExport(client);
+            var exporter = new DownloadAddressExport(client);
 
-            useCase.SaveAs(FilePath, AccountId);
+            exporter.SaveAs(FilePath, AccountId);
 
             return 0;
         }

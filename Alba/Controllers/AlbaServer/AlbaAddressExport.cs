@@ -1,6 +1,9 @@
-﻿using System;
+﻿using CsvHelper;
+using CsvHelper.TypeConversion;
 using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace Controllers.AlbaServer
 {
@@ -30,5 +33,22 @@ namespace Controllers.AlbaServer
         public string Geocoded { get; set; }
         public string Territory_number { get; set; }
         public string Territory_description { get; set; }
+
+        public static IEnumerable<AlbaAddressExport> LoadFrom(string path)
+        {
+            var list = new List<AlbaAddressExport>();
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return list;
+            }
+
+            using (var reader = new StreamReader(path))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.Delimiter = "\t";
+                csv.Configuration.BadDataFound = null;
+                return csv.GetRecords<AlbaAddressExport>().ToList();
+            }
+        }
     }
 }
