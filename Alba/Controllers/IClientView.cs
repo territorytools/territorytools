@@ -28,7 +28,7 @@
         
         bool UploadAddressesButtonEnabled { set; }
 
-        string OpenFileDialog(string fileExt);
+        string OpenFileDialog(string fileExt, string title = "");
 
         string GetFileNameToSaveAs(string defaultFileName, string fileExt);
 

@@ -85,23 +85,15 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return formatted.Replace(" ", "+").Replace(",", "%2C");
         }
 
-        public static string SaveAddress(AlbaAddressImport address)
+        public static string SaveAddress(AlbaAddressSave address)
         {
-            // Status codes
-            // 1 New
-            // 2 Valid
-            // 3 Do not call
-            // 4 Moved
-            // 5 Duplicate
-            // 6 Not valid
-
             string formatted = $"/ts?mod=addresses&cmd=save" +
                 $"&id={address.Address_ID}" +
                 $"&lat={address.Latitude}" +
                 $"&lng={address.Longitude}" +
                 $"&territory_id={address.Territory_ID ?? 0}" +
-                $"&status=1" +
-                $"&language_id=4" +
+                $"&status={address.StatusId}" +
+                $"&language_id={address.LanguageId}" +
                 $"&full_name={address.Name}" +
                 $"&suite={address.Suite}" +
                 $"&address={address.Address}" +

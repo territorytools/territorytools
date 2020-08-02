@@ -2,7 +2,6 @@
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.Cli.Verbs

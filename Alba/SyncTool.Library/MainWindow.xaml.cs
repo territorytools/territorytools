@@ -175,10 +175,11 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
         private OpenFileDialog openKmlFileDialog = new OpenFileDialog();
 
-        public string OpenFileDialog(string fileExt)
+        public string OpenFileDialog(string fileExt, string title = "Open File")
         {
             openKmlFileDialog.AddExtension = true;
             openKmlFileDialog.DefaultExt = fileExt;
+            openKmlFileDialog.Title = title;
 
             if (openKmlFileDialog.ShowDialog() ?? false)
                 return openKmlFileDialog.FileName;
@@ -238,8 +239,7 @@ namespace TerritoryTools.Alba.SyncTool.Library
         {
             Cursor = Cursors.Wait;
 
-            controller.ImportAddressButtonClick(
-                OpenAddressCsvFileDialog("csv"));
+            controller.ImportAddressButtonClick();
             
             Cursor = Cursors.Arrow;
         }

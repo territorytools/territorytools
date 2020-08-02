@@ -25,10 +25,31 @@ namespace TerritoryTools.Alba.Controllers
                 .Upload();
         }
 
-        public void ImportAddressButtonClick(string path)
+        public void ImportAddressButtonClick()
         {
-            new ImportAddress(view, AuthenticatedClient(), 0)
-                .Upload(path);
+            try
+            {
+                string languageFilePath = view.OpenFileDialog(
+                    fileExt: "html", 
+                    title: "Open Alba Language File");
+
+                string addressFilePath = view.OpenFileDialog(
+                    fileExt: "csv",
+                    title: "Open Address File to Upload");
+
+                if (string.IsNullOrWhiteSpace(languageFilePath) 
+                    || string.IsNullOrWhiteSpace(addressFilePath))
+                {
+                    return;
+                }
+
+                new ImportAddress(AuthenticatedClient(), 0)
+                    .Upload(addressFilePath, languageFilePath);
+            }
+            catch (UserException e)
+            {
+                view.ShowMessageBox(e.Message);
+            }
         }
 
         public void GeocodeAddressesClick(string path, string key)
