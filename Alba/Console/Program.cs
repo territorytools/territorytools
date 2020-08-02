@@ -30,11 +30,15 @@ namespace TerritoryTools.Alba.Cli
                 var result = Parser.Default.ParseArguments<
                     DownloadAddressesOptions,
                     DownloadAssignmentsOptions,
+                    DownloadLanguagesOptions,
+                    ParseLanguageFileOptions,
                     RemoveAssignedTerritoriesOptions>
                     (args)
                    .MapResult(
                      (DownloadAddressesOptions opts) => opts.Run(),
                      (DownloadAssignmentsOptions opts) => opts.Run(),
+                     (DownloadLanguagesOptions opts) => opts.Run(),
+                     (ParseLanguageFileOptions opts) => opts.Run(),
                      (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
                      errs => 1);
 
@@ -148,10 +152,16 @@ namespace TerritoryTools.Alba.Cli
 
         public static AuthorizationClient AlbaClient()
         {
+            string albaHost = Environment.GetEnvironmentVariable("alba_host");
+            if(string.IsNullOrWhiteSpace(albaHost))
+            {
+                throw new Exception("ALBA_HOST environment variable is missing!");
+            }
+
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
                 protocolPrefix: "https://",
-                site: "www.alba-website-here.com",
+                site: albaHost,
                 applicationPath: "/alba");
 
             var client = new AuthorizationClient(
@@ -748,6 +758,7 @@ namespace TerritoryTools.Alba.Cli
 
         public static Credentials GetCredentials()
         {
+            string host = Environment.GetEnvironmentVariable("alba_host");
             string account = Environment.GetEnvironmentVariable("alba_account");
             string user = Environment.GetEnvironmentVariable("alba_user");
             string password = Environment.GetEnvironmentVariable("alba_password");
@@ -756,7 +767,7 @@ namespace TerritoryTools.Alba.Cli
                 || string.IsNullOrWhiteSpace(user)
                 || string.IsNullOrWhiteSpace(password))
             {
-                throw new NormalException("Missing credentials, please set your credentials as environment variables:  alba_account, alba_user, alba_password");
+                throw new NormalException("Missing credentials, please set your credentials as environment variables:  alba_host, alba_account, alba_user, alba_password");
             }
 
             return new Credentials(

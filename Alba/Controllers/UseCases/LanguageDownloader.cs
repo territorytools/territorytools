@@ -1,10 +1,9 @@
 ﻿using TerritoryTools.Alba.Controllers.AlbaServer;
 using HtmlAgilityPack;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 
-namespace Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class AlbaLanguage
     {
