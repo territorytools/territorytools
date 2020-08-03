@@ -36,6 +36,13 @@ namespace TerritoryTools.Alba.Cli.Verbs
         [Value(0)]
         public string OutputFilePath { get; set; }
 
+        [Option(
+           "phone-territory-id",
+           Required = false,
+           HelpText = "Id of territory to move addresses to that have phone numbers.")]
+        [Value(0)]
+        public int PhoneTerritoryId { get; set; }
+
         [Usage(ApplicationAlias = "alba")]
         public static IEnumerable<Example> Examples
         {
@@ -65,7 +72,8 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             var results = AddressCsvLoader.AddPhoneNumbers1And2(
                 numbers: phoneNumbers,
-                addresses: addresses);
+                addresses: addresses,
+                territoryId: PhoneTerritoryId);
 
             foreach (var address in results.SuccessfulAddresses)
             {

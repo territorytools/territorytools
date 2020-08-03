@@ -34,7 +34,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             using (var reader = new StreamReader(path))
             using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = "\t";
+                csv.Configuration.Delimiter = ",";
                 csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 foreach (var address in addresses)
