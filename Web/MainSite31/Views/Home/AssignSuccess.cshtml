@@ -1,0 +1,10 @@
+@using TerritoryTools.Alba.Controllers.UseCases;
+@using WebUI;
+@model Assignment
+
+<h3>Success!</h3>
+<p>You have successfully assigned territory:</p>
+<p>@Model.Number @Model.Description</p>
+<p>to:</p>
+<p><strong>@(Model.SignedOutTo ?? "Name is missing")</strong></p>
+<a class="btn btn-primary" href="@(Model.MobileLink)">Map</a>

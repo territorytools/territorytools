@@ -1,0 +1,1 @@
+﻿cd /root/TerritoryTools && git pull && docker-compose up --build --detach

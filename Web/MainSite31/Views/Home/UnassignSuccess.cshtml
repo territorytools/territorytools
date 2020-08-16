@@ -1,0 +1,8 @@
+@using TerritoryTools.Alba.Controllers.UseCases;
+@using WebUI;
+@model Assignment
+
+<h3>Success!</h3>
+<p>You have successfully unassigned territory:</p>
+<p>@Model.Number @Model.Description</p>
+<a class="btn btn-primary" href="@(Model.MobileLink)">Map</a>

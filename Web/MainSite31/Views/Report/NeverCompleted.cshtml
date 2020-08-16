@@ -1,0 +1,44 @@
+@model NeverCompletedReport;
+@{
+    ViewData["Title"] = "Never Completed";
+}
+<div class="container mt-3" style="max-width:600px;">
+    <h3>Territories that have never been worked</h3>
+    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="pr-2 pl-2" style="min-width:60px;">#</div>
+        <div class="pr-2 pl-2 flex-grow-1">Description</div>
+        <div class="pr-2 pl-2" style="width:50px;">Addr.</div>
+        <div class="pr-1 pl-1" style="min-width:40px;"></div>
+    </div>
+    @foreach (var assignment in Model.Assignments) 
+    {
+        <form action="/api/Assignments/Assign" id="assign-form-@(assignment.Id)">
+            <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                <div class="p-2" style="min-width:60px;font-family:courier;"><strong>@assignment.Number</strong></div>
+                <div class="p-2 flex-grow-1">@assignment.Description</div>
+                <div class="p-2" style="width:50px;">@assignment.Addresses</div>
+                <div class="p-1">
+                    <a href="#demo@(assignment.Id)" class="btn btn-outline-dark" data-toggle="collapse">
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="collapse form-inline" id="demo@(assignment.Id)">
+                <div class="d-flex mb-0">
+                    <div class="p-2">
+                        <select name="userId" form="assign-form-@(assignment.Id)" class="custom-select m-2">
+                            <option selected value="0">Select Publisher</option>
+                            @foreach(var publisher in Model.Publishers)
+                            {
+                                <option value=@(publisher.Id)>@publisher.Name</option>
+                            }
+                        </select>
+                        <input hidden name="territoryId" value="@assignment.Id">
+                        <input class="btn btn-primary hidden" type="submit" value="Assign">
+                        <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Map</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+</div>
