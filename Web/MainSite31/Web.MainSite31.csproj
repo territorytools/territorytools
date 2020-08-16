@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>aspnet-MainSite31-E0EFCB1D-8412-4410-B3EB-B3FE84DAD6FF</UserSecretsId>
+    <UserSecretsId>aspnet-WebUI-C807F25B-27EF-4FA8-8ABE-2951D5B88E4A</UserSecretsId>
+    <AssemblyName>TerritoryTools.Web.MainSite</AssemblyName>
+    <RootNamespace>TerritoryTools.Web.MainSite</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +17,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4" />
+    <PackageReference Include="SendGrid" Version="9.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Alba\Controllers\Alba.Controllers.csproj" />
+    <ProjectReference Include="..\Data\Web.Data.csproj" />
+  </ItemGroup>
+  
 </Project>
