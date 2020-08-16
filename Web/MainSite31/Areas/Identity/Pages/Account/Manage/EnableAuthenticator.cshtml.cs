@@ -148,7 +148,7 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account.Manage
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("TerritoryTools.Web.MainSite"),
+                _urlEncoder.Encode("Territory Tools System"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

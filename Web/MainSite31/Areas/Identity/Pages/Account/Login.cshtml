@@ -47,7 +47,8 @@
     </div>
     <div class="col-md-6 col-md-offset-2">
         <section>
-            <h4>Use another service to log in.</h4>
+            <h4>Use your Google or Microsoft account to log in.</h4>
+            <p>It's way easier, and more secure, than having to remember another password!  But don't worry if you don't have a Google or Microsoft account just click 'Account &amp; Password' below.</p>
             <hr />
             @{
                 if ((Model.ExternalLogins?.Count ?? 0) == 0)
@@ -64,6 +65,11 @@
                     <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
                         <div>
                             <p>
+                                <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/ms-symbollockup_signin_light.png" /></button>
+                                <button type="submit" class="btn p-0" name="provider" value="Google" title="Log in using your Google account"><img src="/btn_google_signin_dark_normal_web.png" /></button>
+                                <a href="LoginPassword" class="btn btn-info m-2">Account &amp; Password</a>
+                                <hr />
+                                <hr />
                                 @foreach (var provider in Model.ExternalLogins)
                                 {
                                     <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>

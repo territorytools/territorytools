@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using WebUI;
+using WebUI.Areas.Identity.Data;
 
 namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
 {
@@ -23,17 +25,20 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly MainDbContext _database;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            MainDbContext database)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _database = database;
         }
 
         [BindProperty]
@@ -74,8 +79,22 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var territoryUser = _database.TerritoryUser
+                    .FirstOrDefault(u => BasicStrings.StringsEqual(u.Email, Input.Email));
+
+                if (territoryUser == null)
+                {
+                    ModelState.AddModelError(string.Empty, "That email is not in our system.  You must be invited.");
+                    return Page();
+                }
+
                 var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
+
+                territoryUser.AspNetUserId = user.Id;
+                _database.Update(territoryUser);
+                _database.SaveChanges();
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebUI.Areas.Identity.Data;
 
 [assembly: HostingStartup(typeof(TerritoryTools.Web.MainSite.Areas.Identity.IdentityHostingStartup))]
 namespace TerritoryTools.Web.MainSite.Areas.Identity
@@ -15,6 +16,12 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices((context, services) => {
+                services.AddDbContext<MainDbContext>(options =>
+                   options.UseSqlServer(
+                       context.Configuration.GetConnectionString("MainDbContextConnection")));
+
+                services.AddDefaultIdentity<IdentityUser>()
+                    .AddEntityFrameworkStores<MainDbContext>();
             });
         }
     }
