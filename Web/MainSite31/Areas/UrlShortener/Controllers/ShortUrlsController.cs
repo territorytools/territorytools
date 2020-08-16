@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Org.BouncyCastle.Ocsp;
+//using Org.BouncyCastle.Ocsp;
 using System;
 using System.Linq;
 using TerritoryTools.Entities;

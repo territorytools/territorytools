@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace MainSite31
+namespace WebUI
 {
     public class Program
     {
@@ -16,14 +16,15 @@ namespace MainSite31
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        // New .NET Core 3.1 Version
+        //public static IHostBuilder CreateHostBuilder(string[] args) =>
+        //    Host.CreateDefaultBuilder(args)
+        //        .ConfigureWebHostDefaults(webBuilder =>
+        //        {
+        //            webBuilder.UseStartup<Startup>();
+        //        });
 
-        public static IWebHostBuilder OLD_CreateWebHostBuilder(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var builder = Host.CreateDefaultBuilder(args);
 
@@ -39,16 +40,14 @@ namespace MainSite31
                 && (noSsl == null
                 || string.Equals(noSsl, "false", StringComparison.OrdinalIgnoreCase)))
             {
-                builder.UseKestrel(kestrelOptions => kestrelOptions.ConfigureHttpsDefaults(
-                   httpsOptions => httpsOptions.ServerCertificateSelector
-                       = (c, s) => LetsEncryptRenewalService.Certificate));
+                //builder.UseKestrel(kestrelOptions => kestrelOptions.ConfigureHttpsDefaults(
+                //   httpsOptions => httpsOptions.ServerCertificateSelector
+                //       = (c, s) => LetsEncryptRenewalService.Certificate));
             }
             else
             {
                 Startup.NoSsl = true;
             }
-
-            builder.UseStartup<Startup>();
 
             return builder;
 
