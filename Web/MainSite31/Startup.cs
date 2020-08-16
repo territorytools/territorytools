@@ -41,9 +41,12 @@ namespace WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite("Filename=app.db"));
+
             services.AddDbContext<MainDbContext>(options =>
-              options.UseSqlServer(
-                  Configuration.GetConnectionString("MainDbContextConnection")));
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("MainDbContextConnection")));
 
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -61,10 +64,10 @@ namespace WebUI
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-            //services.AddMvc()
+            services.AddMvc()
             //  .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-            //  .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-            //  .AddDataAnnotationsLocalization();
+              .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+              .AddDataAnnotationsLocalization();
 
             services.AddScoped<IAlbaCredentials>(ac => new AlbaCredentials(
                 Configuration["AlbaAccount"],
@@ -93,7 +96,8 @@ namespace WebUI
             services.AddScoped<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
 
             // New with .NET Core 3.1
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<IdentityUser>(
+                options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -111,11 +115,11 @@ namespace WebUI
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                ////////app.UseHsts();
             }
 
             var supportedCultures = new[]
-          {
+            {
                 new CultureInfo("en-US"),
                 new CultureInfo("en-AU"),
                 new CultureInfo("zh"),
@@ -131,7 +135,7 @@ namespace WebUI
                 SupportedUICultures = supportedCultures
             });
 
-            app.UseHttpsRedirection();
+            ////////app.UseHttpsRedirection();
 
             var provider = new FileExtensionContentTypeProvider();
             provider.Mappings[".kml"] = "application/vnd.google-earth.kml+xml";
@@ -142,7 +146,7 @@ namespace WebUI
                 ContentTypeProvider = provider
             });
 
-            UpdateDatabase(app);
+           ////// UpdateDatabase(app);
 
             // New with .NET Core 3.1
             app.UseRouting();
@@ -157,9 +161,9 @@ namespace WebUI
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 // Added areas
-                endpoints.MapControllerRoute(
-                    name: "areas",
-                    pattern: "{area:exists}/{controller=ShortUrls}/{action=Index}");
+                //////endpoints.MapControllerRoute(
+                //////    name: "areas",
+                //////    pattern: "{area:exists}/{controller=ShortUrls}/{action=Index}");
                 endpoints.MapRazorPages();
             });
 
