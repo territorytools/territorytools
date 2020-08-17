@@ -3,9 +3,9 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using TerritoryTools.Vault;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
 
-namespace WebUI.Services
+namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IAlbaCredentialService
     {

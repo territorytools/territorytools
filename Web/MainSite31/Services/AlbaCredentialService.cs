@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using TerritoryTools.Vault;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
 
 namespace TerritoryTools.Web.MainSite.Services
 {

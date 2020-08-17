@@ -4,7 +4,7 @@ using FluffySpoon.AspNet.LetsEncrypt;
 using System;
 using System.Linq;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite
 {
     public class Program
     {

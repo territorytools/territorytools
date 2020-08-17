@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using WebUI.Areas.Identity.Data;
-using WebUI.Models;
-using WebUI.Services;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Services;
+using TerritoryTools.Web.MainSite.Models;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {

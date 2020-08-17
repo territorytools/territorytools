@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Entities;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
 
 namespace TerritoryTools.Web.MainSite.Services
 {

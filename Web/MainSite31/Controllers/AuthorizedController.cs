@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models;
-using WebUI.Services;
+using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
@@ -13,9 +14,9 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using io = System.IO;
 using Microsoft.AspNetCore.Http;
-using static WebUI.BasicStrings;
-using WebUI.Areas.Identity.Data;
-using System;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using static TerritoryTools.Web.MainSite.BasicStrings;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {

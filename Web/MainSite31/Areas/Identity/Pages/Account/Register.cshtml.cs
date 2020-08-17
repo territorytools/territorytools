@@ -13,8 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using WebUI;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
 
 namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
 {

@@ -7,11 +7,11 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
-using WebUI.Models;
-using WebUI.Areas.Identity.Data;
-using WebUI.Services;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class HomeController : AuthorizedController
     {

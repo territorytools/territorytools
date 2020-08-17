@@ -1,4 +1,4 @@
-namespace WebUI
+namespace TerritoryTools.Web.MainSite
 {
     public class WebUIOptions
     {

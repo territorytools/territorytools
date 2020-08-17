@@ -6,14 +6,13 @@ using Org.BouncyCastle.Ocsp;
 using System;
 using System.Linq;
 using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Models;
 using TerritoryTools.Web.Data.Services;
-using WebUI.Areas.Identity.Data;
-using WebUI.Areas.UrlShortener.Models;
-using WebUI.Controllers;
-using WebUI.Services;
+using TerritoryTools.Web.MainSite.Controllers;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI.Areas.UrlShortener.Controllers
+namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
 {
     [Authorize]
     [Area("UrlShortener")]
@@ -28,7 +27,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
             IShortUrlService service, 
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            WebUI.Services.IAuthorizationService authorizationService,
+            erritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,

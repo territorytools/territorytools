@@ -6,14 +6,14 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Models;
 using TerritoryTools.Web.Data.Services;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.MainSite.Controllers;
+using TerritoryTools.Web.MainSite.Services;
 using WebUI.Areas.UrlShortener.Models;
-using WebUI.Controllers;
-using WebUI.Services;
 
-namespace WebUI.Areas.UrlShortener.Controllers
+namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
 {
     [Authorize]
     [Area("UrlShortener")]
@@ -28,7 +28,7 @@ namespace WebUI.Areas.UrlShortener.Controllers
             IShortUrlService service, 
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            WebUI.Services.IAuthorizationService authorizationService,
+            TerritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,

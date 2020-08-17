@@ -1,6 +1,6 @@
 using System;
 
-namespace WebUI.Models
+namespace TerritoryTools.Web.MainSite.Models
 {
     public class ErrorViewModel
     {

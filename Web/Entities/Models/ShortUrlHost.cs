@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebUI.Areas.UrlShortener.Models
+namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Models
 {
     public class ShortUrlHost
     {
