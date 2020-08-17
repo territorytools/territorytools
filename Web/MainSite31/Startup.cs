@@ -96,9 +96,6 @@ namespace WebUI
             services.AddScoped<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
 
             // New with .NET Core 3.1
-            services.AddDefaultIdentity<IdentityUser>(
-                options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

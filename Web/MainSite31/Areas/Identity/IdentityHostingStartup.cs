@@ -20,7 +20,8 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity
                    options.UseSqlServer(
                        context.Configuration.GetConnectionString("MainDbContextConnection")));
 
-                services.AddDefaultIdentity<IdentityUser>()
+                services.AddDefaultIdentity<IdentityUser>(
+                    options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<MainDbContext>();
             });
         }
