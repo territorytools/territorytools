@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TerritoryTools.Web.Data;
 
-namespace WebUI.Migrations
+namespace TerritoryTools.Web.MainSite.Migrations
 {
     [DbContext(typeof(MainDbContext))]
     [Migration("20200621041408_AddUrlHost")]

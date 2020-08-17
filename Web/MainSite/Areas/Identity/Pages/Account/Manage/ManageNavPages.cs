@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace WebUI.Areas.Identity.Pages.Account.Manage
+namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account.Manage
 {
     public static class ManageNavPages
     {

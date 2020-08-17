@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
-using WebUI.Areas.Identity.Data;
 
-namespace UrlShortener
+namespace TerritoryTools.Web.UrlShortener
 {
     public class Startup
     {

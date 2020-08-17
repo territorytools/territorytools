@@ -1,8 +1,8 @@
 ﻿using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using WebUI.Services;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI.Extensions
+namespace TerritoryTools.Web.MainSite.Extensions
 {
     public static class EmailSenderExtensions
     {

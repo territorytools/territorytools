@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using WebUI.Areas.Identity.Data;
-using WebUI.Models;
-using WebUI.Services;
+using TerritoryTools.Web.MainSite.Areas.Identity.Data;
+using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     public class TerritoryUserController : AuthorizedController

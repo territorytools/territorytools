@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace WebUI.Services
+namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IAuthorizationService
     {

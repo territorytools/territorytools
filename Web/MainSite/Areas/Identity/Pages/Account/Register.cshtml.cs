@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
 
-namespace WebUI.Areas.Identity.Pages.Account
+namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class RegisterModel : PageModel

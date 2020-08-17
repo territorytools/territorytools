@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using TerritoryTools.Web.Data.Models;
-using WebUI.Areas.UrlShortener.Models;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
 namespace TerritoryTools.Web.Data.Services
 {

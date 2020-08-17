@@ -11,7 +11,7 @@ using TerritoryTools.Web.Data.Models;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Controllers;
 using TerritoryTools.Web.MainSite.Services;
-using WebUI.Areas.UrlShortener.Models;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
 namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
 {

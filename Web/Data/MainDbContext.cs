@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WebUI.Areas.UrlShortener.Models;
-using WebUI.Models;
+using TerritoryTools.Entities;
+using TerritoryTools.Models;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
 namespace TerritoryTools.Web.Data
 {

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using TerritoryTools.Models;
 
-namespace TerritoryTools.Web.MainSite.Models
+namespace TerritoryTools.Entities
 {
     public class TerritoryUser 
     {

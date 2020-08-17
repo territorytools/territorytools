@@ -7,7 +7,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Chrome;
 
-namespace WebUI.SeleniumTests
+namespace TerritoryTools.Web.MainSite.SeleniumTests
 {
     [TestClass]
     public class IndexTests : IDisposable

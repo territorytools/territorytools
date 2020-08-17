@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using TerritoryTools.Alba.Controllers.UseCases;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite
 {
     public class Publisher
     {
