@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WebUI.Migrations
+namespace TerritoryTools.Web.Data.Migrations
 {
     public partial class AddAlbaHostName : Migration
     {

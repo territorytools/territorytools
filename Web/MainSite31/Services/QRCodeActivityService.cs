@@ -4,7 +4,7 @@ using System.Linq;
 using TerritoryTools.Entities;
 using WebUI.Areas.Identity.Data;
 
-namespace WebUI.Services
+namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IQRCodeActivityService
     {

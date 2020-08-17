@@ -12,7 +12,7 @@ using cuc = Controllers.UseCases;
 using Microsoft.Extensions.Options;
 using WebUI.Services;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]

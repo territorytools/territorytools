@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace MainSite31.Data
+namespace TerritoryTools.Web.MainSite.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

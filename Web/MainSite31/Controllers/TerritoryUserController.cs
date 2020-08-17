@@ -10,7 +10,7 @@ using WebUI.Areas.Identity.Data;
 using WebUI.Models;
 using WebUI.Services;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     public class TerritoryUserController : AuthorizedController

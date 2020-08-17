@@ -17,7 +17,7 @@ using static WebUI.BasicStrings;
 using WebUI.Areas.Identity.Data;
 using System;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class AuthorizedController : Controller
     {

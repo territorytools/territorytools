@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-
 using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite.Models
 {
     public class Publisher
     {

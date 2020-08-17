@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite
 {
     public class Program
     {

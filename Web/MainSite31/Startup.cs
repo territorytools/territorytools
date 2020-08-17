@@ -21,11 +21,10 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Globalization;
 using TerritoryTools.Web.Data.Services;
-using WebUI.Areas.Identity.Data;
-using WebUI.Services;
 using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account;
+using TerritoryTools.Web.Data;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite
 {
     public class Startup
     {

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using WebUI.Services;
 using WebUI.Areas.Identity.Data;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     public class ReportController : AuthorizedController

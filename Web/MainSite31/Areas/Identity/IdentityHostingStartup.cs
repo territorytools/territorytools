@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
 
 [assembly: HostingStartup(typeof(TerritoryTools.Web.MainSite.Areas.Identity.IdentityHostingStartup))]
 namespace TerritoryTools.Web.MainSite.Areas.Identity

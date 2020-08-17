@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WebUI.Areas.UrlShortener.Models;
 using WebUI.Models;
 
-namespace WebUI.Areas.Identity.Data
+namespace TerritoryTools.Web.Data
 {
     public class MainDbContext : IdentityDbContext<IdentityUser>
     {
