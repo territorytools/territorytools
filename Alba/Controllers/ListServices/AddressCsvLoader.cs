@@ -16,22 +16,6 @@ namespace TerritoryTools.Alba.ListServices
 
     public class AddressCsvLoader
     {
-        public static IEnumerable<AddressCsv> LoadFrom(string path)
-        {
-            var list = new List<AddressCsv>();
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return list;
-            }
-
-            using (var reader = new StreamReader(path))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                csv.Configuration.Delimiter = ",";
-                return csv.GetRecords<AddressCsv>().ToList();
-            }
-        }
-
         public static PhoneNumberAddResults AddPhoneNumbers1And2(
             IEnumerable<AddressCsv> numbers,
             IEnumerable<AlbaAddressExport> addresses,

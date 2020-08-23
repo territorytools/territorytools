@@ -8,7 +8,9 @@ namespace Controllers.UseCases
 {
     public class LoadCsv<T>
     {
-        public static IEnumerable<T> LoadFrom(string path)
+        public static IEnumerable<T> LoadFrom(
+            string path, 
+            string deliminator = ",")
         {
             var list = new List<T>();
             if (string.IsNullOrWhiteSpace(path))
@@ -19,8 +21,10 @@ namespace Controllers.UseCases
             using (var reader = new StreamReader(path))
             using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = ",";
-                csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
+                csv.Configuration.Delimiter = deliminator;
+                csv.Configuration.PrepareHeaderForMatch = 
+                    (string header, int index) => header.ToLower();
+
                 csv.Configuration.BadDataFound = null;
                 csv.Configuration.HeaderValidated = null;
                 csv.Configuration.MissingFieldFound = null;

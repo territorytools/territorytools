@@ -34,16 +34,20 @@ namespace TerritoryTools.Alba.Cli
                         DownloadAssignmentsOptions,
                         DownloadLanguagesOptions,
                         ParseLanguageFileOptions,
+                        FilterAddressOptions,
                         AddPhoneNumbersOptions,
-                        RemoveAssignedTerritoriesOptions >
+                        RemoveAssignedTerritoriesOptions,
+                        RemoveAddressIdsOptions>
                     (args)
                     .MapResult(
                         (DownloadAddressesOptions opts) => opts.Run(),
                         (DownloadAssignmentsOptions opts) => opts.Run(),
                         (DownloadLanguagesOptions opts) => opts.Run(),
                         (ParseLanguageFileOptions opts) => opts.Run(),
+                        (FilterAddressOptions opts) => opts.Run(),
                         (AddPhoneNumbersOptions opts) => opts.Run(),
                         (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
+                        (RemoveAddressIdsOptions opts) => opts.Run(),
                     errs => 1);
 
                 /*
