@@ -63,7 +63,10 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
         public int Run()
         {
+            
             Console.WriteLine("Loading List Services address with phone numbers records...");
+            Console.WriteLine($"PhoneNumbers: {PhoneNumbers}");
+            Console.WriteLine($"Addresses: {Addresses}");
 
             var phoneNumbers = AddressCsvLoader.LoadFrom(PhoneNumbers);
             var addresses = AlbaAddressExport.LoadFrom(Addresses);

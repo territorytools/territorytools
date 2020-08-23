@@ -15,6 +15,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
         [Value(0)]
         public string FilePath { get; set; }
 
+        [Option("accountid", Required = true, HelpText = "Input account id (In Alba click Account, ID is on the far right, example: 123)")]
         [Value(1)]
         public int AccountId { get; set; }
         
