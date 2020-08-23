@@ -30,6 +30,7 @@ namespace TerritoryTools.Alba.Cli
                 var result = Parser
                     .Default
                     .ParseArguments<
+                        UploadAddressesOptions,
                         DownloadAddressesOptions,
                         DownloadAssignmentsOptions,
                         DownloadLanguagesOptions,
@@ -40,6 +41,7 @@ namespace TerritoryTools.Alba.Cli
                         RemoveAddressIdsOptions>
                     (args)
                     .MapResult(
+                        (UploadAddressesOptions opts) => opts.Run(),
                         (DownloadAddressesOptions opts) => opts.Run(),
                         (DownloadAssignmentsOptions opts) => opts.Run(),
                         (DownloadLanguagesOptions opts) => opts.Run(),
