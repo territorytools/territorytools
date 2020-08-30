@@ -4,11 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TerritoryTools.Web.Data;
-using TerritoryTools.Web.MainSite.Areas.Identity.Data;
 
-namespace TerritoryTools.Web.MainSite.Migrations
+namespace TerritoryTools.Web.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
     [Migration("20200617050001_AddAlbaHostName")]
