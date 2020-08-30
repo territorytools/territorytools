@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TerritoryTools.Models
+namespace TerritoryTools.Entities
 {
     public class AlbaUser
     {

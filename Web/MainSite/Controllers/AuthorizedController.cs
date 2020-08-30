@@ -28,14 +28,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
         protected string account;
         protected string user;
         protected string password;
-        protected IAuthorizationService authorizationService;
+        protected Services.IAuthorizationService authorizationService;
         protected IAlbaCredentialService albaCredentialService;
 
         public AuthorizedController(
             MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            IAuthorizationService authorizationService,
+            Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor)
         {

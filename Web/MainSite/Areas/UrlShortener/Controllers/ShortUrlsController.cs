@@ -9,6 +9,7 @@ using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Models;
 using TerritoryTools.Web.Data.Services;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 using TerritoryTools.Web.MainSite.Controllers;
 using TerritoryTools.Web.MainSite.Services;
 
@@ -27,7 +28,7 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
             IShortUrlService service, 
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            erritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
+            TerritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
