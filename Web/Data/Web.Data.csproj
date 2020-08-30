@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Library</OutputType>
     <RootNamespace>TerritoryTools.Web.Data</RootNamespace>
     <AssemblyName>TerritoryTools.Web.Data</AssemblyName>
   </PropertyGroup>

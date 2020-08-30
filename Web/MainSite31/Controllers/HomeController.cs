@@ -8,6 +8,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Http;
 using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Services;
+using TerritoryTools.Web.MainSite.Models;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -20,7 +23,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
-            Services.IQRCodeActivityService qrCodeActivityService,
+            IQRCodeActivityService qrCodeActivityService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
@@ -74,7 +77,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 foreach (var hit in qrCodeHits)
                 {
                     publisher.QRCodeActivity.Add(
-                        new QRCodeHit
+                        new Models.QRCodeHit
                         {
                             Id = hit.Id,
                             ShortUrl = hit.ShortUrl,
