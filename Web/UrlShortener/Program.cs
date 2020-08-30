@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using WebUI.Areas.Identity.Data;
+using TerritoryTools.Web.MainSite.Areas.Identity.Data;
 
-namespace UrlShortener
+namespace TerritoryTools.Web.MainSite.Areas.UrlShortener
 {
     public class Program
     {
