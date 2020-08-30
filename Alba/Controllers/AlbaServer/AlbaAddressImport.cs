@@ -1,4 +1,6 @@
-﻿namespace Controllers.AlbaServer
+﻿using TerritoryTools.Alba.ListServices;
+
+namespace Controllers.AlbaServer
 {
     public class AlbaAddressImport
     {
@@ -39,6 +41,29 @@
                 Telephone= export.Telephone,
                 Notes= export.Notes,
                 Notes_private= export.Notes_private
+            };
+        }
+
+        public static AlbaAddressImport From(AddressCsv from)
+        {
+            return new AlbaAddressImport
+            {
+                Address_ID = from.Address_ID,
+                Territory_ID = from.Territory_ID,
+                Language = from.Language,
+                Status = from.Status,
+                Name = from.Name,
+                Suite = from.Suite,
+                Address = from.Address,
+                City = from.City,
+                Province = from.Province,
+                Postal_code = from.Postal_code,
+                Country = from.Country,
+                Latitude = from.Latitude,
+                Longitude = from.Longitude,
+                Telephone = from.Telephone,
+                Notes = from.Notes,
+                Notes_private = from.Notes_private
             };
         }
     }

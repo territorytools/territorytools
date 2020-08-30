@@ -1,4 +1,5 @@
-﻿using CsvHelper.Configuration.Attributes;
+﻿using Controllers.AlbaServer;
+using CsvHelper.Configuration.Attributes;
 
 namespace TerritoryTools.Alba.ListServices
 {
@@ -28,6 +29,32 @@ namespace TerritoryTools.Alba.ListServices
         public string Notes { get; set; }
         public string Notes_private { get; set; }
         public string Account { get; set; }
+
+        public static AddressCsv From(AddressCsv from)
+        {
+            return new AddressCsv
+            {
+                Address_ID = from.Address_ID,
+                Territory_ID = from.Territory_ID,
+                Language = from.Language,
+                Status = from.Status,
+                Name = from.Name,
+                Suite = from.Suite,
+                Address = from.Address,
+                City = from.City,
+                Province = from.Province,
+                Postal_code = from.Postal_code,
+                Country = from.Country,
+                Latitude = from.Latitude,
+                Longitude = from.Longitude,
+                Telephone = from.Telephone,
+                //Phone1,
+                //Phone2,
+                Notes = from.Notes,
+                Notes_private = from.Notes_private,
+                Account = from.Account
+            };
+        }
     }
 }
  

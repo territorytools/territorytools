@@ -1,12 +1,11 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using TerritoryTools.Alba.Controllers.UseCases;
-using TerritoryTools.Alba.ListServices;
-using Controllers.UseCases;
 using Controllers.AlbaServer;
+using Controllers.UseCases;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TerritoryTools.Alba.ListServices;
 
 namespace TerritoryTools.Alba.Cli.Verbs
 {
@@ -64,9 +63,11 @@ namespace TerritoryTools.Alba.Cli.Verbs
         public int Run()
         {
             Console.WriteLine("Loading List Services address with phone numbers records...");
+            Console.WriteLine($"PhoneNumbers: {PhoneNumbers}");
+            Console.WriteLine($"Addresses: {Addresses}");
 
-            var phoneNumbers = AddressCsvLoader.LoadFrom(PhoneNumbers);
-            var addresses = AlbaAddressExport.LoadFrom(Addresses);
+            var phoneNumbers = LoadCsv<AddressCsv>.LoadFrom(PhoneNumbers);
+            var addresses = LoadCsv<AlbaAddressExport>.LoadFrom(Addresses);
 
             Console.WriteLine($"Phone Number Record Count: {phoneNumbers.Count()}");
 
