@@ -1,28 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Certes;
+using FluffySpoon.AspNet.LetsEncrypt;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using MainSite31.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Certes;
-using FluffySpoon.AspNet.LetsEncrypt;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.StaticFiles;
+using System;
 using System.Globalization;
-using TerritoryTools.Web.Data.Services;
-using Microsoft.AspNetCore.Identity.UI.V3.Pages.Internal.Account;
+using System.Linq;
+using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
+using TerritoryTools.Web.Data.Services;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -40,9 +33,6 @@ namespace TerritoryTools.Web.MainSite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite("Filename=app.db"));
-
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MainDbContextConnection")));
