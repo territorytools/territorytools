@@ -156,10 +156,18 @@ namespace WebUI.Controllers
             var accountName = database
                 .AlbaAccounts
                 .FirstOrDefault(a => BasicStrings.StringsEqual(a.AccountName, link.AccountName));
-
+            
             if (accountName != null)
             {
-                throw new Exception($"Alba account '{link.AccountName}' already exists!");
+                if (string.Equals(accountName, "existing")
+                    && IsAdmin())
+                {
+                    
+                } 
+                else
+                {
+                    throw new Exception($"Alba account '{link.AccountName}' already exists!");
+                }
             }
 
             // TODO: Check if credentials work
