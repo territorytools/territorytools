@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Web.Data;
 
 namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
@@ -25,19 +27,33 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly MainDbContext _database;
+        private readonly List<string> _users;
+        private readonly List<string> _adminUsers;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            MainDbContext database)
+            MainDbContext database,
+             IOptions<WebUIOptions> optionsAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
             _database = database;
+            _users = optionsAccessor
+                .Value
+                .Users
+                .Split(";", StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            _adminUsers = optionsAccessor
+                .Value
+                .AdminUsers
+                .Split(";", StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
         }
 
         [BindProperty]
@@ -79,7 +95,37 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var territoryUser = _database.TerritoryUser
-                    .FirstOrDefault(u => BasicStrings.StringsEqual(u.Email, Input.Email));
+                    .FirstOrDefault(u => 
+                        u.Email != null && 
+                        Input.Email != null && 
+                        string.Equals(u.Email.ToUpper(), Input.Email.ToUpper()));
+
+                bool existsInConfigurationFileAsUser = false;
+                bool existsInConfigurationFileAsAdmin = false;
+
+                if (territoryUser == null)
+                {
+                    existsInConfigurationFileAsUser = _users.Exists(u =>
+                        Input.Email != null &&
+                        string.Equals(u.ToUpper(), Input.Email.ToUpper()));
+
+                    existsInConfigurationFileAsAdmin = _adminUsers.Exists(u =>
+                        Input.Email != null &&
+                        string.Equals(u.ToUpper(), Input.Email.ToUpper()));
+                }
+
+                if(existsInConfigurationFileAsUser || existsInConfigurationFileAsAdmin)
+                {
+                    territoryUser = new Entities.TerritoryUser
+                    {
+                        Created = DateTime.Now,
+                        Email = Input.Email,
+                        Role = existsInConfigurationFileAsAdmin ? "Administrator" : "User"
+                    };
+
+                    _database.TerritoryUser.Add(territoryUser);
+                    _database.SaveChanges();
+                }
 
                 if (territoryUser == null)
                 {
