@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using TerritoryTools.Web.MainSite.Services;
-using TerritoryTools.Web.MainSite.Areas.Identity.Data;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Models;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {

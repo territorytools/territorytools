@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.UseCases;
 using Controllers.UseCases;
 
-namespace TerritoryTools.Web.MainSite
+namespace TerritoryTools.Web.MainSite.Models
 {
     public class AssignSingleTerritoryForm
     {

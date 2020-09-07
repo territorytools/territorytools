@@ -1,4 +1,4 @@
-﻿namespace TerritoryTools.Web.MainSite
+﻿namespace TerritoryTools.Web.MainSite.Models
 {
     public class QRCodeHit
     {

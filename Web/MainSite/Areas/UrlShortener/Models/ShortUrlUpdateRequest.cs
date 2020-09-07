@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Models
+namespace WebUI.Areas.UrlShortener.Models
 {
     public class ShortUrlUpdateRequest
     {

@@ -1,23 +1,22 @@
-using Controllers.UseCases;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using TerritoryTools.Alba.Controllers;
-using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.Models;
-using TerritoryTools.Alba.Controllers.UseCases;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.Data;
+using Microsoft.AspNetCore.Mvc;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
-using static TerritoryTools.Web.MainSite.BasicStrings;
+using TerritoryTools.Alba.Controllers;
+using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Alba.Controllers.Models;
 using cuc = Controllers.UseCases;
+using Controllers.UseCases;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using io = System.IO;
+using Microsoft.AspNetCore.Http;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using static TerritoryTools.Web.MainSite.BasicStrings;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -28,14 +27,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
         protected string account;
         protected string user;
         protected string password;
-        protected Services.IAuthorizationService authorizationService;
+        protected IAuthorizationService authorizationService;
         protected IAlbaCredentialService albaCredentialService;
 
         public AuthorizedController(
             MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
-            Services.IAuthorizationService authorizationService,
+            IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor)
         {

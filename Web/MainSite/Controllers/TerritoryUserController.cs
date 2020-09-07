@@ -1,12 +1,12 @@
-﻿using System;
-using System.Linq;
-using TerritoryTools.Alba.Controllers.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using TerritoryTools.Web.MainSite.Areas.Identity.Data;
+using System;
+using System.Linq;
+using TerritoryTools.Alba.Controllers.Models;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 

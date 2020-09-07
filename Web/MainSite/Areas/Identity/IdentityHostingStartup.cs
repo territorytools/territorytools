@@ -1,7 +1,5 @@
-using System;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +14,11 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity
         {
             builder.ConfigureServices((context, services) => {
                 services.AddDbContext<MainDbContext>(options =>
-                    options.UseSqlServer(
-                        context.Configuration.GetConnectionString("MainDbContextConnection")));
+                   options.UseSqlServer(
+                       context.Configuration.GetConnectionString("MainDbContextConnection")));
 
-                services.AddDefaultIdentity<IdentityUser>()
+                services.AddDefaultIdentity<IdentityUser>(
+                    options => options.SignIn.RequireConfirmedAccount = true)
                     .AddEntityFrameworkStores<MainDbContext>();
             });
         }

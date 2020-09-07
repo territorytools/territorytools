@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TerritoryTools.Alba.Controllers.UseCases;
 using Controllers.UseCases;
 
-namespace TerritoryTools.Web.MainSite
+namespace TerritoryTools.Web.MainSite.Models
 {
     public class NeverCompletedReport
     {
