@@ -36,6 +36,7 @@ namespace TerritoryTools.Alba.Cli
                         DownloadLanguagesOptions,
                         ParseLanguageFileOptions,
                         FilterAddressOptions,
+                        PivotS13Options,
                         AddPhoneNumbersOptions,
                         RemoveAssignedTerritoriesOptions,
                         RemoveAddressIdsOptions>
@@ -47,6 +48,7 @@ namespace TerritoryTools.Alba.Cli
                         (DownloadLanguagesOptions opts) => opts.Run(),
                         (ParseLanguageFileOptions opts) => opts.Run(),
                         (FilterAddressOptions opts) => opts.Run(),
+                        (PivotS13Options opts) => opts.Run(),
                         (AddPhoneNumbersOptions opts) => opts.Run(),
                         (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
                         (RemoveAddressIdsOptions opts) => opts.Run(),
@@ -274,71 +276,6 @@ namespace TerritoryTools.Alba.Cli
             Console.WriteLine($"After Filter Count: {filtered.Count}");
 
             LoadTsvAlbaAddresses.SaveTo(filtered, outputPath);
-        }
-
-        static void PivotS13(List<string> args)
-        {
-            Console.WriteLine("Pivoting S-13 form...");
-            if (args.Count != 4)
-            {
-                throw new NormalException("Wrong number of arguments!  Usage: alba pivot-s-13 <s-13-csv-input-file> <alba-assignments-csv-input-file> <s-13-csv-output-file>");
-            }
-
-            string inputPath = args[1];
-            string albaTerritoryAssignmentsPath = args[2];
-            string outputPath = args[3];
-
-            Console.WriteLine($"Input File Path: {inputPath}");
-            Console.WriteLine($"Alba Assignment File Path: {albaTerritoryAssignmentsPath}");
-            Console.WriteLine($"Output File Path: {outputPath}");
-
-            Console.WriteLine("Loading...");
-            var rows = PivotAssignmentRowsToS13Columns.LoadFrom(inputPath);
-
-            Console.WriteLine("Removing entries with Checked-In and Checked-Out both blank...");
-            var cleaned = rows
-                .Where(r => !string.IsNullOrWhiteSpace(r.CheckedIn)
-                    || !string.IsNullOrWhiteSpace(r.CheckedOut))
-                .ToList();
-
-            Console.WriteLine("Pivoting...");
-            var columns = PivotAssignmentRowsToS13Columns.PivotFrom(cleaned);
-
-            Console.WriteLine("Adding unworked territories...");
-            var assignments = DownloadTerritoryAssignments.LoadFromCsv(albaTerritoryAssignmentsPath);
-            var errors = new List<string>();
-            foreach (var assignment in assignments)
-            {
-                try
-                {
-                    int assignmentNumber = int.Parse(assignment.Number);
-
-                    if (!columns.Exists(c => string.Equals(c.Territory, assignmentNumber.ToString(), StringComparison.OrdinalIgnoreCase)))
-                    {
-                        var newCol = new S13Column
-                        {
-                            Territory = assignment.Number
-                        };
-
-                        newCol.Entries.Add(new S13Entry { Publisher = "Never Worked" });
-                        columns.Add(newCol);
-                    }
-                }
-                catch(Exception e)
-                {
-                    errors.Add($"Number: {assignment.Number}: {e.Message}");
-                }
-            }
-
-            foreach(string error in errors)
-            {
-                Console.WriteLine(error);
-            }
-
-            var orderedColumns = columns.OrderBy(c => int.Parse(c.Territory)).ToList();
-
-            Console.WriteLine("Saving data to new file...");
-            PivotAssignmentRowsToS13Columns.SaveTo(orderedColumns, outputPath);
         }
 
         static void LastCompleted(List<string> args)
