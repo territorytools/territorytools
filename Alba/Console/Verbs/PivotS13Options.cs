@@ -62,6 +62,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             // TODO: Add new checked-in checked-out here
             foreach (var assignment in assignments)
             {
+                // TODO: Fixing issue with one null territory having 1300+ entries
                 DateTime.TryParse(assignment.CheckedOut, out DateTime signedOut);
                 DateTime.TryParse(assignment.CheckedIn, out DateTime signedIn);
 
