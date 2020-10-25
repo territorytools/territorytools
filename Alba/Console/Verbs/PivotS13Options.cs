@@ -72,6 +72,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             Console.WriteLine("Loading assignments from Alba...");
             var assignments = DownloadTerritoryAssignments.LoadFromCsv(AlbaTerritoryAssignmentsPath);
 
+            /*
             // TODO: Add new checked-in checked-out here
             foreach (var assignment in assignments)
             {
@@ -135,7 +136,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             Console.WriteLine("Saving data to new file...");
             
             PivotAssignmentRowsToS13Columns.SaveTo(orderedColumns, OutputPath);
-
+            */
             return 0;
         }
     }
