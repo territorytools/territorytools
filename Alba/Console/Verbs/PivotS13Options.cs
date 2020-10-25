@@ -51,10 +51,23 @@ namespace TerritoryTools.Alba.Cli.Verbs
             var rows = PivotAssignmentRowsToS13Columns.LoadFrom(InputPath);
 
             Console.WriteLine("Removing entries with Checked-In and Checked-Out both blank...");
-            var cleaned = rows
+            var cleanedRaw = rows
                 .Where(r => !string.IsNullOrWhiteSpace(r.CheckedIn)
                     || !string.IsNullOrWhiteSpace(r.CheckedOut))
                 .ToList();
+
+            var cleaned = new List<AssignmentRow>();
+            foreach(var raw in cleanedRaw)
+            {
+                DateTime? checkedOutN = null;
+
+                if(DateTime.TryParse(raw.CheckedOut, out DateTime checkedOut))
+                {
+                    checkedOutN = checkedOut;
+                }
+
+                DateTime.TryParse(raw.CheckedIn, out DateTime checkedIn);
+            }
 
             Console.WriteLine("Loading assignments from Alba...");
             var assignments = DownloadTerritoryAssignments.LoadFromCsv(AlbaTerritoryAssignmentsPath);
@@ -63,8 +76,8 @@ namespace TerritoryTools.Alba.Cli.Verbs
             foreach (var assignment in assignments)
             {
                 // TODO: Fixing issue with one null territory having 1300+ entries
-                DateTime.TryParse(assignment.CheckedOut, out DateTime signedOut);
-                DateTime.TryParse(assignment.CheckedIn, out DateTime signedIn);
+                DateTime.TryParse(assignment.SignedOutString, out DateTime signedOut);
+                DateTime.TryParse(assignment.LastCompleted, out DateTime signedIn);
 
                 if (!cleaned.Exists(c => 
                     string.Equals(assignment.Number, c.Territory, StringComparison.OrdinalIgnoreCase)
