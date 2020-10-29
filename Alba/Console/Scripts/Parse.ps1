@@ -82,25 +82,6 @@ $r = "`t`t`$1`t`$2`t`t`$3`t`$4`t`$5`t`$6`t`$7"
 Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfile
 $infile = $outfile
 
-#####################################################
-"Remove Abbreviation Dots (Only removes one)"
-"(Not needed if there is another normalization step)"
-#####################################################
-$outfile = "$output_folder\04b-normalize-abbrev.tsv"
-$e = "^(\t\t[^\t]*\t)" +
-    "(.+?)\.(.*?)" +
-    "(\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*)$"
-$r = "`$1`$2`$3`$4"
-# Run it five times
-Get-Content -Path $infile -Encoding UTF8 `
-    | % { $_ -replace "$e", "$r" } `
-    | % { $_ -replace "$e", "$r" } `
-    | % { $_ -replace "$e", "$r" } `
-    | % { $_ -replace "$e", "$r" } `
-    | % { $_ -replace "$e", "$r" } `
-    > $outfile
-$infile = $outfile
-
 ###############################
 "Normalize Phone Numbers"
 ###############################
@@ -125,6 +106,14 @@ Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfi
 $outfile = "$output_folder\11-isolate-address.tsv"
 $r = "`$2"
 Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfile
+
+#####################################################
+"Remove Abbreviation Dots from Address"
+"(Not needed if there is another normalization step)"
+#####################################################
+$outfile = "$output_folder\11.2-isolate-address-remove-dots.tsv"
+Get-Content -Path "$output_folder\11-isolate-address.tsv" -Encoding UTF8 | % { $_.Replace(".", "") } > $outfile
+$infile = $outfile
 
 ###############################
 "Isolate Unit"
@@ -165,7 +154,7 @@ Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfi
 "Combine Isolated Files"
 ########################
 $names = Get-Content -Path "$output_folder\10-isolate-names.tsv" -Encoding UTF8 
-$addresses = Get-Content -Path "$output_folder\11-isolate-address.tsv" -Encoding UTF8 
+$addresses = Get-Content -Path "$output_folder\11.2-isolate-address-remove-dots.tsv" -Encoding UTF8 
 $units = Get-Content -Path "$output_folder\12-isolate-unit.tsv" -Encoding UTF8 
 $cities = Get-Content -Path "$output_folder\13-isolate-city.tsv" -Encoding UTF8 
 # skips states
