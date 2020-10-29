@@ -91,7 +91,14 @@ $e = "^(\t\t[^\t]*\t)" +
     "(.+?)\.(.*?)" +
     "(\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*)$"
 $r = "`$1`$2`$3`$4"
-Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfile
+# Run it five times
+Get-Content -Path $infile -Encoding UTF8 `
+    | % { $_ -replace "$e", "$r" } `
+    | % { $_ -replace "$e", "$r" } `
+    | % { $_ -replace "$e", "$r" } `
+    | % { $_ -replace "$e", "$r" } `
+    | % { $_ -replace "$e", "$r" } `
+    > $outfile
 $infile = $outfile
 
 ###############################
