@@ -103,7 +103,7 @@ Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfi
 ###############################
 "Isolate Address"
 ###############################
-$outfile = "$output_folder\11-isolate-address.tsv"
+$outfile = "$output_folder\11.0-isolate-address.txt"
 $r = "`$2"
 Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfile
 
@@ -111,8 +111,15 @@ Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfi
 "Remove Abbreviation Dots from Address"
 "(Not needed if there is another normalization step)"
 #####################################################
-$outfile = "$output_folder\11.2-isolate-address-remove-dots.tsv"
-Get-Content -Path "$output_folder\11-isolate-address.tsv" -Encoding UTF8 | % { $_.Replace(".", "") } > $outfile
+$outfile = "$output_folder\11.2-isolate-address-remove-dots.txt"
+Get-Content -Path "$output_folder\11.0-isolate-address.txt" -Encoding UTF8 | % { $_.Replace(".", "") } > $outfile
+
+#######################################################
+"Normalize Addresses (only) with Territory Tools Alba Console"
+#######################################################
+$outFile = "$output_folder\11.3-isolate-address-normalize.txt" 
+&"$path_to_alba_exe"  "normalize-addresses" "--input-address-only" "$output_folder\11.2-isolate-address-remove-dots.txt" "--output-path" "$outFile"
+
 $infile = $outfile
 
 ###############################
@@ -154,7 +161,7 @@ Get-Content -Path $infile -Encoding UTF8 | % { $_ -replace "$e", "$r" } > $outfi
 "Combine Isolated Files"
 ########################
 $names = Get-Content -Path "$output_folder\10-isolate-names.tsv" -Encoding UTF8 
-$addresses = Get-Content -Path "$output_folder\11.2-isolate-address-remove-dots.tsv" -Encoding UTF8 
+$addresses = Get-Content -Path "$output_folder\11.3-isolate-address-normalize.txt" -Encoding UTF8 
 $units = Get-Content -Path "$output_folder\12-isolate-unit.tsv" -Encoding UTF8 
 $cities = Get-Content -Path "$output_folder\13-isolate-city.tsv" -Encoding UTF8 
 # skips states
@@ -215,10 +222,10 @@ For ($i = 0; $i -lt $names.Length; $i++) {
 $infile = $outfile
 
 #######################################################
-"Normalize Addresses with Territory Tools Alba Console"
+#"Normalize Addresses with Territory Tools Alba Console"
 #######################################################
-$outFile = "$output_folder\19-normalized.tsv" 
-&"$path_to_alba_exe"  "normalize-addresses" "--input-path" "$infile" "--output-path" "$outFile"
+#$outFile = "$output_folder\19-normalized.tsv" 
+#&"$path_to_alba_exe"  "normalize-addresses" "--input-path" "$infile" "--output-path" "$outFile"
 
 "Done"
 

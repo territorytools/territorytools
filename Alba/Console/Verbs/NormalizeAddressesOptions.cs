@@ -4,6 +4,7 @@ using Controllers.AlbaServer;
 using Controllers.UseCases;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using TerritoryTools.Entities;
 using TerritoryTools.Entities.AddressParsers;
 
@@ -18,10 +19,17 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
         [Option(
             "input-path",
-            Required = true,
+            Required = false,
             HelpText = "Input file of addresses in Alba TSV format")]
         [Value(0)]
         public string inputPath { get; set; }
+        
+        [Option(
+           "input-address-only",
+           Required = false,
+           HelpText = "Input file of just addresses, no units, cities, postal codes, etc, in a text file")]
+        [Value(0)]
+        public string inputAddressOnly { get; set; }
 
         [Option(
             "output-path",
@@ -50,8 +58,17 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
         public int Run()
         {
-            Console.WriteLine("Normalize Addresses");            
+            Console.WriteLine("Normalize Addresses");
+
+            throw new Exception("This does not work");
+
+            if(string.IsNullOrWhiteSpace(inputPath) && string.IsNullOrWhiteSpace(inputAddressOnly))
+            {
+                throw new ArgumentException("input-path and input-address-only cannot both be missing.");
+            }
+
             Console.WriteLine($"Input File Path: {inputPath}");
+            Console.WriteLine($"Input Address Only Text File Path: {inputAddressOnly}");
             Console.WriteLine($"Output File Path: {outputPath}");
 
             var addresses = LoadTsvAlbaAddresses.LoadFrom(inputPath);
@@ -62,41 +79,64 @@ namespace TerritoryTools.Alba.Cli.Verbs
             var errors = new List<AlbaAddressExport>();
             var normalized = new List<AlbaAddressExport>();
 
-            foreach (var a in addresses)
+            if (!string.IsNullOrWhiteSpace(inputPath))
             {
-                try
+                foreach (var a in addresses)
                 {
-                    //string before = $"{a.Address}, {a.Suite}, {a.City}, {a.Province}, {a.Postal_code}";
-                    var address = parser.Normalize($"{a.Address}, {a.Suite}", a.City, a.Province, a.Postal_code);
-                    a.Address = address.CombineStreet();
-                    a.Suite = address.CombineUnit();
-                    a.City = address.City;
-                    a.Province = address.State;
-                    a.Postal_code = address.PostalCode;
-                    normalized.Add(a);
-                    //Console.WriteLine($"{before} :: {a.Address}, {a.Suite}, {a.City}, {a.Province}, {a.Postal_code}");
+                    try
+                    {
+                        var address = parser.Normalize($"{a.Address}, {a.Suite}", a.City, a.Province, a.Postal_code);
+                        a.Address = address.CombineStreet();
+                        a.Suite = address.CombineUnit();
+                        a.City = address.City;
+                        a.Province = address.State;
+                        a.Postal_code = address.PostalCode;
+                        normalized.Add(a);
+                    }
+                    catch (Exception e)
+                    {
+                        errors.Add(a);
+                        Console.WriteLine(e.Message);
+                    }
                 }
-                catch (Exception e)
-                {
-                    errors.Add(a);
-                    Console.WriteLine(e.Message);
-                }
-            }
 
-            if (errors.Count > 0)
+                if (errors.Count > 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Errors:");
+                    foreach (var a in errors)
+                    {
+                        Console.WriteLine(a.Address);
+                    }
+
+                    Console.WriteLine($"Count: {errors.Count}");
+                }
+
+                LoadTsvAlbaAddresses.SaveTo(normalized, outputPath);
+                LoadTsvAlbaAddresses.SaveTo(errors, $"{outputPath}.errors.txt");
+            }
+            else if(!string.IsNullOrWhiteSpace(inputAddressOnly))
             {
-                Console.WriteLine();
-                Console.WriteLine("Errors:");
-                foreach (var a in errors)
+                var builder = new StringBuilder(1_000_000);
+                builder.AppendLine("Address");
+
+                var addressList = System.IO.File.ReadAllLines(inputAddressOnly);
+                foreach (string a in addressList)
                 {
-                    Console.WriteLine(a.Address);
+                    try
+                    {
+                        Console.WriteLine("Normalizing: " + a);
+                        var address = parser.Normalize(a, "No City", "XX", "99999");
+                        builder.AppendLine(address.CombineStreet());
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine($"Error processing address: {a}");
+                    }
                 }
 
-                Console.WriteLine($"Count: {errors.Count}");
+                System.IO.File.WriteAllText(outputPath, builder.ToString());
             }
-
-            LoadTsvAlbaAddresses.SaveTo(normalized, outputPath);
-            LoadTsvAlbaAddresses.SaveTo(errors, $"{outputPath}.errors.txt");
 
             return 0;
         }

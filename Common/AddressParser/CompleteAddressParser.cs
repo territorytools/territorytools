@@ -35,6 +35,24 @@ namespace TerritoryTools.Entities.AddressParsers
         {
             var parsed = Parse(text, city, state, postalCode);
 
+            string poBoxExpression = @"P\.?\s*O\.?\s*B(ox)?\s+(\d+)";
+            var m = Regex.Match(text, poBoxExpression);
+            if (m.Success)
+            {
+                parsed.Number = m.Groups[2].Value;
+                parsed.IsNotPhysical = true;
+                parsed.StreetName = "PO Box";
+            }
+
+            string noStreetType = @"^(\d+)\s+(\w+)$";
+            var broadway = Regex.Match(text, noStreetType);
+            if (broadway.Success)
+            {
+                parsed.IsNotPhysical = true; // it is physical, just weird
+                parsed.Number = broadway.Groups[1].Value;
+                parsed.StreetName = broadway.Groups[2].Value;
+            }
+
             parsed.DirectionalPrefix = DirectionalFinder
                 .ToDirectionalAbbreviation(parsed.DirectionalPrefix);
             parsed.StreetName = TitleCase(parsed.StreetName);
@@ -72,7 +90,8 @@ namespace TerritoryTools.Entities.AddressParsers
             return CultureInfo
               .CurrentCulture
               .TextInfo
-              .ToTitleCase((text ?? string.Empty).ToLower());
+              .ToTitleCase((text ?? string.Empty).ToLower())
+              .Replace("Po Box", "PO Box");
         }
 
         public Address Parse(string addressToParse)
@@ -81,8 +100,8 @@ namespace TerritoryTools.Entities.AddressParsers
         }
 
         public Address Parse(
-            string addressToParse, 
-            string city = null, 
+            string addressToParse,
+            string city = null,
             string state = null,
             string postalCode = null)
         {
@@ -96,13 +115,47 @@ namespace TerritoryTools.Entities.AddressParsers
 
             splitter.SplitAndClean();
 
-            // Find Required Things
-            new NonPhysicalStreetTypeFinder(container).Find();
-            new PhysicalPrefixStreetTypeFinder(container).Find();
-            new NormalStreetTypeFinder(container, StreetTypes()).Find();
-            new StreetTypeStreetNameFinder(container, StreetTypes()).Find();
+            // Detect 'Non Physical Addresses' like PO Boxes
+            // TODO: Maybe call them StreetNameIsFirst addresses
+            //string poBoxTest = Regex.Replace(container.CompleteAddressToParse, @"\.", " ");
+            //poBoxTest = Regex.Replace(poBoxTest, @"\s+", " ");
+            //if (poBoxTest.StartsWith("POB ")
+            //    || poBoxTest.StartsWith("PO Box ")
+            //    || poBoxTest.StartsWith("P O Box "))
+            //{
+            //    container.Address.IsNotPhysical = true;
+            //    container.ParsedAddress.StreetName.Value = "PO Box";
+            //    container.ParsedAddress.StreetName.Index = 0;
+            //}
 
-            VerifyThatStreetTypeIsSet();
+
+            string poBoxExpression = @"P\.?\s*O\.?\s*B(ox)?\s+(\d+)";
+            var m = Regex.Match(container.CompleteAddressToParse, poBoxExpression);
+            if (m.Success)
+            {
+                container.Address.IsNotPhysical = true;
+                container.ParsedAddress.Number.Value = m.Groups[2].Value;
+                container.ParsedAddress.StreetName.Value = "PO Box";
+            }
+
+            string noStreetType = @"^(\d+)\s+(\w+)[, ]?";
+            var broadway = Regex.Match(container.CompleteAddressToParse, noStreetType);
+            if (broadway.Success)
+            {
+                container.Address.IsNotPhysical = true; // it is physical, just weird
+                container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
+                container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
+            }
+
+            // Find Required Things
+            if (!container.Address.IsNotPhysical)
+            {
+                //new NonPhysicalStreetTypeFinder(container).Find();
+                new PhysicalPrefixStreetTypeFinder(container).Find();
+                new NormalStreetTypeFinder(container, StreetTypes()).Find();
+                new StreetTypeStreetNameFinder(container, StreetTypes()).Find();
+                VerifyThatStreetTypeIsSet();
+            }
 
             new AddressNumberFinder(container).Find();
             new UnitTypeFinder(container).Find();
