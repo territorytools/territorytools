@@ -118,9 +118,17 @@ Get-Content -Path "$output_folder\11.0-isolate-address.txt" -Encoding UTF8 | % {
 "Normalize Addresses (only) with Territory Tools Alba Console"
 #######################################################
 $outFile = "$output_folder\11.3-isolate-address-normalize.txt" 
-&"$path_to_alba_exe"  "normalize-addresses" "--input-address-only" "$output_folder\11.2-isolate-address-remove-dots.txt" "--output-path" "$outFile"
-
-$infile = $outfile
+Get-Content -Path "$output_folder\11.2-isolate-address-remove-dots.txt" -Encoding UTF8 `
+    | % { $_ `
+          -replace "\bNorth\b", "N" -replace "\bSouth\b", "S" `
+          -replace "\bEast\b", "E" -replace "\bWest\b", "W" `
+          -replace "\bNortheast\b", "NE" -replace "\bNorthwest\b", "SW" `
+          -replace "\bSouthwest\b", "NW" -replace "\bSoutheast\b", "SE" `
+          -replace "\bStreet\b", "St" -replace "\bAvenue\b", "Ave" `
+          -replace "\bDrive\b", "Dr" -replace "\bParkway\b", "Pkwy" `
+          -replace "\bRoad\b", "Rd" -replace "\bHighway\b", "Hwy" `
+        } `
+    > $outfile
 
 ###############################
 "Isolate Unit"
@@ -214,12 +222,42 @@ For ($i = 0; $i -lt $names.Length; $i++) {
 #####################################################
 "Combining Files into Export File in Alba TSV Format"
 #####################################################
-$outFile = "$output_folder\18-alba.tsv" 
+$outFile = "$output_folder\18.0-alba.tsv" 
 $null > $outFile
 For ($i = 0; $i -lt $names.Length; $i++) {
-    "$($names[$i])`t$($units[$i])`t$($addresses[$i])`t$($cities[$i])`tWA`t$($zips[$i])`t`t`t`t$($phones[$i])`t$($comments[$i])" >> "$output_folder\18-alba.tsv"
+    "$($names[$i])`t$($units[$i])`t$($addresses[$i])`t$($cities[$i])`tWA`t$($zips[$i])`t`t`t`t$($phones[$i])`t$($comments[$i])" >> "$output_folder\18.0-alba.tsv"
 }
 $infile = $outfile
+
+#####################################################
+"Combining Files into Export File in Alba Console TSV Import Format"
+#####################################################
+$outFile = "$output_folder\18.1-alba-console-import.tsv" 
+#$null > $outfile
+$header = "Address_ID`tTerritory_ID`tLanguage`tStatus`tName`tSuite`tAddress`tCity`tProvince`tPostal_code`tCountry`tLatitude`tLongitude`tTelephone`tNotes`tNotes_private"
+$header > $outfile
+$territory_index = 0
+$territory_ids = (101, 102, 103, 104, 105)
+# In case you want to skip the headers
+$starting_row = 1
+For ($i = $starting_row; $i -lt $names.Length; $i++) {
+    "`t$($territory_ids[$territory_index])`tChinese Mandarin`tNew`t$($names[$i])`t$($units[$i])`t$($addresses[$i])`t$($cities[$i])`tWA`t$($zips[$i])`tUSA`t`t`t$($phones[$i])`t$($comments[$i])`t2020-10-29: Imported for November 2020 Campaign" `
+    >> $outFile
+    if($territory_index -eq 4) {
+        $territory_index = 0
+    } else {
+        $territory_index++
+    }
+}
+$infile = $outfile
+
+#"Replacing first row (header)..."
+#$outFile = "$output_folder\18.2-replace-header.tsv" 
+#$header = "Address_ID`tTerritory_ID`tLanguage`tStatus`tName`tSuite`tAddress`tCity`tProvince`tPostal_code`tCountry`tLatitude`tLongitude`tTelephone`tNotes`tNotes_private"
+#$header > $outfile
+#Get-Content -Path $infile -Encoding UTF8 | Select -Skip 1 >> $outfile
+#$infile = $outfile
+
 
 #######################################################
 #"Normalize Addresses with Territory Tools Alba Console"

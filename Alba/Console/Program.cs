@@ -39,6 +39,7 @@ namespace TerritoryTools.Alba.Cli
                         PivotS13Options,
                         AddPhoneNumbersOptions,
                         NormalizeAddressesOptions,
+                        MatchAddressOptions,
                         RemoveAssignedTerritoriesOptions,
                         RemoveAddressIdsOptions>
                     (args)
@@ -52,6 +53,7 @@ namespace TerritoryTools.Alba.Cli
                         (PivotS13Options opts) => opts.Run(),
                         (AddPhoneNumbersOptions opts) => opts.Run(),
                         (NormalizeAddressesOptions opts) => opts.Run(),
+                        (MatchAddressOptions opts) => opts.Run(),
                         (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
                         (RemoveAddressIdsOptions opts) => opts.Run(),
                     errs => 1);
@@ -471,82 +473,6 @@ namespace TerritoryTools.Alba.Cli
 
             LoadTsvAlbaAddresses.SaveTo(sorted, outputPath);
         }
-
-        static void MatchAddresses(List<string> args)
-        {
-            Console.WriteLine("Match Addresses");
-            if (args.Count < 3)
-            {
-                throw new NormalException("Not enough arguments!  Usage: alba match-addresses <alba-tsv-input-file> <csv-match-file> <alba-tsv-output-file>");
-            }
-
-            string inputPath = args[1];
-            string matchPath = args[2];
-            string outputPath = args[3];
-
-            Console.WriteLine($"Input File Path: {inputPath}");
-            Console.WriteLine($"Match File Path: {matchPath}");
-            Console.WriteLine($"Output File Path: {outputPath}");
-
-            var addresses = LoadTsvAlbaAddresses.LoadFrom(inputPath);
-            var matches = LoadTsvAlbaAddresses.LoadFrom(matchPath);
-
-            var errors = new List<AlbaAddressExport>();
-            var output = new List<AlbaAddressExport>();
-
-            var streetTypes = StreetType.Parse(NormalizeAddressesOptions.StreetTypes);
-            var parser = new CompleteAddressParser(streetTypes);
-
-            foreach (var a in addresses)
-            {
-                try
-                {
-                    foreach (var b in matches)
-                    {
-                        //string aText = $"{a.Address}, {a.Suite}, {a.City}, {a.Province} {a.Postal_code}";
-                        //string bText = $"{b.Address}, {b.Suite}, {b.City}, {b.Province} {b.Postal_code}";
-                        //if (parser.Parse(aText)
-                        //    .SameAs(
-                        //        other: parser.Parse(bText), 
-                        //        options: Address.SameAsOptions.ComparePostalCode))
-                        //{ 
-                        if (string.Equals(a.Address, b.Address, StringComparison.OrdinalIgnoreCase)
-                            && string.Equals(a.Suite, b.Suite, StringComparison.OrdinalIgnoreCase)
-                            && (string.Equals(a.City, b.City, StringComparison.OrdinalIgnoreCase)
-                                || string.Equals(a.Postal_code, b.Postal_code, StringComparison.OrdinalIgnoreCase))
-                            && string.Equals(a.Province, b.Province, StringComparison.OrdinalIgnoreCase))
-                        {
-                            output.Add(a);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    errors.Add(a);
-                    Console.WriteLine(e.Message);
-                }
-            }
-
-            if (errors.Count > 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Errors:");
-                foreach (var a in errors)
-                {
-                    Console.WriteLine(a.Address);
-                }
-
-                Console.WriteLine($"Count: {errors.Count}");
-            }
-
-            LoadTsvAlbaAddresses.SaveTo(output, outputPath);
-
-            if (errors.Count > 0)
-            {
-                LoadTsvAlbaAddresses.SaveTo(errors, $"{outputPath}.errors.txt");
-            }
-        }
-
 
         static void ExcludeAddresses(List<string> args)
         {

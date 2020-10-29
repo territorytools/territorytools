@@ -85,6 +85,29 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return formatted.Replace(" ", "+").Replace(",", "%2C");
         }
 
+        public static string AddAddress(AlbaAddressSave address)
+        {
+            string formatted = $"/ts?mod=addresses&cmd=add" +
+                $"&id={address.Address_ID}" +
+                $"&lat={address.Latitude}" +
+                $"&lng={address.Longitude}" +
+                $"&territory_id={address.Territory_ID ?? 0}" +
+                $"&status={address.StatusId}" +
+                $"&language_id={address.LanguageId}" +
+                $"&full_name={address.Name}" +
+                $"&suite={address.Suite}" +
+                $"&address={address.Address}" +
+                $"&city={address.City}" +
+                $"&province={address.Province}" +
+                $"&country={address.Country}" +
+                $"&postcode={address.Postal_code}" +
+                $"&telephone={address.Telephone}" +
+                $"&notes={address.Notes}" +
+                $"&notes_private={address.Notes_private}";
+
+            return HttpUtility.UrlEncode(formatted);
+        }
+
         public static string SaveAddress(AlbaAddressSave address)
         {
             string formatted = $"/ts?mod=addresses&cmd=save" +
@@ -105,7 +128,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&notes={address.Notes}" +
                 $"&notes_private={address.Notes_private}";
 
-            return formatted.Replace(" ", "+").Replace(",", "%2C");
+            return HttpUtility.UrlEncode(formatted);
         }
 
         public static string GetLanguages()
