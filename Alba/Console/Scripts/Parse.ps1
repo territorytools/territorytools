@@ -4,12 +4,12 @@
 $path_to_alba_exe = "C:\Code\territory-tools\Alba\Console\bin\Debug\netcoreapp3.1\alba.exe"
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 $output_folder  = "C:\Users\Marc\Downloads\business-territory-$timestamp"
-$googleDocId = $env:Google_Doc_Id
+$google_doc_id = $env:Google_Doc_Id
 "Parameters Set:"
 "  path_to_alba_exe: $path_to_alba_exe"
 "  timestamp: $timestamp"
 "  output_folder: $output_folder"
-"  google_doc_id: google_doc_id"
+"  google_doc_id: $google_doc_id"
 
 ##################################
 "Creating output folder: $output_folder"
@@ -21,7 +21,7 @@ mkdir -Path $output_folder
 ########################################
 $outfile = "$output_folder\00-downloaded.tsv"
 $googleDocUri = "https://docs.google.com/spreadsheets/d/$google_doc_id/export?exportFormat=tsv"
-Invoke-WebRequest -Uri $google_doc_id -OutFile $outfile
+Invoke-WebRequest -Uri $googleDocUri -OutFile $outfile
 $infile = $outfile
 
 ###################
