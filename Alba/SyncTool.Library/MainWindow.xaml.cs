@@ -198,9 +198,13 @@ namespace TerritoryTools.Alba.SyncTool.Library
             {
                 saveKmlFileDialog.Filter = "Comma Separated Values|*.csv";
             }
+            else if (string.Equals(fileExt, "tsv", StringComparison.OrdinalIgnoreCase))
+            {
+                saveKmlFileDialog.Filter = "Tab Separated Values|*.tsv";
+            }
             else if (string.Equals(fileExt, "txt", StringComparison.OrdinalIgnoreCase))
             {
-                saveKmlFileDialog.Filter = "Tab Separated Values|*.txt";
+                saveKmlFileDialog.Filter = "Text File (Tab Separated Values)|*.txt";
             }
             else if (string.Equals(fileExt, "html", StringComparison.OrdinalIgnoreCase))
             {
