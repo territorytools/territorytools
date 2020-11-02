@@ -10,7 +10,7 @@ namespace Controllers.UseCases
     {
         public static IEnumerable<T> LoadFrom(
             string path, 
-            string deliminator = ",")
+            string deliminator = "\t")
         {
             var list = new List<T>();
             if (string.IsNullOrWhiteSpace(path))
@@ -39,7 +39,7 @@ namespace Controllers.UseCases
             using (var writer = new StreamWriter(path))
             using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = ",";
+                csv.Configuration.Delimiter = "\t";
                 csv.WriteRecords(addresses);
             }
         }

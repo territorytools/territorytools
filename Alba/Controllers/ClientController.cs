@@ -4,6 +4,7 @@ using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Alba.Controllers.Models;
 using Controllers.UseCases;
 using System;
+using System.Threading;
 
 namespace TerritoryTools.Alba.Controllers
 {
@@ -86,31 +87,43 @@ namespace TerritoryTools.Alba.Controllers
 
             int geocoded = 0;
             int alreadyGeocode = 0;
+            int errors = 0;
             var addresses = LoadCsvAddresses.LoadFrom(path);
             foreach (var address in addresses)
             {
-                if (address.Latitude == null
-                    || address.Longitude == null
-                    || address.Latitude == 0
-                    || address.Longitude == 0)
+                try
                 {
-                    var coordinates = new AzureMapsmGeocodeAddress(view, amClient)
-                        .Geocode(address);
+                    Thread.Sleep(300); // Free account limited to 50 per second
+                    if (address.Latitude == null
+                        || address.Longitude == null
+                        || address.Latitude == 0
+                        || address.Longitude == 0)
+                    {
+                        var coordinates = new AzureMapsmGeocodeAddress(view, amClient)
+                            .Geocode(address);
 
-                    address.Latitude = coordinates.Latitude;
-                    address.Longitude = coordinates.Longitude;
+                        address.Latitude = coordinates.Latitude;
+                        address.Longitude = coordinates.Longitude;
 
-                    geocoded++;
+                        geocoded++;
+                    }
+                    else
+                    {
+                        alreadyGeocode++;
+                    }
                 }
-                else
+                catch(Exception)
                 {
-                    alreadyGeocode++;
+                    errors++;
+                    address.Latitude = 0.0;
+                    address.Longitude = 0.0;
                 }
             }
 
             view.AppendResultText($"\nTotal Addresses: {(geocoded + alreadyGeocode)}");
             view.AppendResultText($"\nGeocoded: {geocoded}");
             view.AppendResultText($"\nAlready Geocoded (Skipped): {alreadyGeocode}");
+            view.AppendResultText($"\nErrors: {errors}");
 
             var newPath = view.GetFileNameToSaveAs(path, "csv");
             if (string.IsNullOrWhiteSpace(newPath))

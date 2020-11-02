@@ -28,6 +28,13 @@ namespace TerritoryTools.Alba.Cli.Verbs
         public string NotesPrivateContain { get; set; }
 
         [Option(
+         "alba-territory-id",
+         Required = false,
+         HelpText = "Find records with the Alba territory id")]
+        [Value(0)]
+        public int AlbaTerritoryId { get; set; }
+
+        [Option(
             "output",
             Required = true,
             HelpText = "Output remain addresses in Alba file path (Alba CSV)")]
@@ -57,6 +64,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             Console.WriteLine("Removing addresses by id...");
             Console.WriteLine($"SourceAddresses: {SourceAddresses}");
             Console.WriteLine($"NotesPrivateContain: {NotesPrivateContain}");
+            Console.WriteLine($"AlbaTerritoryId: {AlbaTerritoryId}");
             Console.WriteLine($"OutputFilePath: {OutputFilePath}");
 
             var source = LoadCsv<AlbaAddressExport>.LoadFrom(SourceAddresses);
@@ -67,6 +75,24 @@ namespace TerritoryTools.Alba.Cli.Verbs
             {
                 var filtered = source
                     .Where(a => a.Notes_private.Contains(NotesPrivateContain))
+                    .ToList();
+
+                Console.WriteLine($"Filtered Addresses: {filtered.Count}");
+
+                var results = new List<AlbaAddressImport>();
+                foreach (var address in filtered)
+                {
+                    results.Add(AlbaAddressImport.From(address));
+                }
+
+                Console.WriteLine($"Result Addresses: {results.Count}");
+
+                LoadCsvAddresses.SaveTo(results, OutputFilePath);
+            }
+            else if(AlbaTerritoryId != 0)
+            {
+                var filtered = source
+                    .Where(a => a.Territory_ID == AlbaTerritoryId)
                     .ToList();
 
                 Console.WriteLine($"Filtered Addresses: {filtered.Count}");

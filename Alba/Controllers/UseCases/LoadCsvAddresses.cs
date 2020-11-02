@@ -20,7 +20,7 @@ namespace Controllers.UseCases
             using (var reader = new StreamReader(path))
             using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = ",";
+                csv.Configuration.Delimiter = "\t";
                 csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
                 return csv.GetRecords<AlbaAddressImport>().ToList();
             }
@@ -33,7 +33,7 @@ namespace Controllers.UseCases
             using (var writer = new StreamWriter(path))
             using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = ",";
+                csv.Configuration.Delimiter = "\t";
                 csv.WriteRecords(addresses);
             }
         }
