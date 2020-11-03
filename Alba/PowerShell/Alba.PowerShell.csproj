@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
+  </ItemGroup>
+
 </Project>
