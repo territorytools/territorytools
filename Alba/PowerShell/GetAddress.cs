@@ -40,6 +40,7 @@ namespace PowerShell
             {
                 csv.Configuration.Delimiter = Format == "TSV" ? "\t" : ",";
                 csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
+                csv.Configuration.BadDataFound = null;
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 WriteVerbose("Start looping addresses...");
                 foreach (var address in addresses)

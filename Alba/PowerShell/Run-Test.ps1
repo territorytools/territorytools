@@ -5,12 +5,14 @@ Import-Module ".\TerritoryTools.Alba.PowerShell.dll";
 
 $master = Get-Address `
     -Verbose `
-    -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.tsv" `
-    -Format TSV
+    -Path "$HOME\Downloads\Addresses.2020-11-06.0210.txt"
+
+#     -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.tsv" 
 
  $addresses= Get-Address `
     -Verbose `
-    -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.TEST.tsv"
+    -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.tsv" 
+#    -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.TEST.tsv"
 
 "Finding duplicates..."
 $addresses | Find-Duplicates -MasterList $master

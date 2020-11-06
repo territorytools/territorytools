@@ -138,7 +138,7 @@ namespace TerritoryTools.Entities.AddressParsers
                 container.ParsedAddress.StreetName.Value = "PO Box";
             }
 
-            string noStreetType = @"^(\d+)\s+(\w+)[, ]?";
+            string noStreetType = @"^(\d+)\s+([a-zA-Z-]+)$";
             var broadway = Regex.Match(container.CompleteAddressToParse, noStreetType);
             if (broadway.Success)
             {

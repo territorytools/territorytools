@@ -765,6 +765,20 @@ namespace MinistryEntities.Tests
         }
 
         [Test]
+        public void Parse_123_Broadway_NoStreetType()
+        {
+            var door = Parse("125 Broadway");
+
+            Assert.AreEqual("125", door.Number, "StreetNumber");
+            Assert.AreEqual("", door.DirectionalPrefix, "StreetDirectionalPrefix");
+            Assert.AreEqual("Broadway", door.StreetName, "StreetName");
+            Assert.AreEqual("", door.StreetType, "StreetType");
+            Assert.AreEqual("", door.DirectionalSuffix, "StreetDirectionSuffix");
+            Assert.AreEqual("", door.UnitType, "UnitType");
+            Assert.AreEqual("", door.UnitNumber, "UnitNumber");
+        }
+
+        [Test]
         public void Parse_UnitNumber_MovesPoundSign()
         {
             var door = Parse("325 9th Ave #359819");

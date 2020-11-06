@@ -37,25 +37,38 @@ namespace PowerShell
         // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
-            if (MasterList.Exists(a => string.Equals(a.Address, Address.Address, StringComparison.OrdinalIgnoreCase)))
+
+            try
             {
-                WriteObject($"DUPLICATE: {Address.Address}");
+                var parsed = parser.Normalize($"{Address.Address}, {Address.Suite}", Address.City, Address.Province, Address.Postal_code);
+
+                if (MasterList.Exists(a => string.Equals(a.Address, parsed.CombineStreet(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    WriteObject($"DUPLICATE: {Address.Address} -> {parsed.CombineStreet()} {parsed.CombineUnit()}");
+                }
+                else
+                {
+                    //string text = $"{Address.Address}, {Address.City}, {Address.Province}  {Address.Postal_code}";
+                    string text = $"{Address.Address}";
+
+                    WriteObject($"UNIQUE: {text}");
+
+                    var a = new CompleteAddressParser(StreetType.Parse(StreetTypes))
+                            .Normalize(text);
+
+                    WriteObject($"  STREET NUMBER: {a.Number}");
+                    WriteObject($"  STREET NAME: {a.StreetName}");
+                    WriteObject($"  STREET TYPE: {a.StreetType}");
+                    WriteObject($"  DIR SUFFIX: {a.DirectionalSuffix}");
+                    WriteObject($"  DIR City: {a.City}");
+                    WriteObject($"  DIR STATE: {a.State}");
+                    WriteObject($"  DIR POSTAL CODE: {a.PostalCode}");
+                    WriteObject($"  Combined: {a.CombineStreet()}");
+                }
             }
-            else
+            catch(Exception)
             {
-                string text = $"{Address.Address}, {Address.City}, {Address.Province}  {Address.Postal_code}";
-                WriteObject($"UNIQUE: {text}");
-                //var a = parser.Normalize(Address.Address, Address.City, Address.Province, Address.Postal_code);
-                //var a = parser.Parse($"{Address.Address}, {Address.City}, {Address.Province}  {Address.Postal_code}");
-                var a = parser.Parse(text);
-                WriteObject($"STREET NUMBER: {a.Number}");
-                WriteObject($"STREET NAME: {a.StreetName}");
-                WriteObject($"STREET TYPE: {a.StreetType}");
-                WriteObject($"DIR SUFFIX: {a.DirectionalSuffix}");
-                WriteObject($"DIR City: {a.City}");
-                WriteObject($"DIR STATE: {a.State}");
-                WriteObject($"DIR POSTAL CODE: {a.PostalCode}");
-                WriteObject($"Combined: {a.CombineStreet()}");
+                //Skip
             }
         }
 
