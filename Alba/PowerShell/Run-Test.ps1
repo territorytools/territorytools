@@ -3,8 +3,14 @@ Import-Module "$HOME\.nuget\packages\microsoft.bcl.asyncinterfaces\1.1.0\lib\net
 Import-Module "$HOME\.nuget\packages\csvhelper\15.0.1\lib\netstandard2.0\CsvHelper.dll"; 
 Import-Module ".\TerritoryTools.Alba.PowerShell.dll"; 
 
-$addresses = Get-Address `
+$master = Get-Address `
     -Verbose `
     -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.tsv" `
     -Format TSV
 
+ $addresses= Get-Address `
+    -Verbose `
+    -Path "$HOME\Downloads\business-territory-2020-10-29-152731.Done\18.1-alba-console-import.TEST.tsv"
+
+"Finding duplicates..."
+$addresses | Find-Duplicates -MasterList $master

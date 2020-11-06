@@ -1,12 +1,10 @@
 ﻿using Controllers.AlbaServer;
 using CsvHelper;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 
 namespace PowerShell
 {
@@ -40,7 +38,7 @@ namespace PowerShell
             using (var reader = new StreamReader(Path))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = "\t";
+                csv.Configuration.Delimiter = Format == "TSV" ? "\t" : ",";
                 csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 WriteVerbose("Start looping addresses...");
@@ -48,6 +46,7 @@ namespace PowerShell
                 {
                     Addresses.Add(address);
                 }
+
                 WriteVerbose($"{addresses.Count()} addresses loaded.");
             }
         }
