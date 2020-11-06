@@ -1,13 +1,18 @@
 ﻿using Controllers.AlbaServer;
+using CsvHelper;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 
 namespace PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"AlbaAddressForImport")]
+    [Cmdlet(VerbsCommon.Get,"Address")]
     [OutputType(typeof(AlbaAddressImport))]
-    public class GetAlbaAddressForImport : PSCmdlet
+    public class GetAddress : PSCmdlet
     {
         [Parameter(
             ValueFromPipeline = true,
@@ -25,24 +30,38 @@ namespace PowerShell
             ValueFromPipelineByPropertyName = true)]
         public string Path { get; set; }
 
+        private List<AlbaAddressImport> Addresses = new List<AlbaAddressImport>();
+        
         // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
             WriteVerbose("Begin!");
+
+            using (var reader = new StreamReader(Path))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.Delimiter = "\t";
+                csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
+                var addresses = csv.GetRecords<AlbaAddressImport>();
+                WriteVerbose("Start looping addresses...");
+                foreach (var address in addresses)
+                {
+                    Addresses.Add(address);
+                }
+                WriteVerbose($"{addresses.Count()} addresses loaded.");
+            }
         }
 
         // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
-            WriteObject(new AlbaAddressImport
-            { 
-                 Address = "Test Address"
-            });
+            WriteObject(Addresses);
         }
 
         // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
         protected override void EndProcessing()
         {
+            
             WriteVerbose("End!");
         }
     }
