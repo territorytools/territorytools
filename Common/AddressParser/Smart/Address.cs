@@ -1,6 +1,6 @@
 ﻿namespace TerritoryTools.Common.AddressParser.Smart
 {
-    public class ParsedAddress
+    public class Address
     {
         public Street Street { get; set; } = new Street();
         public Unit Unit { get; set; } = new Unit();

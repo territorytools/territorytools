@@ -18,7 +18,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("123", Test("123 Main St").Street.Number.ToString());
         }
 
-        ParsedAddress Test(string text)
+        Address Test(string text)
         {
             var parser = new Parser();
 

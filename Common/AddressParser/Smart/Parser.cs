@@ -7,24 +7,30 @@ namespace TerritoryTools.Common.AddressParser.Smart
     {
         public Address Parse(string text)
         {
-            var parsed = new Address();
-
-            if(string.IsNullOrWhiteSpace(text))
+            var address = new Address();
+            if (string.IsNullOrWhiteSpace(text))
             {
-                return parsed;
+                return address;
             }
 
+            address.Street.Number = FindStreetNumber(text);
+
+            return address;
+        }
+
+        static string FindStreetNumber(string text)
+        {
             var parts = text.Split(
-                new char[] { ' ' }, 
+                new char[] { ' ' },
                 StringSplitOptions.RemoveEmptyEntries);
 
             string numberPattern = @"\d+";
-            if(parts.Length > 0 && Regex.IsMatch(parts[0], numberPattern))
+            if (parts.Length > 0 && Regex.IsMatch(parts[0], numberPattern))
             {
-                parsed.Street.Number = parts[0];
+                return parts[0];
             }
 
-            return parsed;
+            return string.Empty;
         }
     }
 }
