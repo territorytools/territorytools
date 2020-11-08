@@ -11,18 +11,32 @@ namespace TerritoryTools.Entities.AddressParsers
         AddressParseContainer container { get; set; }
         string addressToParse;
         List<StreetType> streetTypes;
+        List<StreetType> streetNameAfterTypes;
         Dictionary<string, StreetType> streetTypeMap = new Dictionary<string, StreetType>();
+        Dictionary<string, StreetType> streetNameAfterTypeMap = new Dictionary<string, StreetType>();
 
 
-        public CompleteAddressParser(IEnumerable<StreetType> streetTypes)
+        public CompleteAddressParser(
+            IEnumerable<StreetType> streetTypes,
+            IEnumerable<StreetType> streetNameAfterTypes = null)
         {
             this.streetTypes = streetTypes.ToList();
-            foreach(var t in this.streetTypes)
+            foreach (var t in this.streetTypes)
             {
                 streetTypeMap[t.Full.ToUpper()] = t;
                 if (t.Abbreviation != null)
                 {
                     streetTypeMap[t.Abbreviation?.ToUpper()] = t;
+                }
+            }
+
+            this.streetNameAfterTypes = streetNameAfterTypes.ToList();
+            foreach (var t in this.streetNameAfterTypes)
+            {
+                streetNameAfterTypeMap[t.Full.ToUpper()] = t;
+                if (t.Abbreviation != null)
+                {
+                    streetNameAfterTypeMap[t.Abbreviation?.ToUpper()] = t;
                 }
             }
         }
@@ -158,6 +172,19 @@ namespace TerritoryTools.Entities.AddressParsers
             }
 
             new AddressNumberFinder(container).Find();
+
+            if(container.ParsedAddress.Number.Index == 0)
+            {
+                if(string.Equals(container.AddressPartResults[1].Value, "HWY", StringComparison.OrdinalIgnoreCase))
+                {
+                    container.Address.StreetNameIsAfterType = true;
+                    container.Address.StreetType = "HWY";
+                    container.Address.StreetName = container.AddressPartResults[2].Value;
+                }
+            }
+
+
+
             new UnitTypeFinder(container).Find();
 
             if (string.IsNullOrWhiteSpace(postalCode))

@@ -20,6 +20,12 @@ namespace MinistryEntities.Tests
                 new StreetType("VALLEY")
             };
 
+        readonly IEnumerable<StreetType> StreetNameAfterTypes
+            = new List<StreetType>()
+            {
+                new StreetType("HIGHWAY"){ Abbreviation = "HWY" }
+            };
+
         [Test]
         public void Parse_Null_ThrowsExceptions()
         {
@@ -288,6 +294,20 @@ namespace MinistryEntities.Tests
         }
 
         [Test]
+        public void Parse_StreenName_HasHyphen()
+        {
+            var door = Parse("20 Juniper-Tree Ave");
+
+            Assert.AreEqual("20", door.Number, "StreetNumber");
+            Assert.AreEqual("", door.DirectionalPrefix, "StreetDirectionalPrefix");
+            Assert.AreEqual("Juniper-Tree", door.StreetName, "StreetName");
+            Assert.AreEqual("Ave", door.StreetType, "StreetType");
+            Assert.AreEqual("", door.DirectionalSuffix, "StreetDirectionSuffix");
+            Assert.AreEqual("", door.UnitType, "UnitType");
+            Assert.AreEqual("", door.UnitNumber, "UnitNumber");
+        }
+
+        [Test]
         public void Parse_300_N_Juniper_Tree_Ave()
         {
             var door = Parse("300 N Juniper Tree Ave");
@@ -431,6 +451,22 @@ namespace MinistryEntities.Tests
             Assert.AreEqual("", doorB.UnitType);
             Assert.AreEqual("", doorB.UnitNumber);
             Assert.AreEqual("16th", doorB.StreetName, "StreetName");
+        }
+
+        [Test]
+        public void Parse_Hwy_99()
+        {
+            var door = Parse("1234 Hwy 99");
+
+            Assert.AreEqual("1234", door.Number, "StreetNumber");
+            Assert.AreEqual("", door.DirectionalPrefix, "StreetDirectionalPrefix");
+            Assert.AreEqual("Hwy", door.StreetType, "StreetType");
+            Assert.AreEqual("", door.DirectionalSuffix, "StreetDirectionSuffix");
+            Assert.AreEqual("", door.UnitType, "UnitType");
+            Assert.AreEqual("", door.UnitNumber, "UnitNumber");
+            Assert.AreEqual("99", door.StreetName, "StreetName");
+            Assert.IsTrue(door.StreetNameIsAfterType, "StreetNameIsAfterType");
+            Assert.AreEqual("123 Hwy 99", door.CombineStreet(), "CombineStreet");
         }
 
         [Test]
@@ -902,7 +938,7 @@ namespace MinistryEntities.Tests
             string state = null,
             string postalCode = null)
         {
-            return new CompleteAddressParser(StreetTypes)
+            return new CompleteAddressParser(StreetTypes, StreetNameAfterTypes)
                .Parse(text, city, state, postalCode);
         }
 
@@ -912,7 +948,7 @@ namespace MinistryEntities.Tests
             string state = null,
             string postalCode = null)
         {
-            return new CompleteAddressParser(StreetTypes)
+            return new CompleteAddressParser(StreetTypes, StreetNameAfterTypes)
                .Normalize(text, city, state, postalCode);
         }
     }
