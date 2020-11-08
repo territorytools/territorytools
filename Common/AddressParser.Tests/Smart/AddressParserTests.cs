@@ -18,6 +18,18 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("123", Test("123 Main St").Street.Number.ToString());
         }
 
+        [Test]
+        public void Parser_Region_Code_Normal()
+        {
+            Assert.AreEqual("WA", Test("123 Main St Lynnwood WA 98087").Region.Code.ToString());
+        }
+
+        [Test]
+        public void Parser_Postal_Code_Normal()
+        {
+            Assert.AreEqual("98087", Test("123 Main St Lynnwood WA 98087").Postal.Code.ToString());
+        }
+
         Address Test(string text)
         {
             var parser = new Parser();
