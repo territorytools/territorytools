@@ -5,9 +5,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
 {
     public class Parser
     {
-        public ParsedAddress Parse(string text)
+        public Address Parse(string text)
         {
-            var parsed = new ParsedAddress();
+            var parsed = new Address();
 
             if(string.IsNullOrWhiteSpace(text))
             {
