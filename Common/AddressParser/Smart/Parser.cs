@@ -26,50 +26,73 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             unParsed = words;
 
-            address.Street.Number = FindStreetNumber(text);
-            address.Postal.Code = FindPostalCode(text);
-            address.Region.Code = FindRegionCode(text);
+            // Search from the beginning
+            address.Street.Number = FindStreetNumber();
+
+            // Search backwards from the end
+            address.Postal.Code = FindPostalCode();
+            address.Region.Code = FindRegionCode();
 
             return address;
         }
 
-        string FindStreetNumber(string text)
+        string FindStreetNumber()
         {
             string streetNumberPattern = @"^\d+$";
-            if (unParsed.Count > 0 && Regex.IsMatch(unParsed[0], streetNumberPattern))
+            string firstWord = FirstWord();
+            if (unParsed.Count > 0 && Regex.IsMatch(firstWord, streetNumberPattern))
             {
-                string number = unParsed[0];
-                unParsed.RemoveAt(0);
-                return number;
+                RemoveFirstWord();
+                return firstWord;
             }
 
             return string.Empty;
         }
 
-        string FindPostalCode(string text)
+        string FindPostalCode()
         {
             string postalCodePattern = @"^\d{5}$";
-            string lastWord = unParsed[unParsed.Count - 1];
+            string lastWord = LastUnParsedWord();
             if (unParsed.Count > 0 && Regex.IsMatch(lastWord, postalCodePattern))
             {
-                unParsed.RemoveAt(unParsed.Count - 1);
+                RemoveLastWord();
                 return lastWord;
             }
 
             return string.Empty;
         }
 
-        string FindRegionCode(string text)
+        string FindRegionCode()
         {
             string regionCodePattern = @"^[a-zA-Z]{2}$";
-            string lastWord = unParsed[words.Count - 1];
+            string lastWord = LastUnParsedWord();
             if (unParsed.Count > 0 && Regex.IsMatch(lastWord, regionCodePattern))
             {
-                unParsed.RemoveAt(unParsed.Count - 1);
+                RemoveLastWord();
                 return lastWord;
             }
 
             return string.Empty;
+        }
+
+        string FirstWord()
+        {
+            return unParsed.First();
+        }
+
+        string LastUnParsedWord()
+        {
+            return unParsed.Last();
+        }
+
+        void RemoveFirstWord()
+        {
+            unParsed.RemoveAt(0);
+        }
+
+        void RemoveLastWord()
+        {
+            unParsed.RemoveAt(unParsed.Count - 1);
         }
     }
 }
