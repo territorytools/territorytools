@@ -28,6 +28,14 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             // Search from the beginning
             address.Street.Number = FindStreetNumber();
+            if (string.IsNullOrWhiteSpace(address.Street.Number))
+            {
+                address.Street.Name.Name = FindNonStreet();
+                if(!string.IsNullOrWhiteSpace(address.Street.Name.Name))
+                {
+                    address.Street.Number = FindNonStreetNumber();
+                }
+            }
 
             // Search backwards from the end
             address.Postal.Code = FindPostalCode();
@@ -40,7 +48,66 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             string streetNumberPattern = @"^\d+$";
             string firstWord = FirstWord();
-            if (unParsed.Count > 0 && Regex.IsMatch(firstWord, streetNumberPattern))
+            if(unParsed.Count > 0 && Regex.IsMatch(firstWord, streetNumberPattern))
+            {
+                RemoveFirstWord();
+                return firstWord;
+            }
+
+            return string.Empty;
+        }
+
+        string FindNonStreet()
+        {
+            string pattern = @"^P(ost)?\.?\s*O(ffice)?\.?\s*B(\.|ox\b)?";
+            string text = UnParsedText();
+            //Regex.IsMatch(text, pattern)
+            var r = new Regex(pattern, RegexOptions.IgnoreCase);
+            var m = r.Match(text);
+            
+            if (m.Success)
+            {
+                int wordCount = m.Value.Split(' ').Length;
+                for(int i = 0; i < wordCount; i++)
+                {
+                    RemoveFirstWord();
+                }
+
+                return m.Value;
+            }
+
+
+            //string oneWordNonStreetPattern = @"^P\.?O\.?B(\.|ox)?$";
+            //string firstWord = FirstWord();
+            //if (unParsed.Count > 0 && Regex.IsMatch(firstWord, oneWordNonStreetPattern))
+            //{
+            //    RemoveFirstWord();
+            //    return firstWord;
+            //}
+
+            //string nonStreetPattern1 = @"^(P(\.|ost)?(O\.?)?$";
+            ////string nonPhysicalPattern2 = @"^(O(\.|ffice)?)$";
+            //string nonStreetPattern3 = @"^B(\.|ox)?$";
+            //if (unParsed.Count > 1 && Regex.IsMatch(firstWord, nonStreetPattern1))
+            //{
+            //    //RemoveFirstWord();
+            //    string secondWord = unParsed[1]; //FirstWord();
+            //    if(Regex.IsMatch(secondWord, nonStreetPattern3))
+            //    {
+            //        RemoveFirstWord();
+            //        RemoveFirstWord();
+            //        return firstWord;
+            //    }
+            //}
+
+            return string.Empty;
+        }
+
+        string FindNonStreetNumber()
+        {
+            string nonStreetNumberPattern = @"^\d+$";
+            string firstWord = FirstWord();
+            if (unParsed.Count > 0 && Regex.IsMatch(firstWord, nonStreetNumberPattern))
             {
                 RemoveFirstWord();
                 return firstWord;
@@ -52,11 +119,14 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindPostalCode()
         {
             string postalCodePattern = @"^\d{5}$";
-            string lastWord = LastUnParsedWord();
-            if (unParsed.Count > 0 && Regex.IsMatch(lastWord, postalCodePattern))
+            if (unParsed.Count > 0)
             {
-                RemoveLastWord();
-                return lastWord;
+                string lastWord = LastWord();
+                if (Regex.IsMatch(lastWord, postalCodePattern))
+                {
+                    RemoveLastWord();
+                    return lastWord;
+                }
             }
 
             return string.Empty;
@@ -65,11 +135,14 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindRegionCode()
         {
             string regionCodePattern = @"^[a-zA-Z]{2}$";
-            string lastWord = LastUnParsedWord();
-            if (unParsed.Count > 0 && Regex.IsMatch(lastWord, regionCodePattern))
+            if (unParsed.Count > 0)
             {
-                RemoveLastWord();
-                return lastWord;
+                string lastWord = LastWord();
+                if (Regex.IsMatch(lastWord, regionCodePattern))
+                {
+                    RemoveLastWord();
+                    return lastWord;
+                }
             }
 
             return string.Empty;
@@ -80,7 +153,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             return unParsed.First();
         }
 
-        string LastUnParsedWord()
+        string LastWord()
         {
             return unParsed.Last();
         }
@@ -93,6 +166,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
         void RemoveLastWord()
         {
             unParsed.RemoveAt(unParsed.Count - 1);
+        }
+
+        string UnParsedText()
+        {
+            return string.Join(" ", unParsed);
         }
     }
 }
