@@ -25,10 +25,32 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("Main St", Test("123 Main St").Street.Name.ToString());
         }
 
+        //[Test]
+        //public void Parse_Commas_StreetCityRegion()
+        //{
+        //    string text = "123 Main St, Seattle, WA";
+        //    Assert.AreEqual("Main St", Test(text).Street.Name.ToString());
+        //    Assert.AreEqual("Seattle", Test(text).City.Name);
+        //    Assert.AreEqual("WA", Test(text).Region.Code);
+        //}
+
         [Test]
-        public void Parse_Street_Name_wCityAndRegion()
+        public void Parse_Street_TypelessName_wCityAndRegion()
         {
-            Assert.AreEqual("Main St", Test("123 Main St Seattle WA").Street.Name.ToString());
+            string text = "123 Broadway Everett WA";
+            Assert.AreEqual("Broadway", Test(text).Street.Name.ToString());
+            Assert.AreEqual("Everett", Test(text).City.Name);
+            Assert.AreEqual("WA", Test(text).Region.Code);
+        }
+
+        [Test]
+        public void Parse_Street_TypelessName_TwoWordCityAndRegion()
+        {
+            string text = "123 Main North Bend WA";
+            Assert.AreEqual("Main", Test(text).Street.Name.ToString());
+            Assert.AreEqual("North Bend", Test(text).City.Name);
+            Assert.AreEqual("WA", Test(text).Region.Code);
+
         }
 
         [Test]
@@ -74,7 +96,8 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         {
             var parser = new Parser(
                 new List<string> { 
-                    "Seattle", 
+                    "Seattle",
+                    "Everett",
                     "North Bend", 
                     "Lake Forest Park" });
 

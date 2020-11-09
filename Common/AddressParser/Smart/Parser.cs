@@ -47,9 +47,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
             // Search backwards from the end
             address.Postal.Code = FindPostalCode();
             address.Region.Code = FindRegionCode();
+            address.City.Name = FindCityName();
 
-
-            if(!string.IsNullOrWhiteSpace(address.Street.Number) 
+            if (!string.IsNullOrWhiteSpace(address.Street.Number) 
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
                 address.Street.Name.Name = FindStreetName();
@@ -127,7 +127,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindRegionCode()
         {
             string regionCodePattern = @"^[a-zA-Z]{2}$";
-            // Region Code (Province/State)  should have at least three words 
+            // Region Code (Province/State) should have at least three words 
             // before it and street number should already be parsed
             if (unParsed.Count >= 3 && !string.IsNullOrWhiteSpace(address.Street.Number))
             {
@@ -136,6 +136,26 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 {
                     RemoveLastWord();
                     return lastWord;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        string FindCityName()
+        {
+            // City Name should have at least one words before it
+            if(unParsed.Count > 1 && !string.IsNullOrWhiteSpace(address.Region.Code))
+            {
+                string lastWord = LastWord();
+                foreach (string city in validCities)
+                {
+                    var cityWords = city.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (string.Equals(lastWord, cityWords.Last(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        RemoveLastWord();
+                        return lastWord;
+                    }
                 }
             }
 
