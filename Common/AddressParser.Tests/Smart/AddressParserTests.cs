@@ -74,6 +74,13 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
+        public void Parser_Post_Office_Barn_Fails()
+        {
+
+            AssertStreetNumberName("Post Office Barn 321", string.Empty, string.Empty);
+        }
+
+        [Test]
         public void Parser_Region_Code_Normal()
         {
             Assert.AreEqual("WA", Test("123 Main St Lynnwood WA 98087").Region.Code.ToString());

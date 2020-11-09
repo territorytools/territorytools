@@ -59,9 +59,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindNonStreet()
         {
-            string pattern = @"^P(ost)?\.?\s*O(ffice)?\.?\s*B(\.|ox\b)?";
+            string pattern = @"^P(ost)?\.?\s*O(ffice)?\.?\s*(B\.|B\b|Box\b)";
             string text = UnParsedText();
-            //Regex.IsMatch(text, pattern)
+
             var r = new Regex(pattern, RegexOptions.IgnoreCase);
             var m = r.Match(text);
             
@@ -75,30 +75,6 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
                 return m.Value;
             }
-
-
-            //string oneWordNonStreetPattern = @"^P\.?O\.?B(\.|ox)?$";
-            //string firstWord = FirstWord();
-            //if (unParsed.Count > 0 && Regex.IsMatch(firstWord, oneWordNonStreetPattern))
-            //{
-            //    RemoveFirstWord();
-            //    return firstWord;
-            //}
-
-            //string nonStreetPattern1 = @"^(P(\.|ost)?(O\.?)?$";
-            ////string nonPhysicalPattern2 = @"^(O(\.|ffice)?)$";
-            //string nonStreetPattern3 = @"^B(\.|ox)?$";
-            //if (unParsed.Count > 1 && Regex.IsMatch(firstWord, nonStreetPattern1))
-            //{
-            //    //RemoveFirstWord();
-            //    string secondWord = unParsed[1]; //FirstWord();
-            //    if(Regex.IsMatch(secondWord, nonStreetPattern3))
-            //    {
-            //        RemoveFirstWord();
-            //        RemoveFirstWord();
-            //        return firstWord;
-            //    }
-            //}
 
             return string.Empty;
         }
