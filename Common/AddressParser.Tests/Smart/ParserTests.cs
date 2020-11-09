@@ -50,7 +50,15 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("Main", Test(text).Street.Name.ToString());
             Assert.AreEqual("North Bend", Test(text).City.Name);
             Assert.AreEqual("WA", Test(text).Region.Code);
+        }
 
+        [Test]
+        public void Parse_Street_TypelessName_OneWordCityAndRegion()
+        {
+            string text = "123 Main South Bend WA";
+            Assert.AreEqual("Main South", Test(text).Street.Name.ToString());
+            Assert.AreEqual("Bend", Test(text).City.Name);
+            Assert.AreEqual("WA", Test(text).Region.Code);
         }
 
         [Test]

@@ -144,17 +144,29 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindCityName()
         {
-            // City Name should have at least one words before it
+            // City Name should have at least one word before it
             if(unParsed.Count > 1 && !string.IsNullOrWhiteSpace(address.Region.Code))
             {
                 string lastWord = LastWord();
                 foreach (string city in validCities)
                 {
+                    // Start with longer valid city names first
                     var cityWords = city.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (string.Equals(lastWord, cityWords.Last(), StringComparison.OrdinalIgnoreCase))
+                    cityWords.Reverse();
+                    var unParsedReversed = unParsed;
+                    unParsedReversed.Reverse();
+
+                    if(cityWords.Length >= (unParsed.Count + 1))
                     {
-                        RemoveLastWord();
-                        return lastWord;
+                        bool 
+                        for(int i = 0; i < cityWords.Length; i++)
+                        {
+                            if(!string.Equals(cityWords[i], unParsedReversed[i], StringComparison.OrdinalIgnoreCase))
+                            {
+                                break;
+                            }
+                        }
+
                     }
                 }
             }
