@@ -13,7 +13,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
-        public void Parse_Street_Number_Normal()
+        public void Parse_Street_Normal()
         {
             Assert.AreEqual("123", Test("123 Main St").Street.Number.ToString());
         }
@@ -21,55 +21,13 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [Test]
         public void Parse_NonStreet_PO_Box()
         {
-            AssertStreetNumberName("PO Box 321", "321", "PO Box");
-        }
-
-        [Test]
-        public void Parse_NonStreet_PO_Box_wDots()
-        {
-
-            AssertStreetNumberName("P.O. Box 321", "321", "P.O. Box");
-        }
-
-        [Test]
-        public void Parse_NonStreet_POBox_wDots()
-        {
-
-            AssertStreetNumberName("P.O.Box 321", "321", "P.O.Box");
-        }
-
-        [Test]
-        public void Parse_NonStreet_P_O_Box_wDotsSpaces()
-        {
-
-            AssertStreetNumberName("P. O. Box 321", "321", "P. O. Box");
-        }
-
-        [Test]
-        public void Parse_NonStreet_POB()
-        {
-
             AssertStreetNumberName("POB 321", "321", "POB");
-        }
-
-        [Test]
-        public void Parse_NonStreet_POB_wSpaces()
-        {
-
+            AssertStreetNumberName("PO Box 321", "321", "PO Box");
             AssertStreetNumberName("P O B 321", "321", "P O B");
-        }
-
-        [Test]
-        public void Parse_NonStreet_P_O_B_wDotsSpaces()
-        {
-
+            AssertStreetNumberName("P.O.Box 321", "321", "P.O.Box");
+            AssertStreetNumberName("P.O. Box 321", "321", "P.O. Box");
             AssertStreetNumberName("P. O. B. 321", "321", "P. O. B.");
-        }
-
-        [Test]
-        public void Parse_NonStreet_Post_Office_Box()
-        {
-
+            AssertStreetNumberName("P. O. Box 321", "321", "P. O. Box");
             AssertStreetNumberName("Post Office Box 321", "321", "Post Office Box");
         }
 

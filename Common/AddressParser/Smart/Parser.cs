@@ -28,6 +28,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             // Search from the beginning
             address.Street.Number = FindStreetNumber();
+
             if (string.IsNullOrWhiteSpace(address.Street.Number))
             {
                 address.Street.Name.Name = FindNonStreet();
