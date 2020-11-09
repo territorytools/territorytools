@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Collections.Generic;
 using TerritoryTools.Common.AddressParser.Smart;
 
 namespace TerritoryTools.Common.AddressParser.Tests.Smart
@@ -13,9 +14,21 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
-        public void Parse_Street_Normal()
+        public void Parse_Street_Number_StreetOnly()
         {
             Assert.AreEqual("123", Test("123 Main St").Street.Number.ToString());
+        }
+
+        [Test]
+        public void Parse_Street_Name_StreetOnly()
+        {
+            Assert.AreEqual("Main St", Test("123 Main St").Street.Name.ToString());
+        }
+
+        [Test]
+        public void Parse_Street_Name_wCityAndRegion()
+        {
+            Assert.AreEqual("Main St", Test("123 Main St Seattle WA").Street.Name.ToString());
         }
 
         [Test]
@@ -59,7 +72,11 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         Address Test(string text)
         {
-            var parser = new Parser();
+            var parser = new Parser(
+                new List<string> { 
+                    "Seattle", 
+                    "North Bend", 
+                    "Lake Forest Park" });
 
             return parser.Parse(text);
         }
