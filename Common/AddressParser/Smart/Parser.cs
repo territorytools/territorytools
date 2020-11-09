@@ -59,7 +59,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindNonStreet()
         {
-            string pattern = @"^P(ost)?\.?\s*O(ffice)?\.?\s*(B\.|B\b|Box\b)";
+            string pattern = @"^((P(ost)?\.?\s*O(ffice)?\.?\s*(B\.|B\b|Box\b))|Lot)";
             string text = UnParsedText();
 
             var r = new Regex(pattern, RegexOptions.IgnoreCase);
