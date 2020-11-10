@@ -23,6 +23,17 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         public Address Parse(string text)
         {
+            return Parse(text, null, null, null, null, null);
+        }
+        
+        public Address Parse(
+            string text, 
+            string street, 
+            string unit, 
+            string city, 
+            string region, 
+            string postal)
+        {
             if (string.IsNullOrWhiteSpace(text))
             {
                 return address;
@@ -49,16 +60,16 @@ namespace TerritoryTools.Common.AddressParser.Smart
             }
 
             // Search backwards from the end
-            address.Postal.Code = FindPostalCode();
-            address.Region.Code = FindRegionCode();
-            address.City.Name = FindCityName();
+            address.Postal.Code = postal ?? FindPostalCode();
+            address.Region.Code = region ?? FindRegionCode();
+            address.City.Name = city ?? FindCityName();
 
             // Find unit type and number
             if (!string.IsNullOrWhiteSpace(address.Street.Number)
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
-                string unit = FindUnit();
-                var words = unit.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string u = FindUnit();
+                var words = u.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (words.Length > 0)
                 {
                     address.Unit.Number = words.Last();
