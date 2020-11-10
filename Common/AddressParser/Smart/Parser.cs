@@ -49,6 +49,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             address.Region.Code = FindRegionCode();
             address.City.Name = FindCityName();
 
+            // Find unit type and number
             if (!string.IsNullOrWhiteSpace(address.Street.Number)
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
@@ -75,9 +76,12 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 }
             }
 
+            // What remains is the street name
             if (!string.IsNullOrWhiteSpace(address.Street.Number) 
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
+                address.Street.Name.DirectionalPrefix = FindDirectionalPrefix();
+                address.Street.Name.DirectionalSuffix = FindDirectionalSuffix();
                 address.Street.Name.Name = FindStreetName();
             }
 
@@ -191,6 +195,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindUnit()
         {
             // Unit Type should have at least one word, the street name, before it
+            // TODO: Inject a list of unit types into this unitPattern
             string unitPattern = @"(#|Apartment|Apt|Suite|Ste|Unit|Cabin)\.?\s*#?\s*[0-9a-zA-Z][0-9a-zA-Z-]*$";
             if (unParsed.Count >= 1 && !string.IsNullOrWhiteSpace(address.Street.Number))
             {
@@ -229,6 +234,32 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 }
 
                 return m.Value;
+            }
+
+            return string.Empty;
+        }
+
+        string FindDirectionalPrefix()
+        {
+            string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
+            string word = FirstWord();
+            if(Regex.IsMatch(word, pattern))
+            {
+                RemoveFirstWord();
+                return word;
+            }
+
+            return string.Empty;
+        }
+        
+        string FindDirectionalSuffix()
+        {
+            string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
+            string word = LastWord();
+            if (Regex.IsMatch(word, pattern))
+            {
+                RemoveLastWord();
+                return word;
             }
 
             return string.Empty;

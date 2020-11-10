@@ -77,14 +77,12 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [Test]
         public void Parse_NonStreet_Lot_Number()
         {
-
             AssertStreetNumberName("Lot 321", "321", "Lot");
         }
 
         [Test]
         public void Parse_NonStreet_Post_Office_Barn_Fails()
         {
-
             AssertStreetNumberName("Post Office Barn 321", string.Empty, string.Empty);
         }
 
@@ -124,6 +122,48 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             AssertUnitTypeNumber("123 Main St # 234-A Lynnwood WA 98087", "#", "234-A");
             AssertUnitTypeNumber("123 Main St # 234-34 Lynnwood WA 98087", "#", "234-34");
             AssertUnitTypeNumber("123 Broadway #A Everett WA 98087", "#", "A");
+        }
+
+        [Test]
+        public void Parse_DirectionalPrefix_Normal()
+        {
+            Assert.AreEqual("N", Test("123 N Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("S", Test("123 S Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("W", Test("123 W Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("E", Test("123 E Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("SW", Test("123 SW Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("SE", Test("123 SE Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("NE", Test("123 NE Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("NW", Test("123 NW Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("North", Test("123 North Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("South", Test("123 South Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("East", Test("123 East Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("West", Test("123 West Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("Northeast", Test("123 Northeast Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("Northwest", Test("123 Northwest Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("Southeast", Test("123 Southeast Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual("Southwest", Test("123 Southwest Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+        }
+
+        [Test]
+        public void Parse_DirectionalSuffix_Normal()
+        {
+            Assert.AreEqual("N", Test("123 Main St N Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("S", Test("123 Main St S Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("W", Test("123 Main St W Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("E", Test("123 Main St E Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("SW", Test("123 Main St SW Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("SE", Test("123 Main St SE Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("NE", Test("123 Main St NE Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("NW", Test("123 Main St NW Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("North", Test("123 Main St North Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("South", Test("123 Main St South Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("East", Test("123 Main St East Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("West", Test("123 Main St West Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("Northeast", Test("123 Main St Northeast Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("Northwest", Test("123 Main St Northwest Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("Southeast", Test("123 Main St Southeast Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual("Southwest", Test("123 Main St Southwest Lynnwood WA 98087").Street.Name.DirectionalSuffix);
         }
 
         Address Test(string text)
