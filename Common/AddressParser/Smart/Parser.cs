@@ -82,6 +82,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             {
                 address.Street.Name.DirectionalPrefix = FindDirectionalPrefix();
                 address.Street.Name.DirectionalSuffix = FindDirectionalSuffix();
+                address.Street.Name.StreetType = FindStreetType();
                 address.Street.Name.Name = FindStreetName();
             }
 
@@ -207,7 +208,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     int wordCount = m.Value.Split(' ').Length;
                     for (int i = 0; i < wordCount; i++)
                     {
-                        RemoveFirstWord();
+                        RemoveLastWord();
                     }
 
                     return m.Value;
@@ -257,6 +258,19 @@ namespace TerritoryTools.Common.AddressParser.Smart
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = LastWord();
             if (Regex.IsMatch(word, pattern))
+            {
+                RemoveLastWord();
+                return word;
+            }
+
+            return string.Empty;
+        }
+
+        string FindStreetType()
+        {
+            var types = new List<string> { "ST", "STREET", "RD", "WAY" };
+            string word = LastWord();
+            if (types.Contains(word.ToUpper()))
             {
                 RemoveLastWord();
                 return word;

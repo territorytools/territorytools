@@ -166,6 +166,52 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("Southwest", Test("123 Main St Southwest Lynnwood WA 98087").Street.Name.DirectionalSuffix);
         }
 
+        [Test]
+        public void Parse_StreetType_StreetOnly_Simple()
+        {
+            Assert.AreEqual("St", Test("123 Main St").Street.Name.StreetType);
+        }
+
+        [Test]
+        public void Parse_StreetType_WithCityAndRegion()
+        {
+            Assert.AreEqual("St", Test("123 Main St Lynnwood WA").Street.Name.StreetType);
+        }
+
+        [Test]
+        public void Parse_StreetType_WithCityEtc()
+        {
+            Assert.AreEqual("St", Test("123 Main St Lynnwood WA 98087").Street.Name.StreetType);
+        }
+
+        [Test]
+        public void Parse_StreetType_WithDirectionalPrefixAndCityEtc()
+        {
+            Assert.AreEqual("St", Test("123 NE Main St Lynnwood WA 98087").Street.Name.StreetType);
+        }
+
+        [Test]
+        public void Parse_StreetType_WithDirectionalSuffixAndCityEtc()
+        {
+            Assert.AreEqual("St", Test("123 Main St NE Lynnwood WA 98087").Street.Name.StreetType);
+        }
+
+        [Test]
+        public void Parse_StreetType_WithUnitAndCityEtc()
+        {
+            Assert.AreEqual("Unit", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Unit.Type);
+            Assert.AreEqual("5-A", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Unit.Number);
+            Assert.AreEqual("St", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Street.Name.StreetType);
+        }
+
+        [Test]
+        public void Parse_StreetType_StreetAndUnitOnly()
+        {
+            Assert.AreEqual("Unit", Test("123 Main St Unit # 5-A").Unit.Type);
+            Assert.AreEqual("5-A", Test("123 Main St Unit # 5-A").Unit.Number);
+            Assert.AreEqual("St", Test("123 Main St Unit # 5-A").Street.Name.StreetType);
+        }
+
         Address Test(string text)
         {
             var parser = new Parser(
