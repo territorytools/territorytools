@@ -15,9 +15,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         public Parser(
             List<string> validCities,
-            string streetTypeText)
+            List<string> streetTypes)
         {
-            streetTypes = StreetType.Split(streetTypeText);
+            this.streetTypes = streetTypes;
             cityNameMatcher = new CityNameMatcher(validCities);
         }
 

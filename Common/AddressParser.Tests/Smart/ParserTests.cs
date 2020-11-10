@@ -225,7 +225,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                     "Bend",
                     "North Bend", 
                     "Lake Forest Park" },
-                STREET_TYPES);
+                StreetType.Split(STREET_TYPES));
 
             return parser.Parse(text);
         }
