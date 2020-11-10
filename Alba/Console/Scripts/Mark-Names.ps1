@@ -1,14 +1,23 @@
 ﻿####################################################################
-"Mark rows with Chinese names, in the same format as the input file"
+"Mark rows with targeted names, in the same format as the input file"
 ####################################################################
-$names = Get-Content .\ChineseNames.txt ; 
-$addresses = Get-Content .\Rows.txt ;
+parms (
+    $nameFile,
+    $rowFile,
+    $markWith = "***"
+)
+$names = Get-Content $nameFile ; 
+$rows = Get-Content $rowFile ;
+$indexOfColumnWithName = 1
+
 $all = @();
-ForEach ( $address in $addresses ) { 
+ForEach ( $row in $rows ) { 
     Foreach( $name in $names ) { 
-        $f=$false; if( $address.Split("`t")[1].ToUpper().Split(" ").Contains($name.ToUpper())) { 
+        $f=$false; 
+        $namesInRow = $address.Split("`t")[$indexOfColumnWithName].ToUpper().Split(" ")
+        if($namesInRow.Contains($name.ToUpper())) { 
             Write-Host -ForegroundColor Green "$address ($name)"; 
-            $all += "**CHINESE**$address"; 
+            $all += "$markWith$address"; 
             $f=$true; 
             break; 
         } 
