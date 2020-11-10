@@ -106,6 +106,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                 new List<string> { 
                     "Seattle",
                     "Everett",
+                    "Bend",
                     "North Bend", 
                     "Lake Forest Park" });
 

@@ -10,11 +10,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
         List<string> words;
         List<string> unParsed;
         Address address = new Address();
-        List<string> validCities;
+        CityNameMatcher cityNameMatcher;
 
         public Parser(List<string> validCities)
         {
-            this.validCities = validCities;
+            cityNameMatcher = new CityNameMatcher(validCities);
         }
 
         public Address Parse(string text)
@@ -147,27 +147,15 @@ namespace TerritoryTools.Common.AddressParser.Smart
             // City Name should have at least one word before it
             if(unParsed.Count > 1 && !string.IsNullOrWhiteSpace(address.Region.Code))
             {
-                string lastWord = LastWord();
-                foreach (string city in validCities)
+                var matched = cityNameMatcher.FindCityName(unParsed);
+                if(matched.Length > 0)
                 {
-                    // Start with longer valid city names first
-                    var cityWords = city.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    cityWords.Reverse();
-                    var unParsedReversed = unParsed;
-                    unParsedReversed.Reverse();
-
-                    if(cityWords.Length >= (unParsed.Count + 1))
+                    for(int i = 0; i < matched.Length; i++)
                     {
-                        bool 
-                        for(int i = 0; i < cityWords.Length; i++)
-                        {
-                            if(!string.Equals(cityWords[i], unParsedReversed[i], StringComparison.OrdinalIgnoreCase))
-                            {
-                                break;
-                            }
-                        }
-
+                        RemoveLastWord();
                     }
+
+                    return string.Join(" ", matched);
                 }
             }
 
