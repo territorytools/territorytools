@@ -1,30 +1,36 @@
-﻿####################################################################
+﻿param(
+   [Parameter(Mandatory)]
+   [string]$nameFile,
+   [Parameter(Mandatory)]
+   [string]$rowFile,
+   [Parameter()]
+   [int]$indexOfNameColumn = 0,
+   [Parameter()]
+   [string]$markWith = "***"
+)
+
+####################################################################
 "Mark rows with targeted names, in the same format as the input file"
 ####################################################################
-parms (
-    $nameFile,
-    $rowFile,
-    $markWith = "***"
-)
+
 $names = Get-Content $nameFile ; 
 $rows = Get-Content $rowFile ;
-$indexOfColumnWithName = 1
 
 $all = @();
 ForEach ( $row in $rows ) { 
     Foreach( $name in $names ) { 
         $f=$false; 
-        $namesInRow = $address.Split("`t")[$indexOfColumnWithName].ToUpper().Split(" ")
+        $namesInRow = $row.Split("`t")[$indexOfNameColumn].ToUpper().Split(" ")
         if($namesInRow.Contains($name.ToUpper())) { 
-            Write-Host -ForegroundColor Green "$address ($name)"; 
-            $all += "$markWith$address"; 
+            Write-Host -ForegroundColor Green "$row ($name)"; 
+            $all += "$markWith$row"; 
             $f=$true; 
             break; 
         } 
     } 
     if(!$f) { 
-        Write-Host -ForegroundColor Red "$address" 
-        $all += "$address"; 
+        Write-Host -ForegroundColor Red "$row" 
+        $all += "$row"; 
     } 
 } ; 
-$all > table.txt
+$all > "$rowFile(marked).txt"
