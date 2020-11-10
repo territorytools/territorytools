@@ -11,9 +11,13 @@ namespace TerritoryTools.Common.AddressParser.Smart
         List<string> unParsed;
         Address address = new Address();
         CityNameMatcher cityNameMatcher;
+        List<string> streetTypes;
 
-        public Parser(List<string> validCities)
+        public Parser(
+            List<string> validCities,
+            string streetTypeText)
         {
+            streetTypes = StreetType.Split(streetTypeText);
             cityNameMatcher = new CityNameMatcher(validCities);
         }
 
@@ -268,9 +272,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindStreetType()
         {
-            var types = new List<string> { "ST", "STREET", "RD", "WAY" };
             string word = LastWord();
-            if (types.Contains(word.ToUpper()))
+            if (streetTypes.Contains(word.ToUpper()))
             {
                 RemoveLastWord();
                 return word;
