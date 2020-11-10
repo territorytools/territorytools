@@ -49,6 +49,32 @@ namespace TerritoryTools.Common.AddressParser.Smart
             address.Region.Code = FindRegionCode();
             address.City.Name = FindCityName();
 
+            if (!string.IsNullOrWhiteSpace(address.Street.Number)
+                && string.IsNullOrWhiteSpace(address.Street.Name.Name))
+            {
+                string unit = FindUnit();
+                var words = unit.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (words.Length > 0)
+                {
+                    address.Unit.Number = words.Last();
+                }
+
+                if(words.Length > 1)
+                {
+                    address.Unit.Type = words.First();
+                }
+
+                if(!string.IsNullOrWhiteSpace(address.Unit.Number)
+                    && address.Unit.Number.StartsWith("#"))
+                {
+                    address.Unit.Number = address.Unit.Number.Substring(1);
+                    if (string.IsNullOrWhiteSpace(address.Unit.Type))
+                    {
+                        address.Unit.Type = "#";
+                    }
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(address.Street.Number) 
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
@@ -144,8 +170,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindCityName()
         {
-            // City Name should have at least one word before it
-            if(unParsed.Count > 1 && !string.IsNullOrWhiteSpace(address.Region.Code))
+            // City Name should have at least one word, the street name, before it
+            if (unParsed.Count > 1 && !string.IsNullOrWhiteSpace(address.Region.Code))
             {
                 var matched = cityNameMatcher.FindCityName(unParsed);
                 if(matched.Length > 0)
@@ -156,6 +182,30 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     }
 
                     return string.Join(" ", matched);
+                }
+            }
+
+            return string.Empty;
+        }
+
+        string FindUnit()
+        {
+            // Unit Type should have at least one word, the street name, before it
+            string unitPattern = @"(#|Apartment|Apt|Suite|Ste|Unit|Cabin)\.?\s*#?\s*[0-9a-zA-Z][0-9a-zA-Z-]*$";
+            if (unParsed.Count >= 1 && !string.IsNullOrWhiteSpace(address.Street.Number))
+            {
+                string text = UnParsedText();
+                var r = new Regex(unitPattern, RegexOptions.IgnoreCase);
+                var m = r.Match(text);
+                if (m.Success)
+                {
+                    int wordCount = m.Value.Split(' ').Length;
+                    for (int i = 0; i < wordCount; i++)
+                    {
+                        RemoveFirstWord();
+                    }
+
+                    return m.Value;
                 }
             }
 

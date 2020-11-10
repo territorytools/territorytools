@@ -100,12 +100,39 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("98087", Test("123 Main St Lynnwood WA 98087").Postal.Code.ToString());
         }
 
+        [Test]
+        public void Parse_Unit_Normal()
+        {
+            AssertUnitTypeNumber("123 Main St Apt 234 Lynnwood WA 98087", "Apt", "234");
+            AssertUnitTypeNumber("123 Main St Apt 1A Lynnwood WA 98087", "Apt", "1A");
+            AssertUnitTypeNumber("123 Main St Apt 23-34 Lynnwood WA 98087", "Apt", "23-34");
+            AssertUnitTypeNumber("123 Main St Apt 23-A Lynnwood WA 98087", "Apt", "23-A");
+            AssertUnitTypeNumber("123 Main St Apt A Lynnwood WA 98087", "Apt", "A");
+            AssertUnitTypeNumber("123 Main St Unit A Lynnwood WA 98087", "Unit", "A");
+            AssertUnitTypeNumber("123 Main St Unit AA Lynnwood WA 98087", "Unit", "AA");
+            AssertUnitTypeNumber("123 Main St Unit # 234 Lynnwood WA 98087", "Unit", "234");
+            AssertUnitTypeNumber("123 Main St Unit #234 Lynnwood WA 98087", "Unit", "234");
+            AssertUnitTypeNumber("123 Main St Unit #234A Lynnwood WA 98087", "Unit", "234A");
+            AssertUnitTypeNumber("123 Main St Unit #234-A Lynnwood WA 98087", "Unit", "234-A");
+            AssertUnitTypeNumber("123 Main St #234 Lynnwood WA 98087", "#", "234");
+            AssertUnitTypeNumber("123 Main St #234A Lynnwood WA 98087", "#", "234A");
+            AssertUnitTypeNumber("123 Main St #234-A Lynnwood WA 98087", "#", "234-A");
+            AssertUnitTypeNumber("123 Main St #A Lynnwood WA 98087", "#", "A");
+            AssertUnitTypeNumber("123 Main St # A Lynnwood WA 98087", "#", "A");
+            AssertUnitTypeNumber("123 Main St # 234 Lynnwood WA 98087", "#", "234");
+            AssertUnitTypeNumber("123 Main St # 234A Lynnwood WA 98087", "#", "234A");
+            AssertUnitTypeNumber("123 Main St # 234-A Lynnwood WA 98087", "#", "234-A");
+            AssertUnitTypeNumber("123 Main St # 234-34 Lynnwood WA 98087", "#", "234-34");
+            AssertUnitTypeNumber("123 Broadway #A Everett WA 98087", "#", "A");
+        }
+
         Address Test(string text)
         {
             var parser = new Parser(
                 new List<string> { 
                     "Seattle",
                     "Everett",
+                    "Lynnwood",
                     "Bend",
                     "North Bend", 
                     "Lake Forest Park" });
@@ -117,6 +144,12 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         {
             Assert.AreEqual(streetName, Test(text).Street.Name.Name.ToString());
             Assert.AreEqual(streetNumber, Test(text).Street.Number.ToString());
+        }
+
+        void AssertUnitTypeNumber(string text, string type, string number)
+        {
+            Assert.AreEqual(type, Test(text).Unit.Type.ToString());
+            Assert.AreEqual(number, Test(text).Unit.Number.ToString());
         }
     }
 }
