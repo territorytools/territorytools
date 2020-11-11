@@ -113,6 +113,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
                 string u = FindUnit();
+                // TODO: If it's empty stop trying
                 var words = u.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (words.Length > 0)
                 {
@@ -336,7 +337,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = FirstWord();
-            if(Regex.IsMatch(word, pattern))
+            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern))
             {
                 RemoveFirstWord();
                 return word;
@@ -349,7 +350,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = LastWord();
-            if (Regex.IsMatch(word, pattern))
+            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern))
             {
                 RemoveLastWord();
                 return word;
@@ -361,7 +362,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindPrefixStreetType()
         {
             string word = FirstWord();
-            if (streetTypes.Contains(word.ToUpper()))
+            if (unParsed.Count > 1 && streetTypes.Contains(word.ToUpper()))
             {
                 RemoveFirstWord();
                 return word;
@@ -373,7 +374,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindStreetType()
         {
             string word = LastWord();
-            if (streetTypes.Contains(word.ToUpper()))
+            if (unParsed.Count > 1 && streetTypes.Contains(word.ToUpper()))
             {
                 RemoveLastWord();
                 return word;

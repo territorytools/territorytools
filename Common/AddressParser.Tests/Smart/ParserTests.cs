@@ -230,6 +230,30 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
+        public void Parse_MissingStreetName_WithUnitCityEtc()
+        {
+            string text = "12345 SE Pl Lynnwood WA";
+            Assert.AreEqual("12345", Test(text).Street.Number);
+            Assert.AreEqual("SE", Test(text).Street.Name.DirectionalPrefix);
+            Assert.AreEqual("Pl", Test(text).Street.Name.Name);
+            Assert.IsEmpty(Test(text).Street.Name.StreetType);
+            Assert.AreEqual("Lynnwood", Test(text).City.Name);
+            Assert.AreEqual("WA", Test(text).Region.Code);
+        }
+        //10823 NE, , Kirkland, WA
+        [Test]
+        public void Parse_MissingStreetName_WithDirPrefix()
+        {
+            string text = "12345 NE Lynnwood WA";
+            Assert.AreEqual("12345", Test(text).Street.Number);
+            Assert.IsEmpty(Test(text).Street.Name.DirectionalPrefix);
+            Assert.AreEqual("NE", Test(text).Street.Name.Name);
+            Assert.IsEmpty(Test(text).Street.Name.StreetType);
+            Assert.AreEqual("Lynnwood", Test(text).City.Name);
+            Assert.AreEqual("WA", Test(text).Region.Code);
+        }
+
+        [Test]
         public void Parse_Commas_4()
         {
             string text = "123 Main St, Unit # 5-A, Lynnwood, WA, 98087";

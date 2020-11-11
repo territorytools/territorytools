@@ -41,12 +41,14 @@ namespace PowerShell
             foreach (var master in MasterList)
             {
                 string text = $"{master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}";
+                //WriteVerbose($"MasterIn: {text}");
                 var parsed = parser.Parse(text);
                 //WriteVerbose($"MasterOut: {parsed}");
                 parsedMasterList.Add(parsed);
             }
 
-            foreach(var parsed in parsedMasterList)
+            WriteVerbose($"parsedMasterList: {parsedMasterList.Count}");
+            foreach (var parsed in parsedMasterList)
             {
                 WriteVerbose($"Master: {parsed}");
             }
