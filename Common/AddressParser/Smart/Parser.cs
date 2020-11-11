@@ -76,6 +76,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
             string region, 
             string postal)
         {
+            address = new Address();
+
             if (string.IsNullOrWhiteSpace(text))
             {
                 return address;
@@ -143,6 +145,38 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 address.Street.Name.StreetType = FindStreetType();
                 address.Street.Name.Name = FindStreetName();
             }
+
+            // Checked required
+            if(string.IsNullOrWhiteSpace(address.Street.Number)
+                || string.IsNullOrWhiteSpace(address.Street.Name.Name)
+                || string.IsNullOrWhiteSpace(address.City.Name)
+                || string.IsNullOrWhiteSpace(address.Region.Code))
+            {
+                address.FailedAddress = text;
+            }
+
+            var errors = new List<string>();
+            if (string.IsNullOrWhiteSpace(address.Street.Number))
+            {
+                errors.Add("Street.Number");
+            }
+
+            if (string.IsNullOrWhiteSpace(address.Street.Name.Name))
+            {
+                errors.Add("Street.Name.Name");
+            }
+
+            if (string.IsNullOrWhiteSpace(address.City.Name))
+            {
+                errors.Add("City.Name");
+            }
+
+            if (string.IsNullOrWhiteSpace(address.Region.Code))
+            {
+                errors.Add("Region.Code");
+            }
+
+            address.ErrorMessage = string.Join(", ", errors);
 
             return address;
         }

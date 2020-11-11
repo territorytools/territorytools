@@ -33,7 +33,7 @@ namespace PowerShell
         // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
-            WriteVerbose("Begin!");
+            WriteVerbose("Begin Loading Addresses...");
 
             using (var reader = new StreamReader(Path))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
