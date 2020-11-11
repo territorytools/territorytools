@@ -7,6 +7,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         List<string> parts { get; set; } = new List<string>();
 
         public string DirectionalPrefix { get; set; }
+        public string PrefixStreetType { get; set; }
         public string Name { get; set; }
         public string StreetType { get; set; }
         public string DirectionalSuffix { get; set; }
@@ -15,6 +16,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             parts.Clear();
             parts.Add(DirectionalPrefix);
+            parts.Add(PrefixStreetType);
             parts.Add(Name);
             parts.Add(StreetType);
             parts.Add(DirectionalSuffix);

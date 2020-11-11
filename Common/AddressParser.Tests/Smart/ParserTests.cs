@@ -215,6 +215,34 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("St", Test("123 Main St Unit # 5-A").Street.Name.StreetType);
         }
 
+        [Test]
+        public void Parse_PrefixStreetType_WithCityEtc()
+        {
+            Assert.AreEqual("Hwy", Test("123 Hwy 456 Lynnwood WA 98087").Street.Name.PrefixStreetType);
+            Assert.AreEqual("456", Test("123 Hwy 456 Lynnwood WA 98087").Street.Name.Name);
+        }
+
+        [Test]
+        public void Parse_PrefixStreetType_WithUnitCityEtc()
+        {
+            Assert.AreEqual("Hwy", Test("123 Hwy 456 Unit 5A Lynnwood WA 98087").Street.Name.PrefixStreetType);
+            Assert.AreEqual("456", Test("123 Hwy 456 Unit 5A Lynnwood WA 98087").Street.Name.Name);
+        }
+
+        [Test]
+        public void Parse_Commas_4()
+        {
+            string text = "123 Main St, Unit # 5-A, Lynnwood, WA, 98087";
+            Assert.AreEqual("123", Test(text).Street.Number);
+            Assert.AreEqual("Main", Test(text).Street.Name.Name);
+            Assert.AreEqual("St", Test(text).Street.Name.StreetType);
+            Assert.AreEqual("Unit", Test(text).Unit.Type);
+            Assert.AreEqual("5-A", Test(text).Unit.Number);
+            Assert.AreEqual("Lynnwood", Test(text).Street.Name.StreetType);
+            Assert.AreEqual("WA", Test(text).Region.Code);
+            Assert.AreEqual("98087", Test(text).Postal.Code);
+        }
+
         Address Test(string text)
         {
             var parser = new Parser(

@@ -23,6 +23,46 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         public Address Parse(string text)
         {
+            if(string.IsNullOrWhiteSpace(text))
+            {
+                return new Address();
+            }
+
+            if(text.Contains(","))
+            {
+                var columns = text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                if(columns.Length < 3)
+                {
+                    throw new Exception(
+                        $"Not enough commas, you must have at least three, but no more than five. Address: {text}");
+                }
+                else if(columns.Length == 4)
+                {
+                    return Parse(
+                        text: null, 
+                        street: columns[0], 
+                        unit: null, 
+                        city: columns[1], 
+                        region: columns[2], 
+                        postal: columns[3]);
+                } 
+                else if(columns.Length == 5)
+                {
+                    return Parse(
+                        text: null,
+                        street: columns[0],
+                        unit: columns[1],
+                        city: columns[2],
+                        region: columns[3],
+                        postal: columns[4]);
+                }
+                else if (columns.Length > 5)
+                {
+                    throw new Exception(
+                        $"Too many commas, you must have at least three, but no more than five. Address: {text}");
+                }
+            }
+
             return Parse(text, null, null, null, null, null);
         }
         
@@ -97,6 +137,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             {
                 address.Street.Name.DirectionalPrefix = FindDirectionalPrefix();
                 address.Street.Name.DirectionalSuffix = FindDirectionalSuffix();
+                address.Street.Name.PrefixStreetType = FindPrefixStreetType();
                 address.Street.Name.StreetType = FindStreetType();
                 address.Street.Name.Name = FindStreetName();
             }
@@ -275,6 +316,18 @@ namespace TerritoryTools.Common.AddressParser.Smart
             if (Regex.IsMatch(word, pattern))
             {
                 RemoveLastWord();
+                return word;
+            }
+
+            return string.Empty;
+        }
+
+        string FindPrefixStreetType()
+        {
+            string word = FirstWord();
+            if (streetTypes.Contains(word.ToUpper()))
+            {
+                RemoveFirstWord();
                 return word;
             }
 
