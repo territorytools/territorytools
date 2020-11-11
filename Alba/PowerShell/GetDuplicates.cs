@@ -30,17 +30,17 @@ namespace PowerShell
         // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
-            WriteVerbose("Finding duplicates...");
-            var validCities = new List<string> { "Bellevue", "Lynnwood" }; //, "Kirkland" };
+            var validCities = new List<string> { "Bellevue", "Lynnwood", "Kirkland", "Bothell" };
             var streetTypes = StreetType.Split(StreetTypes);
             parser = new Parser(validCities, streetTypes);
+
             WriteVerbose($"Parser Loaded Cities: {validCities.Count} Street Types:{streetTypes.Count}");
+
             parsedMasterList = new List<Address>();
             errors = new List<string>();
             foreach (var master in MasterList)
             {
                 string text = $"{master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}";
-                //WriteVerbose($"MasterIn: {text}");
                 var parsed = parser.Parse(text);
                 //WriteVerbose($"MasterOut: {parsed}");
                 parsedMasterList.Add(parsed);
@@ -57,33 +57,17 @@ namespace PowerShell
         {
             try
             {
-                //WriteObject($"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}");
-
-                //var parsed = parser.Normalize($"{Address.Address}, {Address.Suite}", Address.City, Address.Province, Address.Postal_code);
                 var parsed = parser.Parse($"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}");
                 if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
                 {
-                    ////WriteVerbose($"ERROR: {parsed.ErrorMessage} {parsed.FailedAddress} ");
                     errors.Add($"{parsed.ErrorMessage} {parsed.FailedAddress} ");
                 }
-                else
-                {
-                    WriteVerbose($"Parsed: {parsed}");
-                }
-                //WriteVerbose($"Master2: {parsedMasterList.Count}");
-                //foreach (var master in MasterList)
-                //{
-                //    WriteVerbose($"    Master: {master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}");
-                //}
 
                 var duplicates = new List<Address>();
                 foreach(var master in parsedMasterList)
                 {
-                    //WriteVerbose($"    Testing: {master} == {parsed}");
-                    //WriteVerbose($"    Testing Master: {master}");
                     if (master.SameAs(parsed))
                     {
-                        //WriteVerbose($"    Found DUPLICATE: {master}");
                         duplicates.Add(master);
                     }
                 }
@@ -92,13 +76,8 @@ namespace PowerShell
                     foreach (var dup in duplicates)
                     {
                         WriteObject(dup);
-                        //WriteVerbose($"    DUPLICATE: {dup}");
                     }
                     
-                }
-                else
-                {
-                    //WriteObject($"UNIQUE");
                 }
             }
             catch(Exception)
