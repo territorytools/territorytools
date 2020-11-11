@@ -28,6 +28,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 return new Address();
             }
 
+            text = text.Replace(',', ' ');
+
             if(text.Contains(","))
             {
                 var columns = text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);

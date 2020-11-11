@@ -238,7 +238,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("St", Test(text).Street.Name.StreetType);
             Assert.AreEqual("Unit", Test(text).Unit.Type);
             Assert.AreEqual("5-A", Test(text).Unit.Number);
-            Assert.AreEqual("Lynnwood", Test(text).Street.Name.StreetType);
+            Assert.AreEqual("Lynnwood", Test(text).City.Name);
             Assert.AreEqual("WA", Test(text).Region.Code);
             Assert.AreEqual("98087", Test(text).Postal.Code);
         }
