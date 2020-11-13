@@ -140,10 +140,16 @@ namespace TerritoryTools.Common.AddressParser.Smart
             if (!string.IsNullOrWhiteSpace(address.Street.Number) 
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
-                address.Street.Name.DirectionalPrefix = FindDirectionalPrefix();
                 address.Street.Name.DirectionalSuffix = FindDirectionalSuffix();
+                address.Street.Name.DirectionalPrefix = string.IsNullOrWhiteSpace(address.Street.Name.DirectionalSuffix)
+                    ? FindDirectionalPrefix()
+                    : string.Empty;
+
                 address.Street.Name.PrefixStreetType = FindPrefixStreetType();
-                address.Street.Name.StreetType = FindStreetType();
+                address.Street.Name.StreetType = string.IsNullOrWhiteSpace(address.Street.Name.PrefixStreetType)
+                    ? FindStreetType()
+                    : string.Empty;
+
                 address.Street.Name.Name = FindStreetName();
             }
 
@@ -337,6 +343,13 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = FirstWord();
+            
+            // Example: North Rd
+            if(unParsed.Count >= 2 && streetTypes.Contains(unParsed[1].ToUpper()))
+            {
+                return string.Empty;
+            }
+
             if(unParsed.Count > 1 && Regex.IsMatch(word, pattern))
             {
                 RemoveFirstWord();
