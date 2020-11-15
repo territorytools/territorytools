@@ -38,6 +38,21 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         //}
 
         [Test]
+        public void Parse_StreetNumberFractions()
+        {
+            AssertStreetNumberFraction("123A Main St Seattle WA", "123", "A");
+            AssertStreetNumberFraction("123-A Main St Seattle WA", "123", "A");
+            AssertStreetNumberFraction("123-1/2 Main St Seattle WA", "123", "1/2");
+        }
+
+        void AssertStreetNumberFraction(string text, string number, string fraction)
+        {
+            var address = Test(text);
+            Assert.AreEqual(number, address.Street.Number);
+            Assert.AreEqual(fraction, address.Street.NumberFraction);
+        }
+
+        [Test]
         public void Parse_Street_TypelessName_wCityAndRegion()
         {
             string text = "123 Broadway Everett WA";

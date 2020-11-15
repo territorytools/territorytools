@@ -95,7 +95,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             unParsed = words;
 
             // Search from the beginning
-            address.Street.Number = FindStreetNumber();
+            (address.Street.Number, address.Street.NumberFraction) = FindStreetNumber();
 
             if (string.IsNullOrWhiteSpace(address.Street.Number))
             {
@@ -199,17 +199,21 @@ namespace TerritoryTools.Common.AddressParser.Smart
             return address;
         }
 
-        string FindStreetNumber()
+        (string, string) FindStreetNumber()
         {
-            string streetNumberPattern = @"^\d+$";
+            string streetNumberPattern = @"^(\d+)-?([A-Z]|\d/\d)?$";
             string firstWord = FirstWord();
-            if(unParsed.Count > 0 && Regex.IsMatch(firstWord, streetNumberPattern))
+            var match = Regex.Match(firstWord, streetNumberPattern);
+            if (unParsed.Count > 0 && match.Success)
             {
                 RemoveFirstWord();
-                return firstWord;
+                
+                return (
+                    match.Groups[1].Value, 
+                    match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty);
             }
 
-            return string.Empty;
+            return (string.Empty, string.Empty);
         }
 
         string FindNonStreetName()

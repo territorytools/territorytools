@@ -7,6 +7,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         List<string> parts { get; set; } = new List<string>();
 
         public string Number { get; set; }
+        public string NumberFraction { get; set; }
         public StreetName Name { get; set; } = new StreetName();
 
         public override string ToString()
