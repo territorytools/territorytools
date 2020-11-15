@@ -109,7 +109,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
             // Search backwards from the end
             address.Postal.Code = postal ?? FindPostalCode();
             address.Region.Code = region ?? FindRegionCode();
-            address.City.Name = city ?? FindCityName();
+            if (!string.IsNullOrWhiteSpace(address.Region.Code))
+            {
+                address.City.Name = city ?? FindCityName();
+            }
 
             // Find unit type and number
             if (!string.IsNullOrWhiteSpace(address.Street.Number)
@@ -267,7 +270,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
             string regionCodePattern = @"^[a-zA-Z]{2}$";
             // Region Code (Province/State) should have at least three words 
             // before it and street number should already be parsed
-            if (unParsed.Count >= 3 && !string.IsNullOrWhiteSpace(address.Street.Number))
+            if ((string.IsNullOrWhiteSpace(address.Street.Name.Name) && unParsed.Count >= 3
+                || !string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix) && unParsed.Count >= 2)
+                && !string.IsNullOrWhiteSpace(address.Street.Number))
             {
                 string lastWord = LastWord();
                 if (Regex.IsMatch(lastWord, regionCodePattern))
@@ -283,7 +288,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindCityName()
         {
             // City Name should have at least one word, the street name, before it
-            if (unParsed.Count > 1 && !string.IsNullOrWhiteSpace(address.Region.Code))
+            // ...unless it's a PO Box in 'Street.Name.NamePrefix'
+            if (unParsed.Count > 1 
+                || (!string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix) 
+                    && !string.IsNullOrWhiteSpace(address.Street.Number)
+                    && unParsed.Count >= 1))
             {
                 var matched = cityNameMatcher.FindCityName(unParsed);
                 if(matched.Length > 0)
@@ -294,6 +303,12 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     }
 
                     return string.Join(" ", matched);
+                }
+                else
+                {
+                    string lastWord = LastWord();
+                    RemoveLastWord();
+                    return lastWord;
                 }
             }
 

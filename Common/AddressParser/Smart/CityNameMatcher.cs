@@ -38,8 +38,6 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         public string[] FindCityName(List<string> words)
         {
-            //words.Reverse(); // Right to left, just like the words in each city name
-
             foreach (var city in cities)
             {
                 if(words.Count >= city.WordCount)
@@ -60,13 +58,17 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     // then all words matched
                     if (match)
                     {
-                        return city.Words; //.Reverse().ToArray();
+                        return city.Words;
                     }
                 }
             }
 
+            //if(words.Count > 0)
+            //{
+            //    return new string[] { words.Last() };
+            //}
+
             return new string[0];
         }
-
     }
 }

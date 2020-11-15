@@ -44,7 +44,7 @@ namespace TerritoryTools.Alba.PowerShell
                 normalized = new Normalized
                 {
                     Original = Address,
-                    StreetNamePrefix = "",
+                    StreetNamePrefix = parsed.Street.Name.NamePrefix,
                     StreetNumber = parsed.Street.Number,
                     StreetNumberFraction = "",
                     DirectionalPrefix = parsed.Street.Name.DirectionalPrefix,

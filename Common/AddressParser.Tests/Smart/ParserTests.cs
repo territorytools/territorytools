@@ -78,6 +78,19 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
+        public void Parse_NonStreet_PO_Box_WithCity()
+        {
+            AssertNonStreetNumberName("POB 321, Bellevue, WA 98004", "321", "POB", "Bellevue", "WA");
+            AssertNonStreetNumberName("PO Box 321, Bellevue, WA 98004", "321", "PO Box", "Bellevue", "WA");
+            AssertNonStreetNumberName("P O B 321, Bellevue, WA 98004", "321", "P O B", "Bellevue", "WA");
+            AssertNonStreetNumberName("P.O.Box 321, Bellevue, WA 98004", "321", "P.O.Box", "Bellevue", "WA");
+            AssertNonStreetNumberName("P.O. Box 321, Bellevue, WA 98004", "321", "P.O. Box", "Bellevue", "WA");
+            AssertNonStreetNumberName("P. O. B. 321, Bellevue, WA 98004", "321", "P. O. B.", "Bellevue", "WA");
+            AssertNonStreetNumberName("P. O. Box 321, Bellevue, WA 98004", "321", "P. O. Box", "Bellevue", "WA");
+            AssertNonStreetNumberName("Post Office Box 321, Bellevue, WA 98004", "321", "Post Office Box", "Bellevue", "WA");
+        }
+
+        [Test]
         public void Parse_NonStreet_Lot_Number()
         {
             AssertNonStreetNumberName("Lot 321", "321", "Lot");
@@ -292,6 +305,13 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
+        public void Parse_UnRecognizedCity_ReturnsLastWord()
+        {
+            string text = "12345 SE Pl Nowhere WA";
+            Assert.AreEqual("Nowhere", Test(text).City.Name);
+        }
+
+        [Test]
         public void Parse_MissingStreetName_WithUnitCityEtc()
         {
             string text = "12345 SE Pl Lynnwood WA";
@@ -320,14 +340,15 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         public void Parse_Commas_4()
         {
             string text = "123 Main St, Unit # 5-A, Lynnwood, WA, 98087";
-            Assert.AreEqual("123", Test(text).Street.Number);
-            Assert.AreEqual("Main", Test(text).Street.Name.Name);
-            Assert.AreEqual("St", Test(text).Street.Name.StreetType);
-            Assert.AreEqual("Unit", Test(text).Unit.Type);
-            Assert.AreEqual("5-A", Test(text).Unit.Number);
-            Assert.AreEqual("Lynnwood", Test(text).City.Name);
-            Assert.AreEqual("WA", Test(text).Region.Code);
-            Assert.AreEqual("98087", Test(text).Postal.Code);
+            var address = Parse(text);
+            Assert.AreEqual("123", address.Street.Number);
+            Assert.AreEqual("Main", address.Street.Name.Name);
+            Assert.AreEqual("St", address.Street.Name.StreetType);
+            Assert.AreEqual("Unit", address.Unit.Type);
+            Assert.AreEqual("5-A", address.Unit.Number);
+            Assert.AreEqual("Lynnwood", address.City.Name);
+            Assert.AreEqual("WA", address.Region.Code);
+            Assert.AreEqual("98087", address.Postal.Code);
         }
 
         //[TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456")]
@@ -378,21 +399,40 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         void AssertStreetNumberName(string text, string streetNumber, string streetName)
         {
-            Assert.AreEqual(streetName, Test(text).Street.Name.Name.ToString());
-            Assert.AreEqual(streetNumber, Test(text).Street.Number.ToString());
+            var address = Test(text);
+            Assert.AreEqual(streetName, address.Street.Name.Name.ToString());
+            Assert.AreEqual(streetNumber, address.Street.Number.ToString());
         }
 
-        void AssertNonStreetNumberName(string text, string streetNumber, string streetName)
+        void AssertNonStreetNumberName(
+            string text, 
+            string streetNumber, 
+            string streetName, 
+            string city = null, 
+            string region = null)
         {
-            Assert.IsEmpty(Test(text).Street.Name.Name.ToString());
-            Assert.AreEqual(streetName, Test(text).Street.Name.NamePrefix.ToString());
-            Assert.AreEqual(streetNumber, Test(text).Street.Number.ToString());
+            var address = Test(text);
+            Assert.IsEmpty(address.Street.Name.Name.ToString());
+            Assert.AreEqual(streetName, address.Street.Name.NamePrefix.ToString());
+            Assert.AreEqual(streetNumber, address.Street.Number.ToString());
+            if(city != null)
+                Assert.AreEqual(city, address.City.Name.ToString());
+            if (region != null)
+                Assert.AreEqual(region, address.Region.Code.ToString());
         }
 
         void AssertUnitTypeNumber(string text, string type, string number)
         {
-            Assert.AreEqual(type, Test(text).Unit.Type.ToString());
-            Assert.AreEqual(number, Test(text).Unit.Number.ToString());
+            var address = Test(text);
+            Assert.AreEqual(type, address.Unit.Type.ToString());
+            Assert.AreEqual(number, address.Unit.Number.ToString());
+        }
+
+        void AssertCityRegion(string text, string city, string region)
+        {
+            var address = Test(text);
+            Assert.AreEqual(city, address.City.Name);
+            Assert.AreEqual(region, address.Region.Code);
         }
     }
 }
