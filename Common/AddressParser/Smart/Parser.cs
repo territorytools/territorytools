@@ -99,8 +99,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             if (string.IsNullOrWhiteSpace(address.Street.Number))
             {
-                address.Street.Name.Name = FindNonStreetName();
-                if(!string.IsNullOrWhiteSpace(address.Street.Name.Name))
+                address.Street.Name.NamePrefix = FindNonStreetName();
+                if(!string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix))
                 {
                     address.Street.Number = FindNonStreetNumber();
                 }
@@ -113,7 +113,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             // Find unit type and number
             if (!string.IsNullOrWhiteSpace(address.Street.Number)
-                && string.IsNullOrWhiteSpace(address.Street.Name.Name))
+                && string.IsNullOrWhiteSpace(address.Street.Name.Name) 
+                && string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix))
             {
                 string u = FindUnit();
                 // TODO: If it's empty stop trying
@@ -141,7 +142,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             // What remains is the street name
             if (!string.IsNullOrWhiteSpace(address.Street.Number) 
-                && string.IsNullOrWhiteSpace(address.Street.Name.Name))
+                && string.IsNullOrWhiteSpace(address.Street.Name.Name)
+                && string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix))
             {
                 address.Street.Name.DirectionalSuffix = FindDirectionalSuffix();
                 address.Street.Name.DirectionalPrefix = string.IsNullOrWhiteSpace(address.Street.Name.DirectionalSuffix)
@@ -158,7 +160,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             // Checked required
             if(string.IsNullOrWhiteSpace(address.Street.Number)
-                || string.IsNullOrWhiteSpace(address.Street.Name.Name)
+                || (string.IsNullOrWhiteSpace(address.Street.Name.Name)
+                  && string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix))
                 || string.IsNullOrWhiteSpace(address.City.Name)
                 || string.IsNullOrWhiteSpace(address.Region.Code))
             {
@@ -171,9 +174,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 errors.Add("Street.Number");
             }
 
-            if (string.IsNullOrWhiteSpace(address.Street.Name.Name))
+            if (string.IsNullOrWhiteSpace(address.Street.Name.Name) 
+                && string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix))
             {
                 errors.Add("Street.Name.Name");
+                errors.Add("Street.Name.NamePrefix");
             }
 
             if (string.IsNullOrWhiteSpace(address.City.Name))

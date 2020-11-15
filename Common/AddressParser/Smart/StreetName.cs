@@ -6,15 +6,17 @@ namespace TerritoryTools.Common.AddressParser.Smart
     {
         List<string> parts { get; set; } = new List<string>();
 
-        public string DirectionalPrefix { get; set; }
-        public string StreetTypePrefix { get; set; }
-        public string Name { get; set; }
-        public string StreetType { get; set; }
-        public string DirectionalSuffix { get; set; }
+        public string NamePrefix { get; set; } = string.Empty;
+        public string DirectionalPrefix { get; set; } = string.Empty;
+        public string StreetTypePrefix { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string StreetType { get; set; } = string.Empty;
+        public string DirectionalSuffix { get; set; } = string.Empty;
 
         public override string ToString()
         {
             parts.Clear();
+            parts.Add(NamePrefix);
             parts.Add(DirectionalPrefix);
             parts.Add(StreetTypePrefix);
             parts.Add(Name);
