@@ -23,7 +23,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             return SameRequired(Street.Number, other.Street.Number)
                 && Same(Street.Name.DirectionalPrefix, other.Street.Name.DirectionalPrefix)
                 && SameRequired(Street.Name.Name, other.Street.Name.Name)
-                && (SameRequired(Street.Name.PrefixStreetType, other.Street.Name.PrefixStreetType)
+                && (SameRequired(Street.Name.StreetTypePrefix, other.Street.Name.StreetTypePrefix)
                     || SameRequired(Street.Name.StreetType, other.Street.Name.StreetType))
                 && Same(Street.Name.DirectionalSuffix, other.Street.Name.DirectionalSuffix)
                 && Same(Unit.Number, other.Unit.Number)

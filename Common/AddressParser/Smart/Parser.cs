@@ -12,12 +12,15 @@ namespace TerritoryTools.Common.AddressParser.Smart
         Address address = new Address();
         CityNameMatcher cityNameMatcher;
         List<string> streetTypes;
+        List<string> prefixStreetTypes;
 
         public Parser(
             List<string> validCities,
-            List<string> streetTypes)
+            List<string> streetTypes,
+            List<string> prefixStreetTypes)
         {
             this.streetTypes = streetTypes;
+            this.prefixStreetTypes = prefixStreetTypes;
             cityNameMatcher = new CityNameMatcher(validCities);
         }
 
@@ -145,8 +148,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     ? FindDirectionalPrefix()
                     : string.Empty;
 
-                address.Street.Name.PrefixStreetType = FindPrefixStreetType();
-                address.Street.Name.StreetType = string.IsNullOrWhiteSpace(address.Street.Name.PrefixStreetType)
+                address.Street.Name.StreetTypePrefix = FindPrefixStreetType();
+                address.Street.Name.StreetType = string.IsNullOrWhiteSpace(address.Street.Name.StreetTypePrefix)
                     ? FindStreetType()
                     : string.Empty;
 
@@ -238,7 +241,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindPostalCode()
         {
-            string postalCodePattern = @"^\d{5}$";
+            string postalCodePattern = @"^\d{5}(-\d{4})?$";
             // Postal Code should have at least three words before it and 
             // street number should already be parsed
             if (unParsed.Count >= 3 && !string.IsNullOrWhiteSpace(address.Street.Number))
@@ -350,7 +353,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 return string.Empty;
             }
 
-            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern))
+            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase))
             {
                 RemoveFirstWord();
                 return word;
@@ -363,7 +366,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = LastWord();
-            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern))
+            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase))
             {
                 RemoveLastWord();
                 return word;
@@ -375,7 +378,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindPrefixStreetType()
         {
             string word = FirstWord();
-            if (unParsed.Count > 1 && streetTypes.Contains(word.ToUpper()))
+            if (unParsed.Count > 1 && prefixStreetTypes.Contains(word.ToUpper()))
             {
                 RemoveFirstWord();
                 return word;

@@ -24,25 +24,31 @@ $master = Get-Address `
 
 ##ForEach($territoryId in $territoryIds) {
     #$addresses = $master | Where { $_.Territory_Id -eq $territoryId }
-    $addresses = $master | Where { $territoryIds.Contains($_.Territory_Id)}
+#dups#     $addresses = $master | Where { $territoryIds.Contains($_.Territory_Id)}
 
-    "Territory ID: $territoryId"
-    "Master List: $($master.Count)"
-    "Target List: $($addresses.Count)"
+#dups#   "Territory ID: $territoryId"
+#dups#     "Master List: $($master.Count)"
+#dups#    "Target List: $($addresses.Count)"
     "City List: $($cities.Count)"
 
-    "Finding duplicates..."
+$master `
+    | % { "$($_.Address), $($_.Suite), $($_.City), $($_.Province) $($_.Postal_code)" } `
+    | Get-Normalized -Cities $cities `
+    | ConvertTo-Csv -Delimiter `t `
+    > "$HOME\Desktop\Normalized-$(Get-Date -Format 'yyyy-MM-dd_HHmmss').txt"
 
-     $duplicates = $addresses `
-        | Get-Duplicates -Verbose -MasterList $master -Cities $cities -IncludeSelf 
+#dups#     "Finding duplicates..."
 
-$duplicates | ConvertTo-Csv -Delimiter `t | Out-File -FilePath (Join-Path -Path $masterFolder -ChildPath "duplicates-all.tsv")
+#dups#     $duplicates = $addresses `
+#dups#        | Get-Duplicates -Verbose -MasterList $master -Cities $cities -IncludeSelf 
+
+#dups#$duplicates | ConvertTo-Csv -Delimiter `t | Out-File -FilePath (Join-Path -Path $masterFolder -ChildPath "duplicates-all.tsv")
 
 
-  $selfdups = $addresses `
-        | Get-Duplicates -Verbose -MasterList $addresses -Cities $cities -IncludeSelf 
+#dups#  $selfdups = $addresses `
+#dups#        | Get-Duplicates -Verbose -MasterList $addresses -Cities $cities -IncludeSelf 
 
-$selfdups | ConvertTo-Csv -Delimiter `t | Out-File -FilePath (Join-Path -Path $masterFolder -ChildPath "duplicates-self.tsv")
+#dups#$selfdups | ConvertTo-Csv -Delimiter `t | Out-File -FilePath (Join-Path -Path $masterFolder -ChildPath "duplicates-self.tsv")
 
 ###    $addresses `
 ###        | Get-Duplicates -Verbose -MasterList $master -Cities $cities -IncludeSelf `

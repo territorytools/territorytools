@@ -218,14 +218,14 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [Test]
         public void Parse_PrefixStreetType_WithCityEtc()
         {
-            Assert.AreEqual("Hwy", Test("123 Hwy 456 Lynnwood WA 98087").Street.Name.PrefixStreetType);
+            Assert.AreEqual("Hwy", Test("123 Hwy 456 Lynnwood WA 98087").Street.Name.StreetTypePrefix);
             Assert.AreEqual("456", Test("123 Hwy 456 Lynnwood WA 98087").Street.Name.Name);
         }
 
         [Test]
         public void Parse_PrefixStreetType_WithUnitCityEtc()
         {
-            Assert.AreEqual("Hwy", Test("123 Hwy 456 Unit 5A Lynnwood WA 98087").Street.Name.PrefixStreetType);
+            Assert.AreEqual("Hwy", Test("123 Hwy 456 Unit 5A Lynnwood WA 98087").Street.Name.StreetTypePrefix);
             Assert.AreEqual("456", Test("123 Hwy 456 Unit 5A Lynnwood WA 98087").Street.Name.Name);
         }
 
@@ -330,8 +330,8 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("98087", Test(text).Postal.Code);
         }
 
-        [TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456", "")]
-        [TestCase("1234 North Rd Lynnwood WA 98123", "1234", "North", "Rd")]
+        //[TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456")]
+        //[TestCase("1234 North Rd Lynnwood WA 98123", "1234", "North", "Rd")]
         public void AssertParts(
             string text,
             string streetNumber,
@@ -370,7 +370,8 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                     "Bend",
                     "North Bend",
                     "Lake Forest Park" },
-                StreetType.Split(STREET_TYPES));
+                StreetType.Split(STREET_TYPES),
+                StreetType.Split(StreetType.PrefixDefaults));
 
             return parser.Parse(text);
         }
