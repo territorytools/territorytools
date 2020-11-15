@@ -229,6 +229,23 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("456", Test("123 Hwy 456 Unit 5A Lynnwood WA 98087").Street.Name.Name);
         }
 
+        
+        [TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("1234 North Rd Lynnwood WA 98123", "1234", "North", "Rd")]
+        public void Parse_NorthRdEtc(string text, string streetNumber, string streetName, string streetType)
+        {
+            AssertParts(
+                text: text,
+                streetNumber: streetNumber,
+                dirPrefix: "",
+                streetName: streetName,
+                streetType: streetType,
+                dirSuffix: "",
+                city: "Lynnwood",
+                region: "WA",
+                postal: "98123");
+        }
+
         [Test]
         public void Parse_NorthRd()
         {
@@ -248,13 +265,28 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         public void Parse_DirectionalName_WithUnitCityEtc()
         {
             AssertParts(
-                text: "1234 W Laake Sammamish Pkwy SE Sammamish WA 98123",
+                text: "1234 W Lake Sammamish Pkwy SE Seattle WA 98123",
                 streetNumber: "1234",
                 dirPrefix: "",
-                streetName: "W Laake Sammamish",
+                streetName: "W Lake Sammamish",
                 streetType: "Pkwy",
                 dirSuffix: "SE",
-                city: "Sammamish",
+                city: "Seattle",
+                region: "WA",
+                postal: "98123");
+        }
+
+        [Test]
+        public void Parse_DirectionalName2_WithUnitCityEtc()
+        {
+            AssertParts(
+                text: "1234 West Blue Mountain Rd SE Seattle WA 98123",
+                streetNumber: "1234",
+                dirPrefix: "",
+                streetName: "West Blue Mountain",
+                streetType: "Rd",
+                dirSuffix: "SE",
+                city: "Seattle",
                 region: "WA",
                 postal: "98123");
         }
@@ -298,6 +330,8 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("98087", Test(text).Postal.Code);
         }
 
+        [TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("1234 North Rd Lynnwood WA 98123", "1234", "North", "Rd")]
         public void AssertParts(
             string text,
             string streetNumber,
@@ -310,14 +344,14 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             string postal)
         {
             var address = Parse(text);
-            Assert.AreEqual(streetNumber, address.Street.Number);
-            Assert.AreEqual(dirPrefix, address.Street.Name.DirectionalPrefix);
-            Assert.AreEqual(streetName, address.Street.Name.Name);
-            Assert.AreEqual(streetType, address.Street.Name.StreetType);
-            Assert.AreEqual(dirSuffix, address.Street.Name.DirectionalSuffix);
-            Assert.AreEqual(city, address.City.Name);
-            Assert.AreEqual(region, address.Region.Code);
-            Assert.AreEqual(postal, address.Postal.Code);
+            Assert.AreEqual(streetNumber, address.Street.Number, "Street.Number");
+            Assert.AreEqual(dirPrefix, address.Street.Name.DirectionalPrefix, "Street.Name.DirectionalPrefix)");
+            Assert.AreEqual(streetName, address.Street.Name.Name, "Street.Name.Name");
+            Assert.AreEqual(streetType, address.Street.Name.StreetType, "Street.Name.StreetType");
+            Assert.AreEqual(dirSuffix, address.Street.Name.DirectionalSuffix, "Street.Name.DirectionalSuffix");
+            Assert.AreEqual(city, address.City.Name, "City.Name");
+            Assert.AreEqual(region, address.Region.Code, "Region.Code");
+            Assert.AreEqual(postal, address.Postal.Code, "Postal.Code");
         }
 
         Address Test(string text)
