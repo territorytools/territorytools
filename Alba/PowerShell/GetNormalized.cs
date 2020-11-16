@@ -40,6 +40,7 @@ namespace TerritoryTools.Alba.PowerShell
 
             try
             {
+                parser.Normalize = true;
                 parsed = parser.Parse(Address);
                 normalized = new Normalized
                 {

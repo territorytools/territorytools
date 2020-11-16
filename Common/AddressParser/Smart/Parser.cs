@@ -24,6 +24,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
             cityNameMatcher = new CityNameMatcher(validCities);
         }
 
+        public bool Normalize { get; set; }
+
         public Address Parse(string text)
         {
             if(string.IsNullOrWhiteSpace(text))
@@ -420,7 +422,15 @@ namespace TerritoryTools.Common.AddressParser.Smart
             if(unParsed.Count > 1 && IsDirectional(word))
             {
                 RemoveFirstWord();
-                return word;
+
+                if (Normalize)
+                {
+                    return NormalizeDirectional(word);
+                }
+                else
+                {
+                    return word;
+                }
             }
 
             return string.Empty;
@@ -437,10 +447,28 @@ namespace TerritoryTools.Common.AddressParser.Smart
             if(unParsed.Count > 1 && IsDirectional(word))
             {
                 RemoveLastWord();
-                return word;
+
+                if (Normalize)
+                {
+                    return NormalizeDirectional(word);
+                }
+                else
+                {
+                    return word;
+                }
             }
 
             return string.Empty;
+        }
+
+        string NormalizeDirectional(string text)
+        {
+            return text
+                .ToUpper()
+                .Replace("NORTH", "N")
+                .Replace("SOUTH", "S")
+                .Replace("EAST", "E")
+                .Replace("WEST", "W");
         }
 
         bool IsDirectional(string word)
