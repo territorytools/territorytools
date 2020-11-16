@@ -6,8 +6,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
     {
         List<string> parts { get; set; } = new List<string>();
 
-        public string Type { get; set; }
-        public string Number { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Number { get; set; } = string.Empty;
 
         public override string ToString()
         {

@@ -116,8 +116,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             // Find unit type and number
             if (!string.IsNullOrWhiteSpace(address.Street.Number)
-                && string.IsNullOrWhiteSpace(address.Street.Name.Name) 
-                && string.IsNullOrWhiteSpace(address.Street.Name.NamePrefix))
+                && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
                 string u = FindUnit();
                 // TODO: If it's empty stop trying
@@ -323,21 +322,32 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             // Unit Type should have at least one word, the street name, before it
             // TODO: Inject a list of unit types into this unitPattern
-            string unitPattern = @"(#|Apartment|Apt|Suite|Ste|Unit|Cabin)\.?\s*#?\s*[0-9a-zA-Z][0-9a-zA-Z-]*$";
+            string unitTypePattern = @"(#|Apartment|Apt|Suite|Ste|Unit|Cabin)\.?\s*#?\s*[0-9a-zA-Z][0-9a-zA-Z-]*$";
+            string justTheNumberPattern = @"(\d+[0-9a-zA-Z]*|[a-zA-Z]+\d+|[0-9a-zA-Z]+-[0-9a-zA-Z]+)$";
             if (unParsed.Count >= 1 && !string.IsNullOrWhiteSpace(address.Street.Number))
             {
                 string text = UnParsedText();
-                var r = new Regex(unitPattern, RegexOptions.IgnoreCase);
-                var m = r.Match(text);
-                if (m.Success)
+                var unitTypeRegex = new Regex(unitTypePattern, RegexOptions.IgnoreCase);
+                var unitTypeMatch = unitTypeRegex.Match(text);
+
+                string lastWord = LastWord();
+                var justTheNumberRegex = new Regex(justTheNumberPattern, RegexOptions.IgnoreCase);
+                var justTheNumberMatch = justTheNumberRegex.Match(lastWord);
+                if (unitTypeMatch.Success)
                 {
-                    int wordCount = m.Value.Split(' ').Length;
+                    int wordCount = unitTypeMatch.Value.Split(' ').Length;
                     for (int i = 0; i < wordCount; i++)
                     {
                         RemoveLastWord();
                     }
 
-                    return m.Value;
+                    return unitTypeMatch.Value;
+                }
+                else if (justTheNumberMatch.Success)
+                {
+                    RemoveLastWord();
+
+                    return justTheNumberMatch.Value;
                 }
             }
 
@@ -402,10 +412,22 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindPrefixStreetType()
         {
             string word = FirstWord();
-            if (unParsed.Count > 1 && prefixStreetTypes.Contains(word.ToUpper()))
+            if (prefixStreetTypes.Contains(word.ToUpper()))
             {
-                RemoveFirstWord();
-                return word;
+                if (unParsed.Count > 1)
+                {
+                    RemoveFirstWord();
+                    return word;
+                } 
+                else if(unParsed.Count == 1 
+                    && string.IsNullOrWhiteSpace(address.Unit.Type)
+                    && !string.IsNullOrWhiteSpace(address.Unit.Number))
+                {
+                    RemoveFirstWord();
+                    unParsed.Add(address.Unit.Number);
+                    address.Unit.Number = string.Empty;
+                    return word;
+                }
             }
 
             return string.Empty;

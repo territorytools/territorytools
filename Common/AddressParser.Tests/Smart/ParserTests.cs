@@ -28,21 +28,15 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("Main St", Test("123 Main St").Street.Name.ToString());
         }
 
-        //[Test]
-        //public void Parse_Commas_StreetCityRegion()
-        //{
-        //    string text = "123 Main St, Seattle, WA";
-        //    Assert.AreEqual("Main St", Test(text).Street.Name.ToString());
-        //    Assert.AreEqual("Seattle", Test(text).City.Name);
-        //    Assert.AreEqual("WA", Test(text).Region.Code);
-        //}
-
-        [Test]
-        public void Parse_StreetNumberFractions()
+        [TestCase("123A Main St Seattle WA", "123", "A")]
+        [TestCase("123-A Main St Seattle WA", "123", "A")]
+        [TestCase("123-1/2 Main St Seattle WA", "123", "1/2")]
+        public void Parse_StreetNumberFractions(
+            string text, 
+            string number, 
+            string fraction)
         {
-            AssertStreetNumberFraction("123A Main St Seattle WA", "123", "A");
-            AssertStreetNumberFraction("123-A Main St Seattle WA", "123", "A");
-            AssertStreetNumberFraction("123-1/2 Main St Seattle WA", "123", "1/2");
+            AssertStreetNumberFraction(text, number, fraction);
         }
 
         void AssertStreetNumberFraction(string text, string number, string fraction)
@@ -79,30 +73,35 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("WA", Test(text).Region.Code);
         }
 
-        [Test]
-        public void Parse_NonStreet_PO_Box()
+        [TestCase("POB 321", "321", "POB")]
+        [TestCase("PO Box 321", "321", "PO Box")]
+        [TestCase("P O B 321", "321", "P O B")]
+        [TestCase("P.O.Box 321", "321", "P.O.Box")]
+        [TestCase("P.O. Box 321", "321", "P.O. Box")]
+        [TestCase("P. O. B. 321", "321", "P. O. B.")]
+        [TestCase("P. O. Box 321", "321", "P. O. Box")]
+        [TestCase("Post Office Box 321", "321", "Post Office Box")]
+        public void Parse_NonStreet_PO_Box(string text, string number, string name)
         {
-            AssertNonStreetNumberName("POB 321", "321", "POB");
-            AssertNonStreetNumberName("PO Box 321", "321", "PO Box");
-            AssertNonStreetNumberName("P O B 321", "321", "P O B");
-            AssertNonStreetNumberName("P.O.Box 321", "321", "P.O.Box");
-            AssertNonStreetNumberName("P.O. Box 321", "321", "P.O. Box");
-            AssertNonStreetNumberName("P. O. B. 321", "321", "P. O. B.");
-            AssertNonStreetNumberName("P. O. Box 321", "321", "P. O. Box");
-            AssertNonStreetNumberName("Post Office Box 321", "321", "Post Office Box");
+            AssertNonStreetNumberName(text, number, name);
         }
 
-        [Test]
-        public void Parse_NonStreet_PO_Box_WithCity()
+        [TestCase("POB 321, Bellevue, WA 98004", "321", "POB", "Bellevue", "WA")]
+        [TestCase("PO Box 321, Bellevue, WA 98004", "321", "PO Box", "Bellevue", "WA")]
+        [TestCase("P O B 321, Bellevue, WA 98004", "321", "P O B", "Bellevue", "WA")]
+        [TestCase("P.O.Box 321, Bellevue, WA 98004", "321", "P.O.Box", "Bellevue", "WA")]
+        [TestCase("P.O. Box 321, Bellevue, WA 98004", "321", "P.O. Box", "Bellevue", "WA")]
+        [TestCase("P. O. B. 321, Bellevue, WA 98004", "321", "P. O. B.", "Bellevue", "WA")]
+        [TestCase("P. O. Box 321, Bellevue, WA 98004", "321", "P. O. Box", "Bellevue", "WA")]
+        [TestCase("Post Office Box 321, Bellevue, WA 98004", "321", "Post Office Box", "Bellevue", "WA")]
+        public void Parse_NonStreet_PO_Box_WithCity(
+            string text, 
+            string number, 
+            string name, 
+            string city, 
+            string region)
         {
-            AssertNonStreetNumberName("POB 321, Bellevue, WA 98004", "321", "POB", "Bellevue", "WA");
-            AssertNonStreetNumberName("PO Box 321, Bellevue, WA 98004", "321", "PO Box", "Bellevue", "WA");
-            AssertNonStreetNumberName("P O B 321, Bellevue, WA 98004", "321", "P O B", "Bellevue", "WA");
-            AssertNonStreetNumberName("P.O.Box 321, Bellevue, WA 98004", "321", "P.O.Box", "Bellevue", "WA");
-            AssertNonStreetNumberName("P.O. Box 321, Bellevue, WA 98004", "321", "P.O. Box", "Bellevue", "WA");
-            AssertNonStreetNumberName("P. O. B. 321, Bellevue, WA 98004", "321", "P. O. B.", "Bellevue", "WA");
-            AssertNonStreetNumberName("P. O. Box 321, Bellevue, WA 98004", "321", "P. O. Box", "Bellevue", "WA");
-            AssertNonStreetNumberName("Post Office Box 321, Bellevue, WA 98004", "321", "Post Office Box", "Bellevue", "WA");
+            AssertNonStreetNumberName(text, number, name, city, region);
         }
 
         [Test]
@@ -129,72 +128,77 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("98087", Test("123 Main St Lynnwood WA 98087").Postal.Code.ToString());
         }
 
-        [Test]
-        public void Parse_Unit_Normal()
+        [TestCase("123 Main St Apt 234 Lynnwood WA 98087", "Apt", "234")]
+        [TestCase("123 Main St Apt 1A Lynnwood WA 98087", "Apt", "1A")]
+        [TestCase("123 Main St Apt 23-34 Lynnwood WA 98087", "Apt", "23-34")]
+        [TestCase("123 Main St Apt 23-A Lynnwood WA 98087", "Apt", "23-A")]
+        [TestCase("123 Main St Apt A Lynnwood WA 98087", "Apt", "A")]
+        [TestCase("123 Main St Unit A Lynnwood WA 98087", "Unit", "A")]
+        [TestCase("123 Main St Unit AA Lynnwood WA 98087", "Unit", "AA")]
+        [TestCase("123 Main St Unit # 234 Lynnwood WA 98087", "Unit", "234")]
+        [TestCase("123 Main St Unit #234 Lynnwood WA 98087", "Unit", "234")]
+        [TestCase("123 Main St Unit #234A Lynnwood WA 98087", "Unit", "234A")]
+        [TestCase("123 Main St Unit #234-A Lynnwood WA 98087", "Unit", "234-A")]
+        [TestCase("123 Main St #234 Lynnwood WA 98087", "#", "234")]
+        [TestCase("123 Main St #234A Lynnwood WA 98087", "#", "234A")]
+        [TestCase("123 Main St #234-A Lynnwood WA 98087", "#", "234-A")]
+        [TestCase("123 Main St #A Lynnwood WA 98087", "#", "A")]
+        [TestCase("123 Main St # A Lynnwood WA 98087", "#", "A")]
+        [TestCase("123 Main St # 234 Lynnwood WA 98087", "#", "234")]
+        [TestCase("123 Main St # 234A Lynnwood WA 98087", "#", "234A")]
+        [TestCase("123 Main St # 234-A Lynnwood WA 98087", "#", "234-A")]
+        [TestCase("123 Main St # 234-34 Lynnwood WA 98087", "#", "234-34")]
+        [TestCase("123 Broadway #A Everett WA 98087", "#", "A")]
+        public void Parse_Unit_Normal(
+            string text, 
+            string unitType, 
+            string number)
         {
-            AssertUnitTypeNumber("123 Main St Apt 234 Lynnwood WA 98087", "Apt", "234");
-            AssertUnitTypeNumber("123 Main St Apt 1A Lynnwood WA 98087", "Apt", "1A");
-            AssertUnitTypeNumber("123 Main St Apt 23-34 Lynnwood WA 98087", "Apt", "23-34");
-            AssertUnitTypeNumber("123 Main St Apt 23-A Lynnwood WA 98087", "Apt", "23-A");
-            AssertUnitTypeNumber("123 Main St Apt A Lynnwood WA 98087", "Apt", "A");
-            AssertUnitTypeNumber("123 Main St Unit A Lynnwood WA 98087", "Unit", "A");
-            AssertUnitTypeNumber("123 Main St Unit AA Lynnwood WA 98087", "Unit", "AA");
-            AssertUnitTypeNumber("123 Main St Unit # 234 Lynnwood WA 98087", "Unit", "234");
-            AssertUnitTypeNumber("123 Main St Unit #234 Lynnwood WA 98087", "Unit", "234");
-            AssertUnitTypeNumber("123 Main St Unit #234A Lynnwood WA 98087", "Unit", "234A");
-            AssertUnitTypeNumber("123 Main St Unit #234-A Lynnwood WA 98087", "Unit", "234-A");
-            AssertUnitTypeNumber("123 Main St #234 Lynnwood WA 98087", "#", "234");
-            AssertUnitTypeNumber("123 Main St #234A Lynnwood WA 98087", "#", "234A");
-            AssertUnitTypeNumber("123 Main St #234-A Lynnwood WA 98087", "#", "234-A");
-            AssertUnitTypeNumber("123 Main St #A Lynnwood WA 98087", "#", "A");
-            AssertUnitTypeNumber("123 Main St # A Lynnwood WA 98087", "#", "A");
-            AssertUnitTypeNumber("123 Main St # 234 Lynnwood WA 98087", "#", "234");
-            AssertUnitTypeNumber("123 Main St # 234A Lynnwood WA 98087", "#", "234A");
-            AssertUnitTypeNumber("123 Main St # 234-A Lynnwood WA 98087", "#", "234-A");
-            AssertUnitTypeNumber("123 Main St # 234-34 Lynnwood WA 98087", "#", "234-34");
-            AssertUnitTypeNumber("123 Broadway #A Everett WA 98087", "#", "A");
+            AssertUnitTypeNumber(text, unitType, number);
         }
 
-        [Test]
-        public void Parse_DirectionalPrefix_Normal()
+        [TestCase("123 N Main St Lynnwood WA 98087", "N")]        
+        [TestCase("123 S Main St Lynnwood WA 98087", "S")]
+        [TestCase("123 W Main St Lynnwood WA 98087","W")]
+        [TestCase("123 E Main St Lynnwood WA 98087", "E")]
+        [TestCase("123 SW Main St Lynnwood WA 98087", "SW")]
+        [TestCase("123 SE Main St Lynnwood WA 98087", "SE")]
+        [TestCase("123 NE Main St Lynnwood WA 98087", "NE")]
+        [TestCase("123 NW Main St Lynnwood WA 98087", "NW")]
+        [TestCase("123 North Main St Lynnwood WA 98087", "North")]
+        [TestCase("123 South Main St Lynnwood WA 98087", "South")]
+        [TestCase("123 East Main St Lynnwood WA 98087", "East")]
+        [TestCase("123 West Main St Lynnwood WA 98087", "West")]
+        [TestCase("123 Northeast Main St Lynnwood WA 98087", "Northeast")]
+        [TestCase("123 Northwest Main St Lynnwood WA 98087", "Northwest")]
+        [TestCase("123 Southeast Main St Lynnwood WA 98087", "Southeast")]
+        [TestCase("123 Southwest Main St Lynnwood WA 98087", "Southwest")]
+        public void Parse_DirectionalPrefix_Normal(
+            string text, 
+            string directionalPrefix)
         {
-            Assert.AreEqual("N", Test("123 N Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("S", Test("123 S Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("W", Test("123 W Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("E", Test("123 E Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("SW", Test("123 SW Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("SE", Test("123 SE Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("NE", Test("123 NE Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("NW", Test("123 NW Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("North", Test("123 North Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("South", Test("123 South Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("East", Test("123 East Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("West", Test("123 West Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("Northeast", Test("123 Northeast Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("Northwest", Test("123 Northwest Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("Southeast", Test("123 Southeast Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
-            Assert.AreEqual("Southwest", Test("123 Southwest Main St Lynnwood WA 98087").Street.Name.DirectionalPrefix);
+            Assert.AreEqual(directionalPrefix, Test(text).Street.Name.DirectionalPrefix);
         }
 
-        [Test]
-        public void Parse_DirectionalSuffix_Normal()
+        [TestCase("123 Main St N Lynnwood WA 98087", "N")]
+        [TestCase("123 Main St S Lynnwood WA 98087", "S")]
+        [TestCase("123 Main St W Lynnwood WA 98087", "W")]
+        [TestCase("123 Main St E Lynnwood WA 98087", "E")]
+        [TestCase("123 Main St SW Lynnwood WA 98087", "SW")]
+        [TestCase("123 Main St SE Lynnwood WA 98087", "SE")]
+        [TestCase("123 Main St NE Lynnwood WA 98087", "NE")]
+        [TestCase("123 Main St NW Lynnwood WA 98087", "NW")]
+        [TestCase("123 Main St North Lynnwood WA 98087", "North")]
+        [TestCase("123 Main St South Lynnwood WA 98087", "South")]
+        [TestCase("123 Main St East Lynnwood WA 98087", "East")]
+        [TestCase("123 Main St West Lynnwood WA 98087", "West")]
+        [TestCase("123 Main St Northeast Lynnwood WA 98087", "Northeast")]
+        [TestCase("123 Main St Northwest Lynnwood WA 98087", "Northwest")]
+        [TestCase("123 Main St Southeast Lynnwood WA 98087", "Southeast")]
+        [TestCase("123 Main St Southwest Lynnwood WA 98087", "Southwest")]
+        public void Parse_DirectionalSuffix_Normal(string text, string directionalSuffx)
         {
-            Assert.AreEqual("N", Test("123 Main St N Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("S", Test("123 Main St S Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("W", Test("123 Main St W Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("E", Test("123 Main St E Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("SW", Test("123 Main St SW Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("SE", Test("123 Main St SE Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("NE", Test("123 Main St NE Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("NW", Test("123 Main St NW Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("North", Test("123 Main St North Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("South", Test("123 Main St South Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("East", Test("123 Main St East Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("West", Test("123 Main St West Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("Northeast", Test("123 Main St Northeast Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("Northwest", Test("123 Main St Northwest Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("Southeast", Test("123 Main St Southeast Lynnwood WA 98087").Street.Name.DirectionalSuffix);
-            Assert.AreEqual("Southwest", Test("123 Main St Southwest Lynnwood WA 98087").Street.Name.DirectionalSuffix);
+            Assert.AreEqual(directionalSuffx, Test(text).Street.Name.DirectionalSuffix);
         }
 
         [Test]
@@ -233,6 +237,19 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("Unit", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Unit.Type);
             Assert.AreEqual("5-A", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Unit.Number);
             Assert.AreEqual("St", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Street.Name.StreetType);
+        }
+
+        [TestCase("123 Main St 5-A Lynnwood WA 98087", "", "5-A")]
+        [TestCase("123 Main St A-5 Lynnwood WA 98087", "", "A-5")]
+        [TestCase("123 Main St A-B Lynnwood WA 98087", "", "A-B")]
+        [TestCase("123 Main St 5 Lynnwood WA 98087", "", "5")]
+        [TestCase("123 Main St 567 Lynnwood WA 98087", "", "567")]
+        [TestCase("123 Main St 567-89 Lynnwood WA 98087", "", "567-89")]
+        [TestCase("123 Main St 5A Lynnwood WA 98087", "", "5A")]
+        [TestCase("123 Main St A5 Lynnwood WA 98087", "", "A5")]
+        public void Parse_Unit_JustTheNumber(string text, string unitType, string unitNumber)
+        {
+            AssertUnitTypeNumber(text, unitType, unitNumber);
         }
 
         [Test]
