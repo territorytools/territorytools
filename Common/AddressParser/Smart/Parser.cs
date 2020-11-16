@@ -12,14 +12,17 @@ namespace TerritoryTools.Common.AddressParser.Smart
         Address address = new Address();
         CityNameMatcher cityNameMatcher;
         List<string> streetTypes;
+        Dictionary<string, string> mapStreetTypes;
         List<string> prefixStreetTypes;
 
         public Parser(
             List<string> validCities,
             List<string> streetTypes,
+            Dictionary<string, string> mapStreetTypes,
             List<string> prefixStreetTypes)
         {
             this.streetTypes = streetTypes;
+            this.mapStreetTypes = mapStreetTypes;
             this.prefixStreetTypes = prefixStreetTypes;
             cityNameMatcher = new CityNameMatcher(validCities);
         }
@@ -507,6 +510,16 @@ namespace TerritoryTools.Common.AddressParser.Smart
             if (unParsed.Count > 1 && IsStreetType(word))
             {
                 RemoveLastWord();
+
+                if(Normalize)
+                {
+                    word = word.ToUpper();
+                    if(mapStreetTypes.ContainsKey(word))
+                    {
+                        return mapStreetTypes[word];
+                    }
+                }
+
                 return word;
             }
 

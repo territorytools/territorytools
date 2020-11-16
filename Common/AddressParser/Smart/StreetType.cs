@@ -21,5 +21,20 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             return streetTypes;
         }
+
+        public static Dictionary<string, string> Map(string text)
+        {
+            var streetTypes = new Dictionary<string, string>();
+            foreach (string t in text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var entries = t.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                if(entries.Length > 1)
+                {
+                    streetTypes[entries[0]] = entries[1];
+                }
+            }
+
+            return streetTypes;
+        }
     }
 }

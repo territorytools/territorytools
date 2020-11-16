@@ -28,8 +28,9 @@ namespace TerritoryTools.Alba.PowerShell
         protected override void BeginProcessing()
         {
             var streetTypes = StreetType.Split(StreetType.Defaults);
+            var mapStreetTypes = StreetType.Map(StreetType.Defaults);
             var prefixStreetTypes = StreetType.Split(StreetType.PrefixDefaults);
-            parser = new Parser(Cities, streetTypes, prefixStreetTypes);
+            parser = new Parser(Cities, streetTypes, mapStreetTypes, prefixStreetTypes);
         }
 
         // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
