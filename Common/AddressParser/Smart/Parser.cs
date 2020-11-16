@@ -324,6 +324,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             // TODO: Inject a list of unit types into this unitPattern
             string unitTypePattern = @"(#|Apartment|Apt|Suite|Ste|Unit|Cabin)\.?\s*#?\s*[0-9a-zA-Z][0-9a-zA-Z-]*$";
             string justTheNumberPattern = @"(\d+[0-9a-zA-Z]*|[a-zA-Z]+\d+|[0-9a-zA-Z]+-[0-9a-zA-Z]+)$";
+            string justLettersPattern = @"([a-zA-Z]+)$";
             if (unParsed.Count >= 1 && !string.IsNullOrWhiteSpace(address.Street.Number))
             {
                 string text = UnParsedText();
@@ -333,6 +334,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 string lastWord = LastWord();
                 var justTheNumberRegex = new Regex(justTheNumberPattern, RegexOptions.IgnoreCase);
                 var justTheNumberMatch = justTheNumberRegex.Match(lastWord);
+
+                var justLettersRegex = new Regex(justLettersPattern, RegexOptions.IgnoreCase);
+                var justLettersMatch = justLettersRegex.Match(lastWord);
+
                 if (unitTypeMatch.Success)
                 {
                     int wordCount = unitTypeMatch.Value.Split(' ').Length;
@@ -349,6 +354,28 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
                     return justTheNumberMatch.Value;
                 }
+                else if (justLettersMatch.Success)
+                {
+                    if (unParsed.Count >= 3)
+                    {
+                        string wordBeforeLast = unParsed[unParsed.Count - 2];
+                        string twoWordsBeforeLast = unParsed[unParsed.Count - 3];
+                        if(IsDirectional(wordBeforeLast) && IsStreetType(twoWordsBeforeLast))
+                        {
+                            RemoveLastWord();
+                            return lastWord;
+                        }
+
+                        if(!IsDirectional(lastWord)
+                            && !IsStreetType(lastWord)
+                            && IsStreetType(wordBeforeLast))
+                        {
+                            RemoveLastWord();
+                            return lastWord;
+                        }
+
+                    }
+                }
             }
 
             return string.Empty;
@@ -364,7 +391,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             if (m.Success)
             {
-                int wordCount = m.Value.Split(' ').Length;
+                var words = m.Value.Split(' ');
+                int wordCount = words.Length;
+
                 for (int i = 0; i < wordCount; i++)
                 {
                     RemoveFirstWord();
@@ -378,16 +407,17 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindDirectionalPrefix()
         {
-            string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = FirstWord();
             
+            // If the second word is a street type, then treat this directional 
+            // word as a name
             // Example: North Rd
-            if(unParsed.Count >= 2 && streetTypes.Contains(unParsed[1].ToUpper()))
+            if(unParsed.Count >= 2 && IsStreetType(unParsed[1]))
             {
                 return string.Empty;
             }
 
-            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase))
+            if(unParsed.Count > 1 && IsDirectional(word))
             {
                 RemoveFirstWord();
                 return word;
@@ -395,18 +425,28 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             return string.Empty;
         }
+
+        bool IsStreetType(string word)
+        {
+            return streetTypes.Contains(word.ToUpper());
+        }
         
         string FindDirectionalSuffix()
         {
-            string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|east|west)?$";
             string word = LastWord();
-            if(unParsed.Count > 1 && Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase))
+            if(unParsed.Count > 1 && IsDirectional(word))
             {
                 RemoveLastWord();
                 return word;
             }
 
             return string.Empty;
+        }
+
+        bool IsDirectional(string word)
+        {
+            string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|East|West)?$";
+            return Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase);
         }
 
         string FindPrefixStreetType()
@@ -436,7 +476,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindStreetType()
         {
             string word = LastWord();
-            if (unParsed.Count > 1 && streetTypes.Contains(word.ToUpper()))
+            if (unParsed.Count > 1 && IsStreetType(word))
             {
                 RemoveLastWord();
                 return word;

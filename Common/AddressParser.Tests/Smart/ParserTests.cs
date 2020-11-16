@@ -239,15 +239,22 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("St", Test("123 Main St Unit # 5-A Lynnwood WA 98087").Street.Name.StreetType);
         }
 
+        [TestCase("123 Main St 5 Lynnwood WA 98087", "", "5")]
+        [TestCase("123 Main St A Lynnwood WA 98087", "", "A")]
         [TestCase("123 Main St 5-A Lynnwood WA 98087", "", "5-A")]
         [TestCase("123 Main St A-5 Lynnwood WA 98087", "", "A-5")]
         [TestCase("123 Main St A-B Lynnwood WA 98087", "", "A-B")]
-        [TestCase("123 Main St 5 Lynnwood WA 98087", "", "5")]
         [TestCase("123 Main St 567 Lynnwood WA 98087", "", "567")]
         [TestCase("123 Main St 567-89 Lynnwood WA 98087", "", "567-89")]
         [TestCase("123 Main St 5A Lynnwood WA 98087", "", "5A")]
         [TestCase("123 Main St A5 Lynnwood WA 98087", "", "A5")]
         public void Parse_Unit_JustTheNumber(string text, string unitType, string unitNumber)
+        {
+            AssertUnitTypeNumber(text, unitType, unitNumber);
+        }
+
+        [TestCase("123 Main St NE A Lynnwood WA 98087", "", "A")]
+        public void Unit_JustTheNumber_AfterDirectional(string text, string unitType, string unitNumber)
         {
             AssertUnitTypeNumber(text, unitType, unitNumber);
         }

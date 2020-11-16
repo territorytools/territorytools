@@ -46,7 +46,7 @@ namespace TerritoryTools.Alba.PowerShell
                     Original = Address,
                     StreetNamePrefix = parsed.Street.Name.NamePrefix,
                     StreetNumber = parsed.Street.Number,
-                    StreetNumberFraction = "",
+                    StreetNumberFraction = parsed.Street.NumberFraction,
                     DirectionalPrefix = parsed.Street.Name.DirectionalPrefix,
                     StreetTypePrefix = parsed.Street.Name.StreetTypePrefix,
                     StreetName = parsed.Street.Name.Name,
