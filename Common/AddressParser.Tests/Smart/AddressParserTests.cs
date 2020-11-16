@@ -406,6 +406,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                     "North Bend",
                     "Lake Forest Park" },
                 StreetType.Split(STREET_TYPES),
+                StreetType.Map(StreetType.Defaults),
                 StreetType.Split(PREFIX_STREET_TYPES));
 
             return parser.Parse(text);

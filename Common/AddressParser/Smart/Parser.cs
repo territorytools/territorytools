@@ -91,6 +91,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 return address;
             }
 
+            if(Normalize)
+            {
+                text = text.ToUpper();
+            }
+
             words = text
                 .Split(
                     new char[] { ' ' },
@@ -413,11 +418,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
         string FindDirectionalPrefix()
         {
             string word = FirstWord();
-            
+
             // If the second word is a street type, then treat this directional 
             // word as a name
             // Example: North Rd
-            if(unParsed.Count >= 2 && IsStreetType(unParsed[1]))
+            if (unParsed.Count == 2 && IsStreetType(unParsed[1]))
             {
                 return string.Empty;
             }

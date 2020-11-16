@@ -64,13 +64,19 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("WA", Test(text).Region.Code);
         }
 
-        [Test]
-        public void Parse_Street_TypelessName_OneWordCityAndRegion()
+        [TestCase("989 112th Bellevue WA 98004", "112th", "", "Bellevue", "WA")]
+        [TestCase("123 Main South Bend WA", "Main South", "", "Bend", "WA")]
+        public void Parse_Street_TypelessName_OneWordCityAndRegion(
+            string text, 
+            string name,
+            string type,
+            string city,
+            string region)
         {
-            string text = "123 Main South Bend WA";
-            Assert.AreEqual("Main South", Test(text).Street.Name.ToString());
-            Assert.AreEqual("Bend", Test(text).City.Name);
-            Assert.AreEqual("WA", Test(text).Region.Code);
+            Assert.AreEqual(name, Test(text).Street.Name.Name.ToString());
+            Assert.AreEqual(type, Test(text).Street.Name.StreetType.ToString());
+            Assert.AreEqual(city, Test(text).City.Name);
+            Assert.AreEqual(region, Test(text).Region.Code);
         }
 
         [TestCase("POB 321", "321", "POB")]
@@ -173,6 +179,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [TestCase("123 Northwest Main St Lynnwood WA 98087", "Northwest")]
         [TestCase("123 Southeast Main St Lynnwood WA 98087", "Southeast")]
         [TestCase("123 Southwest Main St Lynnwood WA 98087", "Southwest")]
+        [TestCase("123 SE Mount Baker St Lynnwood WA 98087", "SE")]
         public void Parse_DirectionalPrefix_Normal(
             string text, 
             string directionalPrefix)
@@ -431,6 +438,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                     "North Bend",
                     "Lake Forest Park" },
                 StreetType.Split(STREET_TYPES),
+                StreetType.Map(STREET_TYPES),
                 StreetType.Split(StreetType.PrefixDefaults));
 
             return parser.Parse(text);
