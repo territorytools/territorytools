@@ -54,7 +54,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [TestCase("123 Broadway Bellevue WA", "Broadway", "", "Bellevue", "WA")]
         [TestCase("123 Broadway Bellevue WA 98004", "Broadway", "", "Bellevue", "WA")]
         [TestCase("123 112th Bellevue WA 98004", "112th", "", "Bellevue", "WA")]
-        [TestCase("123 Main South Bend WA", "Main South", "", "Bend", "WA")]
+        [TestCase("123 Main South UnkownCity WA", "Main South", "", "UnkownCity", "WA")]
         public void NoStreetType_OneWordCityAndRegion(
             string text,
             string name,

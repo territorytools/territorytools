@@ -417,6 +417,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindDirectionalPrefix()
         {
+            if(unParsed.Count == 0)
+            {
+                return string.Empty;
+            }
+
             string word = FirstWord();
 
             // If the second word is a street type, then treat this directional 
@@ -451,18 +456,21 @@ namespace TerritoryTools.Common.AddressParser.Smart
         
         string FindDirectionalSuffix()
         {
-            string word = LastWord();
-            if(unParsed.Count > 1 && IsDirectional(word))
+            if(unParsed.Count > 1)
             {
-                RemoveLastWord();
+                string word = LastWord();
+                if (IsDirectional(word))
+                {
+                    RemoveLastWord();
 
-                if (Normalize)
-                {
-                    return NormalizeDirectional(word);
-                }
-                else
-                {
-                    return word;
+                    if (Normalize)
+                    {
+                        return NormalizeDirectional(word);
+                    }
+                    else
+                    {
+                        return word;
+                    }
                 }
             }
 
@@ -487,6 +495,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindPrefixStreetType()
         {
+            if(unParsed.Count == 0)
+            {
+                return string.Empty;
+            }
+
             string word = FirstWord();
             if (prefixStreetTypes.Contains(word.ToUpper()))
             {
@@ -511,6 +524,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindStreetType()
         {
+            if(unParsed.Count == 0)
+            {
+                return string.Empty;
+            }
+
             string word = LastWord();
             if (unParsed.Count > 1 && IsStreetType(word))
             {
