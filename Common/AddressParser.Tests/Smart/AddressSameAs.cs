@@ -9,7 +9,7 @@ using TerritoryTools.Common.AddressParser.Smart;
 namespace TerritoryTools.Common.AddressParser.Tests.Smart
 {
     [TestFixture]
-    public class AddressTets
+    public class AddressSameAs
     {
         [Test]
         public void SameAs_Simple()

@@ -131,12 +131,12 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 string u = FindUnit();
                 // TODO: If it's empty stop trying
                 var words = u.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (words.Length > 0 && unParsed.Count > 1)
+                if (words.Length > 0) // && unParsed.Count > 1)
                 {
                     address.Unit.Number = words.Last();
                 }
 
-                if(words.Length > 1 && unParsed.Count > 2)
+                if(words.Length > 1) // && unParsed.Count > 2)
                 {
                     address.Unit.Type = words.First();
                 }
