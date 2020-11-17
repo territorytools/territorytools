@@ -6,7 +6,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
     {
         [TestCase("123 Broadway Bellevue WA", "WA")]
         [TestCase("123 Broadway Bellevue WA 98004", "WA")]
-        [TestCase("123 112th Bellevue WA 98004", "WA")]
         [TestCase("123 Main South Bend WA", "WA")]
         [TestCase("123 Main North Bend WA", "WA")]
         public void Region(string text, string region)
@@ -16,7 +15,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         [TestCase("123 Broadway Bellevue WA", "Bellevue")]
         [TestCase("123 Broadway Bellevue WA 98004", "Bellevue")]
-        [TestCase("123 112th Bellevue WA 98004", "Bellevue")]
         [TestCase("123 Main South Bend WA", "Bend")]
         [TestCase("123 Main North Bend WA", "North Bend")]
         public void City(string text, string city)
@@ -26,7 +24,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         [TestCase("123 Broadway Bellevue WA", "Broadway")]
         [TestCase("123 Broadway Bellevue WA 98004", "Broadway")]
-        [TestCase("123 112th Bellevue WA 98004", "112th")]
         public void StreetName(string text, string name)
         {
             Assert.AreEqual(name, Test(text).Street.Name.Name);
@@ -34,7 +31,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         [TestCase("123 Broadway Bellevue WA", "")]
         [TestCase("123 Broadway Bellevue WA 98004", "")]
-        [TestCase("123 112th Bellevue WA 98004", "")]
         [TestCase("123 Main South Bend WA", "")]
         public void StreetType(string text, string type)
         {
@@ -52,7 +48,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         [TestCase("123 Broadway Bellevue WA", "Broadway", "", "Bellevue", "WA")]
         [TestCase("123 Broadway Bellevue WA 98004", "Broadway", "", "Bellevue", "WA")]
-        [TestCase("123 112th Bellevue WA 98004", "112th", "", "Bellevue", "WA")]
         [TestCase("123 Main South UnkownCity WA", "Main South", "", "UnkownCity", "WA")]
         public void OneWordCityAndRegion(
             string text,
