@@ -64,25 +64,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         {
             Assert.AreEqual("St", Test("123 Main St Lynnwood WA 98087").Street.Name.StreetType);
         }
-
-        [Test]
-        public void StreetType_WithDirectionalPrefixAndCityEtc()
-        {
-            Assert.AreEqual("St", Test("123 NE Main St Lynnwood WA 98087").Street.Name.StreetType);
-        }
-
-        [Test]
-        public void StreetType_WithDirectionalSuffixAndCityEtc()
-        {
-            Assert.AreEqual("St", Test("123 Main St NE Lynnwood WA 98087").Street.Name.StreetType);
-        }
-
-        [Test]
-        public void Parse_UnRecognizedCity_ReturnsLastWord()
-        {
-            string text = "12345 SE Pl Nowhere WA";
-            Assert.AreEqual("Nowhere", Test(text).City.Name);
-        }
    
         [Test]
         public void Parse_Commas_4()

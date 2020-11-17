@@ -60,5 +60,48 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.AreEqual("456", Test(text).Street.Name.Name);
         }
 
+        [TestCase("123 Hwy 456 # 5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 # 5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 # 5-A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 # A5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 # A-5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 # A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit 5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit 5-A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit A5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit A-5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit #5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit #5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit #5-A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit #A5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit #A-5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit #A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit # 5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit # 5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit # 5-A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit # A5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit # A-5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 Unit # A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 #5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 #5A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 #5-A Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 #A5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 #A-5 Lynnwood WA 98123", "123", "456", "")]
+        [TestCase("123 Hwy 456 #A Lynnwood WA 98123", "123", "456", "")]
+        public void WithUnitTypeAndNumber(string text, string streetNumber, string streetName, string streetType)
+        {
+            AssertParts(
+                text: text,
+                streetNumber: streetNumber,
+                dirPrefix: "",
+                streetName: streetName,
+                streetType: streetType,
+                dirSuffix: "",
+                city: "Lynnwood",
+                region: "WA",
+                postal: "98123");
+        }
     }
 }

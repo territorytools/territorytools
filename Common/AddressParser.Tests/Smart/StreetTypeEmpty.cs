@@ -27,7 +27,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [TestCase("123 Broadway Bellevue WA", "Broadway")]
         [TestCase("123 Broadway Bellevue WA 98004", "Broadway")]
         [TestCase("123 112th Bellevue WA 98004", "112th")]
-        [TestCase("123 Main South Bend WA", "Main South")]
         public void StreetName(string text, string name)
         {
             Assert.AreEqual(name, Test(text).Street.Name.Name);
@@ -43,7 +42,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
-        public void NoStreetType_TwoWordCityAndRegion()
+        public void TwoWordCityAndRegion()
         {
             string text = "123 Main North Bend WA";
             Assert.AreEqual("Main", Test(text).Street.Name.ToString());
@@ -55,7 +54,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [TestCase("123 Broadway Bellevue WA 98004", "Broadway", "", "Bellevue", "WA")]
         [TestCase("123 112th Bellevue WA 98004", "112th", "", "Bellevue", "WA")]
         [TestCase("123 Main South UnkownCity WA", "Main South", "", "UnkownCity", "WA")]
-        public void NoStreetType_OneWordCityAndRegion(
+        public void OneWordCityAndRegion(
             string text,
             string name,
             string type,

@@ -4,7 +4,7 @@ using TerritoryTools.Common.AddressParser.Smart;
 namespace TerritoryTools.Common.AddressParser.Tests.Smart
 {
     [TestFixture]
-    public class StreetNameTests
+    public class StreetNameToString : ParserTestBase
     {
         [Test]
         public void ToString_Empty()

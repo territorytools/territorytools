@@ -50,21 +50,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
-        public void DirectionalStreetName()
-        {
-            AssertParts(
-                text: "1234 North Rd Sammamish WA 98123",
-                streetNumber: "1234",
-                dirPrefix: "",
-                streetName: "North",
-                streetType: "Rd",
-                dirSuffix: "",
-                city: "Sammamish",
-                region: "WA",
-                postal: "98123");
-        }
-
-        [Test]
         public void SuffixWinsOverShortPrefix()
         {
             AssertParts(
@@ -95,44 +80,15 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         }
 
         [Test]
-        public void MissingStreetName_WithDirPrefix()
+        public void StreetType_WithDirectionalPrefixAndCityEtc()
         {
-            string text = "12345 NE Lynnwood WA";
-            Assert.AreEqual("12345", Test(text).Street.Number);
-            Assert.IsEmpty(Test(text).Street.Name.DirectionalPrefix);
-            Assert.AreEqual("NE", Test(text).Street.Name.Name);
-            Assert.IsEmpty(Test(text).Street.Name.StreetType);
-            Assert.AreEqual("Lynnwood", Test(text).City.Name);
-            Assert.AreEqual("WA", Test(text).Region.Code);
+            Assert.AreEqual("St", Test("123 NE Main St Lynnwood WA 98087").Street.Name.StreetType);
         }
 
         [Test]
-        public void MissingStreetName_WithDirectionalAndStreetType()
+        public void StreetType_WithDirectionalSuffixAndCityEtc()
         {
-            string text = "12345 SE Pl Lynnwood WA";
-            Assert.AreEqual("12345", Test(text).Street.Number);
-            Assert.AreEqual("", Test(text).Street.Name.DirectionalPrefix);
-            Assert.AreEqual("SE", Test(text).Street.Name.Name);
-            Assert.AreEqual("Pl", Test(text).Street.Name.StreetType);
-            Assert.AreEqual("", Test(text).Street.Name.DirectionalSuffix);
-            Assert.AreEqual("Lynnwood", Test(text).City.Name);
-            Assert.AreEqual("WA", Test(text).Region.Code);
-        }
-
-        [TestCase("123 Hwy 456 Unit 5A Lynnwood WA 98123", "123", "456", "")]
-        [TestCase("1234 North Rd Lynnwood WA 98123", "1234", "North", "Rd")]
-        public void DirectionalStreetName(string text, string streetNumber, string streetName, string streetType)
-        {
-            AssertParts(
-                text: text,
-                streetNumber: streetNumber,
-                dirPrefix: "",
-                streetName: streetName,
-                streetType: streetType,
-                dirSuffix: "",
-                city: "Lynnwood",
-                region: "WA",
-                postal: "98123");
+            Assert.AreEqual("St", Test("123 Main St NE Lynnwood WA 98087").Street.Name.StreetType);
         }
     }
 }
