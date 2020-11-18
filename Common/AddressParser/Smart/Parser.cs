@@ -338,7 +338,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
             string unitTypePattern = @"(#|Apartment|Apt|Suite|Ste|Unit|Cabin)\.?\s*#?\s*[0-9a-zA-Z][0-9a-zA-Z-]*$";
             string justTheNumberPattern = @"(\d+[0-9a-zA-Z]*|[a-zA-Z]+\d+|[0-9a-zA-Z]+-[0-9a-zA-Z]+)$";
             string justLettersPattern = @"([a-zA-Z]+)$";
-            if (unParsed.Count >= 1 && !string.IsNullOrWhiteSpace(address.Street.Number))
+            if (!string.IsNullOrWhiteSpace(address.Street.Number))
             {
                 string text = UnParsedText();
                 var unitTypeRegex = new Regex(unitTypePattern, RegexOptions.IgnoreCase);
