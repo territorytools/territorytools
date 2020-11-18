@@ -39,9 +39,9 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [Test]
         public void PrefixStreetType_WithCityEtc()
         {
-            string text = "123 Hwy 456 Lynnwood WA 98087";
-            Assert.AreEqual("Hwy", Test(text).Street.Name.StreetTypePrefix);
-            Assert.AreEqual("456", Test(text).Street.Name.Name);
+            var address = Test("123 Hwy 456 Lynnwood WA 98087");
+            Assert.AreEqual("Hwy", address.Street.Name.StreetTypePrefix);
+            Assert.AreEqual("456", address.Street.Name.Name);
         }
 
         [Test]

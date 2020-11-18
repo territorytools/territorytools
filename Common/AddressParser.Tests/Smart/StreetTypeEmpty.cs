@@ -56,10 +56,11 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             string city,
             string region)
         {
-            Assert.AreEqual(name, Test(text).Street.Name.Name.ToString());
-            Assert.AreEqual(type, Test(text).Street.Name.StreetType.ToString());
-            Assert.AreEqual(city, Test(text).City.Name);
-            Assert.AreEqual(region, Test(text).Region.Code);
+            var address = Test(text);
+            Assert.AreEqual(name, address.Street.Name.ToString());
+            Assert.AreEqual(type, address.Street.Name.StreetType);
+            Assert.AreEqual(city, address.City.Name);
+            Assert.AreEqual(region, address.Region.Code);
         }
     }
 }

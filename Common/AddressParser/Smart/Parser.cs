@@ -128,26 +128,29 @@ namespace TerritoryTools.Common.AddressParser.Smart
             if (!string.IsNullOrWhiteSpace(address.Street.Number)
                 && string.IsNullOrWhiteSpace(address.Street.Name.Name))
             {
-                string u = FindUnit();
-                // TODO: If it's empty stop trying
-                var words = u.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (words.Length > 0) // && unParsed.Count > 1)
+                if (unParsed.Count > 1)
                 {
-                    address.Unit.Number = words.Last();
-                }
-
-                if(words.Length > 1) // && unParsed.Count > 2)
-                {
-                    address.Unit.Type = words.First();
-                }
-
-                if(!string.IsNullOrWhiteSpace(address.Unit.Number)
-                    && address.Unit.Number.StartsWith("#"))
-                {
-                    address.Unit.Number = address.Unit.Number.Substring(1);
-                    if (string.IsNullOrWhiteSpace(address.Unit.Type))
+                    string u = FindUnit();
+                    // TODO: If it's empty stop trying
+                    var words = u.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (words.Length > 0)
                     {
-                        address.Unit.Type = "#";
+                        address.Unit.Number = words.Last();
+                    }
+
+                    if (words.Length > 1)
+                    {
+                        address.Unit.Type = words.First();
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(address.Unit.Number)
+                        && address.Unit.Number.StartsWith("#"))
+                    {
+                        address.Unit.Number = address.Unit.Number.Substring(1);
+                        if (string.IsNullOrWhiteSpace(address.Unit.Type))
+                        {
+                            address.Unit.Type = "#";
+                        }
                     }
                 }
             }

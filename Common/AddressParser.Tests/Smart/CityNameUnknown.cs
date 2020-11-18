@@ -14,7 +14,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [TestCase("123 Main South Bend WA", "Main South")]
         public void StreetName(string text, string name)
         {
-            Assert.AreEqual(name, Test(text).Street.Name.Name);
+            Assert.AreEqual(name, Test(text).Street.Name.ToString());
         }
     }
 }
