@@ -13,26 +13,27 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [Test]
         public void Null_CityName()
         {
-            Assert.IsNull(Test(null).City.Name);
+            Assert.IsNull(ParseIgnoreCityRegion(null).City.Name);
         }
 
         [Test]
         public void StreetNumber()
         {
-            Assert.AreEqual("123", Test("123 Main St").Street.Number.ToString());
+            Assert.AreEqual("123", ParseIgnoreCityRegion("123 Main St").Street.Number.ToString());
         }
 
         [Test]
         public void StreetName()
         {
-            Assert.AreEqual("Main St", Test("123 Main St").Street.Name.ToString());
+            Assert.AreEqual("Main St", ParseIgnoreCityRegion("123 Main St").Street.Name.ToString());
         }
 
         [Test]
         public void NonStreet_PartialMatch()
         {
             // Starts with same letters, but ends wrong
-            AssertNonStreetNumberName("Post Office Barn 321", string.Empty, string.Empty);
+            var address = ParseIgnoreCityRegion("Post Office Barn 321");
+            Assert.IsEmpty(address.Street.Name.NamePrefix);
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         [Test]
         public void StreetType_StreetOnly_Simple()
         {
-            Assert.AreEqual("St", Test("123 Main St").Street.Name.StreetType);
+            Assert.AreEqual("St", ParseIgnoreCityRegion("123 Main St").Street.Name.StreetType);
         }
 
         [Test]
@@ -85,9 +86,25 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             return Parse(text);
         }
 
+        private static Address ParseIgnoreCityRegion(string text)
+        {
+            Parser parser = DefaultParser();
+            parser.IgnoreMissingCity = true;
+            parser.IgnoreMissingRegion = true;
+
+            return parser.Parse(text);
+        }
+
         private static Address Parse(string text)
         {
-            var parser = new Parser(
+            Parser parser = DefaultParser();
+
+            return parser.Parse(text);
+        }
+
+        private static Parser DefaultParser()
+        {
+            return new Parser(
                 new List<string> {
                     "Seattle",
                     "Sammamish",
@@ -99,8 +116,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                 StreetType.Split(STREET_TYPES),
                 StreetType.Map(STREET_TYPES),
                 StreetType.Split(StreetType.PrefixDefaults));
-
-            return parser.Parse(text);
         }
     }
 }

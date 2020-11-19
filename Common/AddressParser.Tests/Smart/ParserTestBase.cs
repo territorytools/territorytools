@@ -34,6 +34,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                 StreetType.Split(StreetType.PrefixDefaults));
 
             parser.Normalize = normalize;
+            parser.KeepParseResultsOnError = true;
 
             return parser.Parse(text);
         }

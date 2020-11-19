@@ -28,6 +28,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
         }
 
         public bool Normalize { get; set; }
+        public bool IgnoreMissingCity { get; set; } = false;
+        public bool IgnoreMissingRegion { get; set; } = false;
+        public bool IgnoreMissingPostal { get; set; } = true;
+        public bool KeepParseResultsOnError { get; set; } = false;
 
         public Address Parse(string text)
         {
@@ -199,17 +203,32 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 errors.Add("Street.Name.NamePrefix");
             }
 
-            if (string.IsNullOrWhiteSpace(address.City.Name))
+            if (!IgnoreMissingCity && string.IsNullOrWhiteSpace(address.City.Name))
             {
                 errors.Add("City.Name");
             }
 
-            if (string.IsNullOrWhiteSpace(address.Region.Code))
+            if (!IgnoreMissingRegion && string.IsNullOrWhiteSpace(address.Region.Code))
             {
                 errors.Add("Region.Code");
             }
 
-            address.ErrorMessage = string.Join(", ", errors);
+            string errorMessage = string.Join(", ", errors);
+
+            if (errors.Count > 0)
+            {
+                if (KeepParseResultsOnError)
+                {
+                    address.ErrorMessage = errorMessage;
+                }
+                else
+                {
+                    return new Address()
+                    {
+                        ErrorMessage = errorMessage
+                    };
+                }
+            }
 
             return address;
         }
