@@ -318,7 +318,14 @@ namespace TerritoryTools.Common.AddressParser.Smart
                         RemoveLastWord();
                     }
 
-                    return string.Join(" ", matched);
+                    if (Normalize)
+                    {
+                        return string.Join(" ", matched).ToUpper();
+                    }
+                    else
+                    {
+                        return string.Join(" ", matched);
+                    }
                 }
                 else
                 {
