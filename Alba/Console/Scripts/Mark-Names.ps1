@@ -24,20 +24,27 @@ $all = @()
 $marked = @()
 ForEach($row in $rows) { 
     ForEach($name in $names) { 
-        $f=$false
+        $matched=$false
         $nameColumn = $row.Split("`t")[$indexOfNameColumn]
+        
+        # Remove characters that would confuse the split 
+        # Example: SMITH, ALICE+BOB becomes SMITH ALICE BOB
         $cleaned = $nameColumn.ToUpper().Replace("+"," ").Replace(";"," ").Replace(","," ").Replace("&"," ")
+        
+        # Splits all names like surnames from given names
         $namesInRow = $cleaned.Split(" ")
+
+        # Compare each name with each name from NameFile
         if($namesInRow.Contains($name.ToUpper())) { 
             #Write-Host -ForegroundColor Green "$row ($name)"; 
             $all += "$markWith$row"
             $marked += "$row"
             $markCount++
-            $f=$true
+            $matched=$true
             break
         } 
     } 
-    if(!$f) { 
+    if(!$matched) { 
         #Write-Host -ForegroundColor Red "$row" 
         $all += "$row"
     } 
