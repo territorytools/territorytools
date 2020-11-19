@@ -36,7 +36,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 return new Address();
             }
 
-            text = text.Replace(',', ' ');
+            text = text
+                .Replace(',', ' ')
+                .Replace('.', ' ')
+                .Trim();
 
             if(text.Contains(","))
             {
