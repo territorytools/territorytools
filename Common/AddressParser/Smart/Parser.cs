@@ -11,16 +11,19 @@ namespace TerritoryTools.Common.AddressParser.Smart
         List<string> unParsed;
         Address address = new Address();
         CityNameMatcher cityNameMatcher;
+        List<string> validRegions;
         List<string> streetTypes;
         Dictionary<string, string> mapStreetTypes;
         List<string> prefixStreetTypes;
 
         public Parser(
+            List<string> validRegions,
             List<string> validCities,
             List<string> streetTypes,
             Dictionary<string, string> mapStreetTypes,
             List<string> prefixStreetTypes)
         {
+            this.validRegions = validRegions;
             this.streetTypes = streetTypes;
             this.mapStreetTypes = mapStreetTypes;
             this.prefixStreetTypes = prefixStreetTypes;
@@ -302,7 +305,6 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindRegionCode()
         {
-            string regionCodePattern = @"^(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|)$";
             // Region Code (Province/State) should have at least three words 
             // before it and street number should already be parsed
             if ((string.IsNullOrWhiteSpace(address.Street.Name.Name) && unParsed.Count >= 3
@@ -310,7 +312,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 && !string.IsNullOrWhiteSpace(address.Street.Number))
             {
                 string lastWord = LastWord();
-                if (Regex.IsMatch(lastWord, regionCodePattern))
+                if (validRegions.Contains(lastWord.ToUpper().Trim()))
                 {
                     RemoveLastWord();
                     return lastWord;

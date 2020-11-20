@@ -105,7 +105,9 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         private static Parser DefaultParser()
         {
+            var validRegions = new List<string> { "WA", "CA", "OR", "ID" };
             return new Parser(
+                validRegions,
                 new List<string> {
                     "Seattle",
                     "Sammamish",

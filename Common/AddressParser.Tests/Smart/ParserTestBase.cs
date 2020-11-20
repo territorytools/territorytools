@@ -31,6 +31,7 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
         public static Parser DefaultParser()
         {
             return new Parser(
+                new List<string> { "WA", "CA", "OR", "ID" },
                 new List<string> {
                     "Seattle",
                     "Sammamish",

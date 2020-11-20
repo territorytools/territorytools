@@ -23,7 +23,6 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     .Split(
                         new char[] { ' ' },
                         StringSplitOptions.RemoveEmptyEntries)
-                    //.Reverse() // Read from right to left
                     .ToArray();
 
                 list.Add(
@@ -62,11 +61,6 @@ namespace TerritoryTools.Common.AddressParser.Smart
                     }
                 }
             }
-
-            //if(words.Count > 0)
-            //{
-            //    return new string[] { words.Last() };
-            //}
 
             return new string[0];
         }
