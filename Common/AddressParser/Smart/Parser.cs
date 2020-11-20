@@ -31,6 +31,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
         public bool IgnoreMissingCity { get; set; } = false;
         public bool IgnoreMissingRegion { get; set; } = false;
         public bool IgnoreMissingPostal { get; set; } = true;
+        public bool IgnoreUnknownCity { get; set; } = true;
         public bool KeepParseResultsOnError { get; set; } = false;
 
         public Address Parse(string text)
@@ -215,22 +216,18 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             string errorMessage = string.Join(", ", errors);
 
-            if (errors.Count > 0)
+            if (errors.Count == 0 || errors.Count > 0 && KeepParseResultsOnError)
             {
-                if (KeepParseResultsOnError)
-                {
-                    address.ErrorMessage = errorMessage;
-                }
-                else
-                {
-                    return new Address()
-                    {
-                        ErrorMessage = errorMessage
-                    };
-                }
+                address.ErrorMessage = errorMessage;
+                return address;
             }
-
-            return address;
+            else
+            {
+                return new Address()
+                {
+                    ErrorMessage = errorMessage
+                };
+            }
         }
 
         (string, string) FindStreetNumber()
@@ -305,7 +302,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         string FindRegionCode()
         {
-            string regionCodePattern = @"^[a-zA-Z]{2}$";
+            string regionCodePattern = @"^(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|)$";
             // Region Code (Province/State) should have at least three words 
             // before it and street number should already be parsed
             if ((string.IsNullOrWhiteSpace(address.Street.Name.Name) && unParsed.Count >= 3
@@ -349,7 +346,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
                         return string.Join(" ", matched);
                     }
                 }
-                else
+                else if(IgnoreUnknownCity)
                 {
                     string lastWord = LastWord();
                     RemoveLastWord();

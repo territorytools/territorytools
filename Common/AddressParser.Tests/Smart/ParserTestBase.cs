@@ -20,7 +20,17 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 
         private static Address Parse(string text, bool normalize = false)
         {
-            var parser = new Parser(
+            Parser parser = DefaultParser();
+
+            parser.Normalize = normalize;
+            parser.KeepParseResultsOnError = true;
+
+            return parser.Parse(text);
+        }
+
+        public static Parser DefaultParser()
+        {
+            return new Parser(
                 new List<string> {
                     "Seattle",
                     "Sammamish",
@@ -32,11 +42,6 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
                 StreetType.Split(STREET_TYPES),
                 StreetType.Map(STREET_TYPES),
                 StreetType.Split(StreetType.PrefixDefaults));
-
-            parser.Normalize = normalize;
-            parser.KeepParseResultsOnError = true;
-
-            return parser.Parse(text);
         }
 
         public void AssertParts(
