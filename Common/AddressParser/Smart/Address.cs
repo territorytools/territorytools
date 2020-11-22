@@ -17,9 +17,6 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         public bool SameAs(Address other)
         {
-            // Console.WriteLine($"{other} == {ToString()}");
-            //return SameRequired(Street.Number, other.Street.Number)
-            //    && Same(Street.Name.DirectionalPrefix, other.Street.Name.Name);
             return SameRequired(Street.Number, other.Street.Number)
                 && Same(Street.Name.DirectionalPrefix, other.Street.Name.DirectionalPrefix)
                 && SameRequired(Street.Name.Name, other.Street.Name.Name)

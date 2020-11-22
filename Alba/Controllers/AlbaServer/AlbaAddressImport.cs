@@ -21,6 +21,11 @@ namespace Controllers.AlbaServer
         public string Notes { get; set; } 
         public string Notes_private { get; set; }
 
+        public override string ToString()
+        {
+            return $"{Address_ID} {Name} {Address}, {Suite}, {City}, {Province} {Postal_code}".Trim();
+        }
+
         public static AlbaAddressImport From(AlbaAddressExport export)
         {
             return new AlbaAddressImport

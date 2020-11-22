@@ -6,9 +6,9 @@ using TerritoryTools.Common.AddressParser.Smart;
 
 namespace PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"Duplicates")]
-    [OutputType(typeof(DuplicateAddress))]
-    public class GetDuplicates : PSCmdlet
+    [Cmdlet(VerbsCommon.Skip,"Duplicates")]
+    [OutputType(typeof(Parsed))]
+    public class SkipDuplicates : PSCmdlet
     {
        
         Parser parser;
@@ -65,46 +65,30 @@ namespace PowerShell
 
                 string text = $"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}";
                 var parsed = parser.Parse(text);
-                //WriteVerbose(parsed.ToString());
+                WriteVerbose($"Parsing text: {text} -> {parsed}");
                 if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
                 {
                     errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
                 }
 
-                var duplicates = new List<ParsedAddress>();
+                bool duplicatesFound = false;
+                var duplicates = new List<Parsed>();
                 foreach(var master in parsedMasterList)
                 {
-                    if (master.AlbaAddressImport.Address_ID != Address.Address_ID
-                        && master.Address.SameAs(parsed))
+                    //WriteVerbose($"Checking Master: {master.Address.ToString()}");
+                    if (master.Address.SameAs(parsed))
                     {
-                        //WriteVerbose($"    {parsed} == {master.Address}");
-                        duplicates.Add(master);
+                        WriteVerbose($"DUPLICATE: {Address.ToString()}");
+                        duplicatesFound = true;
+                        break;
                     }
                 }
 
-                //WriteVerbose($"Duplicates: {duplicates.Count}");
-
-                if (duplicates.Count > 0)
+                if (!duplicatesFound)
                 {
-                    //foreach (var dup in duplicates)
-                    //{
-                    //    if(IncludeSelf)
-                    //    {
-                    //        WriteObject(Address);
-                    //    }
-
-                    //    WriteObject(dup.AlbaAddressImport);
-                    //}
-                    var a = new DuplicateAddress(Address.Address_ID, Address);
-                    a.DuplicationStatus = "Original";
-                    WriteObject(a);
-
-                    foreach (var dup in duplicates)
-                    {
-                        var da = new DuplicateAddress(Address.Address_ID, dup.AlbaAddressImport);
-                        da.DuplicationStatus = "Duplicate";
-                        WriteObject(da);
-                    }
+                    //WriteVerbose($"No duplicates found for: {Address.ToString()}");
+                    //var p = new Parsed { Address = parsed, AlbaAddressImport = Address };
+                    WriteObject(Address);
                 }
             }
             catch(Exception)
@@ -124,38 +108,11 @@ namespace PowerShell
         }
     }
 
-    public class ParsedAddress
+    public class Parsed
     {
         public string Text { get; set; }
         public AlbaAddressImport AlbaAddressImport { get; set; }
         public Address Address { get; set; }
         public List<AlbaAddressImport> Duplicates { get; set; } = new List<AlbaAddressImport>();
-    }
-
-    public class DuplicateAddress : AlbaAddressImport
-    {
-        public DuplicateAddress(int? duplicateOfAddressId, AlbaAddressImport copy)
-        {
-            DuplicateOf = duplicateOfAddressId;
-            Address_ID = copy.Address_ID;
-            Territory_ID = copy.Territory_ID;
-            Language = copy.Language;
-            Status = copy.Status;
-            Name = copy.Name;
-            Suite = copy.Suite;
-            Address = copy.Address;
-            City = copy.City;
-            Province = copy.Province;
-            Postal_code = copy.Postal_code;
-            Country = copy.Country;
-            Latitude = copy.Latitude;
-            Longitude = copy.Longitude;
-            Telephone = copy.Telephone;
-            Notes = copy.Notes;
-            Notes_private = copy.Notes_private;
-        }
-
-        public int? DuplicateOf { get; set; }
-        public string DuplicationStatus { get; set; }
     }
 }
