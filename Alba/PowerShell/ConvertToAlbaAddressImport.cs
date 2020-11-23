@@ -32,18 +32,23 @@ namespace PowerShell
             {
                 WriteObject(Convert(Input));
             }
-            catch(Exception e)
+            catch(Exception)// e)
             {
-                throw new Exception($"Error converting PSObject to AlbaAddressImport", e);
+                throw; // new Exception($"Error converting PSObject to AlbaAddressImport: {e.StackTrace}", e);
             }
         }
 
         private AlbaAddressImport Convert(PSObject input)
         {
+            int.TryParse(input.Properties["Address_ID"]?.Value?.ToString(), out int aid);
+            int.TryParse(input.Properties["Territory_ID"]?.Value?.ToString(), out int tid);
+            double.TryParse(input.Properties["Latitude"]?.Value?.ToString(), out double latitude);
+            double.TryParse(input.Properties["Longitude"]?.Value?.ToString(), out double longitude);
+
             var address = new AlbaAddressImport
             {
-                Address_ID = (int?)input.Properties["Address_Id"]?.Value,
-                Territory_ID = (int?)input.Properties["Territory_ID"]?.Value,
+                Address_ID = aid == 0 ? null : (int?)aid,
+                Territory_ID = tid == 0 ? null : (int?)tid,
                 Language = input.Properties["Language"]?.Value?.ToString(),
                 Status = input.Properties["Status"]?.Value?.ToString(),
                 Name = input.Properties["Name"]?.Value?.ToString(),
@@ -53,8 +58,8 @@ namespace PowerShell
                 Province = input.Properties["Province"]?.Value?.ToString(),
                 Postal_code = input.Properties["Postal_code"]?.Value?.ToString(),
                 Country = input.Properties["Country"]?.Value?.ToString(),
-                Latitude = (double?)input.Properties["Latitude"]?.Value,
-                Longitude = (double?)input.Properties["Longitude"]?.Value,
+                Latitude = latitude == 0 ? null : (double?)latitude,
+                Longitude = longitude == 0 ? null : (double?)longitude,
                 Telephone = input.Properties["Telephone"]?.Value?.ToString(),
                 Notes = input.Properties["Notes"]?.Value?.ToString(),
                 Notes_private = input.Properties["Notes_private"]?.Value?.ToString(),
