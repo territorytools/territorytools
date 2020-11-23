@@ -93,7 +93,7 @@ namespace TerritoryTools.Alba.Controllers
             {
                 try
                 {
-                    Thread.Sleep(300); // Free account limited to 50 per second
+                    Thread.Sleep(40); // Free account limited to 50 per second, or every 20ms
                     if (address.Latitude == null
                         || address.Longitude == null
                         || address.Latitude == 0

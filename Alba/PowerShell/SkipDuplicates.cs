@@ -39,6 +39,7 @@ namespace PowerShell
             var prefixStreetTypes = StreetType.Split(StreetType.PrefixDefaults);
             var mapStreetTypes = StreetType.Map(StreetType.Defaults);
             parser = new Parser(validRegions, Cities, streetTypes, mapStreetTypes, prefixStreetTypes);
+            parser.Normalize = true;
 
             WriteVerbose($"Parser Loaded Cities: {Cities.Count} Street Types:{streetTypes.Count}");
 

@@ -69,8 +69,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                         Notes = address.Notes,
                         Notes_private = address.Notes_private
                     };
-
-                    var saveUrl = RelativeUrlBuilder.SaveAddress(save);
+                    
+                    // AddAddress for new addresses, SaveAddress for existing
+                    var saveUrl = RelativeUrlBuilder.AddAddress(save);
                     var resultString = client.DownloadString(saveUrl);
 
                     // TODO: Need to geocode
