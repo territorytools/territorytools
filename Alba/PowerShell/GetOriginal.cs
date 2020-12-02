@@ -8,7 +8,7 @@ using TerritoryTools.Common.AddressParser.Smart;
 namespace PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"Original")]
-    [OutputType(typeof(Parsed))]
+    [OutputType(typeof(DuplicatedAddress))]
     public class GetOriginal : PSCmdlet
     {
        
@@ -81,7 +81,13 @@ namespace PowerShell
                     if (master.Address.SameAs(parsed))
                     {
                         WriteVerbose($"ORIGINAL FOUND: {Address.ToString()}");
-                        WriteObject(master.AlbaAddressImport);
+                        var duplicate = new DuplicatedAddress
+                        {
+                            Original = master.AlbaAddressImport,
+                            Duplicate = Address
+                        };
+
+                        WriteObject(duplicate);
                         break;
                     }
                 }
@@ -101,5 +107,11 @@ namespace PowerShell
                 WriteVerbose(error);
             }
         }
+    }
+
+    public class DuplicatedAddress
+    {
+        public AlbaAddressImport Duplicate { get; set; }
+        public AlbaAddressImport Original { get; set; }
     }
 }
