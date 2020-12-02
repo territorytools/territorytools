@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using TerritoryTools.Alba.ListServices;
 
 namespace Controllers.AlbaServer
 {
@@ -30,5 +28,36 @@ namespace Controllers.AlbaServer
         public string Geocoded { get; set; }
         public string Territory_number { get; set; }
         public string Territory_description { get; set; }
+
+        public static AlbaAddressExport From(AddressCsv from)
+        {
+            return new AlbaAddressExport
+            {
+                Address_ID = from.Address_ID,
+                Territory_ID = from.Territory_ID,
+                Language = from.Language,
+                Status = from.Status,
+                Name = from.Name,
+                Suite = from.Suite,
+                Address = from.Address,
+                City = from.City,
+                Province = from.Province,
+                Postal_code = from.Postal_code,
+                Country = from.Country,
+                Latitude = from.Latitude,
+                Longitude = from.Longitude,
+                Telephone = from.Telephone,
+                //Owner = from.Owner,
+                Notes = from.Notes,
+                Notes_private = from.Notes_private,
+                Account = from.Account,
+                //Created = from.Created,
+                //Modified = from.Modified,
+                //Contacted = from.Contacted,
+                //Geocoded = from.Geocoded,
+                //Territory_number = from.Territory_number,
+                //Territory_description = from.Territory_description
+            };
+        }
     }
 }

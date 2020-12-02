@@ -19,7 +19,7 @@ steps:
 
 - task: MSBuild@1
   inputs:
-    solution: 'Alba/WpfUI/WpfUI.csproj'
+    solution: 'Alba/SyncTool.UI/Alba.SyncTool.UI.csproj'
     msbuildArguments: '/Target:Restore'
 
 - task: DownloadSecureFile@1
@@ -29,21 +29,21 @@ steps:
 - task: CopyFiles@2
   inputs:
     Contents: 'TerritoryTools.pfx'
-    TargetFolder: '$(Build.SourcesDirectory)/Alba/WpfUI'
+    TargetFolder: '$(Build.SourcesDirectory)/Alba/SyncTool.UI'
 
 - task: MSBuild@1
   inputs:
-    solution: 'Alba/WpfUI/WpfUI.csproj'
+    solution: 'Alba/SyncTool.UI/Alba.SyncTool.UI.csproj'
     msbuildArguments: '/Target:Build /p:Configuration=Release'
 
 - task: PowerShell@2
   inputs:
-    filePath: '$(Build.SourcesDirectory)/Alba/WpfUI/Publish.ps1'
-    workingDirectory: '$(Build.SourcesDirectory)/Alba/WpfUI'
+    filePath: '$(Build.SourcesDirectory)/Alba/SyncTool.UI/Publish.ps1'
+    workingDirectory: '$(Build.SourcesDirectory)/Alba/SyncTool.UI'
 
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.SourcesDirectory)/Alba/WpfUI/Publish'
+    targetPath: '$(Build.SourcesDirectory)/Alba/SyncTool.UI/Publish'
     artifact: 'ClickOncePublish'
     publishLocation: 'pipeline'
 

@@ -1,0 +1,13 @@
+# Login Page
+LoginTerritoryTools=區域工具
+LoginGreeting=歡飲! 這個網站區域的工具和報告。這不是公開的網站,必須先收到邀請才能有賬戶。
+LoginSignIn=請登錄:
+LoginAccountPassword=用戶和密碼
+
+# After loggedin (Home page)
+
+HomeQRCodeButton=製造二維碼
+
+MenuUser=用戶
+MenuUserManageAccount=管理賬戶
+MenuUserSignOut=退出

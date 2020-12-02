@@ -1,46 +1,41 @@
-﻿using AlbaClient.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 using Controllers.UseCases;
 
-namespace AlbaClient.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class AuthorizationClient 
     {
-        private string baseUrl;
+        private const string SessionKeyName = "Alba3";
+
         private IWebClient webClient;
 
         /// <summary>
         /// Connects to Alba and authorizes a user.
         /// </summary>
         /// <param name="protocolPrefix">Example: "http://"</param>
-        /// <param name="site">The DNS name where the Alba applicaton is hosted.  Example: www.baseloc.com</param>
+        /// <param name="site">The FQDN name where the Alba applicaton is hosted.  Example: www.my-alba-host.com</param>
         /// <param name="applicationPath">Example: "/alba"</param>
         public AuthorizationClient(IWebClient webClient, ApplicationBasePath basePath)
         {
             this.webClient = webClient;
             BasePath = basePath;
-            baseUrl = basePath.BaseUrl;
         }
 
         public ApplicationBasePath BasePath;
 
         public void Authenticate(Credentials credentials)
         {
-            webClient = GetWebClientWithCookies(credentials);
-
-            // We need to load the logon page first to get this client recognized by the server.
+            // We need to load the logon page first to get the session key
             string html = GetLogonPage();
 
             credentials.K1MagicString = ExtractAuthK1.ExtractFrom(html);
+            credentials.SessionKeyValue = webClient.GetCookieValue(SessionKeyName);
 
-            SubmitCredentials(credentials);
-        }
-
-        private IWebClient GetWebClientWithCookies(Credentials credentials)
-        {
             webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
             webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
+            webClient.AddCookie(SessionKeyName, credentials.SessionKeyValue, "/", BasePath.Site);
 
-            return webClient;
+            SubmitCredentials(credentials);
         }
 
         private string GetLogonPage()

@@ -1,10 +1,10 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.Kml;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Kml;
 using System;
 using System.Linq;
 using System.Threading;
 
-namespace AlbaClient.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class UploadKmlFile
     {
@@ -27,7 +27,7 @@ namespace AlbaClient.Controllers.UseCases
                 return;
             }
 
-            string fileName = view.OpenKmlFileDialog("kml");
+            string fileName = view.OpenFileDialog("kml");
 
             if (string.IsNullOrWhiteSpace(fileName))
                 return;

@@ -1,11 +1,12 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.AzureMaps;
-using AlbaClient.Controllers.UseCases;
-using AlbaClient.Models;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.AzureMaps;
+using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Alba.Controllers.Models;
 using Controllers.UseCases;
 using System;
+using System.Threading;
 
-namespace AlbaClient
+namespace TerritoryTools.Alba.Controllers
 {
     public class ClientController
     {
@@ -21,12 +22,35 @@ namespace AlbaClient
             int delay = 1000;
             int.TryParse(view.UploadDelayMs, out delay);
 
-            new UploadKmlFile(view, Client(), delay).Upload();
+            new UploadKmlFile(view, AuthenticatedClient(), delay)
+                .Upload();
         }
 
-        public void ImportAddressButtonClick(string path)
+        public void ImportAddressButtonClick()
         {
-            new ImportAddress(view, Client(), 0).Upload(path);
+            try
+            {
+                string languageFilePath = view.OpenFileDialog(
+                    fileExt: "html", 
+                    title: "Open Alba Language File");
+
+                string addressFilePath = view.OpenFileDialog(
+                    fileExt: "csv",
+                    title: "Open Alba Address CSV File to Upload");
+
+                if (string.IsNullOrWhiteSpace(languageFilePath) 
+                    || string.IsNullOrWhiteSpace(addressFilePath))
+                {
+                    return;
+                }
+
+                new ImportAddress(AuthenticatedClient(), int.Parse(view.UploadDelayMs))
+                    .Upload(addressFilePath, languageFilePath);
+            }
+            catch (UserException e)
+            {
+                view.ShowMessageBox(e.Message);
+            }
         }
 
         public void GeocodeAddressesClick(string path, string key)
@@ -63,33 +87,45 @@ namespace AlbaClient
 
             int geocoded = 0;
             int alreadyGeocode = 0;
+            int errors = 0;
             var addresses = LoadCsvAddresses.LoadFrom(path);
             foreach (var address in addresses)
             {
-                if (address.Latitude == null
-                    || address.Longitude == null
-                    || address.Latitude == 0
-                    || address.Longitude == 0)
+                try
                 {
-                    var coordinates = new AzureMapsmGeocodeAddress(view, amClient)
-                        .Geocode(address);
+                    Thread.Sleep(40); // Free account limited to 50 per second, or every 20ms
+                    if (address.Latitude == null
+                        || address.Longitude == null
+                        || address.Latitude == 0
+                        || address.Longitude == 0)
+                    {
+                        var coordinates = new AzureMapsmGeocodeAddress(view, amClient)
+                            .Geocode(address);
 
-                    address.Latitude = coordinates.Latitude;
-                    address.Longitude = coordinates.Longitude;
+                        address.Latitude = coordinates.Latitude;
+                        address.Longitude = coordinates.Longitude;
 
-                    geocoded++;
+                        geocoded++;
+                    }
+                    else
+                    {
+                        alreadyGeocode++;
+                    }
                 }
-                else
+                catch(Exception)
                 {
-                    alreadyGeocode++;
+                    errors++;
+                    address.Latitude = 0.0;
+                    address.Longitude = 0.0;
                 }
             }
 
             view.AppendResultText($"\nTotal Addresses: {(geocoded + alreadyGeocode)}");
             view.AppendResultText($"\nGeocoded: {geocoded}");
             view.AppendResultText($"\nAlready Geocoded (Skipped): {alreadyGeocode}");
+            view.AppendResultText($"\nErrors: {errors}");
 
-            var newPath = view.GetKmlFileNameToSaveAs(path, "csv");
+            var newPath = view.GetFileNameToSaveAs(path, "csv");
             if (string.IsNullOrWhiteSpace(newPath))
             {
                 // Cancelled
@@ -122,9 +158,9 @@ namespace AlbaClient
                 view.AppendResultText("Territory Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"TerritoryBorders.{timeStamp}", "kml");
+                string fileName = view.GetFileNameToSaveAs($"TerritoryBorders.{timeStamp}", "kml");
 
-                var territories = new DownloadKmlFile(Client())
+                var territories = new DownloadKmlFile(AuthenticatedClient())
                     .SaveAs(fileName);
 
                 territories.ForEach(t => view.AppendResultText(Environment.NewLine + t.ToString()));
@@ -135,23 +171,43 @@ namespace AlbaClient
             }
         }
 
-        public void DownloadAllAddressesButtonClick()
+        public void DownloadAllAddressesButtonClick(string accountId)
         {
             try
             {
                 view.AppendResultText("Download All Addresses Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
+                string fileName = view.GetFileNameToSaveAs($"Addresses.{timeStamp}", "txt");
 
-                new DownloadAddressExport(Client()).SaveAs(fileName);
+                if (int.TryParse(accountId, out int id))
+                {
+                    new DownloadAddressExport(AuthenticatedClient())
+                        .SaveAs(fileName, id);
 
-                view.AppendResultText($"Saved to: {fileName}");
+                    view.AppendResultText($"Saved to: {fileName}");
+                }
+                else
+                {
+                    view.ShowMessageBox($"Invalid account id {id}");
+                }    
             }
             catch (Exception err)
             {
                 view.ShowMessageBox(err.Message);
             }
+        }
+
+        private AuthorizationClient AuthenticatedClient()
+        {
+            var client = Client();
+            var creds = new Credentials(
+                view.AccountBoxText,
+                view.UserBoxText,
+                view.PasswordBoxText);
+
+            client.Authenticate(creds);
+            return client;
         }
 
         public string DownloadTerritoriyAssignments()
@@ -161,9 +217,10 @@ namespace AlbaClient
                 view.AppendResultText("Download Territory Assignments Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Assignments.{timeStamp}", "csv");
+                string fileName = view.GetFileNameToSaveAs($"Assignments.{timeStamp}", "csv");
 
-                new DownloadTerritoryAssignments(Client()).SaveAs(fileName);
+                new DownloadTerritoryAssignments(AuthenticatedClient())
+                    .SaveAs(fileName);
 
                 view.AppendResultText($"Saved to: {fileName}");
 
@@ -184,11 +241,67 @@ namespace AlbaClient
                 view.AppendResultText("Download Users Result:" + Environment.NewLine + Environment.NewLine);
 
                 string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
-                string fileName = view.GetKmlFileNameToSaveAs($"Users.{timeStamp}", "csv");
+                string fileName = view.GetFileNameToSaveAs($"Users.{timeStamp}", "csv");
 
-                new DownloadUsers(Client()).SaveAs(fileName);
+                new DownloadUsers(AuthenticatedClient())
+                    .SaveAs(fileName);
 
                 view.AppendResultText($"Saved to: {fileName}");
+
+                return fileName;
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+
+                return null;
+            }
+        }
+
+        public string DownloadLanguages()
+        {
+            try
+            {
+                view.AppendResultText("Download Languages Result:" + Environment.NewLine + Environment.NewLine);
+
+                string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
+                string fileName = view.GetFileNameToSaveAs($"Languages.{timeStamp}", "html");
+
+                new LanguageDownloader(AuthenticatedClient())
+                    .SaveAs(fileName);
+
+                view.AppendResultText($"Saved to: {fileName}");
+
+                return fileName;
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+
+                return null;
+            }
+        }
+
+        public string LoadLanguages()
+        {
+            try
+            {
+                view.AppendResultText("Load Languages Result:" + Environment.NewLine + Environment.NewLine);
+
+                string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
+
+                string fileName = view.OpenFileDialog("html");
+
+                view.AppendResultText($"File Loaded: {fileName}");
+
+                view.AppendResultText("Parsing language file...");
+
+                var languages = LanguageDownloader.LoadLanguagesFrom(fileName);
+
+                foreach (var language in languages)
+                {
+                    view.AppendResultText($"    {language.Id}: {language.Name}");
+                }
 
                 return fileName;
             }
@@ -209,7 +322,8 @@ namespace AlbaClient
         {
             try
             {
-                new LogUserOntoAlba(view, Client()).Logon();
+                new LogUserOntoAlba(view, Client())
+                    .Logon();
             }
             catch (Exception err)
             {

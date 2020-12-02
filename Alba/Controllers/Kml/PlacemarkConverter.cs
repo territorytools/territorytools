@@ -1,7 +1,7 @@
-﻿using AlbaClient.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 using System.Linq;
 
-namespace AlbaClient.Kml
+namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class PlacemarkConverter
     {

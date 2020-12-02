@@ -1,0 +1,54 @@
+﻿@model TerritoryTools.Web.MainSite.Models.LinkAlbaAccount
+
+@{
+    ViewData["Title"] = "LinkAlbaAccount";
+}
+
+<h1>Link Alba Account</h1>
+
+<h4>Link a Territory Tools user to an Alba account</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="LinkAlbaAccount">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TerritoryUserEmail" class="control-label"></label>
+                <input asp-for="TerritoryUserEmail" value="@User.Identity.Name" class="form-control" />
+                <span asp-validation-for="TerritoryUserEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Host" class="control-label"></label>
+                <input asp-for="Host" class="form-control" placeholder="www.example.com" />
+                <span asp-validation-for="Host" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AccountName" class="control-label"></label>
+                <input asp-for="AccountName" class="form-control" />
+                <span asp-validation-for="AccountName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Link" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

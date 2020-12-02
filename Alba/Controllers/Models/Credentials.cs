@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AlbaClient.Models
+namespace TerritoryTools.Alba.Controllers.Models
 {
     public class Credentials
     {
@@ -16,6 +16,7 @@ namespace AlbaClient.Models
         public string Password;
         public Guid AlbaAccountId;
         public string K1MagicString;
+        public string SessionKeyValue;
 
         public string Combined { get { return Account + User + Password + K1MagicString; } } 
     }

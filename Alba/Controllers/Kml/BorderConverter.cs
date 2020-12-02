@@ -1,8 +1,8 @@
-﻿using AlbaClient.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 using System;
 using System.Linq;
 
-namespace AlbaClient.Kml
+namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class BorderConverter
     {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace AlbaClient.Controllers
+namespace TerritoryTools.Alba.Controllers
 {
     public class TextFileGateway
     {

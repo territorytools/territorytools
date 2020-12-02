@@ -71,7 +71,7 @@ namespace TerritoryTools.Entities.AddressParsers
         {
             return Regex.IsMatch(
                 value,
-                @"^([A-Z]+)$",
+                @"^([A-Z-]+)$",
                 RegexOptions.IgnoreCase);
         }
 

@@ -1,0 +1,35 @@
+﻿@model TerritoryTools.Web.MainSite.Models.TerritoryUserInvitation
+
+@{
+    ViewData["Title"] = "AlreadyInvited";
+}
+
+<h1>Already Invited</h1>
+
+<div>
+    <h4>Sorry, this user has already been invited</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Surname)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Surname)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GivenName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GivenName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Invitation">Try again</a>
+</div>

@@ -1,4 +1,4 @@
-﻿namespace AlbaClient
+﻿namespace TerritoryTools.Alba.Controllers
 {
     public interface IClientView
     {
@@ -28,9 +28,9 @@
         
         bool UploadAddressesButtonEnabled { set; }
 
-        string OpenKmlFileDialog(string fileExt);
+        string OpenFileDialog(string fileExt, string title = "");
 
-        string GetKmlFileNameToSaveAs(string defaultFileName, string fileExt);
+        string GetFileNameToSaveAs(string defaultFileName, string fileExt);
 
         void ShowMessageBox(string message);
 

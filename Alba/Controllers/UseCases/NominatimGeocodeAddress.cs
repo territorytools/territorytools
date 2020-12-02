@@ -1,10 +1,10 @@
-﻿using AlbaClient.Nominatim;
+﻿using TerritoryTools.Alba.Controllers.Nominatim;
 using Controllers.AlbaServer;
 using Controllers.Nominatim;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AlbaClient.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class NominatimGeocodeAddress
     {

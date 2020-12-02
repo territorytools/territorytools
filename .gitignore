@@ -333,10 +333,8 @@ ASALocalRun/
 .vscode/launch.json
 .vscode/tasks.json
 
-WebUI/DataVolume/
-WebUI/wwwroot/commit.txt
-WebUI/assignments.html
-WebUI/users.html
+Web/MainSite/DataVolume/
+Web/MainSite/wwwroot/commit.txt
 
 data/vault/file/
 data/certbot/etc/

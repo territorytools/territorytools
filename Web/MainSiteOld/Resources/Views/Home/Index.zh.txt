@@ -1,0 +1,9 @@
+# Login Page
+LoginTerritoryTools=区域工具
+LoginGreeting=欢饮! 这个网站区域的工具和报告。这不是公开的网站，必须先收到邀请才能有账户。
+LoginSignIn=请登录:
+LoginAccountPassword=用户和密码
+
+# After loggedin (Home page)
+
+HomeQRCodeButton=制造二维码

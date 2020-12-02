@@ -46,9 +46,20 @@ namespace TerritoryTools.Entities
         public string PostalCodeExt { get; set; }
 
         public bool IsNotPhysical { get; set; }
+        
+        public bool StreetNameIsAfterType { get; set; }
 
         public string CombineStreet()
         {
+            if(StreetNameIsAfterType)
+            {
+                return StringNormalizer
+                .NormalizeWhiteSpace(
+                    StringNormalizer.NormalizeCharacters(
+                        $"{Number}{NumberFraction} {DirectionalPrefix} {StreetType} {StreetName} {DirectionalSuffix}"))
+                .Trim();
+            }
+
             return StringNormalizer
                 .NormalizeWhiteSpace(
                     StringNormalizer.NormalizeCharacters(

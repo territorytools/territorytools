@@ -1,0 +1,38 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject IViewLocalizer Localizer
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                <i class="fas fa-user-circle fa-lg text-body"></i>
+                <span style="color:black;">@Localizer["MenuUser"]</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <div class="p-2"><strong>@User.Identity.Name</strong></div>
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                    @Localizer["MenuUserManageAccount"]
+                </a>
+                <a class="nav-link text-dark" asp-controller="TerritoryUser" asp-action="Invitation" title="Invite User">
+                    Invite User
+                </a>
+                <a class="nav-link text-dark" asp-controller="TerritoryUser" asp-action="LinkAlbaAccount" title="Link Alba Account">
+                    Link Alba Account
+                </a>
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-dark">@Localizer["MenuUserSignOut"]</button>
+                </form>
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">@Localizer["MenuLoginButton"]</a>
+        </li>
+    }
+</ul>

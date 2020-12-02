@@ -1,7 +1,5 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.Controllers.AlbaServer;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
 using CsvHelper;
-using CsvHelper.Configuration;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -9,7 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace AlbaClient.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadTerritoryAssignments
     {
@@ -37,7 +35,7 @@ namespace AlbaClient.Controllers.UseCases
             SaveAs(assignments, fileName);
         }
 
-        public void SaveAs(List<Assignment> assignments, string fileName)
+        public static void SaveAs(List<Assignment> assignments, string fileName)
         {
             using (var writer = new StreamWriter(fileName))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))

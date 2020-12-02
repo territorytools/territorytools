@@ -1,6 +1,6 @@
-﻿using AlbaClient.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 
-namespace AlbaClient.Nominatim
+namespace TerritoryTools.Alba.Controllers.Nominatim
 {
     public class NominatimClient 
     {
@@ -11,7 +11,7 @@ namespace AlbaClient.Nominatim
         /// Connects to Alba and authorizes a user.
         /// </summary>
         /// <param name="protocolPrefix">Example: "http://"</param>
-        /// <param name="site">The DNS name where the Alba applicaton is hosted.  Example: www.baseloc.com</param>
+        /// <param name="site">The FQDN name where the Alba applicaton is hosted.  Example: www.my-alba-host.com</param>
         /// <param name="applicationPath">Example: "/alba"</param>
         public NominatimClient(IWebClient webClient, ApplicationBasePath basePath)
         {
@@ -29,9 +29,6 @@ namespace AlbaClient.Nominatim
 
         private IWebClient GetWebClientWithCookies(Credentials credentials)
         {
-            //webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
-            //webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
-
             return webClient;
         }
 

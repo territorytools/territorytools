@@ -1,0 +1,28 @@
+@using TerritoryTools.Alba.Controllers.UseCases;
+@using TerritoryTools.Web.MainSite;
+@using TerritoryTools.Web.MainSite.Models;
+@model List<AlbaUserView>;
+@{
+    ViewData["Title"] = "Alba Users";
+}
+
+<div class="container mt-3" style="max-width:1200px;">
+    <h3>Alba Users</h3>
+    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="pr-2 pl-2" style="min-width:100px;">ID</div>
+        <div class="pr-2 pl-2" style="min-width:200px;">User Name</div>
+        <div class="pr-2 pl-2 flex-grow-1" style="min-width:300px;">Name</div>
+        <div class="pr-2 pl-2" style="width:300px;">Email</div>
+        <div class="pr-2 pl-2" style="width:200px;">Role</div>
+    </div>
+    @foreach (var u in Model)
+        {
+<div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+    <div class="p-2" style="min-width:100px;"><strong>@u.Id</strong></div>
+    <div class="p-2" style="min-width:200px;"><strong>@u.UserName</strong></div>
+    <div class="p-2 flex-grow-1" style="min-width:300px;">@u.Name</div>
+    <div class="p-2" style="width:300px;">@u.Email</div>
+    <div class="p-2" style="width:200px;">@u.Role</div>
+</div>
+        }
+</div>

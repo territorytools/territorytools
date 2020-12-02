@@ -1,4 +1,6 @@
-﻿namespace AlbaClient.Tests
+﻿using TerritoryTools.Alba.Controllers;
+
+namespace AlbaClient.Tests
 {
     public class WebClientFake : IWebClient
     {
@@ -7,10 +9,16 @@
         }
 
         public string DownloadStringReturns;
+        public string GetCookieValueReturns;
 
         public string DownloadString(string url)
         {
             return DownloadStringReturns;
+        }
+
+        public string GetCookieValue(string name)
+        {
+            return GetCookieValueReturns;
         }
     }
 }

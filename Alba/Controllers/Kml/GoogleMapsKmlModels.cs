@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace AlbaClient.Kml
+namespace TerritoryTools.Alba.Controllers.Kml
 {
 
     [XmlType(AnonymousType = true, Namespace = "http://www.opengis.net/kml/2.2")]

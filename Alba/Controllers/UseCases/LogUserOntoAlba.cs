@@ -1,8 +1,8 @@
-﻿using AlbaClient.AlbaServer;
-using AlbaClient.Models;
+﻿using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Models;
 using System;
 
-namespace AlbaClient.Controllers.UseCases
+namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class LogUserOntoAlba
     {

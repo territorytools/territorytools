@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace AlbaClient.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class AddressExportParser
     {

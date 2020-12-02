@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AlbaClient.Models
+namespace TerritoryTools.Alba.Controllers.Models
 {
     /// <summary>
     /// Territory Border.

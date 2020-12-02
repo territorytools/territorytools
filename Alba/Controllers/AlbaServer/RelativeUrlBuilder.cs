@@ -1,33 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Web;
-using AlbaClient.Models;
+using TerritoryTools.Alba.Controllers.Models;
 using Controllers.AlbaServer;
 
-namespace AlbaClient.AlbaServer
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class RelativeUrlBuilder
     {
         public static string AuthenticationUrlFrom(Credentials credentials)
         {
-            return @"/gk.php?"
-               + "an=" + credentials.Account
-               + "&us=" + credentials.User
-               + "&k2=" + HashComputer.Hash(credentials.Combined);
+            return @"/gk.php?" +
+               $"an={credentials.Account}" +
+               $"&us={credentials.User}" +
+               $"&k2={HashComputer.Hash(credentials.Combined)}";
         }
 
         public static string GetAllTerritories()
         {
-            return @"/ts?mod=territories&cmd=search&kinds%5B%5D=0&kinds%5B%5D=1&kinds%5B%5D=2&q=&sort=number&order=asc"; 
+            return @"/ts?mod=territories&cmd=search&kinds%5B%5D=0" +
+                "&kinds%5B%5D=1&kinds%5B%5D=2&q=&sort=number&order=asc";
         }
 
-        public static string ExportAllAddresses()
+        public static string ExportAllAddresses(int accountId)
         {
-            return @"/ts?mod=addresses&cmd=search&acids=940&exp=true&npp=25&cp=1&tid=0&lid=0&display=1%2C2%2C3%2C4%2C5%2C6&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
+            return $"/ts?mod=addresses&cmd=search&acids={accountId}&exp=true" +
+                "&npp=25&cp=1&tid=0&lid=0&display=1%2C2%2C3%2C4%2C5%2C6" +
+                "&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
         }
 
         public static string GetTerritoryAssignments()
         {
-            return @"/ts?mod=assigned&cmd=search&q=&sort=number&order=asc&av=true&so=true&tk0=true&tk1=true&tk2=true";
+            return @"/ts?mod=assigned&cmd=search&q=&sort=number&order=asc" +
+                "&av=true&so=true&tk0=true&tk1=true&tk2=true";
         }
 
         public static string GetTerritoryAssignmentsPage()
@@ -42,27 +46,11 @@ namespace AlbaClient.AlbaServer
 
         public static string RequestToAddNew(Territory territory)
         {
-            return @"/ts?mod=territories&cmd=add&kind=0"
-                + "&number=" + HttpUtility.UrlEncode(territory.Number)
-                + "&notes=" + HttpUtility.UrlEncode(territory.Notes)
-                + "&description=" + HttpUtility.UrlEncode(territory.Description)
-                + "&border=" + HttpUtility.UrlEncode(CoordinatesFrom(territory));
-        }
-
-        public static string GeocodeAddress(AlbaAddressImport address)
-        {
-            if(string.IsNullOrEmpty(address.Country))
-            {
-                address.Country = "United States";
-            }
-
-            string formatted = $"https://nominatim.openstreetmap.org/search?street=4069+jones+ln&city=bellingham&state=wa&postalcode=98225&format=json";
-            //string formatted = $"{address.Address} {address.Suite}, {address.City}, {address.Province}, {address.Postal_code} {address.Country}";
-            formatted = formatted.Replace(",", "%2C").Replace(" ", "%20");
-            return $"https://api.apple-mapkit.com/v1/geocode?"
-                + $"q={formatted}&"
-                + $"lang=en&" 
-                + $"mkjsVersion=5.39.0";
+            return @"/ts?mod=territories&cmd=add&kind=0" +
+                $"&number={HttpUtility.UrlEncode(territory.Number)}" +
+                $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
+                $"&description={HttpUtility.UrlEncode(territory.Description)}" +
+                $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}";
         }
 
         public static string ImportAddress(AlbaAddressImport address)
@@ -88,13 +76,72 @@ namespace AlbaClient.AlbaServer
             return formatted.Replace(" ", "+").Replace(",", "%2C");
         }
 
+        public static string SaveAddressNotePrivate(AlbaAddressImport address)
+        {
+            string formatted = $"/ts?mod=addresses&cmd=save" +
+                $"&id={address.Address_ID}" +
+                $"&notes_private={address.Notes_private}";
+
+            return formatted.Replace(" ", "+").Replace(",", "%2C");
+        }
+
+        public static string AddAddress(AlbaAddressSave address)
+        {
+            string formatted = $"/ts?mod=addresses&cmd=add" +
+                $"&id={address.Address_ID}" +
+                $"&lat={address.Latitude}" +
+                $"&lng={address.Longitude}" +
+                $"&territory_id={address.Territory_ID ?? 0}" +
+                $"&status={address.StatusId}" +
+                $"&language_id={address.LanguageId}" +
+                $"&full_name={address.Name}" +
+                $"&suite={address.Suite}" +
+                $"&address={address.Address}" +
+                $"&city={address.City}" +
+                $"&province={address.Province}" +
+                $"&country={address.Country}" +
+                $"&postcode={address.Postal_code}" +
+                $"&telephone={address.Telephone}" +
+                $"&notes={address.Notes}" +
+                $"&notes_private={address.Notes_private}";
+
+            return HttpUtility.UrlEncode(formatted);
+        }
+
+        public static string SaveAddress(AlbaAddressSave address)
+        {
+            string formatted = $"/ts?mod=addresses&cmd=save" +
+                $"&id={address.Address_ID}" +
+                $"&lat={address.Latitude}" +
+                $"&lng={address.Longitude}" +
+                $"&territory_id={address.Territory_ID ?? 0}" +
+                $"&status={address.StatusId}" +
+                $"&language_id={address.LanguageId}" +
+                $"&full_name={address.Name}" +
+                $"&suite={address.Suite}" +
+                $"&address={address.Address}" +
+                $"&city={address.City}" +
+                $"&province={address.Province}" +
+                $"&country={address.Country}" +
+                $"&postcode={address.Postal_code}" +
+                $"&telephone={address.Telephone}" +
+                $"&notes={address.Notes}" +
+                $"&notes_private={address.Notes_private}";
+
+            return HttpUtility.UrlEncode(formatted);
+        }
+
+        public static string GetLanguages()
+        {
+            return $"/addresses2";
+        }
 
         private static string CoordinatesFrom(Territory territory)
         {
             var coordinates = new List<string>();
 
             foreach (Vertex v in territory.Border.Vertices)
-                coordinates.Add(v.Latitude + " " + v.Longitude);
+                coordinates.Add($"{v.Latitude} {v.Longitude}");
 
             return string.Join(",", coordinates);
         }

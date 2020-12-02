@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>TerritoryTools.Alba.PowerShell</AssemblyName>
+    <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="15.0.1" />
+    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Run-Test.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

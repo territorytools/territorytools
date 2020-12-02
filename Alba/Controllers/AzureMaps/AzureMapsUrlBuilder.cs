@@ -1,6 +1,6 @@
 ﻿using Controllers.AlbaServer;
 
-namespace AlbaClient.AzureMaps
+namespace TerritoryTools.Alba.Controllers.AzureMaps
 {
     public class AzureMapsUrlBuilder
     {

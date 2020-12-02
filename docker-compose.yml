@@ -95,7 +95,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./WebUI/Dockerfile
+      dockerfile: ./Web/MainSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
     networks:
@@ -113,6 +113,7 @@ services:
       - AdminUsers=$AdminUsers
       - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
       - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaHost=$AlbaHost
       - AlbaUser=$AlbaUser
       - AlbaPassword=$AlbaPassword
       - AlbaAccount=$AlbaAccount
@@ -132,12 +133,13 @@ services:
       - AzureAppId=$AzureAppId
       - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
+      - CompletionMapUrl=$CompletionMapUrl
   tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./WebUI/Dockerfile
+      dockerfile: ./Web/MainSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
     networks:
@@ -155,6 +157,7 @@ services:
       - AdminUsers=$AdminUsers
       - Authentication:Microsoft:ClientSecret=$MicrosoftClientSecret
       - Authentication:Microsoft:ClientId=$MicrosoftClientId
+      - AlbaHost=$AlbaHost
       - AlbaUser=$AlbaUser
       - AlbaPassword=$AlbaPassword
       - AlbaAccount=$AlbaAccount
@@ -174,6 +177,7 @@ services:
       - AzureAppId=$AzureAppId
       - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
+      - CompletionMapUrl=$CompletionMapUrl
   db:
     container_name: tt-db
     image: "microsoft/mssql-server-linux"
@@ -186,12 +190,12 @@ services:
       - SA_PASSWORD=$SA_PASSWORD
     networks:
       - main
-  url_shortener:
-    container_name: url-shortener
+  tt-url:
+    container_name: tt-url
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./UrlShortener/Dockerfile
+      dockerfile: ./Web/UrlShortener/Dockerfile
     networks:
       - main
     ports:
@@ -199,6 +203,20 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      
+  tt-url-test:
+    container_name: tt-url-test
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Web/UrlShortener/Dockerfile
+    networks:
+      - main
+    ports:
+      - "6010:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      
+    
 
 networks:
   main:

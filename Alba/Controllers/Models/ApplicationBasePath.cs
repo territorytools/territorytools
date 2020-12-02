@@ -1,4 +1,4 @@
-﻿namespace AlbaClient.Models
+﻿namespace TerritoryTools.Alba.Controllers.Models
 {
     public class ApplicationBasePath
     {

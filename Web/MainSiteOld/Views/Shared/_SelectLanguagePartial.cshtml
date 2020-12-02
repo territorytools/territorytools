@@ -1,0 +1,26 @@
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = new List<LanguageItem>
+    {
+        new LanguageItem { Code = @"en", Name = @"English" },
+        new LanguageItem { Code = @"zh", Name = @"中文 （简体字）" },
+        new LanguageItem { Code = @"zh-HANT", Name = @"中文 （繁体字）" }
+    };
+}
+
+<div title="@Localizer["Request culture provider:"] @requestCulture?.Provider?.GetType().Name">  
+    @foreach(var c in cultureItems) 
+    {
+        <form id="selectLanguage-@c.Code" asp-controller="Home"
+            asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path"
+            method="post" role="form">
+            <input type="hidden" name="culture" value="@c.Code" />
+            <button type="submit" class="btn btn-white">@c.Name</button>
+        </form>
+    }
+</div>  
