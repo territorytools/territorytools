@@ -10,7 +10,7 @@ Import-Module ".\TerritoryTools.Alba.PowerShell.dll";
 $inputFile = ".\originals-to-update.txt"
 $languageFilePath = ".\languages.html"
 
-$connection = Get-Connection `
+$connection = Get-AlbaAConnection `
     -AlbaHost $env:ALBA_HOST `
     -Account $env:ALBA_ACCOUNT `
     -User $env:ALBA_USER `
@@ -19,10 +19,10 @@ $connection = Get-Connection `
 $addresses = Get-Content -Path $inputFile | ConvertFrom-Csv -Delimiter `t
 
 # You can test an import on just a couple addresses at a time
-# $addresses[0..1] | Update-Address `
+# $addresses[0..1] | Update-AlbaAAddress `
 #    -LanguageFilePath $languageFilePath `
 #    -Connection $connection 
 
-$addresses | Update-Address `
+$addresses | Update-AlbaAddress `
     -LanguageFilePath $languageFilePath `
     -Connection $connection 

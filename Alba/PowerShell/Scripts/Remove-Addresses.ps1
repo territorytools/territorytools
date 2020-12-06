@@ -25,7 +25,7 @@ Import-Module "$HOME\.nuget\packages\Newtonsoft.Json\12.0.3\lib\netstandard2.0\N
 Import-Module "$HOME\.nuget\packages\csvhelper\15.0.1\lib\netstandard2.0\CsvHelper.dll"; 
 Import-Module ".\TerritoryTools.Alba.PowerShell.dll"; 
 
-$connection = Get-Connection `
+$connection = Get-AlbaAConnection `
     -AlbaHost $env:ALBA_HOST `
     -Account $env:ALBA_ACCOUNT `
     -User $env:ALBA_USER `
@@ -41,6 +41,6 @@ $ids = $addresses `
       } `
     | Select -ExpandProperty Address_ID
 
-# You manually must add -Force to the Remove-Address command below.
+# You manually must add -Force to the Remove-AlbaAAddress command below.
 # It has been removed to prevent accidentally running this script
-$ids | Remove-Address -Verbose -Connection $connection
+$ids | Remove-AlbaAAddress -Verbose -Connection $connection

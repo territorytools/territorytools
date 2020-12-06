@@ -10,7 +10,7 @@ Import-Module ".\TerritoryTools.Alba.PowerShell.dll";
 $duplicatesFile = ".\duplicates-to-update.txt"
 $languageFilePath = ".\languages.html"
 
-$connection = Get-Connection `
+$connection = Get-AlbaAConnection `
     -AlbaHost $env:ALBA_HOST `
     -Account $env:ALBA_ACCOUNT `
     -User $env:ALBA_USER `
@@ -19,13 +19,13 @@ $connection = Get-Connection `
 $addresses = Get-Content $inputFile `
     | ConvertFrom-Csv -Delimiter `t
 
-$addresses | Update-Address `
+$addresses | Update-AlbaAAddress `
     -LanguageFilePath $languageFilePath `
     -Connection $connection 
 
 $duplicates = Get-Content $duplicatesFile `
     | ConvertFrom-Csv -Delimiter `t
 
-$duplicates | Update-Address `
+$duplicates | Update-AlbaAAddress `
     -LanguageFilePath $languageFilePath `
     -Connection $connection 
