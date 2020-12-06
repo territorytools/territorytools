@@ -4,8 +4,8 @@ using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsData.Import,"AddressFile")]
-    public class ImportAddressFile : PSCmdlet
+    [Cmdlet(VerbsData.Import,"AlbaAddressFile")]
+    public class ImportAlbaAddressFile : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         public string LanguageFilePath { get; set; }

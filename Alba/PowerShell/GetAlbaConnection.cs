@@ -6,9 +6,9 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"Connection")]
+    [Cmdlet(VerbsCommon.Get,"AlbaConnection")]
     [OutputType(typeof(AuthorizationClient))]
-    public class GetConnection : PSCmdlet
+    public class GetAlbaConnection : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         public string AlbaHost { get; set; }

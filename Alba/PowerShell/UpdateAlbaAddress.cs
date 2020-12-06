@@ -1,14 +1,17 @@
 ﻿using Controllers.AlbaServer;
 using System;
+using System.Collections.Generic;
 using System.Management.Automation;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Add,"Address")]
-    public class AddAddress : PSCmdlet
+    [Cmdlet(VerbsData.Update,"AlbaAddress")]
+    public class UpdateAlbaAddress : PSCmdlet
     {
+        List<string> errors = new List<string>();
+
         [Parameter]
         public string LanguageFilePath { get; set; }
 
@@ -27,25 +30,37 @@ namespace TerritoryTools.Alba.PowerShell
 
         AddressImporter importer;
 
+        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
+
             importer = new AddressImporter(
                 Connection, 
                 UploadDelayMs, 
                 LanguageFilePath);
         }
 
+        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
             try
             {
-                string result = importer.Add(Address);
+                string result = importer.Update(Address);
                 
                 WriteVerbose($"Result: {result}");
             }
-            catch(Exception)
+            catch(Exception e)
             {
-                throw;
+                errors.Add(e.Message);
+            }
+        }
+
+        protected override void EndProcessing()
+        {
+            WriteVerbose("ERRORS:");
+            foreach (string error in errors)
+            {
+                WriteVerbose(error);
             }
         }
     }

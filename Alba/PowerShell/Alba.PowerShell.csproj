@@ -16,10 +16,4 @@
     <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Run-Test.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

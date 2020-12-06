@@ -3,8 +3,8 @@ using TerritoryTools.Alba.Controllers.AlbaServer;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Remove, "Address")]
-    public class RemoveAddress : PSCmdlet
+    [Cmdlet(VerbsCommon.Remove, "AlbaAddress")]
+    public class RemoveAlbaAddress : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         public AuthorizationClient Connection { get; set; }

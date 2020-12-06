@@ -3,7 +3,7 @@
 ###############################
 $path_to_alba_exe = "C:\Code\territory-tools\Alba\Console\bin\Debug\netcoreapp3.1\alba.exe"
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
-$output_folder  = "C:\Users\Marc\Downloads\business-territory-$timestamp"
+$output_folder  = "$HOME\Downloads\business-territory-$timestamp"
 $google_doc_id = $env:Google_Doc_Id
 "Parameters Set:"
 "  path_to_alba_exe: $path_to_alba_exe"
