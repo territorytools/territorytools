@@ -2,6 +2,7 @@
 using System.Web;
 using TerritoryTools.Alba.Controllers.Models;
 using Controllers.AlbaServer;
+using System;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
@@ -51,6 +52,16 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
                 $"&description={HttpUtility.UrlEncode(territory.Description)}" +
                 $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}";
+        }
+
+        public static string DeleteAddress(int addressId)
+        {
+            if(addressId == 0)
+            {
+                throw new ArgumentNullException(nameof(addressId));
+            }
+
+            return $"/ts?mod=addresses&cmd=delete&id={addressId}";
         }
 
         public static string ImportAddress(AlbaAddressImport address)
