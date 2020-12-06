@@ -7,8 +7,8 @@ using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsData.Update,"AlbaAddress")]
-    public class UpdateAlbaAddress : PSCmdlet
+    [Cmdlet(VerbsData.Edit,"AlbaAddress")]
+    public class EditAlbaAddress : PSCmdlet
     {
         List<string> errors = new List<string>();
 

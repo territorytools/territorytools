@@ -19,10 +19,10 @@ $connection = Get-AlbaAConnection `
 $addresses = Get-Content -Path $inputFile | ConvertFrom-Csv -Delimiter `t
 
 # You can test an import on just a couple addresses at a time
-# $addresses[0..1] | Update-AlbaAAddress `
+# $addresses[0..1] | Edit-AlbaAAddress `
 #    -LanguageFilePath $languageFilePath `
 #    -Connection $connection 
 
-$addresses | Update-AlbaAddress `
+$addresses | Edit-AlbaAddress `
     -LanguageFilePath $languageFilePath `
     -Connection $connection 
