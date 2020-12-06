@@ -6,11 +6,10 @@ using TerritoryTools.Common.AddressParser.Smart;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get, "Normalized")]
-    [OutputType(typeof(Normalized))]
-    public class GetDuplicates : PSCmdlet
+    [OutputType(typeof(NormalizedAddress))]
+    public class GetNormalizedAddress : PSCmdlet
     {
         Parser parser;
-        List<Normalized> normalized;
 
         [Parameter(
            Mandatory = true,
@@ -18,7 +17,6 @@ namespace TerritoryTools.Alba.PowerShell
            ValueFromPipeline = true,
            ValueFromPipelineByPropertyName = true)]
         public string Address { get; set; }
-        //public AlbaAddressImport Address { get; set; }
 
         [Parameter]
         public List<string> Cities { get; set; }
@@ -32,17 +30,15 @@ namespace TerritoryTools.Alba.PowerShell
             parser = new Parser(validRegions, Cities, streetTypes, mapStreetTypes, prefixStreetTypes);
         }
 
-        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
-            Address parsed;
-            var normalized = new Normalized();
+            var normalized = new NormalizedAddress();
 
             try
             {
                 parser.Normalize = true;
-                parsed = parser.Parse(Address);
-                normalized = new Normalized
+                Address parsed = parser.Parse(Address);
+                normalized = new NormalizedAddress
                 {
                     Original = Address,
                     StreetNamePrefix = parsed.Street.Name.NamePrefix,
@@ -71,7 +67,7 @@ namespace TerritoryTools.Alba.PowerShell
         }
     }
 
-    public class Normalized
+    public class NormalizedAddress
     {
         public string Original { get; set; }
         public string StreetNamePrefix { get; set; }

@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using TerritoryTools.Common.AddressParser.Smart;
 
-namespace PowerShell
+namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Skip,"Duplicates")]
     [OutputType(typeof(Parsed))]
-    public class SkipDuplicates : PSCmdlet
+    public class SkipDuplicateAddresses : PSCmdlet
     {
        
         Parser parser;
-        List<ParsedAddress> parsedMasterList; // = new List<Address>();
+        List<ParsedAddress> parsedMasterList;
         List<string> errors = new List<string>();
 
         [Parameter(
@@ -62,11 +62,8 @@ namespace PowerShell
         {
             try
             {
-                // TODO: Use the AlbaAddressInput to pass the data, only parse for comparison
-
                 string text = $"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}";
                 var parsed = parser.Parse(text);
-                WriteVerbose($"Parsing text: {text} -> {parsed}");
                 if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
                 {
                     errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
@@ -76,10 +73,8 @@ namespace PowerShell
                 var duplicates = new List<Parsed>();
                 foreach(var master in parsedMasterList)
                 {
-                    //WriteVerbose($"Checking Master: {master.Address.ToString()}");
                     if (master.Address.SameAs(parsed))
                     {
-                        WriteVerbose($"DUPLICATE: {Address.ToString()}");
                         duplicatesFound = true;
                         break;
                     }
@@ -87,14 +82,12 @@ namespace PowerShell
 
                 if (!duplicatesFound)
                 {
-                    //WriteVerbose($"No duplicates found for: {Address.ToString()}");
-                    //var p = new Parsed { Address = parsed, AlbaAddressImport = Address };
                     WriteObject(Address);
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
-                //Skip
+                errors.Add(e.Message);
             }
         }
 

@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using TerritoryTools.Common.AddressParser.Smart;
 
-namespace PowerShell
+namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"Duplicates")]
     [OutputType(typeof(DuplicateAddress))]
-    public class GetDuplicates : PSCmdlet
+    public class GetDuplicateAddresses : PSCmdlet
     {
-       
         Parser parser;
-        List<ParsedAddress> parsedMasterList; // = new List<Address>();
+        List<ParsedAddress> parsedMasterList;
         List<string> errors = new List<string>();
 
         [Parameter(
@@ -31,7 +30,6 @@ namespace PowerShell
         [Parameter]
         public SwitchParameter IncludeSelf { get; set; }
 
-        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
             var validRegions = Region.Split(Region.Defaults);
@@ -47,9 +45,7 @@ namespace PowerShell
             foreach (var master in MasterList)
             {
                 string text = $"{master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}";
-                //WriteVerbose($"MasterIn: {text}");
                 var parsed = parser.Parse(text);
-                //WriteVerbose($"MasterOut: {parsed}");
                 parsedMasterList.Add(new ParsedAddress() { Address = parsed, AlbaAddressImport = master });
             }
 
@@ -65,7 +61,6 @@ namespace PowerShell
 
                 string text = $"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}";
                 var parsed = parser.Parse(text);
-                //WriteVerbose(parsed.ToString());
                 if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
                 {
                     errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
@@ -77,24 +72,12 @@ namespace PowerShell
                     if (master.AlbaAddressImport.Address_ID != Address.Address_ID
                         && master.Address.SameAs(parsed))
                     {
-                        //WriteVerbose($"    {parsed} == {master.Address}");
                         duplicates.Add(master);
                     }
                 }
 
-                //WriteVerbose($"Duplicates: {duplicates.Count}");
-
                 if (duplicates.Count > 0)
                 {
-                    //foreach (var dup in duplicates)
-                    //{
-                    //    if(IncludeSelf)
-                    //    {
-                    //        WriteObject(Address);
-                    //    }
-
-                    //    WriteObject(dup.AlbaAddressImport);
-                    //}
                     var a = new DuplicateAddress(Address.Address_ID, Address);
                     a.DuplicationStatus = "Original";
                     WriteObject(a);
@@ -107,9 +90,9 @@ namespace PowerShell
                     }
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
-                //Skip
+                errors.Add(e.Message);
             }
         }
 

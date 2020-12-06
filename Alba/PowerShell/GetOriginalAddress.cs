@@ -5,11 +5,11 @@ using System.Linq;
 using System.Management.Automation;
 using TerritoryTools.Common.AddressParser.Smart;
 
-namespace PowerShell
+namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"Original")]
     [OutputType(typeof(DuplicatedAddress))]
-    public class GetOriginal : PSCmdlet
+    public class GetOriginalAddress : PSCmdlet
     {
        
         Parser parser;
@@ -50,9 +50,7 @@ namespace PowerShell
             foreach (var master in MasterList)
             {
                 string text = $"{master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}";
-                //WriteVerbose($"MasterIn: {text}");
                 var parsed = parser.Parse(text);
-                //WriteVerbose($"MasterOut: {parsed}");
                 parsedMasterList.Add(new ParsedAddress() { Address = parsed, AlbaAddressImport = master });
             }
 
@@ -67,35 +65,36 @@ namespace PowerShell
         {
             try
             {
-                string text = $"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}";
-                var parsed = parser.Parse(text);
-                //WriteVerbose($"Parsing text: {text} -> {parsed}");
-                if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
-                {
-                    errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
-                }
-
-                foreach(var master in parsedMasterList)
-                {
-                    //WriteVerbose($"Checking Master: {master.Address.ToString()}");
-                    if (master.Address.SameAs(parsed))
-                    {
-                        var duplicate = new DuplicatedAddress
-                        {
-                            Original = master.AlbaAddressImport,
-                            Duplicate = Address
-                        };
-
-                        WriteVerbose($"ORIGINAL: Original-Name: {duplicate.Original.Name} Duplicate-Name: {duplicate.Duplicate.Name}");
-
-                        WriteObject(duplicate);
-                        break;
-                    }
-                }
+                ProcessAddress();
             }
-            catch(Exception)
+            catch (Exception e)
             {
-                throw;
+                errors.Add(e.Message);
+            }
+        }
+
+        private void ProcessAddress()
+        {
+            string text = $"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}";
+            var parsed = parser.Parse(text);
+            if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
+            {
+                errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
+            }
+
+            foreach (var master in parsedMasterList)
+            {
+                if (master.Address.SameAs(parsed))
+                {
+                    var duplicate = new DuplicatedAddress
+                    {
+                        Original = master.AlbaAddressImport,
+                        Duplicate = Address
+                    };
+
+                    WriteObject(duplicate);
+                    break;
+                }
             }
         }
 
