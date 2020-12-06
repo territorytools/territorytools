@@ -7,9 +7,8 @@ using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace PowerShell
 {
-    [Cmdlet("Send","Address")]
-    [OutputType(typeof(DuplicatedAddress))]
-    public class SendAddress : PSCmdlet
+    [Cmdlet(VerbsCommon.Add,"Address")]
+    public class AddAddress : PSCmdlet
     {
         List<string> errors = new List<string>();
 
