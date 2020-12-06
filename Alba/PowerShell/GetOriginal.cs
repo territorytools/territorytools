@@ -69,7 +69,7 @@ namespace PowerShell
             {
                 string text = $"{Address.Address}, {Address.Suite}, {Address.City}, {Address.Province} {Address.Postal_code}";
                 var parsed = parser.Parse(text);
-                WriteVerbose($"Parsing text: {text} -> {parsed}");
+                //WriteVerbose($"Parsing text: {text} -> {parsed}");
                 if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
                 {
                     errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
@@ -80,12 +80,13 @@ namespace PowerShell
                     //WriteVerbose($"Checking Master: {master.Address.ToString()}");
                     if (master.Address.SameAs(parsed))
                     {
-                        WriteVerbose($"ORIGINAL FOUND: {Address.ToString()}");
                         var duplicate = new DuplicatedAddress
                         {
                             Original = master.AlbaAddressImport,
                             Duplicate = Address
                         };
+
+                        WriteVerbose($"ORIGINAL: Original-Name: {duplicate.Original.Name} Duplicate-Name: {duplicate.Duplicate.Name}");
 
                         WriteObject(duplicate);
                         break;

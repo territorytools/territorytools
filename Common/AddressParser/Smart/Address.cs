@@ -19,9 +19,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             return SameRequired(Street.Number, other.Street.Number)
                 && Same(Street.Name.DirectionalPrefix, other.Street.Name.DirectionalPrefix)
-                && SameRequired(Street.Name.Name, other.Street.Name.Name)
-                && (SameRequired(Street.Name.StreetTypePrefix, other.Street.Name.StreetTypePrefix)
-                    || SameRequired(Street.Name.StreetType, other.Street.Name.StreetType))
+                && (SameRequired(Street.Name.Name, other.Street.Name.Name)
+                    || SameRequired(Street.Name.NamePrefix, other.Street.Name.NamePrefix))
+                && (Same(Street.Name.StreetTypePrefix, other.Street.Name.StreetTypePrefix)
+                    || Same(Street.Name.StreetType, other.Street.Name.StreetType))
                 && Same(Street.Name.DirectionalSuffix, other.Street.Name.DirectionalSuffix)
                 && Same(Unit.Number, other.Unit.Number)
                 && ((SameRequired(City.Name, other.City.Name)

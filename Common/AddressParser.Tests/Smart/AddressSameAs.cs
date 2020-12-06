@@ -33,5 +33,65 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.IsTrue(first.SameAs(second));
 
         }
+
+        [Test]
+        public void SameAs_NoStreetType()
+        {
+            var first = new Address();
+            first.Street.Number = "123";
+            first.Street.Name.Name = "Broadway";
+            first.City.Name = "Bellevue";
+            first.Region.Code = "WA";
+            first.Postal.Code = "98001";
+
+            var second = new Address();
+            second.Street.Number = "123";
+            second.Street.Name.Name = "Broadway";
+            second.City.Name = "Bellevue";
+            second.Region.Code = "WA";
+            second.Postal.Code = "98001";
+
+            Assert.IsTrue(first.SameAs(second));
+        }
+
+        [Test]
+        public void SameAs_NonStreetType()
+        {
+            var first = new Address();
+            first.Street.Number = "123";
+            first.Street.Name.NamePrefix = "PO Box";
+            first.City.Name = "Bellevue";
+            first.Region.Code = "WA";
+            first.Postal.Code = "98001";
+
+            var second = new Address();
+            second.Street.Number = "123";
+            second.Street.Name.Name = "PO Box";
+            second.City.Name = "Bellevue";
+            second.Region.Code = "WA";
+            second.Postal.Code = "98001";
+
+            Assert.IsTrue(first.SameAs(second));
+        }
+
+        [Test]
+        public void SameAs_NonStreetType2()
+        {
+            var first = new Address();
+            first.Street.Number = "123";
+            first.Street.Name.NamePrefix = "PO Box";
+            first.City.Name = "Bellevue";
+            first.Region.Code = "WA";
+            first.Postal.Code = "98001";
+
+            var second = new Address();
+            second.Street.Number = "123";
+            second.Street.Name.Name = "POB";
+            second.City.Name = "Bellevue";
+            second.Region.Code = "WA";
+            second.Postal.Code = "98001";
+
+            Assert.IsTrue(first.SameAs(second));
+        }
     }
 }
