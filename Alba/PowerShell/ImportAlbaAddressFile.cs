@@ -40,7 +40,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
 
             new AddressImporter(Connection, UploadDelayMs, LanguageFilePath)
-                .Upload(AddressFilePath);
+                .AddFrom(AddressFilePath);
         }
     }
 }

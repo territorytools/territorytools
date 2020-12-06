@@ -45,7 +45,7 @@ namespace TerritoryTools.Alba.Controllers
                 }
 
                 new AddressImporter(AuthenticatedClient(), int.Parse(view.UploadDelayMs), languageFilePath)
-                    .Upload(addressFilePath);
+                    .AddFrom(addressFilePath);
             }
             catch (UserException e)
             {
