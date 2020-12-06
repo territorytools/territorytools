@@ -7,8 +7,8 @@ using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace PowerShell
 {
-    [Cmdlet(VerbsCommon.Add,"Address")]
-    public class AddAddress : PSCmdlet
+    [Cmdlet(VerbsData.Update,"Address")]
+    public class UpdateAddress : PSCmdlet
     {
         List<string> errors = new List<string>();
 
@@ -28,13 +28,16 @@ namespace PowerShell
         [Parameter]
         public int UploadDelayMs { get; set; } = 300;
 
-        ImportAddress importer;
+        AddressImporter importer;
 
         // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
 
-            importer = new ImportAddress(Connection, UploadDelayMs);
+            importer = new AddressImporter(
+                Connection, 
+                UploadDelayMs, 
+                LanguageFilePath);
         }
 
         // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
@@ -42,7 +45,9 @@ namespace PowerShell
         {
             try
             {
-                //importer.UploadAddress(Address, LanguageFilePath);
+                string result = importer.Update(Address);
+                
+                WriteVerbose($"Result: {result}");
             }
             catch(Exception)
             {
@@ -53,21 +58,6 @@ namespace PowerShell
         // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
         protected override void EndProcessing()
         {
-            WriteVerbose("ERRORS:");
-            foreach(string error in errors)
-            {
-                WriteVerbose(error);
-            }
-        }
-
-        public void Import()
-        {
-            try
-            {
-            }
-            catch (UserException)
-            {
-            }
         }
     }
 }

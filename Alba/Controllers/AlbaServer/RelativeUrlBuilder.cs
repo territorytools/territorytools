@@ -119,8 +119,15 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return HttpUtility.UrlEncode(formatted);
         }
 
-        public static string SaveAddress(AlbaAddressSave address)
+        public static string UpdateAddress(AlbaAddressSave address)
         {
+            if(address.Address_ID == null || address.Address_ID == 0)
+            {
+                throw new ArgumentException(
+                    $"Address ID cannot be null or zero.", 
+                    nameof(address.Address_ID));
+            }
+
             string formatted = $"/ts?mod=addresses&cmd=save" +
                 $"&id={address.Address_ID}" +
                 $"&lat={address.Latitude}" +

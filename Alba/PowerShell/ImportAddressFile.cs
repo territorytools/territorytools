@@ -45,8 +45,8 @@ namespace PowerShell
                     return;
                 }
 
-                new ImportAddress(Connection, UploadDelayMs)
-                    .Upload(AddressFilePath, LanguageFilePath);
+                new AddressImporter(Connection, UploadDelayMs, LanguageFilePath)
+                    .Upload(AddressFilePath);
             }
             catch (UserException)
             {
