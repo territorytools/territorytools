@@ -10,7 +10,7 @@ Import-Module ".\TerritoryTools.Alba.PowerShell.dll";
 $inputFile = ".\originals-to-update.txt"
 $languageFilePath = ".\languages.html"
 
-$connection = Get-AlbaAConnection `
+$connection = Get-AlbaConnection `
     -AlbaHost $env:ALBA_HOST `
     -Account $env:ALBA_ACCOUNT `
     -User $env:ALBA_USER `

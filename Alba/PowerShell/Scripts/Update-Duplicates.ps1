@@ -19,13 +19,13 @@ $connection = Get-AlbaConnection `
 $addresses = Get-Content $inputFile `
     | ConvertFrom-Csv -Delimiter `t
 
-$addresses | Edit-AlbaAAddress `
+$addresses | Edit-AlbaAddress `
     -LanguageFilePath $languageFilePath `
     -Connection $connection 
 
 $duplicates = Get-Content $duplicatesFile `
     | ConvertFrom-Csv -Delimiter `t
 
-$duplicates | Edit-AlbaAAddress `
+$duplicates | Edit-AlbaAddress `
     -LanguageFilePath $languageFilePath `
     -Connection $connection 
