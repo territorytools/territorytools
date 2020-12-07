@@ -2,40 +2,92 @@
 using Controllers.AlbaServer;
 using Controllers.AzureMaps;
 using Newtonsoft.Json;
+using System;
+using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
 {
+    public class AzureMapsmGeocodeAddressException : Exception
+    {
+        public AzureMapsmGeocodeAddressException(string message) : base(message)
+        {
+        }
+    }
+
     public class AzureMapsmGeocodeAddress
     {
-        private IClientView view;
         private AzureMapsClient client;
 
-        public AzureMapsmGeocodeAddress(IClientView view, AzureMapsClient client)
+        public AzureMapsmGeocodeAddress(AzureMapsClient client)
         {
-            this.view = view;
             this.client = client;
         }
-        
+
+        public AzureMapsmGeocodeAddress(string key)
+        {
+            client = AzureMapsClientFrom(key);
+        }
+
         public class Coordinate
         {
             public double Latitude { get; set; }
             public double Longitude { get; set; }
         }
 
-        public Coordinate Geocode(AlbaAddressImport address)
+        public AlbaAddressImport Geocode(AlbaAddressImport address, bool force = false)
         {
             if (client.BasePath == null)
             {
-                view.ShowMessageBox("You do not have a base path set!");
-                return null;
+                throw new AzureMapsmGeocodeAddressException("You do not have a base path set!");
             }
-            
+
+            if (force || address.Latitude == null
+                || address.Longitude == null
+                || address.Latitude == 0
+                || address.Longitude == 0)
+            {
+                var coordinates = GeocodeFrom(address);
+                address.Latitude = coordinates.Latitude;
+                address.Longitude = coordinates.Longitude;
+            }
+
+            return address;
+        }
+
+        public Coordinate CoordinatesFrom(AlbaAddressImport address)
+        {
+            if (client.BasePath == null)
+            {
+                throw new AzureMapsmGeocodeAddressException("You do not have a base path set!");
+            }
+
+            return GeocodeFrom(address);
+        }
+
+        public static AzureMapsClient AzureMapsClientFrom(string key)
+        {
+            var amWebClient = new CookieWebClient();
+            var amBasePath = new ApplicationBasePath(
+                protocolPrefix: "https://",
+                site: "atlas.microsoft.com",
+                applicationPath: "/");
+
+            var amClient = new AzureMapsClient(
+               webClient: amWebClient,
+               basePath: amBasePath,
+               subscriptionKey: key);
+
+            return amClient;
+        }
+
+        Coordinate GeocodeFrom(AlbaAddressImport address)
+        {
             var url = AzureMapsUrlBuilder.GeocodeAddress(address);
             var resultString = client.DownloadString(url);
-   
+
             var result = JsonConvert.DeserializeObject<GeocodeResult>(resultString);
 
-            if(result.results.Length == 0)
+            if (result.results.Length == 0)
             {
                 return null;
             }

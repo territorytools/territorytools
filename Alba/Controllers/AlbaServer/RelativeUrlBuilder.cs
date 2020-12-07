@@ -24,6 +24,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public static string ExportAllAddresses(int accountId)
         {
+            if (accountId == 0)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
             return $"/ts?mod=addresses&cmd=search&acids={accountId}&exp=true" +
                 "&npp=25&cp=1&tid=0&lid=0&display=1%2C2%2C3%2C4%2C5%2C6" +
                 "&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
