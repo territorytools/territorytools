@@ -84,7 +84,9 @@ namespace TerritoryTools.Alba.PowerShell
 
             foreach (var master in parsedMasterList)
             {
-                if (master.Address.SameAs(parsed))
+                if (master.Address.SameAs(parsed) 
+                    && master.AlbaAddressImport.Address_ID != Address.Address_ID
+                    && master.AlbaAddressImport.Address_ID != 0)
                 {
                     var duplicate = new DuplicatedAddress
                     {
