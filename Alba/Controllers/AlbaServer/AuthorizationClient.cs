@@ -1,5 +1,6 @@
 ﻿using TerritoryTools.Alba.Controllers.Models;
 using Controllers.UseCases;
+using Newtonsoft.Json;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
@@ -47,10 +48,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         private void SubmitCredentials(Credentials credentials)
         {
             var result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
+            var logonResult = JsonConvert.DeserializeObject<LogonResult>(result);
 
-            AccountId = ExtractAccountId.ExtractFrom(result);
-            
-            LogonResultChecker.CheckForErrors(result);
+            AccountId =  logonResult?.user?.id ?? 0;
+
+            LogonResultChecker.CheckForErrors(logonResult);
         }
 
         public string DownloadString(string url)
