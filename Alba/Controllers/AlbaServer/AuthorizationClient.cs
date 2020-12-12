@@ -1,6 +1,6 @@
-﻿using TerritoryTools.Alba.Controllers.Models;
-using Controllers.UseCases;
+﻿using Controllers.UseCases;
 using Newtonsoft.Json;
+using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
@@ -24,6 +24,15 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public ApplicationBasePath BasePath { get; set; }
         public int AccountId { get; set; }
+        public string AccountName { get; private set; }
+        public string AccountFullName { get; private set; }
+        public string Address { get; private set; }
+        public string City { get; private set; }
+        public string Province { get; private set; }
+        public string Country { get; private set; }
+        public string PostalCode { get; private set; }
+        public double? Latitude { get; private set; }
+        public double? Longitude { get; private set; }
 
         public void Authenticate(Credentials credentials)
         {
@@ -50,9 +59,26 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             var result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
             var logonResult = JsonConvert.DeserializeObject<LogonResult>(result);
 
-            AccountId =  logonResult?.user?.id ?? 0;
-
             LogonResultChecker.CheckForErrors(logonResult);
+
+            if(logonResult?.user == null)
+            {
+                return;
+            }
+
+            var user = logonResult.user;
+
+            // In the JSON returned the user.id is the Account ID
+            AccountId = user.id ?? 0;
+            AccountName = user.account_name;
+            AccountFullName = user.account_full_name;
+            Address = user.address;
+            City = user.city;
+            Province = user.province;
+            Country = user.country;
+            PostalCode = user.postcode;
+            Latitude = user.location_lat ?? 0.0;
+            Longitude = user.location_lng ?? 0.0;
         }
 
         public string DownloadString(string url)
