@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Controllers.UseCases
 {
@@ -15,6 +16,7 @@ namespace Controllers.UseCases
         public string Role { get; set; }
         public DateTime Created { get; set; }
         public DateTime? LastSignIn { get; set; }
+        public string LastIPAddress { get; set; }
         public DateTime Updated { get; set; }
     }
 
@@ -64,6 +66,13 @@ namespace Controllers.UseCases
 
                     var colNodes = rowNode.SelectNodes("td");
 
+                    // Using the HTML InnerText property the date is smashed 
+                    // against the IP Address like this:
+                    // November 21, 2015192.168.1.1
+                    // But the year is always four digits, so we can parse
+                    // it with the following Regular Expression
+                    var dateAndIPAddressPattern = new Regex(@"(\w+ \d+, \d{4})(\d+\.\d+\.\d+\.\d+)");
+
                     if (colNodes != null)
                     {
                         for (int col = 0; col < colNodes.Count; col++)
@@ -93,12 +102,25 @@ namespace Controllers.UseCases
                                     user.Role = colNode.SelectSingleNode("span").InnerText;
                                     break;
                                 case 7:
-                                    // TODO: Add later
-                                    //user.Created = colNode.InnerText;
+                                    if (!string.IsNullOrWhiteSpace(colNode.InnerText))
+                                    {
+                                        user.Created = colNode.InnerText == null
+                                        ? DateTime.MinValue
+                                        : DateTime.Parse(colNode.InnerText);
+                                    }
+
                                     break;
                                 case 8:
-                                    // user.LastSignIn = colNode.InnerText;
-                                    // IP Address
+                                    if (!string.IsNullOrWhiteSpace(colNode.InnerText))
+                                    {
+                                        var match = dateAndIPAddressPattern.Match(colNode.InnerText);
+                                        if (match.Success && match.Groups.Count >= 2)
+                                        {
+                                            user.LastSignIn = DateTime.Parse(match.Groups[1].Value);
+                                            user.LastIPAddress = match.Groups[2].Value;
+                                        }
+                                    }
+
                                     break;
                             }
                         }

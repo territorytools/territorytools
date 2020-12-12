@@ -1,5 +1,6 @@
 ﻿using Controllers.UseCases;
 using Newtonsoft.Json;
+using System;
 using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
@@ -79,6 +80,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             PostalCode = user.postcode;
             Latitude = user.location_lat ?? 0.0;
             Longitude = user.location_lng ?? 0.0;
+
+            if (AccountId == 0)
+            {
+                throw new ArgumentException("Account ID cannot be zero");
+            }
         }
 
         public string DownloadString(string url)

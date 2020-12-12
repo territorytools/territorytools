@@ -50,7 +50,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&exp={export.ToString().ToLower()}" +
                 $"&npp={addressesPerPage}&cp=1" + 
                 $"&tid={territoryId}&lid={lid}&display=1%2C2%2C3%2C4%2C5%2C6" +
-                $"&onlyun=false&q={searchText}&sort=id&order=desc&lat=&lng=";
+                $"&onlyun=false&q={HttpUtility.UrlEncode(searchText)}&sort=id&order=desc&lat=&lng=";
         }
 
         public static string GetTerritoryAssignments()
