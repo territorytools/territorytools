@@ -17,7 +17,7 @@ namespace TerritoryTools.Alba.PowerShell
         public string Search { get; set; } = "";
 
         [Parameter(Mandatory = true)]
-        public AuthorizationClient Connection { get; set; }
+        public AlbaConnection Connection { get; set; }
 
         protected override void ProcessRecord()
         {

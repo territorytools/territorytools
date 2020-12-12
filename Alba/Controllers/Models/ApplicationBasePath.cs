@@ -27,5 +27,10 @@
                 return ProtocolPrefix + Site + ApplicationPath;
             }
         }
+
+        public override string ToString()
+        {
+            return BaseUrl;
+        }
     }
 }

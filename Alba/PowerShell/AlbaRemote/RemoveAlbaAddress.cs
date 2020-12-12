@@ -7,7 +7,7 @@ namespace TerritoryTools.Alba.PowerShell
     public class RemoveAlbaAddress : PSCmdlet
     {
         [Parameter(Mandatory = true)]
-        public AuthorizationClient Connection { get; set; }
+        public AlbaConnection Connection { get; set; }
 
         [Parameter(
            Mandatory = false,

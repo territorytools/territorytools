@@ -65,9 +65,9 @@ namespace TerritoryTools.Alba.Controllers
             }
         }
 
-        AuthorizationClient Client()
+        AlbaConnection Client()
         {
-            return new AuthorizationClient(
+            return new AlbaConnection(
                 new CookieWebClient(),
                 new ApplicationBasePath("https://", view.AlbaHostText, "/alba"));
         }
@@ -193,7 +193,7 @@ namespace TerritoryTools.Alba.Controllers
             }
         }
 
-        private AuthorizationClient AuthenticatedClient()
+        private AlbaConnection AuthenticatedClient()
         {
             var client = Client();
             var creds = new Credentials(

@@ -13,7 +13,7 @@ namespace TerritoryTools.Alba.PowerShell
         public string LanguageFilePath { get; set; }
 
         [Parameter]
-        public AuthorizationClient Connection { get; set; }
+        public AlbaConnection Connection { get; set; }
 
         [Parameter(
             Mandatory = false,

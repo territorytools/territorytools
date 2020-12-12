@@ -4,7 +4,7 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
-    public class AuthorizationClient 
+    public class AlbaConnection 
     {
         private const string SessionKeyName = "Alba3";
 
@@ -16,7 +16,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         /// <param name="protocolPrefix">Example: "http://"</param>
         /// <param name="site">The FQDN name where the Alba applicaton is hosted.  Example: www.my-alba-host.com</param>
         /// <param name="applicationPath">Example: "/alba"</param>
-        public AuthorizationClient(IWebClient webClient, ApplicationBasePath basePath)
+        public AlbaConnection(IWebClient webClient, ApplicationBasePath basePath)
         {
             this.webClient = webClient;
             BasePath = basePath;

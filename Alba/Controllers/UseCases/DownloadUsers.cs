@@ -18,9 +18,9 @@ namespace Controllers.UseCases
 
     public class DownloadUsers
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public DownloadUsers(AuthorizationClient client)
+        public DownloadUsers(AlbaConnection client)
         {
             this.client = client;
         }

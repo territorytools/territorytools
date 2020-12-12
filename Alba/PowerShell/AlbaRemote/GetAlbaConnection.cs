@@ -7,7 +7,7 @@ using TerritoryTools.Alba.Controllers.Models;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"AlbaConnection")]
-    [OutputType(typeof(AuthorizationClient))]
+    [OutputType(typeof(AlbaConnection))]
     public class GetAlbaConnection : PSCmdlet
     {
         [Parameter(Mandatory = true)]
@@ -35,11 +35,11 @@ namespace TerritoryTools.Alba.PowerShell
             }
         }
 
-        public AuthorizationClient GetClient()
+        public AlbaConnection GetClient()
         {
             try
             {
-                var client = new AuthorizationClient(
+                var client = new AlbaConnection(
                     new CookieWebClient(),
                     new ApplicationBasePath("https://", AlbaHost, "/alba"));
 

@@ -19,7 +19,7 @@ namespace TerritoryTools.Alba.PowerShell
         public SwitchParameter Force { get; set; }
 
         [Parameter]
-        public AuthorizationClient Connection { get; set; }
+        public AlbaConnection Connection { get; set; }
 
         [Parameter(
             Mandatory = false,

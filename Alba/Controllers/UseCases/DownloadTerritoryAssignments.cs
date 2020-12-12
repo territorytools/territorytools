@@ -11,9 +11,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadTerritoryAssignments
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public DownloadTerritoryAssignments(AuthorizationClient client)
+        public DownloadTerritoryAssignments(AlbaConnection client)
         {
             this.client = client;
         }

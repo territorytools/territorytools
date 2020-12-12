@@ -14,7 +14,7 @@ namespace TerritoryTools.Alba.PowerShell
         public string AddressFilePath { get; set; }
 
         [Parameter(Mandatory = true)]
-        public AuthorizationClient Connection { get; set; }
+        public AlbaConnection Connection { get; set; }
 
         [Parameter]
         public int UploadDelayMs { get; set; } = 300;

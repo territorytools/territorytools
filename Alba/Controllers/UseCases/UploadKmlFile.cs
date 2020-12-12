@@ -9,10 +9,10 @@ namespace TerritoryTools.Alba.Controllers.UseCases
     public class UploadKmlFile
     {
         private IClientView view;
-        private AuthorizationClient client;
+        private AlbaConnection client;
         private int delay;
 
-        public UploadKmlFile(IClientView view, AuthorizationClient client, int delay)
+        public UploadKmlFile(IClientView view, AlbaConnection client, int delay)
         {
             this.view = view;
             this.client = client;

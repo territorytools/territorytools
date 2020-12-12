@@ -4,9 +4,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadAddressExport
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public DownloadAddressExport(AuthorizationClient client)
+        public DownloadAddressExport(AlbaConnection client)
         {
             this.client = client;
         }

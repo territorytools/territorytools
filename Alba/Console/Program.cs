@@ -166,7 +166,7 @@ namespace TerritoryTools.Alba.Cli
             }
         }
 
-        public static AuthorizationClient AlbaClient()
+        public static AlbaConnection AlbaClient()
         {
             string albaHost = Environment.GetEnvironmentVariable("alba_host");
             if(string.IsNullOrWhiteSpace(albaHost))
@@ -180,7 +180,7 @@ namespace TerritoryTools.Alba.Cli
                 site: albaHost,
                 applicationPath: "/alba");
 
-            var client = new AuthorizationClient(
+            var client = new AlbaConnection(
                 webClient: webClient,
                 basePath: basePath);
 

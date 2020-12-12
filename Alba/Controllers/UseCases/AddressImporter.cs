@@ -12,12 +12,12 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class AddressImporter
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
         private int msDelay;
         List<AlbaLanguage> languages;
 
         public AddressImporter(
-            AuthorizationClient client, 
+            AlbaConnection client, 
             int msDelay, 
             string languageFilePath)
         {

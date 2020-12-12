@@ -10,9 +10,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadKmlFile
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public DownloadKmlFile(AuthorizationClient client)
+        public DownloadKmlFile(AlbaConnection client)
         {
             this.client = client;
         }

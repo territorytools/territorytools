@@ -50,7 +50,7 @@ namespace AlbaClient.Tests.AlbaServer
                 Throws.TypeOf (typeof (AuthorizationException)));
         }
 
-        private static AuthorizationClient GetClientThatReturns(string message)
+        private static AlbaConnection GetClientThatReturns(string message)
         {
             var webClient = new WebClientFake()
             {
@@ -59,7 +59,7 @@ namespace AlbaClient.Tests.AlbaServer
 
             var path = new ApplicationBasePath("", "", "");
 
-            return new AuthorizationClient(webClient, path);
+            return new AlbaConnection(webClient, path);
         }
 
         private static Credentials BlankCredentials()

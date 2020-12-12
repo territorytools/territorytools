@@ -269,7 +269,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return albaCredentialService.GetCredentialsFrom(userName);
         }
 
-        AuthorizationClient AuthClient()
+        AlbaConnection AuthClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
@@ -277,7 +277,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 site: options.AlbaHost,
                 applicationPath: "/alba");
 
-            var client = new AuthorizationClient(
+            var client = new AlbaConnection(
                 webClient: webClient,
                 basePath: basePath);
 
