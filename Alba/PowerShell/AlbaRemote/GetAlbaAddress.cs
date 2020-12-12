@@ -13,6 +13,9 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter(Mandatory = true)]
         public int AccountId { get; set; }
 
+        [Parameter]
+        public int TerritoryId { get; set; }
+
         [Parameter(Mandatory = true)]
         public AuthorizationClient Connection { get; set; }
 
@@ -21,7 +24,9 @@ namespace TerritoryTools.Alba.PowerShell
             try
             {
                 var resultString = Connection.DownloadString(
-                    RelativeUrlBuilder.ExportAllAddresses(AccountId));
+                    RelativeUrlBuilder.ExportAddresses(
+                        accountId: AccountId,
+                        territoryId: TerritoryId));
 
                 string text = AddressExportParser.Parse(resultString);
 
