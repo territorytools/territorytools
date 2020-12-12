@@ -342,3 +342,4 @@ data/db/
 data/certbot_certificates_copied.txt
 data/nginx.conf
 *.pem
+/NuGet.config
