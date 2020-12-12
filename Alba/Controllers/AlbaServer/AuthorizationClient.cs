@@ -21,7 +21,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             BasePath = basePath;
         }
 
-        public ApplicationBasePath BasePath;
+        public ApplicationBasePath BasePath { get; set; }
+        public int AccountId { get; set; }
 
         public void Authenticate(Credentials credentials)
         {
@@ -47,6 +48,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         {
             var result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
 
+            AccountId = ExtractAccountId.ExtractFrom(result);
+            
             LogonResultChecker.CheckForErrors(result);
         }
 

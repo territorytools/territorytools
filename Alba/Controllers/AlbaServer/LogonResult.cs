@@ -12,7 +12,7 @@
 
     public class User
     {
-        public string id { get; set; }
+        public int? id { get; set; }
         public string account_type { get; set; }
         public string account_name { get; set; }
         public string account_full_name { get; set; }

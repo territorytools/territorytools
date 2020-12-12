@@ -36,7 +36,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             int accountId, 
             int territoryId = 0,
             bool export = true,
-            int addressesPerPage = 10)
+            int addressesPerPage = 10,
+            int lid = 0,
+            string searchText = "")
         {
             if (accountId == 0)
             {
@@ -47,8 +49,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&acids={accountId}" + 
                 $"&exp={export.ToString().ToLower()}" +
                 $"&npp={addressesPerPage}&cp=1" + 
-                $"&tid={territoryId}&lid=0&display=1%2C2%2C3%2C4%2C5%2C6" +
-                $"&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
+                $"&tid={territoryId}&lid={lid}&display=1%2C2%2C3%2C4%2C5%2C6" +
+                $"&onlyun=false&q={searchText}&sort=id&order=desc&lat=&lng=";
         }
 
         public static string GetTerritoryAssignments()

@@ -20,12 +20,13 @@ namespace TerritoryTools.Web.MainSite.Services
         MainDbContext database;
 
         public TerritoryAuthorizationService(
-            IEnumerable<string> userNames, IEnumerable<string> adminUserNames,
-            MainDbContext database)
+            IEnumerable<string> userNames, 
+            IEnumerable<string> adminUserNames)
+            //mainDbContext database)
         {
             this.userNames = userNames;
             this.adminUserNames = adminUserNames;
-            this.database = database;
+            //this.database = database;
         }
 
         public bool IsAdmin(string userName)
@@ -38,9 +39,7 @@ namespace TerritoryTools.Web.MainSite.Services
                 }
             }
 
-
-            GetRoleForAlbaAccountIdFor(User.Identity.Name);
-
+            //GetRoleForAlbaAccountIdFor(User.Identity.Name);
 
             return false;
         }
