@@ -4,6 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>TerritoryTools.Alba.Controllers</RootNamespace>
     <AssemblyName>TerritoryTools.Alba.Controllers</AssemblyName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <PackageId>TerritoryTools.Alba.Controllers</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Marc Durham</Authors>
+    <Company>Territory Tools</Company>
+    <PackageDescription>.NET library for manipulating territory and address data from the Alba territory system.</PackageDescription>
+    <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
+    <PackageLicenseFile>../../LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
