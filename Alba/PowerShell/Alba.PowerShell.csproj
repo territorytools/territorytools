@@ -8,11 +8,12 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <PackageId>TerritoryTools.Alba.PowerShell</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Territory Tools</Authors>
+    <Version>0.1.0</Version>
+    <Authors>Marc Durham</Authors>
     <Company>Territory Tools</Company>
-    <PackageDescription>Parsing Alba Data</PackageDescription>
+    <PackageDescription>PowerShell Cmdlet tools for manipulating territory and address data from the Alba territory system.</PackageDescription>
     <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
+    <PackageLicenseFile>../../LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
