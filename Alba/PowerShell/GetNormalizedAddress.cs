@@ -38,6 +38,7 @@ namespace TerritoryTools.Alba.PowerShell
             {
                 parser.Normalize = true;
                 Address parsed = parser.Parse(Address);
+                
                 normalized = new NormalizedAddress
                 {
                     Original = Address,
@@ -54,7 +55,8 @@ namespace TerritoryTools.Alba.PowerShell
                     City = parsed.City.Name,
                     Region = parsed.Region.Code,
                     PostalCode = parsed.Postal.Code,
-                    PostalCodeExtra = parsed.Postal.Extra
+                    PostalCodeExtra = parsed.Postal.Extra,
+                    Errors = parsed.ErrorMessage
                 };
             }
             catch(Exception)
@@ -84,5 +86,6 @@ namespace TerritoryTools.Alba.PowerShell
         public string Region { get; set; }
         public string PostalCode { get; set; }
         public string PostalCodeExtra { get; set; }
+        public string Errors { get; internal set; }
     }
 }

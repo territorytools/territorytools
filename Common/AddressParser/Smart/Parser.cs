@@ -97,7 +97,8 @@ namespace TerritoryTools.Common.AddressParser.Smart
         {
             address = new Address();
 
-            if (string.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text) 
+                && string.IsNullOrWhiteSpace(street))
             {
                 return address;
             }
@@ -128,7 +129,18 @@ namespace TerritoryTools.Common.AddressParser.Smart
             }
 
             // Search backwards from the end
-            address.Postal.Code = postal ?? FindPostalCode();
+            string postalCode = postal ?? FindPostalCode();
+            if(postalCode.Length == 10 && postalCode[5] == '-')
+            {
+                string[] codes = postalCode.Split('-');
+                address.Postal.Code = codes[0];
+                address.Postal.Extra = codes[1];
+            }
+            else
+            {
+                address.Postal.Code = postalCode;
+            }
+
             address.Region.Code = region ?? FindRegionCode();
             if (!string.IsNullOrWhiteSpace(address.Region.Code))
             {
