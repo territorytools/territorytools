@@ -16,7 +16,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                $"&k2={HashComputer.Hash(credentials.Combined)}";
         }
 
-        public static string GetAllTerritories()
+        public static string GetAllTerritoriesWithBorders()
         {
             return @"/ts?mod=territories&cmd=search&kinds%5B%5D=0" +
                 "&kinds%5B%5D=1&kinds%5B%5D=2&q=&sort=number&order=asc";
