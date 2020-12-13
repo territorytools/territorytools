@@ -5,7 +5,7 @@ using TerritoryTools.Common.AddressParser.Smart;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get, "Normalized")]
+    [Cmdlet(VerbsCommon.Get, "NormalizedAddresses")]
     [OutputType(typeof(NormalizedAddress))]
     public class GetNormalizedAddress : PSCmdlet
     {

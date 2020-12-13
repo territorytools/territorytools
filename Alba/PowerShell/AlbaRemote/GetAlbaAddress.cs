@@ -1,11 +1,17 @@
-﻿using System;
+﻿using Controllers.AlbaServer;
+using CsvHelper;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"AlbaAddress")]
+    [OutputType(typeof(AlbaAddressImport))]
     public class GetAlbaAddress : PSCmdlet
     {
         List<string> errors = new List<string>();
@@ -23,11 +29,6 @@ namespace TerritoryTools.Alba.PowerShell
         {
             try
             {
-                if(Connection.AccountId == 0)
-                {
-                    throw new ArgumentException("Account ID cannot be zero");
-                }
-
                 var resultString = Connection.DownloadString(
                     RelativeUrlBuilder.ExportAddresses(
                         accountId: Connection.AccountId,
@@ -36,10 +37,17 @@ namespace TerritoryTools.Alba.PowerShell
 
                 string text = AddressExportParser.Parse(resultString);
 
-                foreach (string line in text.Split('\n'))
+                using (var reader = new StringReader(text))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
-                    WriteObject(line);
+                    csv.Configuration.Delimiter = "\t";
+                    var records = csv.GetRecords<AlbaAddressImport>().ToList();
+                    foreach (var record in records)
+                    {
+                        WriteObject(record);
+                    }
                 }
+
             }
             catch(Exception e)
             {

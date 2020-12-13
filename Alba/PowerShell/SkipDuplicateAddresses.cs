@@ -6,7 +6,7 @@ using TerritoryTools.Common.AddressParser.Smart;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Skip,"Duplicates")]
+    [Cmdlet(VerbsCommon.Skip,"DuplicateAddresses")]
     [OutputType(typeof(Parsed))]
     public class SkipDuplicateAddresses : PSCmdlet
     {

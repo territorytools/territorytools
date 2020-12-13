@@ -5,7 +5,7 @@ $connection = Get-AlbaConnection `
     -User $env:ALBA_USER `
     -Password $env:ALBA_PASSWORD
 
-$result = Get-AlbaAddress -AccountId 0 -Connection $connection 
+$result = Get-AlbaAddress -Connection $connection -Search "Main St"
 
 $result | Out-File -FilePath "addresses-$(Get-Date -Format 'yyyy-MM-dd-HHmm').txt" -Encoding utf8
  

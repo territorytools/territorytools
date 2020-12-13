@@ -7,7 +7,7 @@ using TerritoryTools.Common.AddressParser.Smart;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"Original")]
+    [Cmdlet(VerbsCommon.Get,"OriginalAddress")]
     [OutputType(typeof(DuplicatedAddress))]
     public class GetOriginalAddress : PSCmdlet
     {
