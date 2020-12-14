@@ -23,25 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.1">
-      <IncludeAssets></IncludeAssets>
-      <Pack>true</Pack>
-    </PackageReference>
-    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0">
-      <IncludeAssets></IncludeAssets>
-      <Pack>true</Pack>
-    </PackageReference>
+    <PackageReference Include="CsvHelper" Version="15.0.1" />
+    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>TerritoryTools.Alba.Controllers.dll</IncludeAssets>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
   </ItemGroup>
 
 </Project>

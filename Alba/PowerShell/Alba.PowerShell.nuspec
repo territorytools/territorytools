@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>TerritoryTools.Alba.PowerShell</id>
-    <version>0.1.4</version>
+    <version>0.1.7</version>
     <title>PowerShell Module for Territory Tools for Alba</title>
     <authors>Marc Durham</authors>
     <owners>Territory Tools</owners>
@@ -22,6 +22,7 @@
         <dependency id="Newtonsoft.Json" version="12.0.3" />
         <dependency id="System.ValueTuple" version="4.5.0" />
         <dependency id="CommandLineParser" version="2.8.0" />
+        <dependency id="NETStandard.Library" version="2.0.3" />
       </group>
     </dependencies>
   </metadata>
