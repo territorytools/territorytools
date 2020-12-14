@@ -47,6 +47,8 @@ namespace TerritoryTools.Alba.PowerShell
 
                 client.Authenticate(creds);
 
+                SessionState.PSVariable.Set("CurrentAlbaConnection", client);
+
                 return client;
             }
             catch (Exception)
