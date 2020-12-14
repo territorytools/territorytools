@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>TerritoryTools.Alba.PowerShell</id>
+    <version>0.1.4</version>
+    <title>PowerShell Module for Territory Tools for Alba</title>
+    <authors>Marc Durham</authors>
+    <owners>Territory Tools</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Cmdlets that parse and normalize street addresses and connect to Alba</description>
+    <projectUrl>https://github.com/territorytools/territory-tools</projectUrl>
+    <repository type="git" url="https://github.com/territorytools/territory-tools" branch="dev" />
+    <license type="expression">MIT</license>
+    <summary>Library for parsing and normalizing U.S. addresses and Alba tools</summary>
+    <copyright>Copyright © 2020-2021 Territory Tools and Contributors</copyright>
+    <icon>images\icon.png</icon>
+    <dependencies>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="CsvHelper" version="15.0.1" />
+        <dependency id="Microsoft.PowerShell.5.ReferenceAssemblies" version="1.1.0" />
+        <dependency id="HtmlAgilityPack" version="1.11.8" />
+        <dependency id="Newtonsoft.Json" version="12.0.3" />
+        <dependency id="System.ValueTuple" version="4.5.0" />
+        <dependency id="CommandLineParser" version="2.8.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerSHell.dll" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.Controllers.dll" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.Common.AddressParser.dll" target="lib" />
+    <file src="bin\Release\netstandard2.0\icon.png" target="images\" />
+  </files>
+</package>
