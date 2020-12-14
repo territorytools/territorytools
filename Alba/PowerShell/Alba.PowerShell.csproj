@@ -6,19 +6,27 @@
     <AssemblyName>TerritoryTools.Alba.PowerShell</AssemblyName>
     <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     <PackageId>TerritoryTools.Alba.PowerShell</PackageId>
     <Version>0.1.0</Version>
     <Authors>Marc Durham</Authors>
-    <Company>Territory Tools</Company>
-    <PackageDescription>PowerShell Cmdlet tools for manipulating territory and address data from the Alba territory system.</PackageDescription>
+    <Owners>Territory Tools</Owners>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
-    <PackageLicenseFile>../../LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Title>Territory Tools Alba Tools for PowerShell</Title>
+    <PackageDescription>Library for parsing and normalizing street addresses and Alba tools</PackageDescription>
+    <Description>Library for parsing and normalizing addresses and Alba tools</Description>
+    <Summary>Library for parsing and normalizing U.S. addresses and Alba tools</Summary>
+    <Copyright>Copyright © 2020-2021 Marc Durham and Contributors</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\LICENSE" Link="LICENSE"  Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.1">
@@ -45,8 +53,8 @@
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'PackageReference'))"/>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'PackageReference'))" />
     </ItemGroup>
   </Target>
 
