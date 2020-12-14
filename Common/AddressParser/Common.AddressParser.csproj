@@ -1,9 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>TerritoryTools.Common.AddressParser</RootNamespace>
     <AssemblyName>TerritoryTools.Common.AddressParser</AssemblyName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>TerritoryTools.Common.AddressParser</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Marc Durham</Authors>
+    <Owners>Territory Tools</Owners>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Title>Territory Tools Address Parser Library</Title>
+    <PackageDescription>Library for parsing and normalizing street addresses</PackageDescription>
+    <Description>Library for parsing and normalizing addresses</Description>
+    <Summary>Library for parsing and normalizing U.S. addresses</Summary>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\LICENSE" Link="LICENSE"  Pack="true" PackagePath="" />
+  </ItemGroup>
 
 </Project>

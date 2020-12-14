@@ -2,6 +2,7 @@
 using System.Web;
 using TerritoryTools.Alba.Controllers.Models;
 using Controllers.AlbaServer;
+using System;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
@@ -15,7 +16,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                $"&k2={HashComputer.Hash(credentials.Combined)}";
         }
 
-        public static string GetAllTerritories()
+        public static string GetAllTerritoriesWithBorders()
         {
             return @"/ts?mod=territories&cmd=search&kinds%5B%5D=0" +
                 "&kinds%5B%5D=1&kinds%5B%5D=2&q=&sort=number&order=asc";
@@ -23,9 +24,33 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public static string ExportAllAddresses(int accountId)
         {
-            return $"/ts?mod=addresses&cmd=search&acids={accountId}&exp=true" +
-                "&npp=25&cp=1&tid=0&lid=0&display=1%2C2%2C3%2C4%2C5%2C6" +
-                "&onlyun=false&q=&sort=id&order=desc&lat=&lng=";
+            if (accountId == 0)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
+            return ExportAddresses(accountId);
+        }
+
+        public static string ExportAddresses(
+            int accountId, 
+            int territoryId = 0,
+            bool export = true,
+            int addressesPerPage = 10,
+            int lid = 0,
+            string searchText = "")
+        {
+            if (accountId == 0)
+            {
+                throw new ArgumentNullException(nameof(accountId));
+            }
+
+            return $"/ts?mod=addresses&cmd=search" + 
+                $"&acids={accountId}" + 
+                $"&exp={export.ToString().ToLower()}" +
+                $"&npp={addressesPerPage}&cp=1" + 
+                $"&tid={territoryId}&lid={lid}&display=1%2C2%2C3%2C4%2C5%2C6" +
+                $"&onlyun=false&q={HttpUtility.UrlEncode(searchText)}&sort=id&order=desc&lat=&lng=";
         }
 
         public static string GetTerritoryAssignments()
@@ -51,6 +76,16 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
                 $"&description={HttpUtility.UrlEncode(territory.Description)}" +
                 $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}";
+        }
+
+        public static string DeleteAddress(int addressId)
+        {
+            if(addressId == 0)
+            {
+                throw new ArgumentNullException(nameof(addressId));
+            }
+
+            return $"/ts?mod=addresses&cmd=delete&id={addressId}";
         }
 
         public static string ImportAddress(AlbaAddressImport address)
@@ -108,8 +143,15 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return HttpUtility.UrlEncode(formatted);
         }
 
-        public static string SaveAddress(AlbaAddressSave address)
+        public static string UpdateAddress(AlbaAddressSave address)
         {
+            if(address.Address_ID == null || address.Address_ID == 0)
+            {
+                throw new ArgumentException(
+                    $"Address ID cannot be null or zero.", 
+                    nameof(address.Address_ID));
+            }
+
             string formatted = $"/ts?mod=addresses&cmd=save" +
                 $"&id={address.Address_ID}" +
                 $"&lat={address.Latitude}" +

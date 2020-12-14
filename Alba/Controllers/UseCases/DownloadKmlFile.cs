@@ -10,9 +10,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadKmlFile
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public DownloadKmlFile(AuthorizationClient client)
+        public DownloadKmlFile(AlbaConnection client)
         {
             this.client = client;
         }
@@ -22,7 +22,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
         public List<Territory> SaveAs(string fileName)
         {
-            var resultString = client.DownloadString(RelativeUrlBuilder.GetAllTerritories());
+            var resultString = client.DownloadString(RelativeUrlBuilder.GetAllTerritoriesWithBorders());
             AllTerritories = TerritoryResultParser.Parse(resultString);
 
             var assignmentsResultString = client.DownloadString(

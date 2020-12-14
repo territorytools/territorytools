@@ -1,25 +1,61 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>TerritoryTools.Alba.PowerShell</AssemblyName>
     <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>TerritoryTools.Alba.PowerShell</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Marc Durham</Authors>
+    <Owners>Territory Tools</Owners>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Title>Territory Tools Alba Tools for PowerShell</Title>
+    <PackageDescription>Library for parsing and normalizing street addresses and Alba tools</PackageDescription>
+    <Description>Library for parsing and normalizing addresses and Alba tools</Description>
+    <Summary>Library for parsing and normalizing U.S. addresses and Alba tools</Summary>
+    <Copyright>Copyright © 2020-2021 Marc Durham and Contributors</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.1" />
-    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
+    <Content Include="..\..\LICENSE" Link="LICENSE"  Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
-    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
+    <PackageReference Include="CsvHelper" Version="15.0.1">
+      <IncludeAssets></IncludeAssets>
+      <Pack>true</Pack>
+    </PackageReference>
+    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0">
+      <IncludeAssets></IncludeAssets>
+      <Pack>true</Pack>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Run-Test.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj">
+      <Private>true</Private>
+
+    </ProjectReference>
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
+      <Private>true</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>TerritoryTools.Alba.Controllers.dll</IncludeAssets>
+    </ProjectReference>
   </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'PackageReference'))" />
+    </ItemGroup>
+  </Target>
 
 </Project>

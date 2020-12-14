@@ -12,15 +12,17 @@
 
     public class User
     {
-        public string id { get; set; }
+        public int? id { get; set; }
         public string account_type { get; set; }
         public string account_name { get; set; }
         public string account_full_name { get; set; }
-        public string primary_language_id { get; set; }
+        public int primary_language_id { get; set; }
         public string address { get; set; }
         public string city { get; set; }
         public string province { get; set; }
         public string country { get; set; }
         public string postcode { get; set; }
+        public double? location_lat { get; set; }
+        public double? location_lng { get; set; }
     }
 }

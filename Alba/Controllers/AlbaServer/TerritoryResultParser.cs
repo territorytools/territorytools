@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System;
 using TerritoryTools.Alba.Controllers.Models;
+using System.Text.RegularExpressions;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
@@ -37,13 +38,17 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
                 string text = border.tt;
 
-                newTerritory.Number = text.Length >0 && text.Contains(" ") 
-                    ? text.Substring(0, text.IndexOf(" ")) 
-                    : string.Empty;
-
-                newTerritory.Description = text.Length > 1 && text.Contains(" ") 
-                    ? text.Substring(text.IndexOf(" ") + 1) 
-                    : string.Empty;
+                var regex = new Regex(@"([^<>]+) ([^<>]+)");
+                var matches = regex.Match(text);
+                if(matches.Success && matches.Groups.Count == 2)
+                {
+                    newTerritory.Number = matches.Groups[1].Value;
+                    newTerritory.Description = matches.Groups[2].Value;
+                }
+                else
+                {
+                    newTerritory.Number = text;
+                }
 
                 newTerritory.CityArea = !string.IsNullOrWhiteSpace(newTerritory.Description) 
                         && newTerritory.Description.Trim().Length == 6

@@ -64,8 +64,8 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             client.Authenticate(Program.GetCredentials());
 
-            new ImportAddress(client, msDelay: 100)
-                   .Upload(AddressesFile, LanguagesFile);
+            new AddressImporter(client, msDelay: 100, languageFilePath: LanguagesFile)
+                   .AddFrom(AddressesFile);
 
             Console.WriteLine("Uploading addresses completed");
 

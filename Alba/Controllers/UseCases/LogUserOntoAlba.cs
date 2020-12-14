@@ -7,9 +7,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
     public class LogUserOntoAlba
     {
         private IClientView view;
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public LogUserOntoAlba(IClientView view, AuthorizationClient client)
+        public LogUserOntoAlba(IClientView view, AlbaConnection client)
         {
             this.view = view;
             this.client = client;

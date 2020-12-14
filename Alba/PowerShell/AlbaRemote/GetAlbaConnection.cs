@@ -4,11 +4,11 @@ using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.Models;
 
-namespace PowerShell
+namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"Connection")]
-    [OutputType(typeof(AuthorizationClient))]
-    public class GetConnection : PSCmdlet
+    [Cmdlet(VerbsCommon.Get,"AlbaConnection")]
+    [OutputType(typeof(AlbaConnection))]
+    public class GetAlbaConnection : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         public string AlbaHost { get; set; }
@@ -21,18 +21,6 @@ namespace PowerShell
 
         [Parameter(Mandatory = true)]
         public string Password { get; set; }
-
-        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
-        protected override void BeginProcessing()
-        {
-          
-        }
-
-        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
-        protected override void ProcessRecord()
-        {
-
-        }
 
         // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
         protected override void EndProcessing()
@@ -47,11 +35,11 @@ namespace PowerShell
             }
         }
 
-        public AuthorizationClient GetClient()
+        public AlbaConnection GetClient()
         {
             try
             {
-                var client = new AuthorizationClient(
+                var client = new AlbaConnection(
                     new CookieWebClient(),
                     new ApplicationBasePath("https://", AlbaHost, "/alba"));
 

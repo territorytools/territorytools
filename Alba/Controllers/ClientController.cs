@@ -44,8 +44,8 @@ namespace TerritoryTools.Alba.Controllers
                     return;
                 }
 
-                new ImportAddress(AuthenticatedClient(), int.Parse(view.UploadDelayMs))
-                    .Upload(addressFilePath, languageFilePath);
+                new AddressImporter(AuthenticatedClient(), int.Parse(view.UploadDelayMs), languageFilePath)
+                    .AddFrom(addressFilePath);
             }
             catch (UserException e)
             {
@@ -65,25 +65,16 @@ namespace TerritoryTools.Alba.Controllers
             }
         }
 
-        AuthorizationClient Client()
+        AlbaConnection Client()
         {
-            return new AuthorizationClient(
+            return new AlbaConnection(
                 new CookieWebClient(),
                 new ApplicationBasePath("https://", view.AlbaHostText, "/alba"));
         }
 
-        private void GeocodeCsvAddressesFrom(string path, string key)
+        void GeocodeCsvAddressesFrom(string path, string key)
         {
-            var amWebClient = new CookieWebClient();
-            var amBasePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: "atlas.microsoft.com",
-                applicationPath: "/");
-
-            var amClient = new AzureMapsClient(
-               webClient: amWebClient,
-               basePath: amBasePath,
-               subscriptionKey: key);
+            var amClient = AzureMapsmGeocodeAddress.AzureMapsClientFrom(key);
 
             int geocoded = 0;
             int alreadyGeocode = 0;
@@ -99,8 +90,8 @@ namespace TerritoryTools.Alba.Controllers
                         || address.Latitude == 0
                         || address.Longitude == 0)
                     {
-                        var coordinates = new AzureMapsmGeocodeAddress(view, amClient)
-                            .Geocode(address);
+                        var coordinates = new AzureMapsmGeocodeAddress(amClient)
+                            .CoordinatesFrom(address);
 
                         address.Latitude = coordinates.Latitude;
                         address.Longitude = coordinates.Longitude;
@@ -111,6 +102,10 @@ namespace TerritoryTools.Alba.Controllers
                     {
                         alreadyGeocode++;
                     }
+                }
+                catch(AzureMapsmGeocodeAddressException e)
+                {
+                    view.ShowMessageBox(e.Message);
                 }
                 catch(Exception)
                 {
@@ -198,7 +193,7 @@ namespace TerritoryTools.Alba.Controllers
             }
         }
 
-        private AuthorizationClient AuthenticatedClient()
+        private AlbaConnection AuthenticatedClient()
         {
             var client = Client();
             var creds = new Credentials(

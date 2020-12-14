@@ -1,13 +1,8 @@
 ﻿using Controllers.AlbaServer;
-using CsvHelper;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Management.Automation;
 
-namespace PowerShell
+namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet("ConvertTo","AlbaAddressImport")]
     [OutputType(typeof(AlbaAddressImport))]
@@ -20,21 +15,15 @@ namespace PowerShell
           ValueFromPipelineByPropertyName = true)]
         public PSObject Input { get; set; }
         
-        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
-        protected override void BeginProcessing()
-        {
-        }
-
-        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
             try
             {
                 WriteObject(Convert(Input));
             }
-            catch(Exception)// e)
+            catch(Exception e)
             {
-                throw; // new Exception($"Error converting PSObject to AlbaAddressImport: {e.StackTrace}", e);
+                throw new Exception($"Error converting PSObject to AlbaAddressImport: {e.StackTrace}", e);
             }
         }
 
@@ -66,12 +55,6 @@ namespace PowerShell
             };
 
             return address;
-        }
-
-        // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
-        protected override void EndProcessing()
-        {
-            WriteVerbose("End!");
         }
     }
 }

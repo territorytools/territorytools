@@ -13,9 +13,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
     public class LanguageDownloader
     {
-        private AuthorizationClient client;
+        private AlbaConnection client;
 
-        public LanguageDownloader(AuthorizationClient client)
+        public LanguageDownloader(AlbaConnection client)
         {
             this.client = client;
         }

@@ -1,16 +1,32 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>TerritoryTools.Alba.Controllers</RootNamespace>
     <AssemblyName>TerritoryTools.Alba.Controllers</AssemblyName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>TerritoryTools.Alba.Controllers</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Marc Durham</Authors>
+    <Owners>Territory Tools</Owners>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Title>Territory Tools Alba Controller Library</Title>
+    <PackageDescription>Library for Alba inter components</PackageDescription>
+    <Description>Targets file from RubberDuckDev.</Description>
+    <Summary>Library for parsing and normalizing U.S. addresses</Summary>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="..\..\LICENSE" Link="LICENSE"  Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.1" />
-	  <PackageReference Include="HtmlAgilityPack" Version="1.11.8" />
-	  <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-	  <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
   </ItemGroup>
 

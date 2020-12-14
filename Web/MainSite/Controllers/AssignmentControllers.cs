@@ -298,7 +298,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, usersHtml);
         }
 
-        private AuthorizationClient AuthorizationClient()
+        private AlbaConnection AuthorizationClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
@@ -306,7 +306,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 site: options.AlbaHost,
                 applicationPath: "/alba");
 
-            var client = new AuthorizationClient(
+            var client = new AlbaConnection(
                 webClient: webClient,
                 basePath: basePath);
 
