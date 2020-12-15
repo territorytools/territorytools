@@ -9,13 +9,22 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(Assignment))]
     public class GetAlbaTerritory : PSCmdlet
     {
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public AlbaConnection Connection { get; set; }
 
         protected override void ProcessRecord()
         {
             try
             {
+                if (Connection == null)
+                {
+                    Connection = SessionState
+                        .PSVariable
+                        .Get(nameof(Names.CurrentAlbaConnection))?
+                        .Value as AlbaConnection
+                        ?? throw new MissingConnectionException();
+                }
+
                 var assignmentsResultString = Connection.DownloadString(
                    RelativeUrlBuilder.GetTerritoryAssignments());
 

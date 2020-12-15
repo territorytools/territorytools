@@ -14,7 +14,6 @@ namespace TerritoryTools.Alba.PowerShell
        
         Parser parser;
         List<ParsedAddress> parsedMasterList;
-        List<string> errors = new List<string>();
 
         [Parameter(
             Mandatory = true,
@@ -32,7 +31,6 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter]
         public SwitchParameter IncludeSelf { get; set; }
 
-        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
             var validRegions = Region.Split(Region.Defaults);
@@ -46,7 +44,6 @@ namespace TerritoryTools.Alba.PowerShell
             WriteVerbose($"Loaded Street Types:{streetTypes.Count}");
 
             parsedMasterList = new List<ParsedAddress>();
-            errors = new List<string>();
             foreach (var master in MasterList)
             {
                 string text = $"{master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}";
@@ -60,7 +57,6 @@ namespace TerritoryTools.Alba.PowerShell
             parsedMasterList = parsedMasterList.OrderBy(a => a.AlbaAddressImport.Address_ID).ToList();
         }
 
-        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
             try
@@ -69,7 +65,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch (Exception e)
             {
-                errors.Add(e.Message);
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
 
@@ -79,7 +75,7 @@ namespace TerritoryTools.Alba.PowerShell
             var parsed = parser.Parse(text);
             if (!string.IsNullOrWhiteSpace(parsed.FailedAddress))
             {
-                errors.Add($"{parsed.ErrorMessage}: {parsed.FailedAddress} ");
+                throw new Exception("Parsing error: " + parsed.FailedAddress);
             }
 
             foreach (var master in parsedMasterList)
@@ -97,16 +93,6 @@ namespace TerritoryTools.Alba.PowerShell
                     WriteObject(duplicate);
                     break;
                 }
-            }
-        }
-
-        // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
-        protected override void EndProcessing()
-        {
-            WriteVerbose("ERRORS:");
-            foreach(string error in errors)
-            {
-                WriteVerbose(error);
             }
         }
     }

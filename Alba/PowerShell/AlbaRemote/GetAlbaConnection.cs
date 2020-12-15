@@ -29,9 +29,9 @@ namespace TerritoryTools.Alba.PowerShell
             {
                 WriteObject(GetClient());
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
 

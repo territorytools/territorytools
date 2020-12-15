@@ -92,17 +92,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch(Exception e)
             {
-                errors.Add(e.Message);
-            }
-        }
-
-        // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
-        protected override void EndProcessing()
-        {
-            WriteVerbose("ERRORS:");
-            foreach(string error in errors)
-            {
-                WriteVerbose(error);
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
     }

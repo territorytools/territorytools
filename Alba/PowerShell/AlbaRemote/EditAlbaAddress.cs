@@ -10,8 +10,6 @@ namespace TerritoryTools.Alba.PowerShell
     [Cmdlet(VerbsData.Edit,"AlbaAddress")]
     public class EditAlbaAddress : PSCmdlet
     {
-        List<string> errors = new List<string>();
-
         [Parameter]
         public string LanguageFilePath { get; set; }
 
@@ -30,9 +28,16 @@ namespace TerritoryTools.Alba.PowerShell
 
         AddressImporter importer;
 
-        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
+            if (Connection == null)
+            {
+                Connection = SessionState
+                    .PSVariable
+                    .Get(nameof(Names.CurrentAlbaConnection))?
+                    .Value as AlbaConnection
+                    ?? throw new MissingConnectionException();
+            }
 
             importer = new AddressImporter(
                 Connection, 
@@ -40,7 +45,6 @@ namespace TerritoryTools.Alba.PowerShell
                 LanguageFilePath);
         }
 
-        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
             try
@@ -51,16 +55,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch(Exception e)
             {
-                errors.Add(e.Message);
-            }
-        }
-
-        protected override void EndProcessing()
-        {
-            WriteVerbose("ERRORS:");
-            foreach (string error in errors)
-            {
-                WriteVerbose(error);
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
     }

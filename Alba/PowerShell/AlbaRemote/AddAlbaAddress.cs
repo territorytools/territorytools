@@ -29,6 +29,15 @@ namespace TerritoryTools.Alba.PowerShell
 
         protected override void BeginProcessing()
         {
+            if (Connection == null)
+            {
+                Connection = SessionState
+                    .PSVariable
+                    .Get(nameof(Names.CurrentAlbaConnection))?
+                    .Value as AlbaConnection
+                    ?? throw new MissingConnectionException();
+            }
+
             importer = new AddressImporter(
                 Connection, 
                 UploadDelayMs, 
@@ -43,9 +52,9 @@ namespace TerritoryTools.Alba.PowerShell
                 
                 WriteVerbose($"Result: {result}");
             }
-            catch(Exception)
+            catch(Exception e)
             {
-                throw;
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
     }

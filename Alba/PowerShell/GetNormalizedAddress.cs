@@ -59,9 +59,9 @@ namespace TerritoryTools.Alba.PowerShell
                     Errors = parsed.ErrorMessage
                 };
             }
-            catch(Exception)
+            catch(Exception e)
             {
-                normalized.Original = $"*{Address}";
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
                
 
