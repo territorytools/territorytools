@@ -16,7 +16,7 @@ namespace TerritoryTools.Alba.PowerShell
         {
             try
             {
-                if(Connection == null)
+                if (Connection == null)
                 {
                     Connection = SessionState.PSVariable
                         .Get("CurrentAlbaConnection")?.Value as AlbaConnection;
@@ -24,7 +24,9 @@ namespace TerritoryTools.Alba.PowerShell
 
                 if (Connection == null)
                 {
-                    throw new ArgumentNullException(nameof(Connection));
+                    throw new ArgumentNullException(
+                        paramName: nameof(Connection), 
+                        message: "Use Get-AlbaConnection to set a default connection");
                 }
 
                 string url = RelativeUrlBuilder.GetUserManagementPage();
