@@ -50,6 +50,10 @@ namespace TerritoryTools.Alba.PowerShell
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     csv.Configuration.Delimiter = "\t";
+                    csv.Configuration.BadDataFound = (rc) => {
+                        WriteVerbose($"CSV Address Parsing Error: {rc.RawRecord} ");
+                    };
+
                     var records = csv.GetRecords<AlbaAddressImport>().ToList();
                     foreach (var record in records)
                     {
