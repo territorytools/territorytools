@@ -14,11 +14,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TerritoryTools.Alba.PowerShell.psd1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\..\LICENSE" Link="LICENSE" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Web\MainSite\wwwroot\android-chrome-512x512.png" Link="icon.png" Pack="true" PackagePath="images">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TerritoryTools.Alba.PowerShell.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -29,8 +36,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
-    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj">
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <Private>true</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
