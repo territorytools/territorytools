@@ -78,6 +78,24 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}";
         }
 
+        public static string AssignTerritory(
+            int territoryId, 
+            int userId, 
+            DateTime date)
+        {
+            string dateString = date.ToString("yyyy-MM-dd");
+
+            return $"/ts?mod=assigned&cmd=assign" +
+                $"&id={territoryId}" + 
+                $"&date={dateString}" +
+                $"&user={userId}";
+        }
+
+        public static string UnassignTerritory(int territoryId)
+        {
+            return $"/ts?mod=assigned&cmd=unassign&id={territoryId}");
+        }
+
         public static string DeleteAddress(int addressId)
         {
             if(addressId == 0)

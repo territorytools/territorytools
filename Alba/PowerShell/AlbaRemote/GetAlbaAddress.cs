@@ -11,7 +11,7 @@ using TerritoryTools.Alba.Controllers.AlbaServer;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"AlbaAddress")]
-    [OutputType(typeof(AlbaAddressImport))]
+    [OutputType(typeof(AlbaAddressExport))]
     public class GetAlbaAddress : PSCmdlet
     {
         List<string> errors = new List<string>();
@@ -54,7 +54,7 @@ namespace TerritoryTools.Alba.PowerShell
                         WriteVerbose($"CSV Address Parsing Error: {rc.RawRecord} ");
                     };
 
-                    var records = csv.GetRecords<AlbaAddressImport>().ToList();
+                    var records = csv.GetRecords<AlbaAddressExport>().ToList();
                     foreach (var record in records)
                     {
                         WriteObject(record);

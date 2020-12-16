@@ -42,10 +42,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var client = AuthorizationClient();
             client.Authenticate(credentials);
 
-            string date = DateTime.Now.ToString("yyyy-MM-dd");
-
             string result = client.DownloadString(
-                $"/ts?mod=assigned&cmd=assign&id={territoryId}&date={date}&user={userId}");
+                RelativeUrlBuilder.AssignTerritory(
+                    territoryId, 
+                    userId, 
+                    DateTime.Now));
 
             var myUser = GetUsersFor(credentials.AlbaAccountId)
                 .FirstOrDefault(u => u.Id == userId);
@@ -71,7 +72,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string date = DateTime.Now.ToString("yyyy-MM-dd");
 
             string result = client.DownloadString(
-                $"/ts?mod=assigned&cmd=unassign&id={territoryId}");
+                RelativeUrlBuilder.UnassignTerritory(territoryId));
 
             return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
         }
