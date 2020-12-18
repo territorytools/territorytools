@@ -93,7 +93,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public static string UnassignTerritory(int territoryId)
         {
-            return $"/ts?mod=assigned&cmd=unassign&id={territoryId}");
+            return $"/ts?mod=assigned&cmd=unassign&id={territoryId}";
         }
 
         public static string DeleteAddress(int addressId)
