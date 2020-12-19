@@ -1,6 +1,1 @@
-function Test-Me()
-{
-
-    Write-Host "Testing me"
-
-}
+# No functions to export
