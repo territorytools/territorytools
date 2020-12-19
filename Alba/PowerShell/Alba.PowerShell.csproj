@@ -22,10 +22,10 @@
     <Content Include="..\..\Web\MainSite\wwwroot\android-chrome-512x512.png" Link="icon.png" Pack="true" PackagePath="images">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TerritoryTools.Alba.PowerShell.psm1">
+    <Content Include="TerritoryTools.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TerritoryTools.Alba.PowerShell.psd1">
+    <Content Include="TerritoryTools.psd1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -33,7 +33,6 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="15.0.1" />
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
