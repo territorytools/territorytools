@@ -7,16 +7,12 @@
     <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="TerritoryTools.Alba.PowerShell.psd1" />
-    <None Remove="TerritoryTools.Alba.PowerShell.psm1" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="..\..\LICENSE" Link="LICENSE" Pack="true" PackagePath="">
@@ -29,7 +25,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="TerritoryTools.Alba.PowerShell.psd1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
