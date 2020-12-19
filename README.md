@@ -5,16 +5,6 @@ Territory Tools currently has the following
 - **Alba Console** Console version of **Alba Sync Tool** that can run in Windows, Linux, and macOS terminals and shells.
 - **PowerShell Module** ![.NET Core Desktop](https://github.com/territorytools/territory-tools/workflows/.NET%20Core%20Desktop/badge.svg) Mostly the same tools as the Alba Sync Tool but including address parsing and normalizing tools.
 
-# Compressing The Vault Folder
-Location is data/vault
-Command:
-    
-    tar -zcvf archive-name.tar.gz directory-name
-
-# Getting secrets
-This is an example path:
-https://territory.bellevuemandarin.org:8200/v1/kv/data/territory-web/alba-service-accounts/youraccountname
-
 # Getting Started
 To run the staging environment, run the following command from a production folder:
 
