@@ -1,6 +1,5 @@
 ﻿using Controllers.UseCases;
 using System;
-using System.Collections.Generic;
 using System.Management.Automation;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 
@@ -10,15 +9,22 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(AlbaHtmlUser))]
     public class GetAlbaUser : PSCmdlet
     {
-        List<string> errors = new List<string>();
-
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public AlbaConnection Connection { get; set; }
 
         protected override void ProcessRecord()
         {
             try
             {
+                if (Connection == null)
+                {
+                    Connection = SessionState
+                        .PSVariable
+                        .Get(nameof(Names.CurrentAlbaConnection))?
+                        .Value as AlbaConnection
+                        ?? throw new MissingConnectionException();
+                }
+
                 string url = RelativeUrlBuilder.GetUserManagementPage();
                 var json = Connection.DownloadString(url);
                 string html = AlbaJsonResultParser.ParseDataHtml(json, "users");

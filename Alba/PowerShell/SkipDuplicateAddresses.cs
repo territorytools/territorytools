@@ -31,7 +31,6 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter]
         public SwitchParameter IncludeSelf { get; set; }
 
-        // This method gets called once for each cmdlet in the pipeline when the pipeline starts executing
         protected override void BeginProcessing()
         {
             var validRegions = Region.Split(Region.Defaults);
@@ -48,16 +47,13 @@ namespace TerritoryTools.Alba.PowerShell
             foreach (var master in MasterList)
             {
                 string text = $"{master.Address}, {master.Suite}, {master.City}, {master.Province} {master.Postal_code}";
-                //WriteVerbose($"MasterIn: {text}");
                 var parsed = parser.Parse(text);
-                //WriteVerbose($"MasterOut: {parsed}");
                 parsedMasterList.Add(new ParsedAddress() { Address = parsed, AlbaAddressImport = master });
             }
 
             WriteVerbose($"parsedMasterList: {parsedMasterList.Count}");
         }
 
-        // This method will be called for each input received from the pipeline to this cmdlet; if no input is received, this method is not called
         protected override void ProcessRecord()
         {
             try
@@ -87,17 +83,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch(Exception e)
             {
-                errors.Add(e.Message);
-            }
-        }
-
-        // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
-        protected override void EndProcessing()
-        {
-            WriteVerbose("ERRORS:");
-            foreach(string error in errors)
-            {
-                WriteVerbose(error);
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
     }

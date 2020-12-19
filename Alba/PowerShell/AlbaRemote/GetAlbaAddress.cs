@@ -11,7 +11,7 @@ using TerritoryTools.Alba.Controllers.AlbaServer;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"AlbaAddress")]
-    [OutputType(typeof(AlbaAddressImport))]
+    [OutputType(typeof(AlbaAddressExport))]
     public class GetAlbaAddress : PSCmdlet
     {
         List<string> errors = new List<string>();
@@ -22,13 +22,22 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter]
         public string Search { get; set; } = "";
 
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public AlbaConnection Connection { get; set; }
 
         protected override void ProcessRecord()
         {
             try
             {
+                if (Connection == null)
+                {
+                    Connection = SessionState
+                        .PSVariable
+                        .Get(nameof(Names.CurrentAlbaConnection))?
+                        .Value as AlbaConnection
+                        ?? throw new MissingConnectionException();
+                }
+
                 var resultString = Connection.DownloadString(
                     RelativeUrlBuilder.ExportAddresses(
                         accountId: Connection.AccountId,
@@ -41,7 +50,11 @@ namespace TerritoryTools.Alba.PowerShell
                 using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
                 {
                     csv.Configuration.Delimiter = "\t";
-                    var records = csv.GetRecords<AlbaAddressImport>().ToList();
+                    csv.Configuration.BadDataFound = (rc) => {
+                        WriteVerbose($"CSV Address Parsing Error: {rc.RawRecord} ");
+                    };
+
+                    var records = csv.GetRecords<AlbaAddressExport>().ToList();
                     foreach (var record in records)
                     {
                         WriteObject(record);
@@ -51,7 +64,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch(Exception e)
             {
-                errors.Add(e.Message);
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
     }

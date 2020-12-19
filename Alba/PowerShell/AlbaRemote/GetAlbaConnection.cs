@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Management.Automation;
+using System.Runtime.InteropServices;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.Models;
@@ -15,12 +16,9 @@ namespace TerritoryTools.Alba.PowerShell
 
         [Parameter(Mandatory = true)]
         public string Account { get; set; }
-        
-        [Parameter(Mandatory = true)]
-        public string User { get; set; }
 
         [Parameter(Mandatory = true)]
-        public string Password { get; set; }
+        public PSCredential Credential { get; set; }
 
         // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
         protected override void EndProcessing()
@@ -29,9 +27,9 @@ namespace TerritoryTools.Alba.PowerShell
             {
                 WriteObject(GetClient());
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
 
@@ -43,9 +41,17 @@ namespace TerritoryTools.Alba.PowerShell
                     new CookieWebClient(),
                     new ApplicationBasePath("https://", AlbaHost, "/alba"));
 
-                var creds = new Credentials(Account, User, Password);
+                IntPtr ptr = Marshal.SecureStringToGlobalAllocUnicode(
+                    Credential.Password);
+
+                var creds = new Credentials(
+                    account: Account, 
+                    user: Credential.UserName, 
+                    password: Marshal.PtrToStringUni(ptr));
 
                 client.Authenticate(creds);
+
+                SessionState.PSVariable.Set("CurrentAlbaConnection", client);
 
                 return client;
             }

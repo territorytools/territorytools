@@ -1,14 +1,20 @@
-﻿using System;
+﻿using Controllers.UseCases;
+using System;
 using System.Management.Automation;
 using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get, "AlbaTerritory")]
-    [OutputType(typeof(Assignment))]
-    public class GetAlbaTerritory : PSCmdlet
+    [Cmdlet(VerbsCommon.Set,"AlbaTerritoryUser")]
+    [OutputType(typeof(AlbaHtmlUser))]
+    public class SetAlbaTerritoryUser : PSCmdlet
     {
+        [Parameter(Mandatory=true)]
+        public int TerritoryId { get; set; }
+
+        [Parameter(Mandatory = true)]
+        public int UserId { get; set; }
+
         [Parameter]
         public AlbaConnection Connection { get; set; }
 
@@ -25,19 +31,14 @@ namespace TerritoryTools.Alba.PowerShell
                         ?? throw new MissingConnectionException();
                 }
 
-                var assignmentsResultString = Connection.DownloadString(
-                   RelativeUrlBuilder.GetTerritoryAssignments());
+                string url = RelativeUrlBuilder.AssignTerritory(
+                    territoryId: TerritoryId,
+                    userId: UserId,
+                    DateTime.Now);
 
-                string assignmentsHtml = TerritoryAssignmentParser
-                    .Parse(assignmentsResultString);
+                var json = Connection.DownloadString(url);
 
-                var assignments = new DownloadTerritoryAssignments(Connection)
-                    .GetAssignments(assignmentsHtml);
-
-                foreach (var assignment in assignments)
-                {
-                    WriteObject(assignment);
-                }
+                // TODO: Check the json to see if it worked
             }
             catch(Exception e)
             {

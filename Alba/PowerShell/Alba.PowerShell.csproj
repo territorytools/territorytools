@@ -3,21 +3,12 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>TerritoryTools.Alba.PowerShell</AssemblyName>
+    <AssemblyName>TerritoryTools</AssemblyName>
     <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>TerritoryTools.Alba.PowerShell</PackageId>
-    <Version>0.1.0</Version>
-    <Authors>Marc Durham</Authors>
-    <Owners>Territory Tools</Owners>
-    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
-    <RepositoryUrl>https://github.com/territorytools/territory-tools</RepositoryUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Title>Territory Tools Alba Tools for PowerShell</Title>
-    <PackageDescription>Library for parsing and normalizing street addresses and Alba tools</PackageDescription>
-    <Description>Library for parsing and normalizing addresses and Alba tools</Description>
-    <Summary>Library for parsing and normalizing U.S. addresses and Alba tools</Summary>
-    <Copyright>Copyright © 2020-2021 Marc Durham and Contributors</Copyright>
+    <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <PublishDir>publish\TerritoryTools</PublishDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,37 +16,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\..\LICENSE" Link="LICENSE"  Pack="true" PackagePath="" />
+    <Content Include="..\..\LICENSE" Link="LICENSE" Pack="true" PackagePath="">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Web\MainSite\wwwroot\android-chrome-512x512.png" Link="icon.png" Pack="true" PackagePath="images">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TerritoryTools.psm1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TerritoryTools.psd1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.1">
-      <IncludeAssets></IncludeAssets>
-      <Pack>true</Pack>
-    </PackageReference>
-    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0">
-      <IncludeAssets></IncludeAssets>
-      <Pack>true</Pack>
-    </PackageReference>
+    <PackageReference Include="CsvHelper" Version="15.0.1" />
+    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj">
-      <Private>true</Private>
-
-    </ProjectReference>
-    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>TerritoryTools.Alba.Controllers.dll</IncludeAssets>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
   </ItemGroup>
-
-  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-    <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'PackageReference'))" />
-    </ItemGroup>
-  </Target>
 
 </Project>
