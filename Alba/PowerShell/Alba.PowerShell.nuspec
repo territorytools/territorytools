@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>TerritoryTools.Alba.PowerShell</id>
-    <version>0.1.7</version>
+    <version>0.1.13</version>
     <title>PowerShell Module for Territory Tools for Alba</title>
     <authors>Marc Durham</authors>
     <owners>Territory Tools</owners>
@@ -14,6 +14,7 @@
     <summary>Library for parsing and normalizing U.S. addresses and Alba tools</summary>
     <copyright>Copyright © 2020-2021 Territory Tools and Contributors</copyright>
     <icon>images\icon.png</icon>
+    <tags>PSModule</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.0">
         <dependency id="CsvHelper" version="15.0.1" />
@@ -27,7 +28,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerSHell.dll" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerShell.psd1" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerShell.psm1" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerShell.dll" target="lib" />
     <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.Controllers.dll" target="lib" />
     <file src="bin\Release\netstandard2.0\TerritoryTools.Common.AddressParser.dll" target="lib" />
     <file src="bin\Release\netstandard2.0\icon.png" target="images\" />
