@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
-    <id>TerritoryTools.Alba.PowerShell</id>
+    <id>TerritoryTools</id>
     <version>0.1.13</version>
     <title>PowerShell Module for Territory Tools for Alba</title>
     <authors>Marc Durham</authors>
@@ -28,9 +28,9 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerShell.psd1" target="lib" />
-    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerShell.psm1" target="lib" />
-    <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.PowerShell.dll" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.psd1" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.psm1" target="lib" />
+    <file src="bin\Release\netstandard2.0\TerritoryTools.dll" target="lib" />
     <file src="bin\Release\netstandard2.0\TerritoryTools.Alba.Controllers.dll" target="lib" />
     <file src="bin\Release\netstandard2.0\TerritoryTools.Common.AddressParser.dll" target="lib" />
     <file src="bin\Release\netstandard2.0\icon.png" target="images\" />

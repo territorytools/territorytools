@@ -3,12 +3,12 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>TerritoryTools.Alba.PowerShell</AssemblyName>
+    <AssemblyName>TerritoryTools</AssemblyName>
     <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PublishDir>publish\TerritoryTools.Alba.PowerShell</PublishDir>
+    <PublishDir>publish\TerritoryTools</PublishDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

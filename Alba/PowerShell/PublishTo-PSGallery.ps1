@@ -1,4 +1,4 @@
-﻿$folderPath = "$PSScriptRoot\publish\TerritoryTools.Alba.PowerShell"
+﻿$folderPath = "$PSScriptRoot\publish\TerritoryTools"
 $timestamp = (Get-Date -Format "yyyy-MM-dd-HHmmss")
 
 Publish-Module `
