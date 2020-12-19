@@ -8,6 +8,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <PublishDir>publish\TerritoryTools.Alba.PowerShell</PublishDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,14 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj">
-      <Private>true</Private>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-    </ProjectReference>
-    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <Private>true</Private>
-    </ProjectReference>
+    <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
+    <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
   </ItemGroup>
 
 </Project>
