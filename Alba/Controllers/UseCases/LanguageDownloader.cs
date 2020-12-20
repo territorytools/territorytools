@@ -20,6 +20,14 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             this.client = client;
         }
 
+        public List<AlbaLanguage> GetLanguages()
+        {
+            var html = client.DownloadString(
+              RelativeUrlBuilder.GetLanguages());
+
+            return ExtractLanguages(html);
+        }
+
         public void SaveAs(string path)
         {
             var html = client.DownloadString(

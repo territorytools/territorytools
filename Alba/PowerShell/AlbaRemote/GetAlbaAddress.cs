@@ -14,8 +14,6 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(AlbaAddressExport))]
     public class GetAlbaAddress : AlbaConnectedCmdlet
     {
-        List<string> errors = new List<string>();
-
         [Parameter]
         public int TerritoryId { get; set; }
 

@@ -7,7 +7,7 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"AlbaConnection")]
+    [Cmdlet(VerbsCommon.Get , nameof(AlbaConnection))]
     [OutputType(typeof(AlbaConnection))]
     public class GetAlbaConnection : PSCmdlet
     {
@@ -20,12 +20,11 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter(Mandatory = true)]
         public PSCredential Credential { get; set; }
 
-        // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
-        protected override void EndProcessing()
+        protected override void ProcessRecord()
         {
             try
             {
-                WriteObject(GetClient());
+                WriteObject(GetConnection());
             }
             catch (Exception e)
             {
@@ -33,7 +32,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
         }
 
-        public AlbaConnection GetClient()
+        public AlbaConnection GetConnection()
         {
             try
             {
@@ -51,7 +50,10 @@ namespace TerritoryTools.Alba.PowerShell
 
                 client.Authenticate(creds);
 
-                SessionState.PSVariable.Set("CurrentAlbaConnection", client);
+                // Persist this connection to an environment variable
+                SessionState.PSVariable.Set(
+                    name: Names.CurrentAlbaConnection.ToString(), 
+                    value: client);
 
                 return client;
             }

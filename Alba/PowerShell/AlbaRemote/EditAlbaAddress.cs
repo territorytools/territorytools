@@ -8,9 +8,6 @@ namespace TerritoryTools.Alba.PowerShell
     [Cmdlet(VerbsData.Edit,"AlbaAddress")]
     public class EditAlbaAddress : AlbaConnectedCmdlet
     {
-        [Parameter]
-        public string LanguageFilePath { get; set; }
-
         [Parameter(
             Mandatory = false,
             Position = 0,
@@ -27,8 +24,8 @@ namespace TerritoryTools.Alba.PowerShell
         {
             importer = new AddressImporter(
                 Connection, 
-                UploadDelayMs, 
-                LanguageFilePath);
+                UploadDelayMs,
+                languages: Languages);
         }
 
         protected override void ProcessRecord()

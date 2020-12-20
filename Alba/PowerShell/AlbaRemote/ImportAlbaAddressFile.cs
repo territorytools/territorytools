@@ -8,9 +8,6 @@ namespace TerritoryTools.Alba.PowerShell
     public class ImportAlbaAddressFile : AlbaConnectedCmdlet
     {
         [Parameter(Mandatory = true)]
-        public string LanguageFilePath { get; set; }
-
-        [Parameter(Mandatory = true)]
         public string AddressFilePath { get; set; }
 
         [Parameter]
@@ -30,13 +27,10 @@ namespace TerritoryTools.Alba.PowerShell
 
         public void Import()
         {
-            if (string.IsNullOrWhiteSpace(LanguageFilePath)
-                || string.IsNullOrWhiteSpace(AddressFilePath))
-            {
-                return;
-            }
-
-            new AddressImporter(Connection, UploadDelayMs, LanguageFilePath)
+            new AddressImporter(
+                    Connection, 
+                    UploadDelayMs, 
+                    languages: Languages)
                 .AddFrom(AddressFilePath);
         }
     }
