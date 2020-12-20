@@ -5,11 +5,8 @@ using TerritoryTools.Alba.Controllers.AlbaServer;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Remove, "AlbaAddress")]
-    public class RemoveAlbaAddress : PSCmdlet
+    public class RemoveAlbaAddress : AlbaConnectedCmdlet
     {
-        [Parameter]
-        public AlbaConnection Connection { get; set; }
-
         [Parameter(
            Mandatory = false,
            Position = 0,
@@ -26,15 +23,6 @@ namespace TerritoryTools.Alba.PowerShell
         {
             try
             {
-                if (Connection == null)
-                {
-                    Connection = SessionState
-                        .PSVariable
-                        .Get(nameof(Names.CurrentAlbaConnection))?
-                        .Value as AlbaConnection
-                        ?? throw new MissingConnectionException();
-                }
-
                 if (!Force.IsPresent)
                 {
                     throw new Exception("Since this is a destructive Cmdlet you must supply the -Force parameter to use this Cmdlet.");

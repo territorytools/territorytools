@@ -7,7 +7,7 @@ namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Set,"AlbaTerritoryUser")]
     [OutputType(typeof(AlbaHtmlUser))]
-    public class SetAlbaTerritoryUser : PSCmdlet
+    public class SetAlbaTerritoryUser : AlbaConnectedCmdlet
     {
         [Parameter(Mandatory=true)]
         public int TerritoryId { get; set; }
@@ -15,22 +15,10 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter(Mandatory = true)]
         public int UserId { get; set; }
 
-        [Parameter]
-        public AlbaConnection Connection { get; set; }
-
         protected override void ProcessRecord()
         {
             try
             {
-                if (Connection == null)
-                {
-                    Connection = SessionState
-                        .PSVariable
-                        .Get(nameof(Names.CurrentAlbaConnection))?
-                        .Value as AlbaConnection
-                        ?? throw new MissingConnectionException();
-                }
-
                 string url = RelativeUrlBuilder.AssignTerritory(
                     territoryId: TerritoryId,
                     userId: UserId,

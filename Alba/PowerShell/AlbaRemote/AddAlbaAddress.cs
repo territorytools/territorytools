@@ -7,13 +7,10 @@ using TerritoryTools.Alba.Controllers.UseCases;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Add,"AlbaAddress")]
-    public class AddAlbaAddress : PSCmdlet
+    public class AddAlbaAddress : AlbaConnectedCmdlet
     {
         [Parameter]
         public string LanguageFilePath { get; set; }
-
-        [Parameter]
-        public AlbaConnection Connection { get; set; }
 
         [Parameter(
             Mandatory = false,
@@ -29,15 +26,6 @@ namespace TerritoryTools.Alba.PowerShell
 
         protected override void BeginProcessing()
         {
-            if (Connection == null)
-            {
-                Connection = SessionState
-                    .PSVariable
-                    .Get(nameof(Names.CurrentAlbaConnection))?
-                    .Value as AlbaConnection
-                    ?? throw new MissingConnectionException();
-            }
-
             importer = new AddressImporter(
                 Connection, 
                 UploadDelayMs, 

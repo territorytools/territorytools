@@ -7,24 +7,12 @@ namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"AlbaUser")]
     [OutputType(typeof(AlbaHtmlUser))]
-    public class GetAlbaUser : PSCmdlet
+    public class GetAlbaUser : AlbaConnectedCmdlet
     {
-        [Parameter]
-        public AlbaConnection Connection { get; set; }
-
         protected override void ProcessRecord()
         {
             try
             {
-                if (Connection == null)
-                {
-                    Connection = SessionState
-                        .PSVariable
-                        .Get(nameof(Names.CurrentAlbaConnection))?
-                        .Value as AlbaConnection
-                        ?? throw new MissingConnectionException();
-                }
-
                 string url = RelativeUrlBuilder.GetUserManagementPage();
                 var json = Connection.DownloadString(url);
                 string html = AlbaJsonResultParser.ParseDataHtml(json, "users");
