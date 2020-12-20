@@ -1,12 +1,10 @@
 ﻿###############################
 "Parse and Normalize Addresses"
 ###############################
-$path_to_alba_exe = "C:\Code\territory-tools\Alba\Console\bin\Debug\netcoreapp3.1\alba.exe"
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
 $output_folder  = "$HOME\Downloads\business-territory-$timestamp"
 $google_doc_id = $env:Google_Doc_Id
 "Parameters Set:"
-"  path_to_alba_exe: $path_to_alba_exe"
 "  timestamp: $timestamp"
 "  output_folder: $output_folder"
 "  google_doc_id: $google_doc_id"
@@ -260,10 +258,10 @@ $infile = $outfile
 
 
 #######################################################
-#"Normalize Addresses with Territory Tools Alba Console"
+#"Normalize Addresses with Territory Tools Normalizer
 #######################################################
 #$outFile = "$output_folder\19-normalized.tsv" 
-#&"$path_to_alba_exe"  "normalize-addresses" "--input-path" "$infile" "--output-path" "$outFile"
+#Get-Content $infile | Get-NormalizedAddress | Out-File $outFile
 
 "Done"
 

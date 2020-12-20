@@ -1,9 +1,5 @@
-﻿Import-Module "$HOME\.nuget\packages\system.threading.tasks.extensions\4.5.2\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll";
-Import-Module "$HOME\.nuget\packages\microsoft.bcl.asyncinterfaces\1.1.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll";
-Import-Module "$HOME\.nuget\packages\csvhelper\15.0.1\lib\netstandard2.0\CsvHelper.dll"; 
-
-Set-Location $PSScriptRoot
-Import-Module ".\TerritoryTools.Alba.PowerShell.dll"; 
+﻿Set-Location $PSScriptRoot
+Import-Module TerritoryTools
 
 $cities = Get-Content ".\Cities.txt"
 "Cities: $($cities.Count)"
