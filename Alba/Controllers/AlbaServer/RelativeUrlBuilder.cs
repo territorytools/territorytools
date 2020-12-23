@@ -53,9 +53,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&onlyun=false&q={HttpUtility.UrlEncode(searchText)}&sort=id&order=desc&lat=&lng=";
         }
 
-        public static string GetTerritoryAssignments()
+        public static string GetTerritoryAssignments(string search = "")
         {
-            return @"/ts?mod=assigned&cmd=search&q=&sort=number&order=asc" +
+            return $"/ts?mod=assigned&cmd=search&q={search}&sort=number&order=asc" +
                 "&av=true&so=true&tk0=true&tk1=true&tk2=true";
         }
 
