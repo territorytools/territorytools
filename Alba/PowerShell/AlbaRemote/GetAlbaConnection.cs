@@ -17,13 +17,38 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter(Mandatory = true)]
         public string Account { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter]
+        public string User { get; set; }
+
+        [Parameter]
+        public string Password { get; set; }
+
+        [Parameter]
         public PSCredential Credential { get; set; }
 
         protected override void ProcessRecord()
         {
             try
             {
+                if(string.IsNullOrWhiteSpace(User)
+                    && string.IsNullOrWhiteSpace(Password)
+                    && string.IsNullOrWhiteSpace(Credential.UserName)
+                    && Credential.Password.Length == 0)
+                {
+                    throw new ArgumentException("Missing User and Password, or Credential");
+                }
+
+                if(string.IsNullOrWhiteSpace(User)
+                    && string.IsNullOrWhiteSpace(Password))
+                {
+                    User = Credential.UserName;
+
+                    IntPtr ptr = Marshal.SecureStringToGlobalAllocUnicode(
+                        Credential.Password);
+                    
+                    Password = Marshal.PtrToStringUni(ptr);
+                }
+
                 WriteObject(GetConnection());
             }
             catch (Exception e)
@@ -40,17 +65,14 @@ namespace TerritoryTools.Alba.PowerShell
                     new CookieWebClient(),
                     new ApplicationBasePath("https://", AlbaHost, "/alba"));
 
-                IntPtr ptr = Marshal.SecureStringToGlobalAllocUnicode(
-                    Credential.Password);
-
                 var creds = new Credentials(
                     account: Account, 
-                    user: Credential.UserName, 
-                    password: Marshal.PtrToStringUni(ptr));
+                    user: User, 
+                    password: Password);
 
                 client.Authenticate(creds);
 
-                // Persist this connection to an environment variable
+                // Persist this connection to an session variable
                 SessionState.PSVariable.Set(
                     name: Names.CurrentAlbaConnection.ToString(), 
                     value: client);
