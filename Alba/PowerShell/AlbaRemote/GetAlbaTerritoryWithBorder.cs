@@ -7,24 +7,12 @@ namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get, "AlbaTerritoryBorder")]
     [OutputType(typeof(Territory))]
-    public class GetAlbaTerritoryWithBorder : PSCmdlet
+    public class GetAlbaTerritoryWithBorder : AlbaConnectedCmdlet
     {
-        [Parameter]
-        public AlbaConnection Connection { get; set; }
-
         protected override void ProcessRecord()
         {
             try
             {
-                if (Connection == null)
-                {
-                    Connection = SessionState
-                        .PSVariable
-                        .Get(nameof(Names.CurrentAlbaConnection))?
-                        .Value as AlbaConnection
-                        ?? throw new MissingConnectionException();
-                }
-
                 var resultString = Connection.DownloadString(
                     RelativeUrlBuilder.GetAllTerritoriesWithBorders());
 

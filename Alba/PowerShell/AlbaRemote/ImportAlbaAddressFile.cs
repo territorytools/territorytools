@@ -5,16 +5,10 @@ using TerritoryTools.Alba.Controllers.UseCases;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsData.Import,"AlbaAddressFile")]
-    public class ImportAlbaAddressFile : PSCmdlet
+    public class ImportAlbaAddressFile : AlbaConnectedCmdlet
     {
         [Parameter(Mandatory = true)]
-        public string LanguageFilePath { get; set; }
-
-        [Parameter(Mandatory = true)]
         public string AddressFilePath { get; set; }
-
-        [Parameter(Mandatory = true)]
-        public AlbaConnection Connection { get; set; }
 
         [Parameter]
         public int UploadDelayMs { get; set; } = 300;
@@ -33,13 +27,10 @@ namespace TerritoryTools.Alba.PowerShell
 
         public void Import()
         {
-            if (string.IsNullOrWhiteSpace(LanguageFilePath)
-                || string.IsNullOrWhiteSpace(AddressFilePath))
-            {
-                return;
-            }
-
-            new AddressImporter(Connection, UploadDelayMs, LanguageFilePath)
+            new AddressImporter(
+                    Connection, 
+                    UploadDelayMs, 
+                    languages: Languages)
                 .AddFrom(AddressFilePath);
         }
     }

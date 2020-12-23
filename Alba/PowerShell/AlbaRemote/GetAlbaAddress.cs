@@ -12,32 +12,18 @@ namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get,"AlbaAddress")]
     [OutputType(typeof(AlbaAddressExport))]
-    public class GetAlbaAddress : PSCmdlet
+    public class GetAlbaAddress : AlbaConnectedCmdlet
     {
-        List<string> errors = new List<string>();
-
         [Parameter]
         public int TerritoryId { get; set; }
 
         [Parameter]
         public string Search { get; set; } = "";
 
-        [Parameter]
-        public AlbaConnection Connection { get; set; }
-
         protected override void ProcessRecord()
         {
             try
             {
-                if (Connection == null)
-                {
-                    Connection = SessionState
-                        .PSVariable
-                        .Get(nameof(Names.CurrentAlbaConnection))?
-                        .Value as AlbaConnection
-                        ?? throw new MissingConnectionException();
-                }
-
                 var resultString = Connection.DownloadString(
                     RelativeUrlBuilder.ExportAddresses(
                         accountId: Connection.AccountId,

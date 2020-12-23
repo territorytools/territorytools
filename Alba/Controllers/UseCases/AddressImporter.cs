@@ -19,16 +19,22 @@ namespace TerritoryTools.Alba.Controllers.UseCases
         public AddressImporter(
             AlbaConnection client, 
             int msDelay, 
-            string languageFilePath)
+            List<AlbaLanguage> languages = null,
+            string languageFilePath = null)
         {
-            if(string.IsNullOrWhiteSpace(languageFilePath))
+            if(string.IsNullOrWhiteSpace(languageFilePath)
+                && languages == null)
             {
-                throw new ArgumentNullException(nameof(languageFilePath));
+                throw new ArgumentNullException(nameof(languages));
+            }
+
+            if (languages == null)
+            {
+                this.languages = LanguageDownloader.LoadLanguagesFrom(languageFilePath);
             }
 
             this.client = client;
             this.msDelay = msDelay;
-            languages = LanguageDownloader.LoadLanguagesFrom(languageFilePath);
         }
 
         public string Update(AlbaAddressImport address)

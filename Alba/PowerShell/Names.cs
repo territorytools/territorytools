@@ -2,6 +2,8 @@
 {
     public enum Names
     {
-        CurrentAlbaConnection
+        CurrentAlbaConnection,
+        AlbaLanguages,
+        AlbaLanguageIds
     }
 }

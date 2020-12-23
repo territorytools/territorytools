@@ -1,5 +1,6 @@
 ﻿using Controllers.UseCases;
 using System;
+using System.Collections.Generic;
 using System.Management.Automation;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 
@@ -7,28 +8,33 @@ namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Set,"AlbaTerritoryUser")]
     [OutputType(typeof(AlbaHtmlUser))]
-    public class SetAlbaTerritoryUser : PSCmdlet
+    public class SetAlbaTerritoryUser : AlbaConnectedCmdlet
     {
         [Parameter(Mandatory=true)]
         public int TerritoryId { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public int UserId { get; set; }
+        
+        [Parameter]
+        public string User { get; set; }
 
         [Parameter]
-        public AlbaConnection Connection { get; set; }
+        public List<AlbaUser> Users { get; set; }
 
         protected override void ProcessRecord()
         {
             try
             {
-                if (Connection == null)
+                if(UserId == 0 && string.IsNullOrWhiteSpace(User))
                 {
-                    Connection = SessionState
-                        .PSVariable
-                        .Get(nameof(Names.CurrentAlbaConnection))?
-                        .Value as AlbaConnection
-                        ?? throw new MissingConnectionException();
+                    throw new ArgumentException("UserId or User required");
+                }
+
+                if (!string.IsNullOrWhiteSpace(User) 
+                    && (Users == null || Users.Count == 0))
+                {
+                    throw new ArgumentException("UserId or User required");
                 }
 
                 string url = RelativeUrlBuilder.AssignTerritory(

@@ -7,7 +7,7 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get,"AlbaConnection")]
+    [Cmdlet(VerbsCommon.Get , nameof(AlbaConnection))]
     [OutputType(typeof(AlbaConnection))]
     public class GetAlbaConnection : PSCmdlet
     {
@@ -17,15 +17,39 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter(Mandatory = true)]
         public string Account { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter]
+        public string User { get; set; }
+
+        [Parameter]
+        public string Password { get; set; }
+
+        [Parameter]
         public PSCredential Credential { get; set; }
 
-        // This method will be called once at the end of pipeline execution; if no input is received, this method is not called
-        protected override void EndProcessing()
+        protected override void ProcessRecord()
         {
             try
             {
-                WriteObject(GetClient());
+                if(string.IsNullOrWhiteSpace(User)
+                    && string.IsNullOrWhiteSpace(Password)
+                    && string.IsNullOrWhiteSpace(Credential.UserName)
+                    && Credential.Password.Length == 0)
+                {
+                    throw new ArgumentException("Missing User and Password, or Credential");
+                }
+
+                if(string.IsNullOrWhiteSpace(User)
+                    && string.IsNullOrWhiteSpace(Password))
+                {
+                    User = Credential.UserName;
+
+                    IntPtr ptr = Marshal.SecureStringToGlobalAllocUnicode(
+                        Credential.Password);
+                    
+                    Password = Marshal.PtrToStringUni(ptr);
+                }
+
+                WriteObject(GetConnection());
             }
             catch (Exception e)
             {
@@ -33,7 +57,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
         }
 
-        public AlbaConnection GetClient()
+        public AlbaConnection GetConnection()
         {
             try
             {
@@ -41,17 +65,17 @@ namespace TerritoryTools.Alba.PowerShell
                     new CookieWebClient(),
                     new ApplicationBasePath("https://", AlbaHost, "/alba"));
 
-                IntPtr ptr = Marshal.SecureStringToGlobalAllocUnicode(
-                    Credential.Password);
-
                 var creds = new Credentials(
                     account: Account, 
-                    user: Credential.UserName, 
-                    password: Marshal.PtrToStringUni(ptr));
+                    user: User, 
+                    password: Password);
 
                 client.Authenticate(creds);
 
-                SessionState.PSVariable.Set("CurrentAlbaConnection", client);
+                // Persist this connection to an session variable
+                SessionState.PSVariable.Set(
+                    name: Names.CurrentAlbaConnection.ToString(), 
+                    value: client);
 
                 return client;
             }

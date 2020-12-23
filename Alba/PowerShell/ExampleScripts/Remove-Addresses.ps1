@@ -18,18 +18,11 @@ $addressFile = ".\Addresses.2020-12-06.1130.NeedsDeleted.txt"
 
 Set-Location $PSScriptRoot
 
-Import-Module "$HOME\.nuget\packages\system.threading.tasks.extensions\4.5.2\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll";
-Import-Module "$HOME\.nuget\packages\microsoft.bcl.asyncinterfaces\1.1.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll";
-Import-Module "$HOME\.nuget\packages\HtmlAgilityPack\1.11.8\lib\netstandard2.0\HtmlAgilityPack.dll";
-Import-Module "$HOME\.nuget\packages\Newtonsoft.Json\12.0.3\lib\netstandard2.0\Newtonsoft.Json.dll";
-Import-Module "$HOME\.nuget\packages\csvhelper\15.0.1\lib\netstandard2.0\CsvHelper.dll"; 
-Import-Module ".\TerritoryTools.Alba.PowerShell.dll"; 
+Import-Module TerritoryTools
 
 $connection = Get-AlbaAConnection `
     -AlbaHost $env:ALBA_HOST `
-    -Account $env:ALBA_ACCOUNT `
-    -User $env:ALBA_USER `
-    -Password $env:ALBA_PASSWORD
+    -Account $env:ALBA_ACCOUNT
 
 $addresses = Get-Content $addressFile `
     | ConvertFrom-Csv -Delimiter `t
@@ -41,6 +34,6 @@ $ids = $addresses `
       } `
     | Select -ExpandProperty Address_ID
 
-# You manually must add -Force to the Remove-AlbaAAddress command below.
-# It has been removed to prevent accidentally running this script
+"You must manually add -Force to the Remove-AlbaAAddress command below."
+"It has been removed from this script to prevent accidentally running this script"
 $ids | Remove-AlbaAAddress -Verbose -Connection $connection

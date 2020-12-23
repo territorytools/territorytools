@@ -74,12 +74,15 @@ FunctionsToExport = @()
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = `
     'Get-AlbaConnect', `
+    'Get-AlbaLanguage', `
+    'Get-AlbaLanguageId', `
     'Get-AlbaUser', `
     'Get-AlbaAddress', `
     'Add-AlbaAddress', `
     'Edit-AlbaAddress', `
     'Remove-AlbaAddress', `
     'Set-AlbaTerritoryUser', `
+    'Clear-AlbaTerritoryUser', `
     'Get-AlbaTerritory', `
     'Get-AlbaTerritoryWithBorder'
 
@@ -93,7 +96,7 @@ AliasesToExport = @()
 # DscResourcesToExport = @()
 
 # List of all modules packaged with this module
-# ModuleList = @()
+ModuleList = @()
 
 # List of all files packaged with this module
 # FileList = @()
