@@ -42,14 +42,14 @@ namespace TestSite
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                options.OnAppendCookie = cookieContext =>
-                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
-                options.OnDeleteCookie = cookieContext =>
-                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
-            });
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+            //    options.OnAppendCookie = cookieContext =>
+            //        CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            //    options.OnDeleteCookie = cookieContext =>
+            //        CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            //});
 
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -115,7 +115,7 @@ namespace TestSite
 
             app.UseRouting();
 
-            app.UseCookiePolicy();
+            //app.UseCookiePolicy();
 
             app.UseAuthentication();
             app.UseAuthorization();
