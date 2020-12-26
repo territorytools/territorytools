@@ -59,6 +59,37 @@ namespace TestSite
 
                     options.ClientId = googleAuthNSection["ClientId"];
                     options.ClientSecret = googleAuthNSection["ClientSecret"];
+
+
+                    //var redirectToIdpHandler = options.Events.OnRedirectToIdentityProvider;
+                    var redirectToIdpHandler = options.Events.OnRedirectToAuthorizationEndpoint;
+                    //options.Events.OnRedirectToIdentityProvider = async context =>
+                    options.Events.OnRedirectToAuthorizationEndpoint = async context =>
+                    {
+                        // Call what Microsoft.Identity.Web is doing
+                        await redirectToIdpHandler(context);
+
+                        // Override the redirect URI to be what you want
+                        //if (context.ProtocolMessage?.RedirectUri?.StartsWith("http://") ?? false)
+                        if (context.RedirectUri?.StartsWith("http://") ?? false)
+                        {
+                            //context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri.Replace("http://", "https://");
+                            context.RedirectUri = context.RedirectUri.Replace("http://", "https://");
+                        }
+                    };
+
+                    //var redirectToIdpForSignOutHandler = options.Events.OnRedirectToIdentityProviderForSignOut;
+                    //options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
+                    //{
+                    //    // Call what Microsoft.Identity.Web is doing
+                    //    await redirectToIdpForSignOutHandler(context);
+
+                    //    // Override the redirect URI to be what you want
+                    //    if (context.ProtocolMessage?.PostLogoutRedirectUri?.StartsWith("http://") ?? false)
+                    //    {
+                    //        context.ProtocolMessage.PostLogoutRedirectUri = context.ProtocolMessage.PostLogoutRedirectUri.Replace("http://", "https://");
+                    //    }
+                    //};
                 });
         }
 
