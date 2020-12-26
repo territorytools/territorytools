@@ -73,10 +73,10 @@ namespace TestSite
 
                         // Override the redirect URI to be what you want
                         //if (context.ProtocolMessage?.RedirectUri?.StartsWith("http://") ?? false)
-                        if (context.RedirectUri?.StartsWith("http%3A%2F%2F") ?? false)
+                        if (context.RedirectUri?.Contains("&http%3A%2F%2F") ?? false)
                         {
                             //context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri.Replace("http://", "https://");
-                            context.RedirectUri = context.RedirectUri.Replace("http%3A%2F%2F", "https%3A%2F%2F");
+                            context.RedirectUri = context.RedirectUri.Replace("&http%3A%2F%2F", "&https%3A%2F%2F");
                         }
                     };
 
