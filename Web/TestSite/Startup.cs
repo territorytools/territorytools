@@ -66,6 +66,8 @@ namespace TestSite
                     //options.Events.OnRedirectToIdentityProvider = async context =>
                     options.Events.OnRedirectToAuthorizationEndpoint = async context =>
                     {
+                        Console.WriteLine("Redirect is happening");
+                        Console.WriteLine($"Redirect:{context.RedirectUri}");
                         // Call what Microsoft.Identity.Web is doing
                         await redirectToIdpHandler(context);
 
