@@ -152,6 +152,7 @@ services:
       - Authentication:Google:ClientId=$GoogleClientId
       - Authentication:Google:ClientSecret=$GoogleClientSecret
       - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
+      - ConnectionStrings:DefaultConnection=$MainDbContextConnectiond
       - Users=$Users
       - AuthorizedUsers=$AuthorizedUsers
       - AdminUsers=$AdminUsers
