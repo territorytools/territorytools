@@ -139,7 +139,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: ./Web/MainSite/Dockerfile
+      dockerfile: ./Web/TestSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
     networks:
