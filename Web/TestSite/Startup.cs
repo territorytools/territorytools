@@ -66,18 +66,26 @@ namespace TestSite
                     //options.Events.OnRedirectToIdentityProvider = async context =>
                     options.Events.OnRedirectToAuthorizationEndpoint = async context =>
                     {
-                        Console.WriteLine("Redirect is happening");
-                        Console.WriteLine($"Redirect:{context.RedirectUri}");
-                        Console.WriteLine($"Properties.Redirect:{context.Properties.RedirectUri}");
+                        Console.WriteLine("Redirect: Redirect is happening");
+                        Console.WriteLine($"Redirect: RedirectUri:{context.RedirectUri}");
+                        Console.WriteLine($"Redirect: Properties.RedirectUri:{context.Properties.RedirectUri}");
                         // Call what Microsoft.Identity.Web is doing
                         await redirectToIdpHandler(context);
+
+                        Console.WriteLine($"Redirect: Ready to check for HTTP...");
 
                         // Override the redirect URI to be what you want
                         //if (context.ProtocolMessage?.RedirectUri?.StartsWith("http://") ?? false)
                         if (context.RedirectUri?.Contains("&redirect_uri=http%3A%2F%2F") ?? false)
                         {
+                            Console.WriteLine($"Redirect: HTTP was detected!");
                             //context.ProtocolMessage.RedirectUri = context.ProtocolMessage.RedirectUri.Replace("http://", "https://");
                             context.RedirectUri = context.RedirectUri.Replace("&redirect_uri=http%3A%2F%2F", "&redirect_uri=https%3A%2F%2F");
+                            Console.WriteLine($"Redirect: RedirectUri changed to:{context.RedirectUri}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Redirect: HTTP was NOT detected");
                         }
                     };
 
