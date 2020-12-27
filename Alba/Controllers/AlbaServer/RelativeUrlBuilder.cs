@@ -69,6 +69,37 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return @"/ts?mod=users&cmd=usersSearch&q=&sort=user_name&order=asc";
         }
 
+        /// <summary>
+        /// Saves an existing territory.  This method also will reassign 
+        /// addresses within it's borders to this territory.
+        /// </summary>
+        /// <param name="territory">A territory with borders, which must have 
+        /// a non-zero Id</param>
+        /// <returns>The URI, ready to send.</returns>
+        public static string SaveTerritoryWithBorder(Territory territory)
+        {
+            if(territory == null)
+            {
+                throw new ArgumentNullException(nameof(territory));
+            }
+
+            if(!int.TryParse(territory.Id, out int id) || id == 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(territory.Id), 
+                    "Territory ID cannot be zero");
+            }
+
+            return $"ts?mod=territories" +
+                $"&cmd=save" +
+                $"&id={territory.Id}" +
+                $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}" +
+                $"&number={HttpUtility.UrlEncode(territory.Number)}" +
+                $"&description={HttpUtility.UrlEncode(territory.Description)}" +
+                $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
+                $"&kind=0";
+        }
+
         public static string RequestToAddNew(Territory territory)
         {
             return @"/ts?mod=territories&cmd=add&kind=0" +
