@@ -18,8 +18,11 @@ namespace TerritoryTools.Alba.PowerShell
             {
                 CheckArguments();
 
-                var resultString = Connection.DownloadString(
-                    RelativeUrlBuilder.SaveTerritoryWithBorder(Territory));
+                string uri = RelativeUrlBuilder.SaveTerritoryWithBorder(Territory);
+                
+                WriteVerbose(uri);
+
+                var resultString = Connection.DownloadString(uri);
 
                 WriteObject(resultString);
             }
@@ -32,7 +35,7 @@ namespace TerritoryTools.Alba.PowerShell
 
         void CheckArguments()
         {
-            if (int.TryParse(Territory.Id, out int id) || id == 0)
+            if (!int.TryParse(Territory.Id, out int id) || id == 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(Territory.Id),

@@ -90,7 +90,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                     "Territory ID cannot be zero");
             }
 
-            return $"ts?mod=territories" +
+            return $"/ts?mod=territories" +
                 $"&cmd=save" +
                 $"&id={territory.Id}" +
                 $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}" +
