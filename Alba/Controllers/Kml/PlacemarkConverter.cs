@@ -5,7 +5,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class PlacemarkConverter
     {
-        public static AlbaTerritoryBorder From(Placemark placemark)
+        public static Territory From(Placemark placemark)
         {
             return new PlacemarkConverter().TerritoryFrom(placemark);
         }
@@ -30,9 +30,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        AlbaTerritoryBorder TerritoryFrom(Placemark placemark)
+        Territory TerritoryFrom(Placemark placemark)
         {
-            return new AlbaTerritoryBorder(placemark.name)
+            return new Territory(placemark.name)
             {
                 Number = placemark?.name,
                 Description = placemark?.description,

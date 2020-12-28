@@ -47,13 +47,29 @@ namespace TerritoryTools.Alba.Controllers.Models
         public bool NeverCompleted { get; internal set; }
         public int YearsAgoCompleted { get; internal set; }
 
+        public AlbaTerritoryBorder ToAlbaTerritoryBorder()
+        {
+            int.TryParse(Id, out int id);
+            int.TryParse(CountOfAddresses, out int count);
+
+            return new AlbaTerritoryBorder
+            {
+                Id = id,
+                Border = Border,
+                CountOfAddresses = count,
+                Number = Number,
+                Description = Description,
+                Notes = Notes
+            };
+        }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
             builder.Append($"Territory: Id: {Id}, Number: {CountOfAddresses}, Code: {Number}");
 
             foreach (var v in Border.Vertices)
-                builder.Append("    " + v.Latitude + ", " + v.Longitude);
+                builder.Append($"    {v.Latitude}, {v.Longitude}");
 
             return builder.ToString();
         }

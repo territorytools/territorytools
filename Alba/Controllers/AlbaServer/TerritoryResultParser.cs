@@ -20,7 +20,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return territories; 
         }
 
-        static Territory TerritoryFrom(AlbaTerritoryBorder border) 
+        public static Territory TerritoryFrom(AlbaTerritoryBorder border) 
         {
             try
             {
@@ -32,7 +32,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             }
         }
 
-        private static Territory TryTerritoryFrom(AlbaTerritoryBorder border)
+        static Territory TryTerritoryFrom(AlbaTerritoryBorder border)
         {
             var newTerritory = new Territory(border.Id.ToString())
             {

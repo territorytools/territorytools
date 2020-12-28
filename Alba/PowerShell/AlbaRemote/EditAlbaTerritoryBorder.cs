@@ -5,12 +5,12 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsData.Edit, "AlbaTerritoryBorder")]
-    [OutputType(typeof(Territory))]
+    [Cmdlet(VerbsData.Edit, nameof(AlbaTerritoryBorder))]
+    [OutputType(typeof(AlbaTerritoryBorder))]
     public class EditAlbaTerritoryBorder : AlbaConnectedCmdlet
     {
         [Parameter(Mandatory = true)]
-        public Territory Territory { get; set; }
+        public AlbaTerritoryBorder Territory { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -35,7 +35,7 @@ namespace TerritoryTools.Alba.PowerShell
 
         void CheckArguments()
         {
-            if (!int.TryParse(Territory.Id, out int id) || id == 0)
+            if (Territory.Id == 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(Territory.Id),

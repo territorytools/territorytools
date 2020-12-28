@@ -83,7 +83,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 throw new ArgumentNullException(nameof(territory));
             }
 
-            if(!int.TryParse(territory.Id, out int id) || id == 0)
+            if(territory.Id == 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(territory.Id), 
@@ -100,7 +100,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 $"&kind=0";
         }
 
-        public static string RequestToAddNew(Territory territory)
+        public static string RequestToAddNew(AlbaTerritoryBorder territory)
         {
             return @"/ts?mod=territories&cmd=add&kind=0" +
                 $"&number={HttpUtility.UrlEncode(territory.Number)}" +
@@ -228,16 +228,6 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         }
 
         private static string CoordinatesFrom(AlbaTerritoryBorder territory)
-        {
-            var coordinates = new List<string>();
-
-            foreach (Vertex v in territory.Border.Vertices)
-                coordinates.Add($"{v.Latitude} {v.Longitude}");
-
-            return string.Join(",", coordinates);
-        }
-
-        private static string CoordinatesFrom(Territory territory)
         {
             var coordinates = new List<string>();
 
