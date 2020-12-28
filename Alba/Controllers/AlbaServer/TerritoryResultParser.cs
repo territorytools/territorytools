@@ -10,11 +10,13 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class TerritoryResultParser
     {
+        const string SignedOutMessaged = "Sorry, you have been signed out.";
+
         public static List<Territory> Parse(string value)
         {
-            if(value.StartsWith("Sorry, you have been signed out."))
+            if(value.StartsWith(SignedOutMessaged))
             {
-                throw new Exception("Sorry, you have been signed out.");
+                throw new Exception(SignedOutMessaged);
             }
 
             var nodes = JObject.Parse(value);
@@ -32,6 +34,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                     border.Number = territory.Number;
                     border.Description = territory.Description;
                     border.Notes = territory.Notes;
+                    border.CountOfAddresses = territory.AddressCount.ToString();
                     borders.Add(border);
                 }
             }
@@ -90,14 +93,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             }
         }
 
-        static Dictionary<
-                int, 
-                (int Id, string Number, string Description, string Notes)> 
-            TerritoriesFrom(string html)
+        static Dictionary<int, TerritoryValues> TerritoriesFrom(string html)
         {
             try
             {
-                return TryTerritoriesParse(html);
+                return TryParse(html);
             }
             catch(Exception e)
             {
@@ -105,14 +105,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             }
         }
 
-        static Dictionary<
-                int,
-                (int Id, string Number, string Description, string Notes)> 
-            TryTerritoriesParse(string html)
+        static Dictionary<int, TerritoryValues> TryParse(string html)
         {
-            var assignments = new Dictionary<
-                int,
-                (int Id, string Number, string Description, string Notes)>();
+            var assignments = new Dictionary<int, TerritoryValues>();
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -133,8 +128,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return assignments;
         }
 
-        static (int Id, string Number, string Description, string Notes)
-            TerritoryFrom(HtmlNode rowNode)
+        static TerritoryValues TerritoryFrom(HtmlNode rowNode)
         {
             try
             {
@@ -146,13 +140,13 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             }
         }
 
-        static (int Id, string Number, string Description, string Notes)
-            TryTerritoryFrom(HtmlNode rowNode)
+        static TerritoryValues TryTerritoryFrom(HtmlNode rowNode)
         {
-                int id = 0;
+            int id = 0;
             string number = string.Empty;
             string description = string.Empty;
             string notes = string.Empty;
+            int addressCount = 0;
 
             var colNodes = rowNode.SelectNodes("td");
             if (colNodes != null)
@@ -170,12 +164,30 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                             description = colNode.GetDirectInnerText().Trim();
                             notes = colNode.SelectSingleNode("small")?.InnerText;
                             break;
+                        case 2:
+                            int.TryParse(colNode?.InnerText, out int count);
+                            addressCount = count;
+                            break;
                     }
                 }
 
             }
 
-            return (Id: id, Number: number, Description: description, Notes: notes);
+            return new TerritoryValues { 
+                Id = id, 
+                Number = number, 
+                Description = description, 
+                Notes = notes, 
+                AddressCount = addressCount };
+        }
+
+        class TerritoryValues
+        {
+            public int Id;
+            public string Number;
+            public string Description;
+            public string Notes;
+            public int AddressCount;
         }
     }
 }
