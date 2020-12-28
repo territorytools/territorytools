@@ -5,8 +5,8 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Get, "AlbaTerritoryBorder")]
-    [OutputType(typeof(Territory))]
+    [Cmdlet(VerbsCommon.Get, nameof(AlbaTerritoryBorder))]
+    [OutputType(typeof(AlbaTerritoryBorder))]
     public class GetAlbaTerritoryWithBorder : AlbaConnectedCmdlet
     {
         protected override void ProcessRecord()
@@ -16,7 +16,7 @@ namespace TerritoryTools.Alba.PowerShell
                 var resultString = Connection.DownloadString(
                     RelativeUrlBuilder.GetAllTerritoriesWithBorders());
 
-                var territories = TerritoryResultParser.Parse(resultString);
+                var territories = TerritoryBorderResultParser.Parse(resultString);
 
                 foreach (var territory in territories)
                 {

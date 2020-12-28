@@ -76,7 +76,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         /// <param name="territory">A territory with borders, which must have 
         /// a non-zero Id</param>
         /// <returns>The URI, ready to send.</returns>
-        public static string SaveTerritoryWithBorder(Territory territory)
+        public static string SaveTerritoryWithBorder(AlbaTerritoryBorder territory)
         {
             if(territory == null)
             {
@@ -225,6 +225,16 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         public static string GetLanguages()
         {
             return $"/addresses2";
+        }
+
+        private static string CoordinatesFrom(AlbaTerritoryBorder territory)
+        {
+            var coordinates = new List<string>();
+
+            foreach (Vertex v in territory.Border.Vertices)
+                coordinates.Add($"{v.Latitude} {v.Longitude}");
+
+            return string.Join(",", coordinates);
         }
 
         private static string CoordinatesFrom(Territory territory)
