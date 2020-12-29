@@ -68,9 +68,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
         ExtendedData ExtendedDataFrom(TerritoryDetail territory)
         {
-            int.TryParse(territory.CountOfAddresses, out int addresses);
-
-            int density = addresses / 10;
+            int density = territory.CountOfAddresses / 10;
 
             return new ExtendedData
             {
@@ -84,7 +82,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                     new Data { name = "Status", value = territory.Status},
                     new Data { name = "LastCompleted", value = territory.LastCompleted?.ToString()},
                     new Data { name = "LastCompletedBy", value = territory.LastCompletedBy},
-                    new Data { name = "CountOfAddresses", value = territory.CountOfAddresses},
+                    new Data { name = "CountOfAddresses", value = territory.CountOfAddresses.ToString()},
                     new Data { name = "Description", value = territory.Description},
                     new Data { name = "AddressDensity", value = density.ToString()},
                     new Data { name = "MonthsAgoCompleted", value = territory.MonthsAgoCompleted?.ToString()},

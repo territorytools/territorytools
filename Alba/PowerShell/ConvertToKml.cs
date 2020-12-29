@@ -1,7 +1,8 @@
-﻿using Controllers.AlbaServer;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Management.Automation;
-using TerritoryTools.Alba.Controllers.AlbaServer;
+using System.Xml.Serialization;
 using TerritoryTools.Alba.Controllers.Kml;
 using TerritoryTools.Alba.Controllers.Models;
 
@@ -11,26 +12,47 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(GoogleMapsKml))]
     public class ConvertToKml : PSCmdlet
     {
+        AlbaTerritoryBorderToKmlConverter converter;
+        readonly List<AlbaTerritoryBorder> territories = new List<AlbaTerritoryBorder>();
+
         [Parameter(
           Mandatory = true,
           Position = 0,
           ValueFromPipeline = true,
           ValueFromPipelineByPropertyName = true)]
         public AlbaTerritoryBorder Input { get; set; }
-        
+
+        protected override void BeginProcessing()
+        {
+            converter = new AlbaTerritoryBorderToKmlConverter();
+
+            base.BeginProcessing();
+        }
+
         protected override void ProcessRecord()
         {
             try
             {
-                var kml = TerritoryDetailToKmlConverter
-                    .Convert(TerritoryResultParser.TerritoryFrom(Input));
-
-                WriteObject(kml);
+                territories.Add(Input);
             }
             catch(Exception e)
             {
-                throw new Exception($"Error converting PSObject to AlbaAddressImport: {e.StackTrace}", e);
+                throw new Exception($"Error converting AlbaTerritoryBorder into KML: {e.StackTrace}", e);
             }
+        }
+
+        protected override void EndProcessing()
+        {
+            var kml = converter.KmlFrom(territories);
+
+            var serializer = new XmlSerializer(typeof(GoogleMapsKml));
+            using (var textWriter = new StringWriter())
+            {
+                serializer.Serialize(textWriter, kml);
+                WriteObject(textWriter.ToString());
+            }
+
+            base.EndProcessing();
         }
     }
 }

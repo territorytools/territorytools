@@ -19,7 +19,7 @@ namespace TerritoryTools.Alba.Controllers.Models
         /// <summary>
         /// Count of addresses in this territory.
         /// </summary>
-        public string CountOfAddresses { get; set; }
+        public int CountOfAddresses { get; set; }
 
         /// <summary>
         /// Territory Number.
@@ -49,13 +49,11 @@ namespace TerritoryTools.Alba.Controllers.Models
 
         public AlbaTerritoryBorder ToAlbaTerritoryBorder()
         {
-            int.TryParse(CountOfAddresses, out int count);
-
             return new AlbaTerritoryBorder
             {
                 Id = Id,
                 Border = Border,
-                CountOfAddresses = count,
+                CountOfAddresses = CountOfAddresses,
                 Number = Number,
                 Description = Description,
                 Notes = Notes

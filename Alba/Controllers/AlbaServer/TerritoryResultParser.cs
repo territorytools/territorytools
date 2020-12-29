@@ -39,7 +39,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 Number = border.Number,
                 Description = border.Description,
                 Notes = border.Notes,
-                CountOfAddresses = border.CountOfAddresses.ToString(),
+                CountOfAddresses = border.CountOfAddresses,
                 Border = border.Border
             };
 
