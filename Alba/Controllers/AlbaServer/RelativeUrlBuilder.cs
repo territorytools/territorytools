@@ -90,23 +90,15 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                     "Territory ID cannot be zero");
             }
 
-            return $"/ts?mod=territories" +
-                $"&cmd=save" +
+            return $"/ts?mod=territories&cmd=save" +
                 $"&id={territory.Id}" +
-                $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}" +
-                $"&number={HttpUtility.UrlEncode(territory.Number)}" +
-                $"&description={HttpUtility.UrlEncode(territory.Description)}" +
-                $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
-                $"&kind=0";
+                AppendValuesFrom(territory);
         }
 
         public static string RequestToAddNew(AlbaTerritoryBorder territory)
         {
-            return @"/ts?mod=territories&cmd=add&kind=0" +
-                $"&number={HttpUtility.UrlEncode(territory.Number)}" +
-                $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
-                $"&description={HttpUtility.UrlEncode(territory.Description)}" +
-                $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}";
+            return @"/ts?mod=territories&cmd=add" +
+                AppendValuesFrom(territory);
         }
 
         public static string AssignTerritory(
@@ -139,55 +131,37 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public static string ImportAddress(AlbaAddressImport address)
         {
-            string formatted = $"/ts?id=r1&mod=import&cmd=add" +
+            return $"/ts?id=r1&mod=import&cmd=add" +
                 $"&Address_ID={address.Address_ID}" +
                 $"&Territory_ID={address.Territory_ID}" +
-                $"&Language={address.Language}" +
-                $"&Status={address.Status}" +
-                $"&Name={address.Name}" +
-                $"&Suite={address.Suite}" +
-                $"&Address={address.Address}" +
-                $"&City={address.City}" +
-                $"&Province={address.Province}" +
-                $"&Postal_code={address.Postal_code}" +
-                $"&Country={address.Country}" +
+                $"&Language={HttpUtility.UrlEncode(address.Language)}" +
+                $"&Status={HttpUtility.UrlEncode(address.Status)}" +
+                $"&Name={HttpUtility.UrlEncode(address.Name)}" +
+                $"&Suite={HttpUtility.UrlEncode(address.Suite)}" +
+                $"&Address={HttpUtility.UrlEncode(address.Address)}" +
+                $"&City={HttpUtility.UrlEncode(address.City)}" +
+                $"&Province={HttpUtility.UrlEncode(address.Province)}" +
+                $"&Postal_code={HttpUtility.UrlEncode(address.Postal_code)}" +
+                $"&Country={HttpUtility.UrlEncode(address.Country)}" +
                 $"&Latitude={address.Latitude}" +
                 $"&Longitude={address.Longitude}" +
-                $"&Telephone={address.Telephone}" +
-                $"&Notes={address.Notes}" +
-                $"&Notes_private={address.Notes_private}";
-
-            return formatted.Replace(" ", "+").Replace(",", "%2C");
+                $"&Telephone={HttpUtility.UrlEncode(address.Telephone)}" +
+                $"&Notes={HttpUtility.UrlEncode(address.Notes)}" +
+                $"&Notes_private={HttpUtility.UrlEncode(address.Notes_private)}";
         }
 
         public static string SaveAddressNotePrivate(AlbaAddressImport address)
         {
-            string formatted = $"/ts?mod=addresses&cmd=save" +
+            return $"/ts?mod=addresses&cmd=save" +
                 $"&id={address.Address_ID}" +
-                $"&notes_private={address.Notes_private}";
-
-            return formatted.Replace(" ", "+").Replace(",", "%2C");
+                $"&notes_private={HttpUtility.UrlEncode(address.Notes_private)}";
         }
 
         public static string AddAddress(AlbaAddressSave address)
         {
             string formatted = $"/ts?mod=addresses&cmd=add" +
-                $"&id={address.Address_ID}" +
-                $"&lat={address.Latitude}" +
-                $"&lng={address.Longitude}" +
-                $"&territory_id={address.Territory_ID ?? 0}" +
-                $"&status={address.StatusId}" +
-                $"&language_id={address.LanguageId}" +
-                $"&full_name={address.Name}" +
-                $"&suite={address.Suite}" +
-                $"&address={address.Address}" +
-                $"&city={address.City}" +
-                $"&province={address.Province}" +
-                $"&country={address.Country}" +
-                $"&postcode={address.Postal_code}" +
-                $"&telephone={address.Telephone}" +
-                $"&notes={address.Notes}" +
-                $"&notes_private={address.Notes_private}";
+                $"&id={address.Address_ID}" + // TODO: Is this ignored? Remove it if it is
+                AppendValuesFrom(address); 
 
             return HttpUtility.UrlEncode(formatted);
         }
@@ -201,25 +175,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                     nameof(address.Address_ID));
             }
 
-            string formatted = $"/ts?mod=addresses&cmd=save" +
+            return $"/ts?mod=addresses&cmd=save" +
                 $"&id={address.Address_ID}" +
-                $"&lat={address.Latitude}" +
-                $"&lng={address.Longitude}" +
-                $"&territory_id={address.Territory_ID ?? 0}" +
-                $"&status={address.StatusId}" +
-                $"&language_id={address.LanguageId}" +
-                $"&full_name={address.Name}" +
-                $"&suite={address.Suite}" +
-                $"&address={address.Address}" +
-                $"&city={address.City}" +
-                $"&province={address.Province}" +
-                $"&country={address.Country}" +
-                $"&postcode={address.Postal_code}" +
-                $"&telephone={address.Telephone}" +
-                $"&notes={address.Notes}" +
-                $"&notes_private={address.Notes_private}";
-
-            return HttpUtility.UrlEncode(formatted);
+                AppendValuesFrom(address);
         }
 
         public static string GetLanguages()
@@ -227,7 +185,35 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return $"/addresses2";
         }
 
-        private static string CoordinatesFrom(AlbaTerritoryBorder territory)
+        static string AppendValuesFrom(AlbaTerritoryBorder territory)
+        {
+            return $"&kind=0" +
+                $"&number={HttpUtility.UrlEncode(territory.Number)}" +
+                $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
+                $"&description={HttpUtility.UrlEncode(territory.Description)}" +
+                $"&border={HttpUtility.UrlEncode(CoordinatesFrom(territory))}";
+        }
+
+        static string AppendValuesFrom(AlbaAddressSave address)
+        {
+            return $"&lat={address.Latitude}" +
+               $"&lng={address.Longitude}" +
+               $"&territory_id={address.Territory_ID ?? 0}" +
+               $"&status={address.StatusId}" +
+               $"&language_id={address.LanguageId}" +
+               $"&full_name={HttpUtility.UrlEncode(address.Name)}" +
+               $"&suite={HttpUtility.UrlEncode(address.Suite)}" +
+               $"&address={HttpUtility.UrlEncode(address.Address)}" +
+               $"&city={HttpUtility.UrlEncode(address.City)}" +
+               $"&province={HttpUtility.UrlEncode(address.Province)}" +
+               $"&country={HttpUtility.UrlEncode(address.Country)}" +
+               $"&postcode={HttpUtility.UrlEncode(address.Postal_code)}" +
+               $"&telephone={HttpUtility.UrlEncode(address.Telephone)}" +
+               $"&notes={HttpUtility.UrlEncode(address.Notes)}" +
+               $"&notes_private={HttpUtility.UrlEncode(address.Notes_private)}";
+        }
+
+        static string CoordinatesFrom(AlbaTerritoryBorder territory)
         {
             var coordinates = new List<string>();
 
