@@ -7,11 +7,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class TerritoryResultParser
     {
-        public static List<Territory> Parse(string value)
+        public static List<TerritoryDetail> Parse(string value)
         {
             var borders = TerritoryBorderResultParser.Parse(value);
 
-            var territories = new List<Territory>();
+            var territories = new List<TerritoryDetail>();
             foreach (var border in borders)
             {
                 territories.Add(TerritoryFrom(border));
@@ -20,7 +20,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return territories; 
         }
 
-        public static Territory TerritoryFrom(AlbaTerritoryBorder border) 
+        public static TerritoryDetail TerritoryFrom(AlbaTerritoryBorder border) 
         {
             try
             {
@@ -32,9 +32,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             }
         }
 
-        static Territory TryTerritoryFrom(AlbaTerritoryBorder border)
+        static TerritoryDetail TryTerritoryFrom(AlbaTerritoryBorder border)
         {
-            var newTerritory = new Territory(border.Id.ToString())
+            var newTerritory = new TerritoryDetail(border.Id.ToString())
             {
                 Number = border.Number,
                 Description = border.Description,

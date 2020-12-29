@@ -28,7 +28,7 @@ namespace AlbaClient.Tests.AlbaServer
         {
             string expected = @"/ts?mod=territories&cmd=add&kind=0&number=TestNumber-123&notes=Test+Notes&description=Test+Description&border=1.11+-2.22%2c-3.33+-4.44";
 
-            var territory = new Territory("TestId")
+            var territory = new TerritoryDetail("TestId")
             {
                 Number = "TestNumber-123",
                 Description = "Test Description",

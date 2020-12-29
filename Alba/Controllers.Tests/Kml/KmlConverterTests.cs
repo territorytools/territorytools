@@ -65,9 +65,9 @@ namespace AlbaClient.Tests.KmlGateways
         [Test]
         public void Convert_WithSmallTerritory_IsNotNull()
         {
-            var territories = new List<Territory>()
+            var territories = new List<TerritoryDetail>()
             {
-                new Territory("test id")
+                new TerritoryDetail("test id")
                 {
                     Number = "test number",
                     Border = new Border()
@@ -81,7 +81,7 @@ namespace AlbaClient.Tests.KmlGateways
                 }
             };
 
-            var kml = new TerritoryToKmlConverter().KmlFrom(territories);
+            var kml = new TerritoryDetailToKmlConverter().KmlFrom(territories);
 
             Assert.IsNotNull(kml);
         }
@@ -89,9 +89,9 @@ namespace AlbaClient.Tests.KmlGateways
         [Test]
         public void Convert_WithSmallTerritory_DescriptionIsSet()
         {
-            var territories = new List<Territory>()
+            var territories = new List<TerritoryDetail>()
             {
-                new Territory("test id")
+                new TerritoryDetail("test id")
                 {
                     Number = "test number",
                     Description = "test description",
@@ -106,7 +106,7 @@ namespace AlbaClient.Tests.KmlGateways
                 }
             };
 
-            var kml = new TerritoryToKmlConverter().KmlFrom(territories);
+            var kml = new TerritoryDetailToKmlConverter().KmlFrom(territories);
 
             Assert.AreEqual("test description", kml.Document.Folder[0].Placemark[0].description);
         }
@@ -118,7 +118,7 @@ namespace AlbaClient.Tests.KmlGateways
             Assert.AreEqual("TEST321-654", territories2.First().Number);
         }
 
-        private static void AssertTwoCoordinatesAreNowVertices(IEnumerable<Territory> territories)
+        private static void AssertTwoCoordinatesAreNowVertices(IEnumerable<TerritoryDetail> territories)
         {
             Assert.AreEqual(2, territories.First().Border.Vertices.Count);
             Assert.AreEqual(11.11, territories.First().Border.Vertices[0].Longitude);

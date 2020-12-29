@@ -4,9 +4,14 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.Kml
 {
-    public class TerritoryToKmlConverter
+    public class TerritoryDetailToKmlConverter
     {
-        public GoogleMapsKml KmlFrom(IEnumerable<Territory> territories)
+        public static GoogleMapsKml Convert(IEnumerable<TerritoryDetail> territories)
+        {
+            return new TerritoryDetailToKmlConverter().KmlFrom(territories);
+        }
+
+        public GoogleMapsKml KmlFrom(IEnumerable<TerritoryDetail> territories)
         {
             try
             {
@@ -21,7 +26,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             }
         }
 
-        Document DocumentFrom(IEnumerable<Territory> territories)
+        Document DocumentFrom(IEnumerable<TerritoryDetail> territories)
         {
             return new Document()
             {
@@ -31,7 +36,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        DocumentFolder[] FoldersFrom(IEnumerable<Territory> territories)
+        DocumentFolder[] FoldersFrom(IEnumerable<TerritoryDetail> territories)
         {
             return new DocumentFolder[]
             {
@@ -42,7 +47,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        Placemark[] PlacemarksFrom(IEnumerable<Territory> territories)
+        Placemark[] PlacemarksFrom(IEnumerable<TerritoryDetail> territories)
         {
             var placemarks = new List<Placemark>();
             foreach (var territory in territories)
@@ -51,7 +56,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             return placemarks.ToArray();
         }
 
-        Style[] StylesFrom(IEnumerable<Territory> territories)
+        Style[] StylesFrom(IEnumerable<TerritoryDetail> territories)
         {
             var styles = new List<Style>();
 
@@ -99,7 +104,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             return styles.ToArray();
         }
 
-        StyleMap[] StyleMapsFrom(IEnumerable<Territory> territories)
+        StyleMap[] StyleMapsFrom(IEnumerable<TerritoryDetail> territories)
         {
             var maps = new List<StyleMap>();
 

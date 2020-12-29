@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace TerritoryTools.Alba.Controllers.Kml
 {
-    public class PlacemarkConverter
+    public class PlacemarkConverterToAlbaTerritoryBorder
     {
-        public static TerritoryDetail From(Placemark placemark)
+        public static AlbaTerritoryBorder From(Placemark placemark)
         {
-            return new PlacemarkConverter().TerritoryFrom(placemark);
+            return new PlacemarkConverterToAlbaTerritoryBorder().TerritoryFrom(placemark);
         }
 
         public static string ColorString(Color color)
@@ -18,7 +18,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                  + $"{color.Red.ToString("X2")}";
         }
 
-        public Placemark PlacemarkFrom(TerritoryDetail territory)
+        public Placemark PlacemarkFrom(AlbaTerritoryBorder territory)
         {
             return new Placemark()
             {
@@ -30,9 +30,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        TerritoryDetail TerritoryFrom(Placemark placemark)
+        AlbaTerritoryBorder TerritoryFrom(Placemark placemark)
         {
-            return new TerritoryDetail(placemark.name)
+            return new AlbaTerritoryBorder(placemark.name)
             {
                 Number = placemark?.name,
                 Description = placemark?.description,
@@ -64,7 +64,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        ExtendedData ExtendedDataFrom(TerritoryDetail territory)
+        ExtendedData ExtendedDataFrom(AlbaTerritoryBorder territory)
         {
             int.TryParse(territory.CountOfAddresses, out int addresses);
 

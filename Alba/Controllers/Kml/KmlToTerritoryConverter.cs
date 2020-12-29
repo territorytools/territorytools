@@ -6,9 +6,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class KmlToTerritoryConverter
     {
-        List<Territory> territories;
+        List<TerritoryDetail> territories;
 
-        public List<Territory> TerritoryListFrom(GoogleMapsKml kml)
+        public List<TerritoryDetail> TerritoryListFrom(GoogleMapsKml kml)
         {
             try
             {
@@ -20,9 +20,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
             }
         }
 
-        List<Territory> TerritoriesFrom(Document document)
+        List<TerritoryDetail> TerritoriesFrom(Document document)
         {
-            territories = new List<Territory>();
+            territories = new List<TerritoryDetail>();
 
             if (document?.Folder != null)
                 FromFolders(document.Folder);

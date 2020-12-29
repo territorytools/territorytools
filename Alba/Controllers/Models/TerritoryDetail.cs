@@ -3,9 +3,9 @@ using System.Text;
 
 namespace TerritoryTools.Alba.Controllers.Models
 {
-    public class Territory
+    public class TerritoryDetail
     {
-        public Territory(string id)
+        public TerritoryDetail(string id)
         {
             Id = id;
             Border = new Border();
