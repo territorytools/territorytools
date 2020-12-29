@@ -18,13 +18,15 @@ namespace TerritoryTools.Alba.Controllers.Kml
                  + $"{color.Red.ToString("X2")}";
         }
 
+        public static readonly Color Green = new Color { Red = 0, Green = 255, Blue = 0, A = 128 };
+
         public Placemark PlacemarkFrom(AlbaTerritoryBorder territory)
         {
             return new Placemark()
             {
                 name = territory.Number,
                 description = territory.Description,
-                styleUrl =$"#t-fill-color-{ColorString(territory.FillColor)}",
+                styleUrl =$"#t-fill-color-{ColorString(Green)}",
                 MultiGeometry = MultiGeometryFrom(territory.Border),
                 ExtendedData = ExtendedDataFrom(territory)
             };
@@ -32,8 +34,11 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
         AlbaTerritoryBorder TerritoryFrom(Placemark placemark)
         {
-            return new AlbaTerritoryBorder(placemark.name)
+            int.TryParse(placemark.name, out int id);
+
+            return new AlbaTerritoryBorder()
             {
+                Id = id,
                 Number = placemark?.name,
                 Description = placemark?.description,
                 Border = BorderFrom(placemark),
@@ -66,32 +71,18 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
         ExtendedData ExtendedDataFrom(AlbaTerritoryBorder territory)
         {
-            int.TryParse(territory.CountOfAddresses, out int addresses);
-
-            int density = addresses / 10;
+            int density = territory.CountOfAddresses / 10;
 
             return new ExtendedData
             {
                 Data = new Data[]
                 {
                     new Data { name = "Number", value = territory.Number},
-                    new Data { name = "CityArea", value = territory.CityArea},
-                    new Data { name = "AssignUrl", value = $"http://territory.bellevuemandarin.org/t/{territory.Number}"},
-                    new Data { name = "SignedOut", value = territory.SignedOut?.ToString()},
-                    new Data { name = "SignedOutTo", value = territory.SignedOutTo},
-                    new Data { name = "Status", value = territory.Status},
-                    new Data { name = "LastCompleted", value = territory.LastCompleted?.ToString()},
-                    new Data { name = "LastCompletedBy", value = territory.LastCompletedBy},
-                    new Data { name = "CountOfAddresses", value = territory.CountOfAddresses},
+                    new Data { name = "AssignUrl", value = $"http://territorytools.org/t/{territory.Number}"},
+                    new Data { name = "CountOfAddresses", value = territory.CountOfAddresses.ToString()},
                     new Data { name = "Description", value = territory.Description},
                     new Data { name = "AddressDensity", value = density.ToString()},
-                    new Data { name = "MonthsAgoCompleted", value = territory.MonthsAgoCompleted?.ToString()},
-                    new Data { name = "YearsAgoCompleted", value = territory.YearsAgoCompleted.ToString()},
-                    new Data { name = "NeverCompleted", value = territory.NeverCompleted.ToString()},
-                    new Data { name = "MobileLink", value = territory.MobileLink},
                     new Data { name = "Notes", value = territory.Notes},
-                    new Data { name = "CityCode", value = territory.CityCode},
-                    new Data { name = "ZipCodeSuffix", value = territory.ZipCodeSuffix},
                 }
             };
         }

@@ -17,7 +17,7 @@ namespace AlbaClient.Tests.KmlGateways
 
             kml.Document.Folder.First().Placemark = PlacemarkWithTwoCoordinates();
 
-            var territories = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             AssertTwoCoordinatesAreNowVertices(territories);
         }
@@ -29,7 +29,7 @@ namespace AlbaClient.Tests.KmlGateways
 
             kml.Document.Placemark = PlacemarkWithTwoCoordinates();
 
-            var territories = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             AssertTwoCoordinatesAreNowVertices(territories);
         }
@@ -40,7 +40,7 @@ namespace AlbaClient.Tests.KmlGateways
             GoogleMapsKml kml = DefaultKml();
             kml.Document.Placemark = PlacemarkWithTwoCoordinates();
 
-            var territories = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             Assert.AreEqual("TEST321-654", territories.First().Number);
         }
@@ -67,16 +67,16 @@ namespace AlbaClient.Tests.KmlGateways
         {
             var territories = new List<TerritoryDetail>()
             {
-                new TerritoryDetail("test id")
+                new TerritoryDetail(111)
                 {
                     Number = "test number",
                     Border = new Border()
                     {
                         Vertices = new List<Vertex>()
-                          {
-                               new Vertex(1.23, 4.56),
-                               new Vertex(2.34, 6.78)
-                          }
+                        {
+                            new Vertex(1.23, 4.56),
+                            new Vertex(2.34, 6.78)
+                        }
                     }
                 }
             };
@@ -91,7 +91,7 @@ namespace AlbaClient.Tests.KmlGateways
         {
             var territories = new List<TerritoryDetail>()
             {
-                new TerritoryDetail("test id")
+                new TerritoryDetail(111)
                 {
                     Number = "test number",
                     Description = "test description",
@@ -113,7 +113,7 @@ namespace AlbaClient.Tests.KmlGateways
 
         private static void AssertSkipped(GoogleMapsKml kml)
         {
-            var territories2 = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories2 = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             Assert.AreEqual("TEST321-654", territories2.First().Number);
         }

@@ -5,7 +5,7 @@ namespace TerritoryTools.Alba.Controllers.Models
 {
     public class TerritoryDetail
     {
-        public TerritoryDetail(string id)
+        public TerritoryDetail(int id)
         {
             Id = id;
             Border = new Border();
@@ -14,7 +14,7 @@ namespace TerritoryTools.Alba.Controllers.Models
         /// <summary>
         /// Territory Database Id.
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Count of addresses in this territory.
@@ -49,12 +49,11 @@ namespace TerritoryTools.Alba.Controllers.Models
 
         public AlbaTerritoryBorder ToAlbaTerritoryBorder()
         {
-            int.TryParse(Id, out int id);
             int.TryParse(CountOfAddresses, out int count);
 
             return new AlbaTerritoryBorder
             {
-                Id = id,
+                Id = Id,
                 Border = Border,
                 CountOfAddresses = count,
                 Number = Number,

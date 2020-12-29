@@ -33,7 +33,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 return;
 
             var kml = new KmlGateway().Load(fileName);
-            var territories = new KmlToTerritoryConverter()
+            var territories = new KmlToTerritoryDetailConverter()
                 .TerritoryListFrom(kml)
                 .Where(t => t.Border != null && t.Border.Vertices != null && t.Border.Vertices.Count > 0)
                 .ToList();

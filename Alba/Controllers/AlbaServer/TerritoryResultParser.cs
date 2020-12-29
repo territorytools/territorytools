@@ -34,7 +34,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         static TerritoryDetail TryTerritoryFrom(AlbaTerritoryBorder border)
         {
-            var newTerritory = new TerritoryDetail(border.Id.ToString())
+            var newTerritory = new TerritoryDetail(border.Id)
             {
                 Number = border.Number,
                 Description = border.Description,

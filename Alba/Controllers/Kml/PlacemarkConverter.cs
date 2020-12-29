@@ -32,7 +32,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
         TerritoryDetail TerritoryFrom(Placemark placemark)
         {
-            return new TerritoryDetail(placemark.name)
+            int.TryParse(placemark.name, out int id);
+
+            return new TerritoryDetail(id)
             {
                 Number = placemark?.name,
                 Description = placemark?.description,

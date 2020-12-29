@@ -62,7 +62,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 t.FillColor = FillColorFor(t);
             }
 
-            var kml = new TerritoryDetailToKmlConverter().KmlFrom(filteredTerritories);
+            var kml = TerritoryDetailToKmlConverter.Convert(filteredTerritories);
             new KmlGateway().Save(fileName, kml);
 
             return filteredTerritories.ToList();

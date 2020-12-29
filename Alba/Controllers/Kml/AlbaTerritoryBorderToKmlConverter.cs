@@ -46,7 +46,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
         {
             var placemarks = new List<Placemark>();
             foreach (var territory in territories)
-                placemarks.Add(new PlacemarkConverter().PlacemarkFrom(territory));
+                placemarks.Add(new PlacemarkConverterToAlbaTerritoryBorder().PlacemarkFrom(territory));
 
             return placemarks.ToArray();
         }
@@ -57,7 +57,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
             foreach (var t in territories)
             {
-                string color = PlacemarkConverter.ColorString(t.FillColor);
+                string color = PlacemarkConverterToAlbaTerritoryBorder
+                    .ColorString(PlacemarkConverterToAlbaTerritoryBorder.Green);
+
                 string style = $"t-fill-color-{color}";
                 if (!styles.Exists(s => s.id.StartsWith(style)))
                 {
@@ -105,7 +107,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
             foreach (var t in territories)
             {
-                string style = $"t-fill-color-{PlacemarkConverter.ColorString(t.FillColor)}";
+                string style = $"t-fill-color-{PlacemarkConverterToAlbaTerritoryBorder.ColorString(PlacemarkConverterToAlbaTerritoryBorder.Green)}";
                 if (!maps.Exists(s => s.id.Equals(style)))
                 {
                     maps.Add(

@@ -4,7 +4,7 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.Kml
 {
-    public class KmlToTerritoryConverter
+    public class KmlToTerritoryDetailConverter
     {
         List<TerritoryDetail> territories;
 
