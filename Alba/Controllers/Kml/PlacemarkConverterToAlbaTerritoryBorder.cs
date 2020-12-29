@@ -35,6 +35,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
         AlbaTerritoryBorder TerritoryFrom(Placemark placemark)
         {
             int.TryParse(placemark.name, out int id);
+            int.TryParse(FromExtendedData(placemark, "CountOfAddresses"), out int count);
 
             return new AlbaTerritoryBorder()
             {
@@ -42,6 +43,8 @@ namespace TerritoryTools.Alba.Controllers.Kml
                 Number = placemark?.name,
                 Description = placemark?.description,
                 Border = BorderFrom(placemark),
+                Notes = FromExtendedData(placemark, "Notes"),
+                CountOfAddresses = count
             };
         }
 
@@ -67,6 +70,24 @@ namespace TerritoryTools.Alba.Controllers.Kml
             {
                 Polygon = new PlacemarkPolygon[] { PolygonFrom(border) },
             };
+        }
+
+        string FromExtendedData(Placemark placemark, string name)
+        {
+            if(placemark?.ExtendedData?.Data == null)
+            {
+                return null;
+            }
+
+            foreach (Data data in placemark.ExtendedData.Data)
+            {
+                if(data.name == name)
+                {
+                    return data.value;
+                }
+            }
+
+            return null;
         }
 
         ExtendedData ExtendedDataFrom(AlbaTerritoryBorder territory)

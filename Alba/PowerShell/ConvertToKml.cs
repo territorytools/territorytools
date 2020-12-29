@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
+using System.Text;
 using System.Xml.Serialization;
 using TerritoryTools.Alba.Controllers.Kml;
 using TerritoryTools.Alba.Controllers.Models;
@@ -46,13 +47,25 @@ namespace TerritoryTools.Alba.PowerShell
             var kml = converter.KmlFrom(territories);
 
             var serializer = new XmlSerializer(typeof(GoogleMapsKml));
-            using (var textWriter = new StringWriter())
+
+            using (var textWriter = new StringWriterUtf8())
             {
                 serializer.Serialize(textWriter, kml);
                 WriteObject(textWriter.ToString());
             }
 
             base.EndProcessing();
+        }
+    }
+
+    public class StringWriterUtf8 : StringWriter
+    {
+        public override Encoding Encoding
+        {
+            get
+            {
+                return Encoding.UTF8;
+            }
         }
     }
 }
