@@ -44,7 +44,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             {
                 int count = territory.Border.Vertices.Count;
 
-                var url = RelativeUrlBuilder.RequestToAddNew(
+                var url = RelativeUrlBuilder.AddTerritoryWithBorder(
                     territory.ToAlbaTerritoryBorder());
 
                 var resultString = client.DownloadString(url);

@@ -38,7 +38,7 @@ namespace AlbaClient.Tests.AlbaServer
             territory.Border.Vertices.Add(new Vertex(1.11, -2.22));
             territory.Border.Vertices.Add(new Vertex(-3.33, -4.44));
 
-            string url = RelativeUrlBuilder.RequestToAddNew(territory);
+            string url = RelativeUrlBuilder.AddTerritoryWithBorder(territory);
 
             Assert.AreEqual(expected, url);
         }

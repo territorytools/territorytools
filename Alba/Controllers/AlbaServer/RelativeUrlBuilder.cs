@@ -95,7 +95,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 AppendValuesFrom(territory);
         }
 
-        public static string RequestToAddNew(AlbaTerritoryBorder territory)
+        public static string AddTerritoryWithBorder(AlbaTerritoryBorder territory)
         {
             return @"/ts?mod=territories&cmd=add" +
                 AppendValuesFrom(territory);
