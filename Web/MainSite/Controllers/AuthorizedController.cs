@@ -140,7 +140,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             io.File.WriteAllText(path, html);
         }
 
-        protected IEnumerable<Assignment> GetAllAssignments()
+        protected IEnumerable<AlbaAssignmentValues> GetAllAssignments()
         {
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
             string path = string.Format(

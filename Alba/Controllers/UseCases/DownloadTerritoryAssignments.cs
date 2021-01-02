@@ -35,7 +35,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             SaveAs(assignments, fileName);
         }
 
-        public static void SaveAs(List<Assignment> assignments, string fileName)
+        public static void SaveAs(List<AlbaAssignmentValues> assignments, string fileName)
         {
             using (var writer = new StreamWriter(fileName))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -44,9 +44,9 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             }
         }
 
-        public static List<Assignment> LoadFromCsv(string path)
+        public static List<AlbaAssignmentValues> LoadFromCsv(string path)
         {
-            var list = new List<Assignment>();
+            var list = new List<AlbaAssignmentValues>();
             if (string.IsNullOrWhiteSpace(path))
             {
                 return list;
@@ -59,11 +59,11 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 csv.Configuration.BadDataFound = null;
                 csv.Configuration.HeaderValidated = null;
                 csv.Configuration.MissingFieldFound = null;
-                return csv.GetRecords<Assignment>().ToList();
+                return csv.GetRecords<AlbaAssignmentValues>().ToList();
             }
         }
 
-        public List<Assignment> GetAssignments(string html)
+        public List<AlbaAssignmentValues> GetAssignments(string html)
         {
             //string html = File.ReadAllText("assignments.html");
             //var resultString = client.DownloadString(
@@ -71,7 +71,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
             //string html = TerritoryAssignmentParser.Parse(resultString);
 
-            var assignments = new List<Assignment>();
+            var assignments = new List<AlbaAssignmentValues>();
 
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -85,7 +85,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                     var colNodes = rowNode.SelectNodes("td");
                     if (colNodes != null)
                     {
-                        var assignment = new Assignment();
+                        var assignment = new AlbaAssignmentValues();
                         for (int col = 0; col < colNodes.Count; col++)
                         {
                             HtmlNode colNode = colNodes[col];
@@ -183,7 +183,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             return assignments;
         }
 
-        private static void ParseMonthsAgoCompleted(Assignment assignment, HtmlNode colNode)
+        private static void ParseMonthsAgoCompleted(AlbaAssignmentValues assignment, HtmlNode colNode)
         {
             string innerText = string.Empty;
             try
@@ -203,7 +203,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             }
         }
 
-        private static void ParseMonthsSignedout(Assignment assignment, HtmlNode colNode)
+        private static void ParseMonthsSignedout(AlbaAssignmentValues assignment, HtmlNode colNode)
         {
             string innerText = string.Empty;
             try
@@ -223,7 +223,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             }
         }
 
-        private static void ParseId(Assignment assignment, HtmlNode colNode)
+        private static void ParseId(AlbaAssignmentValues assignment, HtmlNode colNode)
         {
             string innerText = string.Empty;
             try
@@ -241,7 +241,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             }
         }
 
-        private static void ParseNumber(Assignment assignment, HtmlNode colNode)
+        private static void ParseNumber(AlbaAssignmentValues assignment, HtmlNode colNode)
         {
             string text = string.Empty;
             try

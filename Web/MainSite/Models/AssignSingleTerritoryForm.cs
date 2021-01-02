@@ -9,6 +9,6 @@ namespace TerritoryTools.Web.MainSite.Models
         public List<User> Users { get; set; } 
             = new List<User>();
 
-        public Assignment Assignment { get; set; } 
+        public AlbaAssignmentValues Assignment { get; set; } 
     }
 }

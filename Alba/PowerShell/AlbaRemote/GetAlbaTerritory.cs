@@ -6,7 +6,7 @@ using TerritoryTools.Alba.Controllers.UseCases;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsCommon.Get, "AlbaTerritory")]
-    [OutputType(typeof(Assignment))]
+    [OutputType(typeof(AlbaAssignmentValues))]
     public class GetAlbaTerritory : AlbaConnectedCmdlet
     {
         protected override void ProcessRecord()
