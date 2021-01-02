@@ -92,8 +92,6 @@ namespace TerritoryTools.Alba.Controllers.Kml
 
         ExtendedData ExtendedDataFrom(AlbaTerritoryBorder territory)
         {
-            int density = territory.CountOfAddresses / 10;
-
             return new ExtendedData
             {
                 Data = new Data[]
@@ -102,7 +100,6 @@ namespace TerritoryTools.Alba.Controllers.Kml
                     new Data { name = "AssignUrl", value = $"http://territorytools.org/t/{territory.Number}"},
                     new Data { name = "CountOfAddresses", value = territory.CountOfAddresses.ToString()},
                     new Data { name = "Description", value = territory.Description},
-                    new Data { name = "AddressDensity", value = density.ToString()},
                     new Data { name = "Notes", value = territory.Notes},
                 }
             };
