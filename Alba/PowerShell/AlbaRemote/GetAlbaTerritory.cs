@@ -24,7 +24,7 @@ namespace TerritoryTools.Alba.PowerShell
 
                 foreach (var assignment in assignments)
                 {
-                    WriteObject(assignment);
+                    WriteObject(assignment.ToAlbaAssignment());
                 }
             }
             catch(Exception e)

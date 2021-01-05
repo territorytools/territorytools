@@ -1,4 +1,5 @@
 ﻿using System;
+using TerritoryTools.Alba.Controllers.AlbaServer;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
 {
@@ -45,6 +46,23 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             }
 
             return DateTime.Now.Subtract((DateTime)LastCompleted);
+        }
+
+        public AlbaAssignment ToAlbaAssignment()
+        {
+            return new AlbaAssignment
+            {
+                Id = Id,
+                Number = Number,
+                Description = Description,
+                Kind = Kind,
+                Status = Status,
+                LastCompleted = LastCompleted,
+                LastCompletedBy = LastCompletedBy,
+                SignedOut = SignedOut,
+                SignedOutTo = SignedOutTo,
+                MobileLink = MobileLink,
+            };
         }
     }
 }
