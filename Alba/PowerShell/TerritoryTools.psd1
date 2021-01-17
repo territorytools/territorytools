@@ -12,7 +12,7 @@
 RootModule = 'TerritoryTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.16'
+ModuleVersion = '0.1.18'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -27,7 +27,7 @@ Author = 'Marc Durham'
 CompanyName = 'Territory Tools'
 
 # Copyright statement for this module
-Copyright = '(c) 2020 Marc Durham. All rights reserved.'
+Copyright = '(c) 2021 Marc Durham. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Tools for downloading data from Alba, parsing, normalizing, and manipulating address data'
@@ -69,11 +69,13 @@ CLRVersion = '4.0'
 NestedModules = @('TerritoryTools.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+FunctionsToExport = @('Set-AlbaOldestTerritoryUser')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = `
-    'Get-AlbaConnect', `
+    'Set-TerritoryUser', `
+    'Connect-Alba', `
+    'Get-AlbaConnection', `
     'Get-AlbaLanguage', `
     'Get-AlbaLanguageId', `
     'Get-AlbaUser', `
@@ -96,7 +98,7 @@ AliasesToExport = @()
 # DscResourcesToExport = @()
 
 # List of all modules packaged with this module
-ModuleList = @()
+ModuleList = @('$PSScriptRoot\Modules\HelperFunctions.psm1')
 
 # List of all files packaged with this module
 # FileList = @()

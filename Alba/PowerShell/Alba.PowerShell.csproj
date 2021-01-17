@@ -77,7 +77,7 @@
     <None Update="Modules\Connect-Alba.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Modules\Set-TerritoryUser.psm1">
+    <None Update="Modules\HelperFunctions.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
