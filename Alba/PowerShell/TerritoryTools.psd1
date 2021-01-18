@@ -72,6 +72,8 @@ NestedModules = @('TerritoryTools.dll')
 FunctionsToExport = @(
     'AssignNewTerritoryTo',
     'ConnectToAlba',
+    'Send-Email',
+    'Send-SendGridMail',
     'ShowTerritoriesForUser')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -103,6 +105,7 @@ AliasesToExport = @()
 ModuleList = @(
     '$PSScriptRoot\Modules\AssignNewTerritoryTo.psm1',
     '$PSScriptRoot\Modules\ConnectToAlba.psm1',
+    '$PSScriptRoot\Modules\Send-SendGridMail.psm1',
     '$PSScriptRoot\Modules\ShowTerritoriesForUser.psm1'
 )
 

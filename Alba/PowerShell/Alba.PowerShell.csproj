@@ -56,7 +56,7 @@
     <None Update="ExampleScripts\Remove-Addresses.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ExampleScripts\Send-SendGridMail.ps1">
+    <None Update="Modules\Send-SendGridMail.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ExampleScripts\SignedOutReport.ps1">
