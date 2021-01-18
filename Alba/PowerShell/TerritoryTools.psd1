@@ -12,7 +12,7 @@
 RootModule = 'TerritoryTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.18'
+ModuleVersion = '0.1.17'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -69,24 +69,26 @@ CLRVersion = '4.0'
 NestedModules = @('TerritoryTools.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Set-AlbaOldestTerritoryUser')
+FunctionsToExport = @(
+    'AssignNewTerritoryTo',
+    'ConnectToAlba',
+    'ShowTerritoriesForUser')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = `
-    'Set-TerritoryUser', `
-    'Connect-Alba', `
-    'Get-AlbaConnection', `
-    'Get-AlbaLanguage', `
-    'Get-AlbaLanguageId', `
-    'Get-AlbaUser', `
-    'Get-AlbaAddress', `
-    'Add-AlbaAddress', `
-    'Edit-AlbaAddress', `
-    'Remove-AlbaAddress', `
-    'Set-AlbaTerritoryUser', `
-    'Clear-AlbaTerritoryUser', `
-    'Get-AlbaTerritory', `
-    'Get-AlbaTerritoryWithBorder'
+CmdletsToExport = @(
+    'Add-AlbaAddress',
+    'Clear-AlbaTerritoryUser',
+    'Edit-AlbaAddress',
+    'Get-AlbaAddress',
+    'Get-AlbaConnection',
+    'Get-AlbaLanguage',
+    'Get-AlbaLanguageId',
+    'Get-AlbaTerritory',
+    'Set-AlbaTerritoryUser',
+    'Get-AlbaTerritoryWithBorder',
+    'Get-AlbaUser',
+    'Remove-AlbaAddress',
+)
 
 # Variables to export from this module
 VariablesToExport = '*'
@@ -98,7 +100,11 @@ AliasesToExport = @()
 # DscResourcesToExport = @()
 
 # List of all modules packaged with this module
-ModuleList = @('$PSScriptRoot\Modules\HelperFunctions.psm1')
+ModuleList = @(
+    '$PSScriptRoot\Modules\AssignNewTerritoryTo.psm1',
+    '$PSScriptRoot\Modules\ConnectToAlba.psm1',
+    '$PSScriptRoot\Modules\ShowTerritoriesForUser.psm1'
+)
 
 # List of all files packaged with this module
 # FileList = @()

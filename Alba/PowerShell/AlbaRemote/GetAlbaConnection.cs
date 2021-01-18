@@ -35,7 +35,7 @@ namespace TerritoryTools.Alba.PowerShell
                     && string.IsNullOrWhiteSpace(Credential.UserName)
                     && Credential.Password.Length == 0)
                 {
-                    throw new ArgumentException("Missing User and Password, or Credential");
+                    throw new ArgumentException($"Missing {nameof(User)} and {nameof(Password)}, or {nameof(Credential)}");
                 }
 
                 if(string.IsNullOrWhiteSpace(User)

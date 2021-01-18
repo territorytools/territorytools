@@ -41,9 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ExampleScripts\Assign-TerritoryOldest.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="ExampleScripts\Download-Addresses.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -74,10 +71,13 @@
     <None Update="ExampleScripts\Update-Originals.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Modules\Connect-Alba.psm1">
+    <None Update="Modules\ShowTerritoriesForUser.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Modules\HelperFunctions.psm1">
+    <None Update="Modules\ConnectToAlba.psm1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Modules\AssignNewTerritoryTo.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

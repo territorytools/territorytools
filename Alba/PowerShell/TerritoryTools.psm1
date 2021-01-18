@@ -1,3 +1,2 @@
-# No functions to export
-#Import-Module $PSScriptRoot\Modules\Connect-Alba.psm1
-Import-Module "$PSScriptRoot\Modules\HelperFunctions.psm1"
+# Modules should be imported viw the TerritoryTools.psd1 file
+# Use the ModuleList and the FunctionsToExport settings
