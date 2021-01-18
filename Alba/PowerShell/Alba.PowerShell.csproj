@@ -41,43 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ExampleScripts\Download-Addresses.ps1">
+    <None Update="ExampleScripts\*.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="ExampleScripts\Find-Duplicates.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\Find-Originals.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\Prepare-AddressesForImport.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\Remove-Addresses.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Modules\Send-SendGridMail.psm1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\SignedOutReport.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\SignedOutReport2.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\Update-Duplicates.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ExampleScripts\Update-Originals.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Modules\ShowTerritoriesForUser.psm1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Modules\ConnectToAlba.psm1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Modules\AssignNewTerritoryTo.psm1">
+    <None Update="Modules\*.psm1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

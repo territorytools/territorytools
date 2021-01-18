@@ -42,7 +42,7 @@ Description = 'Tools for downloading data from Alba, parsing, normalizing, and m
 # PowerShellHostVersion = ''
 
 # Minimum version of Microsoft .NET Framework required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
-DotNetFrameworkVersion = '4.8'
+# DotNetFrameworkVersion = '4.8'
 
 # Minimum version of the common language runtime (CLR) required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
 CLRVersion = '4.0'
@@ -70,15 +70,13 @@ NestedModules = @('TerritoryTools.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    'AssignNewTerritoryTo',
     'ConnectToAlba',
-    'Send-Email',
     'Send-SendGridMail',
+    'AssignNewTerritoryTo',
     'ShowTerritoriesForUser')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @(
-    'Add-AlbaAddress',
+CmdletsToExport = 'Add-AlbaAddress',
     'Clear-AlbaTerritoryUser',
     'Edit-AlbaAddress',
     'Get-AlbaAddress',
@@ -89,8 +87,7 @@ CmdletsToExport = @(
     'Set-AlbaTerritoryUser',
     'Get-AlbaTerritoryWithBorder',
     'Get-AlbaUser',
-    'Remove-AlbaAddress',
-)
+    'Remove-AlbaAddress'
 
 # Variables to export from this module
 VariablesToExport = '*'
@@ -102,12 +99,11 @@ AliasesToExport = @()
 # DscResourcesToExport = @()
 
 # List of all modules packaged with this module
-ModuleList = @(
-    '$PSScriptRoot\Modules\AssignNewTerritoryTo.psm1',
-    '$PSScriptRoot\Modules\ConnectToAlba.psm1',
-    '$PSScriptRoot\Modules\Send-SendGridMail.psm1',
-    '$PSScriptRoot\Modules\ShowTerritoriesForUser.psm1'
-)
+ModuleList = @()
+   #'$PSScriptRoot\Modules\AlbaConnectionFunctions.psm1','.\Modules\Send-SendGridMail.psm1')
+    #,'$PSScriptRoot\Modules\AssignNewTerritoryTo.psm1', 
+    #'$PSScriptRoot\Modules\Send-SendGridMail.psm1',
+    #'$PSScriptRoot\Modules\ShowTerritoriesForUser.psm1')
 
 # List of all files packaged with this module
 # FileList = @()

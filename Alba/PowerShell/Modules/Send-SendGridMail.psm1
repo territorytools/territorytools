@@ -42,11 +42,9 @@
         Uri = "https://api.sendgrid.com/v3/mail/send"
         ContentType = "application/json"
         Headers  = @{Authorization = "Bearer $ApiKey"}
-        Method = Post
+        Method = "Post"
         Body = ($data | ConvertTo-Json -Depth 5 -Compress) 
     }
-
+    
     Invoke-WebRequest @webRequestParameters
 }
-
-Set-Alias -Name Send-Email -Value Send-SendGridMail
