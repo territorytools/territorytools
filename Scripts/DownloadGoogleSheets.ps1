@@ -9,6 +9,7 @@ Param(
     [String]
     $googleDocId,
     # Google API Key for Sheets
+    # To get an API Key go here: https://console.developers.google.com/apis/credentials/key
     [String]
     $apiKey = $env:GOOGLE_API_KEY
 )
