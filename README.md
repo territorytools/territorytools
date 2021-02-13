@@ -1,3 +1,5 @@
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/territorytools/territorytools)
+
 # Introduction 
 Territory Tools currently has the following 
 - **Territory Web** is a web site that suppliments the Alba territory system with a few reports and a territory check-out page.
