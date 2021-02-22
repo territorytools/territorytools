@@ -22,8 +22,10 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             List<AlbaLanguage> languages = null,
             string languageFilePath = null)
         {
-            if(string.IsNullOrWhiteSpace(languageFilePath)
-                && languages == null)
+            this.languages = languages;
+
+            if (string.IsNullOrWhiteSpace(languageFilePath)
+                && (languages == null || languages.Count == 0))
             {
                 throw new ArgumentNullException(nameof(languages));
             }
@@ -59,24 +61,31 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
         public string Add(AlbaAddressImport address)
         {
-            if (client.BasePath == null)
+            try 
             {
-                throw new UserException("You are not logged on to Alba.  Please Logon.");
-            }
+                if (client.BasePath == null)
+                {
+                    throw new UserException("You are not logged on to Alba.  Please Logon.");
+                }
 
-            if (address == null)
+                if (address == null)
+                {
+                    throw new ArgumentNullException(nameof(address));
+                }
+
+                Thread.Sleep(msDelay);
+
+                AlbaAddressSave save = Convert(address);
+
+                var url = RelativeUrlBuilder.AddAddress(save);
+                var resultString = client.DownloadString(url);
+
+                return resultString;
+            }
+            catch(Exception e)
             {
-                throw new ArgumentNullException(nameof(address));
+                throw new Exception($"Error uploading address to Alba. Message: {e.Message}", e);
             }
-
-            Thread.Sleep(msDelay);
-
-            AlbaAddressSave save = Convert(address);
-
-            var url = RelativeUrlBuilder.AddAddress(save);
-            var resultString = client.DownloadString(url);
-
-            return resultString;
         }
 
         public void AddFrom(string path)
@@ -112,10 +121,34 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
         AlbaAddressSave Convert(AlbaAddressImport address)
         {
+            try
+            {
+                return TryConvert(address);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error converting address to AddressSave type.  Message: {e.Message}", e);
+            }
+        }
+
+        private AlbaAddressSave TryConvert(AlbaAddressImport address)
+        {
+            if(address == null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            if(languages == null || languages.Count == 0)
+            {
+                throw new Exception("There are no languages loaded. Please run Get-AlbaLangauge");
+            }
+            
+            throw new Exception($"Got this far");
+
             int languageId = languages
                 .First(l => string.Equals(
-                    l.Name,
-                    address.Language,
+                    l?.Name,
+                    address?.Language,
                     StringComparison.OrdinalIgnoreCase))
                 .Id;
 

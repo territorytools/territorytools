@@ -22,6 +22,11 @@ namespace TerritoryTools.Alba.PowerShell
 
         protected override void BeginProcessing()
         {
+            if(Languages == null || Languages.Count == 0)
+            {
+                throw new ArgumentNullException(nameof(Languages));
+            }
+
             importer = new AddressImporter(
                 Connection,
                 UploadDelayMs,
@@ -38,7 +43,8 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch(Exception e)
             {
-                WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
+                throw;
+                //WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }
     }

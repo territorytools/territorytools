@@ -185,6 +185,24 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return $"/addresses2";
         }
 
+        public static string SetTerritoryCompleted(
+            int territoryId, 
+            DateTime completed, 
+            bool allCompleted = false)
+        {
+            if (territoryId == 0)
+            {
+                throw new ArgumentException(
+                    $"Territory ID cannot be zero.",
+                    nameof(territoryId));
+            }
+
+            return $"/ts?mod=assigned&cmd=completed" +
+                $"&id={territoryId}" +
+                $"&date={completed.ToString("yyyy-MM-dd")} +" +
+                $"&ac={allCompleted.ToString().ToLower()}";
+        }
+
         static string AppendValuesFrom(AlbaTerritoryBorder territory)
         {
             return $"&kind=0" +

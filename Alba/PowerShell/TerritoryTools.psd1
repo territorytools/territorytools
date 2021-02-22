@@ -77,17 +77,32 @@ FunctionsToExport = @(
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = 'Add-AlbaAddress',
+    'Add-AlbaTerritoryBorder',
     'Clear-AlbaTerritoryUser',
+    'ConvertTo-AlbaAddressExport',
+    'ConvertTo-AlbaAddressImport',
+    'ConvertTo-AlbaTerritoryBorder',
+    'Convert-ToKml',
     'Edit-AlbaAddress',
+    'Edit-AlbaTerritoryBorder',
     'Get-AlbaAddress',
     'Get-AlbaConnection',
     'Get-AlbaLanguage',
     'Get-AlbaLanguageId',
-    'Get-AlbaTerritory',
-    'Set-AlbaTerritoryUser',
+    'Get-AlbaTerritory',    
     'Get-AlbaTerritoryWithBorder',
     'Get-AlbaUser',
-    'Remove-AlbaAddress'
+    'Get-DuplicateAddress',
+    'Get-NormalizedAddress',
+    'Get-OriginalAddress'
+    'Import-AlbaAddressFile',
+    'Invoke-AlbaWebRequest',
+    'Normalize-AlbaAddressImport',
+    'Remove-AlbaAddress',
+    'Set-AlbaTerritoryComplete',
+    'Set-AlbaTerritoryUser',
+    'Set-Coordinates',
+    'Skip-DuplicateAddresses'
 
 # Variables to export from this module
 VariablesToExport = '*'

@@ -31,6 +31,9 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter]
         public SwitchParameter IncludeSelf { get; set; }
 
+        [Parameter]
+        public SwitchParameter SkipNonDuplicatesInstead { get; set; }
+
         protected override void BeginProcessing()
         {
             var validRegions = Region.Split(Region.Defaults);
@@ -76,7 +79,8 @@ namespace TerritoryTools.Alba.PowerShell
                     }
                 }
 
-                if (!duplicatesFound)
+                if ((!duplicatesFound && !SkipNonDuplicatesInstead.IsPresent)
+                    || (duplicatesFound && SkipNonDuplicatesInstead.IsPresent))
                 {
                     WriteObject(Address);
                 }
