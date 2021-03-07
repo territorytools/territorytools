@@ -18,39 +18,58 @@ namespace TerritoryTools.Alba.PowerShell
         public int TerritoryId { get; set; }
 
         [Parameter]
+        public int AddressId { get; set; }
+
+        [Parameter]
         public string Search { get; set; } = "";
 
         protected override void ProcessRecord()
         {
             try
             {
-                var resultString = Connection.DownloadString(
-                    RelativeUrlBuilder.ExportAddresses(
-                        accountId: Connection.AccountId,
-                        territoryId: TerritoryId,
-                        searchText: Search));
-
-                string text = AddressExportParser.Parse(resultString);
-
-                using (var reader = new StringReader(text))
-                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                var records = new List<AlbaAddressExport>();
+                if (AddressId != 0)
                 {
-                    csv.Configuration.Delimiter = "\t";
-                    csv.Configuration.BadDataFound = (rc) => {
-                        WriteVerbose($"CSV Address Parsing Error: {rc.RawRecord} ");
-                    };
-
-                    var records = csv.GetRecords<AlbaAddressExport>().ToList();
-                    foreach (var record in records)
-                    {
-                        WriteObject(record);
-                    }
+                    var list = GetAddressList(Search, TerritoryId);
+                    records = list.Where(a => a.Address_ID == AddressId)
+                        .ToList();
+                }
+                else
+                {
+                    records = GetAddressList(Search, TerritoryId);
                 }
 
+                foreach (var record in records)
+                {
+                    WriteObject(record);
+                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
+            }
+        }
+
+        List<AlbaAddressExport> GetAddressList(string search, int territoryId)
+        {
+            var resultString = Connection.DownloadString(
+                RelativeUrlBuilder.ExportAddresses(
+                    accountId: Connection.AccountId,
+                    territoryId: territoryId,
+                    searchText: search));
+
+            string text = AddressExportParser.Parse(resultString);
+
+            using (var reader = new StringReader(text))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.Delimiter = "\t";
+                csv.Configuration.BadDataFound = (rc) =>
+                {
+                    WriteVerbose($"CSV Address Parsing Error: {rc.RawRecord} ");
+                };
+
+                return csv.GetRecords<AlbaAddressExport>().ToList();
             }
         }
     }
