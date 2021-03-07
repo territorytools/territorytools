@@ -9,10 +9,10 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(AlbaHtmlUser))]
     public class SetAlbaTerritoryComplete : AlbaConnectedCmdlet
     {
-        [Parameter(Mandatory=true)]
+        [Parameter(Mandatory=true, Position=0, ValueFromPipeline=true)]
         public int TerritoryId { get; set; }
 
-        [Parameter]
+        [Parameter(Position = 1)]
         public DateTime? CompletedDate { get; set; }
         
         protected override void ProcessRecord()

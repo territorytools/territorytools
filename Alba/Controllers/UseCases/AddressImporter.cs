@@ -143,7 +143,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 throw new Exception("There are no languages loaded. Please run Get-AlbaLangauge");
             }
             
-            throw new Exception($"Got this far");
+            //throw new Exception($"Got this far");
 
             int languageId = languages
                 .First(l => string.Equals(

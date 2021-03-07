@@ -92,6 +92,7 @@ CmdletsToExport = 'Add-AlbaAddress',
     'Get-AlbaTerritory',    
     'Get-AlbaTerritoryWithBorder',
     'Get-AlbaUser',
+    'Get-Coordinates',
     'Get-DuplicateAddress',
     'Get-NormalizedAddress',
     'Get-OriginalAddress'

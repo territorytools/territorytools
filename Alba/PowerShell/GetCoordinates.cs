@@ -8,9 +8,9 @@ using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.PowerShell
 {
-    [Cmdlet(VerbsCommon.Set,"Coordinates")]
+    [Cmdlet(VerbsCommon.Get,"Coordinates")]
     [OutputType(typeof(AlbaAddressImport))]
-    public class SetCoordinates : PSCmdlet
+    public class GetCoordinates : PSCmdlet
     {
         [Parameter]
         public string Key { get; set; }
@@ -45,10 +45,10 @@ namespace TerritoryTools.Alba.PowerShell
             {
                 Thread.Sleep(DelayMs);
 
-                var geocodedAddress = new AzureMapsmGeocodeAddress(client)
-                    .Geocode(Address, Force.IsPresent);
+                var coordinates = new AzureMapsmGeocodeAddress(client)
+                    .CoordinatesFrom(Address);
 
-                WriteObject(geocodedAddress);
+                WriteObject(coordinates);
             }
             catch(Exception e)
             {
