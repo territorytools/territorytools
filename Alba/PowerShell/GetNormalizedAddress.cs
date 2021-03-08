@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Controllers.AlbaServer;
+using System;
 using System.Collections.Generic;
 using System.Management.Automation;
 using TerritoryTools.Common.AddressParser.Smart;
@@ -12,11 +13,18 @@ namespace TerritoryTools.Alba.PowerShell
         Parser parser;
 
         [Parameter(
-           Mandatory = true,
+           //Mandatory = true,
            Position = 0,
            ValueFromPipeline = true,
            ValueFromPipelineByPropertyName = true)]
         public string Address { get; set; }
+
+        [Parameter(
+           //Mandatory = true,
+           Position = 1,
+           ValueFromPipeline = true,
+           ValueFromPipelineByPropertyName = true)]
+        public AlbaAddressImport AddressImport { get; set; }
 
         [Parameter]
         public List<string> Cities { get; set; }
@@ -37,11 +45,17 @@ namespace TerritoryTools.Alba.PowerShell
             try
             {
                 parser.Normalize = true;
-                Address parsed = parser.Parse(Address);
+                string text = Address;
+                if(AddressImport != null)
+                {
+                    text = AddressImport.ToAddressString();
+                }
+
+                Address parsed = parser.Parse(text);
                 
                 normalized = new NormalizedAddress
                 {
-                    Original = Address,
+                    Original = text,
                     StreetNamePrefix = parsed.Street.Name.NamePrefix,
                     StreetNumber = parsed.Street.Number,
                     StreetNumberFraction = parsed.Street.NumberFraction,
