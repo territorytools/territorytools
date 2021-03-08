@@ -12,8 +12,8 @@ Param(
     [String]
     $ApiKey = $env:GOOGLE_API_KEY,
     [Parameter()]
-    [Int]
-    $HeaderRowIndex = 0,
+    [int]
+    $HeaderRowIndex = -1,
     [Parameter()]
     [String]
     $SheetName
@@ -49,9 +49,13 @@ ForEach ($s in $doc.sheets) {
         $rows = @()
         $lineCount = $sheet.values.Count
 
-        If(!$HeaderRowIndex) {
-            $widestLineIndex = 0
-            $widestColumnCount = 0
+        $widestLineIndex = 0
+        $widestColumnCount = 0
+        If($HeaderRowIndex -ge 0) {
+            Write-Host "Header Row Index Supplied: $HeaderRowIndex"
+            $headerRow = $HeaderRowIndex
+        } Else {
+            Write-Host "Header Row Index not supplied, scanning rows..."
             For($i = 0; $i -LT $lineCount; $i++) {
                 If($sheet.values[$i].Count -gt $widestColumnCount) {
                     $widestLineIndex = $i
@@ -62,32 +66,19 @@ ForEach ($s in $doc.sheets) {
             }
             
             Write-Host "Widest line detected at index $widestLineIndex (Width $widestColumnCount)" 
-            $HeaderRowIndex = $widestLineIndex
+            $headerRow = $widestLineIndex
         }
 
         # Load the header row
-        For($headerIndex = $HeaderRowIndex; $headerIndex -LT $lineCount; $headerIndex++) {
-            $line = $sheet.values[$headerIndex]
-            # If(($line.Count -eq 0) -or
-            #     (($line.Count -eq 1) -and ($line[0] -eq $currentSheetName))) { 
-            #     Write-Host "Skipping line $headerIndex in $currentSheetName, value: $line"
-            #     continue 
-            # }
-            $headers += "$($currentSheetName):"
-            $header = @()
-            $colIndex = 0
-            ForEach($col in $line) {
-                If([string]::IsNullOrWhiteSpace($col)) {
-                    $header += "Empty$colIndex"
-                } else {
-                    $header += $col
-                }
-                $colIndex++
+        $header = @()
+        $colIndex = 0
+        ForEach($col in $sheet.values[$headerRow]) {
+            If([string]::IsNullOrWhiteSpace($col)) {
+                $header += "Empty$colIndex"
+            } else {
+                $header += $col
             }
-            $headers += $header
-            $headers += ""
-            $rows += $header
-            break
+            $colIndex++
         }
 
         Write-Host "Header: "
@@ -95,7 +86,7 @@ ForEach ($s in $doc.sheets) {
 
         # Load all the rows after the header
         $file = @()    
-        For ($i = ($headerIndex + 1); $i -LT $lineCount; $i++) {
+        For ($i = ($headerRow + 1); $i -LT $lineCount; $i++) {
             $line = $sheet.values[$i]        
             $row = @()
             $fileRow = [ordered]@{}
