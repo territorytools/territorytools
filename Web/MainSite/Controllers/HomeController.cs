@@ -118,6 +118,23 @@ namespace WebUI.Controllers
             );
         }
 
+        [Route("/Cookies")]
+        public IActionResult Cookies()
+        {
+            return View();
+        }
+
+        [Route("/DeleteCookies")]
+        public IActionResult DeleteCookies()
+        {
+            foreach (var cookie in HttpContext.Request.Cookies)
+            {
+                Response.Cookies.Delete(cookie.Key);
+            }
+
+            return View();
+        }
+
         [Authorize]
         [Route("t/{number}")]
         public IActionResult AssignSingleTerritory(string number)
