@@ -13,5 +13,8 @@ namespace WebUI.Models
         public string Email { get; set; }
         public string Surname { get; set; }
         public string GivenName { get; set; }
+
+        [Ignore]
+        public string AlbaAccount {get; set;}
     }
 }

@@ -86,6 +86,25 @@ namespace WebUI.Controllers
             };
 
             database.TerritoryUser.Add(user);
+
+            if(string.Equals(invitation.AlbaAccount, "this-account"))
+            {
+                 Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+
+                database
+                    .TerritoryUserAlbaAccountLink
+                    .Add(
+                        new TerritoryUserAlbaAccountLink()
+                        {
+                            TerritoryUserId = user.Id,
+                            AlbaAccountId = albaAccountId,
+                            Role = "Invited",
+                            Created = DateTime.Now,
+                            Updated = DateTime.Now
+                        });
+
+            }
+
             database.SaveChanges();
 
             return Ok();
