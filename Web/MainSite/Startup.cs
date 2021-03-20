@@ -33,6 +33,17 @@ namespace WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                    ForwardedHeaders.XForwardedProto;
+                // Only loopback proxies are allowed by default.
+                // Clear that restriction because forwarders are enabled by explicit 
+                // configuration.
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -101,6 +112,14 @@ namespace WebUI
         // the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.Use(async (ctx, next) =>
+            {
+                ctx.Request.Scheme = "https";
+                ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
+
+                await next();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

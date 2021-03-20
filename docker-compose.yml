@@ -136,6 +136,7 @@ services:
       - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
       - CompletionMapUrl=$CompletionMapUrl
+      - HOST_NAME=$HOST_NAME
   tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
@@ -180,6 +181,7 @@ services:
       - AzureClientSecret=$AzureClientSecret
       - TT_AreaNames=$TT_AreaNames
       - CompletionMapUrl=$CompletionMapUrl
+      - HOST_NAME=$HOST_NAME
   db:
     container_name: tt-db
     image: "microsoft/mssql-server-linux"
@@ -220,7 +222,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      
-    
 
 networks:
   main:
