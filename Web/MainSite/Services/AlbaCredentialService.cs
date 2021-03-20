@@ -84,8 +84,22 @@ namespace WebUI.Services
 
             if (territoryUser == null)
             {
+                territoryUser = database
+                    .TerritoryUser
+                    .SingleOrDefault(u => u.Email.ToUpper() == userName.ToUpper());
+
+                if (territoryUser != null && territoryUser.AspNetUserId == null)
+                {
+                    territoryUser.AspNetUserId = identityUser.Id;
+                    database.Update(territoryUser);
+                    database.SaveChanges();
+                }
+            }
+
+            if (territoryUser == null)
+            {
                 throw new Exception(
-                    $"A territory user with identity user ID '{identityUser.Id}' does not exist!");
+                    $"A territory user with identity user ID '{identityUser.Id}' and email '{userName}' does not exist!");
             }
 
             var accountLink = database
