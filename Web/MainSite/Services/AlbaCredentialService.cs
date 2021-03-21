@@ -74,7 +74,7 @@ namespace WebUI.Services
 
             if(identityUser == null)
             {
-                throw new Exception(
+                throw new AlbaCredentialException(
                     $"An identity with the user name '{userName}' does not exist!");
             }
 
@@ -98,8 +98,8 @@ namespace WebUI.Services
 
             if (territoryUser == null)
             {
-                throw new Exception(
-                    $"A territory user with identity user ID '{identityUser.Id}' and email '{userName}' does not exist!");
+                throw new AlbaCredentialException(
+                    $"A territory user with identity user ID '{identityUser.Id}' and email '{userName}' does not exist!  Make sure you were invited with the correct email address.");
             }
 
             var accountLink = database
@@ -108,7 +108,7 @@ namespace WebUI.Services
 
             if (accountLink == null)
             {
-                throw new Exception(
+                throw new AlbaCredentialException(
                     $"An Alba account link for territory user id '{territoryUser.Id}' does not exist!");
             }
 
