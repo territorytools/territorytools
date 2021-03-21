@@ -71,7 +71,7 @@ namespace WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult InviteAll(List<UserInvitation> invitations)
+        public IActionResult InviteMultiple(List<UserInvitation> invitations)
         {
             try
             {

@@ -8,10 +8,10 @@
 
 <div class="container mt-3" style="max-width:1200px;">
     <h3>Alba Users</h3>
-    <form asp-controller="TerritoryUser" asp-action="InviteAll" method="post">
+    @*<form asp-controller="TerritoryUser" asp-action="InviteMultiple" method="post">*@
         <button id="invite-all-users" class="btn btn-primary">Invite Selected Users</button>
-        <input type="hiden" id="invite-all-users-results" value=""/>
-    </form>
+        @*<input type="text" id="invite-all-users-results" value=""/>*@
+    @*</form>@*
     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
         <div class="pr-2 pl-2" style="min-width:40px;"><input asp-for="IsChecked" /></div>
         <div class="pr-2 pl-2" style="min-width:100px;">ID</div>
@@ -24,14 +24,13 @@
     {
         <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
             <div class="p-2" style="min-width:40px;">
-                <button 
-                    class="btn btn-primary"
+                <input 
+                    type="checkbox" 
+                    class="invite-checkbox"
                     data-id="@user.Id"
                     data-email="@user.Email"
                     data-name="@user.Name"
-                    onclick="inviteAlbaUser($(this).data('id'), $(this).data('email'), $(this).data('name'));">
-                    Invite
-                </button>
+                />
             </div>
             <div class="p-2" style="min-width:100px;"><strong>@user.Id</strong></div>
             <div class="p-2" style="min-width:200px;"><strong>@user.UserName</strong></div>
@@ -44,15 +43,39 @@
 
 @section Scripts {
 <script>
+// $(document).ready(function(){
+//     $("#invite-all-users").click(function(){
+//         var users = [];
+//         $(".invite-checkbox").each(function(){
+//             var user = {};
+//             user.selected = $(this).is(":checked");
+//             user.email = $(this).data("email");
+//             user.name = $(this).data("name");
+//             users.push(user);
+//         });
+//         //$("#invite-all-users-result").val(JSON.stringify(users));
+//         $.post("/TerritoryUser/InviteMultiple", users, function(){ console.log("done")});
+//     });
+// });
+
 $(document).ready(function(){
+    // $(".invite-checkbox").click(function(){
+    //     if($(this).is(":checked")){
+    //         $("#invite-all-users-result").val(JSON.stringify(users));
+    //     }
+    // }
     $("#invite-all-users").click(function(){
-        
-        $("button").each(function(){
-          var ids = [];
-          $(this).text("Done");
-          ids.push($(this).data("email"));
+        var users = [];
+        $(".invite-checkbox").each(function(){
+            var user = {};
+            user.selected = $(this).is(":checked");
+            user.email = $(this).data("email");
+            user.name = $(this).data("name");
+            users.push(user);
+            console.log($(this).data("email"));
         });
-        $("#invite-all-users-result").val(ids);
+        //$("#invite-all-users-result").val(JSON.stringify(users));
+        $.post("/TerritoryUser/InviteMultiple", users, function(){ console.log("done")});
     });
 });
 
