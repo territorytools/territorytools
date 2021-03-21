@@ -9,7 +9,8 @@
 <div class="container mt-3" style="max-width:1200px;">
     <h3>Alba Users</h3>
     <form asp-controller="TerritoryUser" asp-action="InviteAll" method="post">
-        <button class="btn btn-primary">Invite Selected Users</button>
+        <button id="invite-all-users" class="btn btn-primary">Invite Selected Users</button>
+        <input type="hiden" id="invite-all-users-results" value=""/>
     </form>
     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
         <div class="pr-2 pl-2" style="min-width:40px;"><input asp-for="IsChecked" /></div>
@@ -41,26 +42,34 @@
     }
 </div>
 
+@section Scripts {
 <script>
-function inviteAllUsers(){
-    $("button").each(function(){
-        log("Item:" + $(this).data("id"));
+$(document).ready(function(){
+    $("#invite-all-users").click(function(){
+        
+        $("button").each(function(){
+          var ids = [];
+          $(this).text("Done");
+          ids.push($(this).data("email"));
+        });
+        $("#invite-all-users-result").val(ids);
     });
-}
+});
+
 function inviteAlbaUser(id, email, name){
-        $.post(
-            "/TerritoryUser/Invitation",
-            {
-                email: email,
-                surname: name,
-                givenName: "",
-                albaAccount: "this-account"
-            },
-            function(result){
-                $("#" + id).html(result);
-            }
-        );
-    }
+    $.post(
+        "/TerritoryUser/Invitation",
+        {
+            email: email,
+            surname: name,
+            givenName: "",
+            albaAccount: "this-account"
+        },
+        function(result){
+            $("#" + id).html(result);
+        }
+    );
+}
 
 
 $(document).ready(function(){
@@ -72,3 +81,4 @@ $(document).ready(function(){
   });
 });
 </script>
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,85 @@ namespace WebUI.Controllers
             catch (Exception e)
             {
                 return NotFound(e.Message);
+            }
+        }
+        public class UserInvitation
+        {
+            public bool Selected { get; set; }
+            public string Email { get; set; }
+            public string Name { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult InviteAll(List<UserInvitation> invitations)
+        {
+            try
+            {
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
+                Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+
+                foreach(var invitation in invitations)
+                {
+                    if(!invitation.Selected)
+                    {
+                        continue;
+                    }
+
+                    if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
+                    {
+                        //return RedirectToAction(nameof(AlreadyInvited), invitation);
+                        continue; // Move to the next invite
+                    }
+
+                    var now = DateTime.Now;
+
+                    var user = new TerritoryUser
+                    {
+                        Id = Guid.NewGuid(),
+                        Email = invitation.Email,
+                        GivenName = invitation.Name,
+                        Created = now,
+                        Updated = now,
+                        Role = "AllInvited"
+                    };
+
+                    database.TerritoryUser.Add(user);
+
+                    //if(string.Equals(invitation.AlbaAccount, "this-account"))
+                    // Assume all "Invite Alls" are for "this-account"
+                    {
+                        
+
+                        database
+                            .TerritoryUserAlbaAccountLink
+                            .Add(
+                                new TerritoryUserAlbaAccountLink()
+                                {
+                                    TerritoryUserId = user.Id,
+                                    AlbaAccountId = albaAccountId,
+                                    Role = "AllInvited",
+                                    Created = DateTime.Now,
+                                    Updated = DateTime.Now
+                                });
+
+                    }
+                }
+
+                database.SaveChanges();
+
+                return Ok();
+            }
+            catch(AlbaCredentialException e)
+            {
+                return Redirect($"~/Home/LoginError?message={e.Message}");
+            }
+            catch(Exception)
+            {
+                throw;
             }
         }
 
