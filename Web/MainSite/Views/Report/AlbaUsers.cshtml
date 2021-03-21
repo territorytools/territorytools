@@ -42,6 +42,11 @@
 </div>
 
 <script>
+function inviteAllUsers(){
+    $("button").each(function(){
+        log("Item:" + $(this).data("id"));
+    });
+}
 function inviteAlbaUser(id, email, name){
         $.post(
             "/TerritoryUser/Invitation",
