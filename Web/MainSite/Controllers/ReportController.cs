@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using WebUI.Services;
 using WebUI.Areas.Identity.Data;
+using WebUI.Models;
 
 namespace WebUI.Controllers
 {
@@ -355,11 +356,12 @@ namespace WebUI.Controllers
                 Guid albaAccountId = albaCredentialService
                     .GetAlbaAccountIdFor(User.Identity.Name);
 
-                var users = GetAlbaUsers(albaAccountId)
+                var userListView = new AlbaUserListView();
+                userListView.Users = GetAlbaUsers(albaAccountId)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                return View(users);
+                return View(userListView);
             }
             catch (Exception)
             {

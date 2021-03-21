@@ -1,29 +1,69 @@
 @using TerritoryTools.Alba.Controllers.UseCases;
 @using WebUI;
 @using WebUI.Models;
-@model List<AlbaUserView>;
+@model AlbaUserListView;
 @{
     ViewData["Title"] = "Alba Users";
 }
 
 <div class="container mt-3" style="max-width:1200px;">
     <h3>Alba Users</h3>
+    <form asp-controller="TerritoryUser" asp-action="InviteAll" method="post">
+        <button class="btn btn-primary">Invite Selected Users</button>
+    </form>
     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="pr-2 pl-2" style="min-width:40px;"><input asp-for="IsChecked" /></div>
         <div class="pr-2 pl-2" style="min-width:100px;">ID</div>
         <div class="pr-2 pl-2" style="min-width:200px;">User Name</div>
         <div class="pr-2 pl-2 flex-grow-1" style="min-width:300px;">Name</div>
         <div class="pr-2 pl-2" style="width:300px;">Email</div>
         <div class="pr-2 pl-2" style="width:200px;">Role</div>
     </div>
-    @foreach (var u in Model)
+    @foreach (var user in Model.Users)
     {
         <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <input type="checkbox" class="form-check-input" id="import-@u.Id" name="ImportUser" value="@u.Email" checked>
-            <div class="p-2" style="min-width:100px;"><strong>@u.Id</strong></div>
-            <div class="p-2" style="min-width:200px;"><strong>@u.UserName</strong></div>
-            <div class="p-2 flex-grow-1" style="min-width:300px;">@u.Name</div>
-            <div class="p-2" style="width:300px;">@u.Email</div>
-            <div class="p-2" style="width:200px;">@u.Role</div>
+            <div class="p-2" style="min-width:40px;">
+                <button 
+                    class="btn btn-primary"
+                    data-id="@user.Id"
+                    data-email="@user.Email"
+                    data-name="@user.Name"
+                    onclick="inviteAlbaUser($(this).data('id'), $(this).data('email'), $(this).data('name'));">
+                    Invite
+                </button>
+            </div>
+            <div class="p-2" style="min-width:100px;"><strong>@user.Id</strong></div>
+            <div class="p-2" style="min-width:200px;"><strong>@user.UserName</strong></div>
+            <div class="p-2 flex-grow-1" style="min-width:300px;">@user.Name</div>
+            <div class="p-2" style="width:300px;">@user.Email</div>
+            <div class="p-2" style="width:200px;">@user.Role<span id="@user.Id"></span></div>
         </div>
     }
 </div>
+
+<script>
+function inviteAlbaUser(id, email, name){
+        $.post(
+            "/TerritoryUser/Invitation",
+            {
+                email: email,
+                surname: name,
+                givenName: "",
+                albaAccount: "this-account"
+            },
+            function(result){
+                $("#" + id).html(result);
+            }
+        );
+    }
+
+
+$(document).ready(function(){
+  $("input").keyup(function(){
+    var txt = $("input").val();
+    $.post("demo_ajax_gethint.asp", {suggest: txt}, function(result){
+      $("span").html(result);
+    });
+  });
+});
+</script>
