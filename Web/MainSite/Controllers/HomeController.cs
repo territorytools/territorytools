@@ -37,8 +37,8 @@ namespace WebUI.Controllers
 
         public IActionResult Index()
         {
-            try
-            {
+            // try
+            // {
                 var publisher = new Publisher()
                 {
                     Email = User.Identity.Name
@@ -49,15 +49,28 @@ namespace WebUI.Controllers
                     return View(publisher);
                 }
 
-                var users = GetUsers(account, user, password);
-                var me = users.FirstOrDefault(u => string.Equals(u.Email, User.Identity.Name, StringComparison.OrdinalIgnoreCase));
+                 string myName = User.Identity.Name;
 
-                if (me == null)
-                {
-                    return NotFound();
-                }
+                // try
+                // {
+                    var users = GetUsers(account, user, password);
+                    var me = users.FirstOrDefault(
+                        u => string.Equals(
+                            u.Email,
+                            User.Identity.Name,
+                            StringComparison.OrdinalIgnoreCase));
 
-                string myName = me.Name;
+                    if(me == null)
+                    {
+                        throw new Exception($"Email not found in users table that matches {User.Identity.Name}");
+                    }
+
+                    myName = me.Name;
+                // }
+                // catch(Exception e)
+                // {
+                //     return NotFound(e.Message);
+                // }
 
                 var assignments = GetAllAssignments()
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
@@ -91,11 +104,11 @@ namespace WebUI.Controllers
                 }
 
                 return View(publisher);
-            }
-            catch (Exception e)
-            {
-                return NotFound(e.Message);
-            }
+            // }
+            // catch (Exception e)
+            // {
+            //     return NotFound(e.Message);
+            // }
         }
 
         public IActionResult Privacy()
@@ -127,10 +140,57 @@ namespace WebUI.Controllers
         [Route("/DeleteCookies")]
         public IActionResult DeleteCookies()
         {
+            /*
+            string domain = "territorytools.org";
+            if (HttpContext.Current.Request.Cookies[cookieName] != null)
+            {
+                HttpCookie cookie = HttpContext.Current.Request.Cookies[cookieName];
+        
+                // SameSite.None Cookies won't be accepted by Google Chrome and other modern browsers if they're not secure, which would lead in a "non-deletion" bug.
+                // in this specific scenario, we need to avoid emitting the SameSite attribute to ensure that the cookie will be deleted.
+                if (cookie.SameSite == SameSiteMode.None && !cookie.Secure)
+                    cookie.SameSite = (SameSiteMode)(-1);
+        
+                if (String.IsNullOrEmpty(keyName))
+                {
+                    cookie.Expires = DateTime.UtcNow.AddYears(-1);
+                    if (!String.IsNullOrEmpty(domain)) cookie.Domain = domain;
+                    HttpContext.Current.Response.Cookies.Add(cookie);
+                    //HttpContext.Current.Request.Cookies.Remove(cookieName);
+                }
+                else
+                {
+                    cookie.Values.Remove(keyName);
+                    if (!String.IsNullOrEmpty(domain)) cookie.Domain = domain;
+                    HttpContext.Current.Response.Cookies.Add(cookie);
+                }
+            }*/
+
             foreach (var cookie in HttpContext.Request.Cookies)
             {
+                Console.WriteLine($"Request Cookie");
+                Console.WriteLine($"Key: {cookie.Key}");
+                Console.WriteLine($"Value: {cookie.Value}");
                 Response.Cookies.Delete(cookie.Key);
+                // Console.WriteLine($"Domain: {cookie.Domain}");
+                // Console.WriteLine($"Key: {cookie.Key}");
+                // Console.WriteLine($"Expires: {cookie.Expires.ToString()}");
+                //HttpContext.Current.Request.Cookies.Delete(cookie.Key);
             }
+
+            // foreach (var cookie in HttpContext.Response.Cookies)
+            // {
+            //     Console.WriteLine($"Response Cookie");
+            //     Console.WriteLine($"Domain: {cookie.Domain}");
+            //     Console.WriteLine($"Key: {cookie.Key}");
+            //     Console.WriteLine($"Expires: {cookie.Expires.ToString()}");
+            //     //Response.Cookies.Delete(cookie.Key);
+            // }
+
+            // foreach (var cookie in HttpContext.Response.Cookies)
+            // {
+            //     Response.Cookies.Delete(cookie.Key);
+            // }
 
             return View();
         }
