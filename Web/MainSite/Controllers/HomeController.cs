@@ -37,8 +37,8 @@ namespace WebUI.Controllers
 
         public IActionResult Index()
         {
-            // try
-            // {
+            try
+            {
                 var publisher = new Publisher()
                 {
                     Email = User.Identity.Name
@@ -104,11 +104,18 @@ namespace WebUI.Controllers
                 }
 
                 return View(publisher);
-            // }
-            // catch (Exception e)
-            // {
-            //     return NotFound(e.Message);
-            // }
+            }
+            catch (Exception e)
+            {
+                return Redirect($"~/Home/LoginError?message={e.Message}");
+            }
+        }
+
+        public IActionResult LoginError(string message)
+        {
+            ViewData["ErrorMessage"] = message;
+
+            return View();
         }
 
         public IActionResult Privacy()

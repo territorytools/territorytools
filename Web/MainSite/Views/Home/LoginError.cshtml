@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Error Signing In";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="text-danger py-4">
+    <p><strong>@ViewData["ErrorMessage"]</strong></p>
+</div>
+
+<div class="p-4">
+    <p>First try signing out then sign back in</p>
+    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+        <button type="submit" class="btn btn-primary">Sign Out</button>
+    </form>
+</div>
+
+<div class="p-4">
+    <p>If that doesn't work try deleting your cookies and signing back in</p>        
+    <a class="btn btn-primary" href="/DeleteCookies">Delete Cookies</a>
+</div>
