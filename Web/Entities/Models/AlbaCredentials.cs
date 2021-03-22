@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TerritoryTools.Entities
+namespace WebUI
 {
     public interface IAlbaCredentials
     {

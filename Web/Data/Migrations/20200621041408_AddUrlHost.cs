@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace TerritoryTools.Web.Data.Migrations
+namespace WebUI.Migrations
 {
     public partial class AddUrlHost : Migration
     {

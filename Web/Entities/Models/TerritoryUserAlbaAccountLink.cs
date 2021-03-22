@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace TerritoryTools.Entities
+namespace WebUI.Models
 {
     public class TerritoryUserAlbaAccountLink
     {

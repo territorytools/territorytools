@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace TerritoryTools.Entities
+namespace WebUI.Models
 {
     public class AlbaAccount
     {
