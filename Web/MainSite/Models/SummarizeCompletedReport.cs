@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite.Models
 {
     public class SummarizeCompletedReport
     {

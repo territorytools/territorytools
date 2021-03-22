@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebUI.Models
+namespace TerritoryTools.Web.MainSite.Models
 {
     public class AlbaUserListView
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace WebUI.Services
+namespace TerritoryTools.Web.MainSite.Services
 {
     public class AlbaCredentialException : Exception
     {

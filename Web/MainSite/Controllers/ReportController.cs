@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using WebUI.Services;
-using WebUI.Areas.Identity.Data;
-using WebUI.Models;
+using TerritoryTools.Web.MainSite.Services;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Models;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     public class ReportController : AuthorizedController

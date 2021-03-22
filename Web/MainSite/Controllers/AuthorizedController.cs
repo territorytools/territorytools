@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models;
-using WebUI.Services;
+using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
@@ -13,11 +14,11 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using io = System.IO;
 using Microsoft.AspNetCore.Http;
-using static WebUI.BasicStrings;
-using WebUI.Areas.Identity.Data;
-using System;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using static TerritoryTools.Web.MainSite.BasicStrings;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class AuthorizedController : Controller
     {
@@ -139,7 +140,7 @@ namespace WebUI.Controllers
             io.File.WriteAllText(path, html);
         }
 
-        protected IEnumerable<Assignment> GetAllAssignments()
+        protected IEnumerable<AlbaAssignmentValues> GetAllAssignments()
         {
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
             string path = string.Format(
@@ -268,7 +269,7 @@ namespace WebUI.Controllers
             return albaCredentialService.GetCredentialsFrom(userName);
         }
 
-        AuthorizationClient AuthClient()
+        AlbaConnection AuthClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
@@ -276,7 +277,7 @@ namespace WebUI.Controllers
                 site: options.AlbaHost,
                 applicationPath: "/alba");
 
-            var client = new AuthorizationClient(
+            var client = new AlbaConnection(
                 webClient: webClient,
                 basePath: basePath);
 

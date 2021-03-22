@@ -9,11 +9,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using WebUI.Areas.Identity.Data;
+using Microsoft.Extensions.Options;
+using TerritoryTools.Alba.Controllers.Models;
+using TerritoryTools.Web.Data;
 
-namespace WebUI.Areas.Identity.Pages.Account
+namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class RegisterModel : PageModel

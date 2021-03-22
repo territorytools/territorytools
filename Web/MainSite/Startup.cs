@@ -19,10 +19,9 @@ using System;
 using System.Globalization;
 using System.Linq;
 using TerritoryTools.Web.Data.Services;
-using WebUI.Areas.Identity.Data;
-using WebUI.Services;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI
+namespace TerritoryTools.Web.MainSite
 {
     public class Startup
     {

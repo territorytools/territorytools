@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using WebUI.Areas.UrlShortener.Models;
-using WebUI.Models;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
-namespace WebUI.Areas.Identity.Data
+namespace TerritoryTools.Web.Data
 {
     public class MainDbContext : IdentityDbContext<IdentityUser>
     {

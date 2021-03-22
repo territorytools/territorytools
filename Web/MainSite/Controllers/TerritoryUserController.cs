@@ -1,17 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using TerritoryTools.Alba.Controllers.Models;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using WebUI.Areas.Identity.Data;
-using WebUI.Models;
-using WebUI.Services;
+using System;
+using System.Linq;
+using TerritoryTools.Alba.Controllers.Models;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
-namespace WebUI.Controllers
+namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     public class TerritoryUserController : AuthorizedController
