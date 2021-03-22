@@ -96,9 +96,8 @@ namespace WebUI.Controllers
                         continue;
                     }
 
-                    if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
+                    if (database.TerritoryUser.Exists(u => BasicStrings.StringsEqual(u.Email, invitation.Email)))
                     {
-                        //return RedirectToAction(nameof(AlreadyInvited), invitation);
                         continue; // Move to the next invite
                     }
 
@@ -109,26 +108,21 @@ namespace WebUI.Controllers
                         GivenName = invitation.Name,
                         Created = now,
                         Updated = now,
-                        Role = "AllInvited"
+                        Role = "Added"
                     };
 
                     database.TerritoryUser.Add(user);
-
-                    //if(string.Equals(invitation.AlbaAccount, "this-account"))
-                    // Assume all "Invite Alls" are for "this-account"
-                    {
-                        database
-                            .TerritoryUserAlbaAccountLink
-                            .Add(
-                                new TerritoryUserAlbaAccountLink()
-                                {
-                                    TerritoryUserId = user.Id,
-                                    AlbaAccountId = albaAccountId,
-                                    Role = "AllInvited",
-                                    Created = now,
-                                    Updated = now
-                                });
-                    }
+                    database
+                        .TerritoryUserAlbaAccountLink
+                        .Add(
+                            new TerritoryUserAlbaAccountLink()
+                            {
+                                TerritoryUserId = user.Id,
+                                AlbaAccountId = albaAccountId,
+                                Role = "Added",
+                                Created = now,
+                                Updated = now
+                            });
                 }
 
                 database.SaveChanges();
