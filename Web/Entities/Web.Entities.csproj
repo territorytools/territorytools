@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>TerritoryTools.Web.Entities</AssemblyName>
     <RootNamespace>TerritoryTools.Web.Entities</RootNamespace>
   </PropertyGroup>

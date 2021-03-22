@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>net5</TargetFrameworks>
+    <TargetFrameworks>netcore3.0</TargetFrameworks>
     <UserSecretsId>aspnet-WebUI-C807F25B-27EF-4FA8-8ABE-2951D5B88E4A</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>TerritoryTools.Web.MainSite</RootNamespace>
@@ -10,10 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="FluffySpoon.AspNet.LetsEncrypt" Version="1.119.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App">
-      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
-      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
-    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
