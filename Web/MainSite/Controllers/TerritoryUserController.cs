@@ -91,12 +91,12 @@ namespace WebUI.Controllers
                 {
                     Console.WriteLine($"    Adding User: {now.ToString("HH:mm:ss")}: {invitation.Email} {invitation.Name}");
                     
-                    if(!invitation.Selected)
+                    if(!invitation.Selected || string.IsNullOrWhiteSpace(invitation.Email))
                     {
                         continue;
                     }
 
-                    if (database.TerritoryUser.Exists(u => BasicStrings.StringsEqual(u.Email, invitation.Email)))
+                    if (database.TerritoryUser.Any(u => BasicStrings.StringsEqual(u.Email, invitation.Email)))
                     {
                         continue; // Move to the next invite
                     }

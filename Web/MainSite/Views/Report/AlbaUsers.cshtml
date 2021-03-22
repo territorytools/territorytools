@@ -10,7 +10,7 @@
     <h3>Alba Users</h3>
     <button id="add-users" class="btn btn-primary">Add Selected Users to Territory Tools</button>
     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-        <div class="pr-2 pl-2" style="min-width:40px;"><input asp-for="IsChecked" /></div>
+        <div class="pr-2 pl-2" style="min-width:40px;"><input id="check-all" asp-for="IsChecked" /></div>
         <div class="pr-2 pl-2" style="min-width:100px;">ID</div>
         <div class="pr-2 pl-2" style="min-width:200px;">User Name</div>
         <div class="pr-2 pl-2 flex-grow-1" style="min-width:300px;">Name</div>
@@ -22,7 +22,8 @@
         <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
             <div class="p-2" style="min-width:40px;">
                 <input 
-                    type="checkbox" 
+                    id="checkbox-@user.Id"
+                    type="checkbox"
                     class="add-checkbox"
                     data-id="@user.Id"
                     data-email="@user.Email"
@@ -53,16 +54,31 @@
                         console.log($(this).data("email"));
                     }
                 });
-
                 $.ajax({
                     type: "POST",
                     url: "/TerritoryUser/AddUsers",
                     data: JSON.stringify(users),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    success: function(){ console.log("done"); }
+                    success: function(){
+                        alert("All selected users were added to Territory Tools");
+                        // $(".add-checkbox").each(
+                        //     function(){
+                        //         $(this).prop("checked", false);
+                        //     }
+                        // );
+                    }
                 });
             });
+            $("#check-all").change(
+                function(){
+                    $(".add-checkbox").each(
+                        function(){
+                             $(this).prop("checked", $("#check-all").prop("checked"));
+                        }
+                    );
+                }
+            );
         });
     </script>
 }
