@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="FluffySpoon.AspNet.LetsEncrypt" Version="1.119.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.13" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
     <PackageReference Include="SendGrid" Version="9.9.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
