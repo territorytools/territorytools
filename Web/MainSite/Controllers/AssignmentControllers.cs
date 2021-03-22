@@ -243,6 +243,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, html);
         }
 
+        IEnumerable<Assignment> GetAllAssignments()
         {
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
 
