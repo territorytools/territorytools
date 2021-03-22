@@ -208,7 +208,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("ShortUrls");
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrlActivity", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrlActivity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,7 +225,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("ShortUrlActivity");
                 });
 
-            modelBuilder.Entity("WebUI.Models.AlbaAccount", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Models.AlbaAccount", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -247,7 +247,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("AlbaAccounts");
                 });
 
-            modelBuilder.Entity("WebUI.Models.AlbaUser", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Models.AlbaUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -279,7 +279,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("AlbaUsers");
                 });
 
-            modelBuilder.Entity("WebUI.Models.TerritoryUser", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Models.TerritoryUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -309,7 +309,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("TerritoryUser");
                 });
 
-            modelBuilder.Entity("WebUI.Models.TerritoryUserAlbaAccountLink", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Models.TerritoryUserAlbaAccountLink", b =>
                 {
                     b.Property<int>("TerritoryUserAlbaAccountLinkId")
                         .ValueGeneratedOnAdd()
@@ -379,7 +379,7 @@ namespace TerritoryTools.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("WebUI.Models.AlbaUser", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Models.AlbaUser", b =>
                 {
                     b.HasOne("WebUI.Models.AlbaAccount", "Account")
                         .WithMany("Users")
@@ -388,7 +388,7 @@ namespace TerritoryTools.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("WebUI.Models.TerritoryUserAlbaAccountLink", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Models.TerritoryUserAlbaAccountLink", b =>
                 {
                     b.HasOne("WebUI.Models.AlbaAccount", "AlbaAccount")
                         .WithMany("TerritoryUserLinks")
@@ -396,7 +396,7 @@ namespace TerritoryTools.Web.Data.Migrations
                         .HasConstraintName("ForeignKey_AlbaAccount_TerritoryUser_Link")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("WebUI.Models.TerritoryUser", "TerritoryUser")
+                    b.HasOne("TerritoryTools.Web.MainSite.Models.TerritoryUser", "TerritoryUser")
                         .WithMany("AlbaAccountLinks")
                         .HasForeignKey("TerritoryUserId")
                         .HasConstraintName("ForeignKey_TerritoryUser_AlbaAccount_Link")

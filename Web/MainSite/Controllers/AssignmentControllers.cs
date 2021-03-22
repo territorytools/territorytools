@@ -1,19 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Alba.Controllers.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
-using cuc = Controllers.UseCases;
-using Microsoft.Extensions.Options;
 using TerritoryTools.Alba.Controllers.UseCases;
-using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.MainSite.Services;
+using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -41,7 +39,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = AlbaConnection();
+            var client = AuthorizationClient();
             client.Authenticate(credentials);
 
             string result = client.DownloadString(
@@ -243,7 +241,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, html);
         }
 
-        IEnumerable<Assignment> GetAllAssignments()
+        IEnumerable<AlbaAssignmentValues> GetAllAssignments()
         {
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
 

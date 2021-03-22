@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
 [assembly: HostingStartup(typeof(TerritoryTools.Web.MainSite.Areas.Identity.IdentityHostingStartup))]
 namespace TerritoryTools.Web.MainSite.Areas.Identity

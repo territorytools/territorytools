@@ -90,7 +90,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 foreach (var hit in qrCodeHits)
                 {
                     publisher.QRCodeActivity.Add(
-                        new QRCodeHit
+                        new Models.QRCodeHit
                         {
                             Id = hit.Id,
                             ShortUrl = hit.ShortUrl,
