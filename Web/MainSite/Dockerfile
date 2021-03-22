@@ -8,7 +8,7 @@ COPY . /src
 RUN dotnet restore Web/MainSite/Web.MainSite.csproj  
 
 FROM build AS publish
-RUN dotnet publish Web/MainSite/Web.MainSite.csproj -c Release -o /app --no-restore
+RUN dotnet publish Web/MainSite/Web.MainSite.csproj -c Release -o /app --no-restore -f netcoreapp3.1
 
 FROM base AS final
 WORKDIR /app
