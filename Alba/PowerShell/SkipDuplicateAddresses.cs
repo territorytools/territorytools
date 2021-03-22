@@ -10,7 +10,6 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(Parsed))]
     public class SkipDuplicateAddresses : PSCmdlet
     {
-       
         Parser parser;
         List<ParsedAddress> parsedMasterList;
         List<string> errors = new List<string>();
@@ -33,6 +32,9 @@ namespace TerritoryTools.Alba.PowerShell
 
         [Parameter]
         public SwitchParameter SkipNonDuplicatesInstead { get; set; }
+
+        [Parameter]
+        public SwitchParameter SetOriginalAddressId { get; set; }
 
         protected override void BeginProcessing()
         {
@@ -75,6 +77,11 @@ namespace TerritoryTools.Alba.PowerShell
                     if (master.Address.SameAs(parsed))
                     {
                         duplicatesFound = true;
+                        if (SetOriginalAddressId.IsPresent)
+                        {
+                            Address.Address_ID = master.AlbaAddressImport.Address_ID;
+                        }
+
                         break;
                     }
                 }
