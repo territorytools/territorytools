@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>TerritoryTools</AssemblyName>
     <RootNamespace>TerritoryTools.Alba.PowerShell</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -38,6 +38,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\AddressParser\Common.AddressParser.csproj" />
     <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ExampleScripts\*.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Modules\*.psm1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,80 +1,64 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.Models;
-using System.Text.RegularExpressions;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public class TerritoryResultParser
     {
-        public static List<Territory> Parse(string value)
+        public static List<TerritoryDetail> Parse(string value)
         {
-            if(value.StartsWith("Sorry, you have been signed out."))
+            var borders = TerritoryBorderResultParser.Parse(value);
+
+            var territories = new List<TerritoryDetail>();
+            foreach (var border in borders)
             {
-                throw new Exception("Sorry, you have been signed out.");
+                territories.Add(TerritoryFrom(border));
             }
-
-            var nodes = JObject.Parse(value);
-            var borders = nodes.SelectToken("data.borders") as JObject;
-            var territories = new List<Territory>();
-
-            foreach (var property in borders.Properties())
-                territories.Add(TerritoryFrom(property));
 
             return territories; 
         }
 
-        private static Territory TerritoryFrom(JProperty property) 
+        public static TerritoryDetail TerritoryFrom(AlbaTerritoryBorder border) 
         {
             try
             {
-                var border = JsonConvert.DeserializeObject<Border>(property.Value.ToString());
-                var newTerritory = new Territory(property.Name)
-                {
-                    CountOfAddresses = border.num
-                };
-
-                string text = border.tt;
-
-                var regex = new Regex(@"([^<>]+) ([^<>]+)");
-                var matches = regex.Match(text);
-                if(matches.Success && matches.Groups.Count == 2)
-                {
-                    newTerritory.Number = matches.Groups[1].Value;
-                    newTerritory.Description = matches.Groups[2].Value;
-                }
-                else
-                {
-                    newTerritory.Number = text;
-                }
-
-                newTerritory.CityArea = !string.IsNullOrWhiteSpace(newTerritory.Description) 
-                        && newTerritory.Description.Trim().Length == 6
-                    ? newTerritory.Description.Substring(0, 6)
-                    : string.Empty;
-
-                newTerritory.CityCode = !string.IsNullOrWhiteSpace(newTerritory.CityArea)
-                        && newTerritory.CityArea.Length == 6
-                    ? newTerritory.CityArea.Substring(0, 3)
-                    : string.Empty;
-
-                newTerritory.ZipCodeSuffix = !string.IsNullOrWhiteSpace(newTerritory.CityArea)
-                        && newTerritory.CityArea.Length == 6
-                    ? newTerritory.CityArea.Substring(3, 3)
-                    : string.Empty;
-
-                foreach (float[] coord in border.pl)
-                    newTerritory.Border.Vertices.Add(new Vertex(coord[0], coord[1]));
-
-                return newTerritory;
+                return TryTerritoryFrom(border);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                string beginning = property.Value.ToString();
-                throw new Exception($"Error parsing border at {beginning.Substring(0, 256)}", e);
+                throw new Exception($"Error parsing territory summary: {e.Message}", e);
             }
+        }
+
+        static TerritoryDetail TryTerritoryFrom(AlbaTerritoryBorder border)
+        {
+            var newTerritory = new TerritoryDetail(border.Id)
+            {
+                Number = border.Number,
+                Description = border.Description,
+                Notes = border.Notes,
+                CountOfAddresses = border.CountOfAddresses,
+                Border = border.Border
+            };
+
+            newTerritory.CityArea = !string.IsNullOrWhiteSpace(newTerritory.Description)
+                    && newTerritory.Description.Trim().Length == 6
+                ? newTerritory.Description.Substring(0, 6)
+                : string.Empty;
+
+            newTerritory.CityCode = !string.IsNullOrWhiteSpace(newTerritory.CityArea)
+                    && newTerritory.CityArea.Length == 6
+                ? newTerritory.CityArea.Substring(0, 3)
+                : string.Empty;
+
+            newTerritory.ZipCodeSuffix = !string.IsNullOrWhiteSpace(newTerritory.CityArea)
+                    && newTerritory.CityArea.Length == 6
+                ? newTerritory.CityArea.Substring(3, 3)
+                : string.Empty;
+
+            return newTerritory;
         }
     }
 }

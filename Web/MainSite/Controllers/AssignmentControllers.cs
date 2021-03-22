@@ -44,8 +44,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             string result = client.DownloadString(
                 RelativeUrlBuilder.AssignTerritory(
-                    territoryId, 
-                    userId, 
+                    territoryId,
+                    userId,
                     DateTime.Now));
 
             var myUser = GetUsersFor(credentials.AlbaAccountId)
@@ -78,13 +78,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<Assignment> All(string account, string user, string password)
+        public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
         {
             return GetAllAssignments();
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<Assignment> NeverCompleted()
+        public IEnumerable<AlbaAssignmentValues> NeverCompleted()
         {
             try
             {
@@ -105,7 +105,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         public class Publisher
         {
             public string Name { get; set; }
-            public List<Assignment> Territories { get; set; } = new List<Assignment>();
+            public List<AlbaAssignmentValues> Territories { get; set; } = new List<AlbaAssignmentValues>();
         }
 
         [HttpGet("[action]")]
@@ -241,7 +241,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, html);
         }
 
-        IEnumerable<Assignment> GetAllAssignments()
+        IEnumerable<AlbaAssignmentValues> GetAllAssignments()
         {
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
 

@@ -4,11 +4,11 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.Kml
 {
-    public class KmlToTerritoryConverter
+    public class KmlToAlbaTerritoryBorderConverter
     {
-        List<Territory> territories;
+        List<AlbaTerritoryBorder> territories;
 
-        public List<Territory> TerritoryListFrom(GoogleMapsKml kml)
+        public List<AlbaTerritoryBorder> TerritoryListFrom(GoogleMapsKml kml)
         {
             try
             {
@@ -20,9 +20,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
             }
         }
 
-        List<Territory> TerritoriesFrom(Document document)
+        List<AlbaTerritoryBorder> TerritoriesFrom(Document document)
         {
-            territories = new List<Territory>();
+            territories = new List<AlbaTerritoryBorder>();
 
             if (document?.Folder != null)
                 FromFolders(document.Folder);
@@ -43,7 +43,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
         void FromPlacemarks(Placemark[] placemarks)
         {
             foreach (var placemark in placemarks)
-                territories.Add(PlacemarkConverter.From(placemark));
+                territories.Add(PlacemarkConverterToAlbaTerritoryBorder.From(placemark));
         }
     }
 }

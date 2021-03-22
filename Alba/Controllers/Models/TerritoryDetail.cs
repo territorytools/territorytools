@@ -3,9 +3,9 @@ using System.Text;
 
 namespace TerritoryTools.Alba.Controllers.Models
 {
-    public class Territory
+    public class TerritoryDetail
     {
-        public Territory(string id)
+        public TerritoryDetail(int id)
         {
             Id = id;
             Border = new Border();
@@ -14,12 +14,12 @@ namespace TerritoryTools.Alba.Controllers.Models
         /// <summary>
         /// Territory Database Id.
         /// </summary>
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Count of addresses in this territory.
         /// </summary>
-        public string CountOfAddresses { get; set; }
+        public int CountOfAddresses { get; set; }
 
         /// <summary>
         /// Territory Number.
@@ -47,13 +47,26 @@ namespace TerritoryTools.Alba.Controllers.Models
         public bool NeverCompleted { get; internal set; }
         public int YearsAgoCompleted { get; internal set; }
 
+        public AlbaTerritoryBorder ToAlbaTerritoryBorder()
+        {
+            return new AlbaTerritoryBorder
+            {
+                Id = Id,
+                Border = Border,
+                CountOfAddresses = CountOfAddresses,
+                Number = Number,
+                Description = Description,
+                Notes = Notes
+            };
+        }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
             builder.Append($"Territory: Id: {Id}, Number: {CountOfAddresses}, Code: {Number}");
 
             foreach (var v in Border.Vertices)
-                builder.Append("    " + v.Latitude + ", " + v.Longitude);
+                builder.Append($"    {v.Latitude}, {v.Longitude}");
 
             return builder.ToString();
         }

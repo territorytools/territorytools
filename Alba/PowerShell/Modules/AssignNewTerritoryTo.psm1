@@ -1,21 +1,25 @@
-﻿Param {
-  [Parameter(Mandatory=$true)]
+﻿function AssignNewTerritoryTo {
+Param (
+  [Parameter(Position = 0, Mandatory=$true)]
   [String]
   $UserRealName     
-}
+)
 
-# Only include three letter plus three digit areas, like ABC123
-# Other patterns are special letter writing, business, 
-#   or place-holder territories.
+$ErrorAction = "Stop"
+
+# Only include three letter plus three digit areas, as others are special
+#   letter writing, business, or place-holder territories.
 $includeTerritoryPattern = "^\w{3}\d{3}$"
 
-# Exclude MER (Mercer Island) and BIZ (Business Territories)
+# Exclude MER = 'Mercer Island' and BIZ = 'Business Territories'
 $excludeTerritoryPattern = "^(MER|BIZ).*"
 
 # This script gets the host and account values from environment 
-#   variables, (ALBA_HOST and ALBA_ACCOUNT) they could also be
-#   passed into this script as parameters.
-Get-AlbaConnection -AlbaHost $env:ALBA_HOST -Account $env:ALBA_ACCOUNT
+#   variables, they could also be passed into this script as 
+#   parameters.
+If(!$CurrentAlbaConnection) {
+  Get-AlbaConnection -AlbaHost $env:ALBA_HOST -Account $env:ALBA_ACCOUNT -User $env:ALBA_USER -Password $env:ALBA_PASSWORD
+}
 $territories = Get-AlbaTerritory 
 
 $available = $territories `
@@ -23,8 +27,7 @@ $available = $territories `
   | Where Description -Match $includeTerritoryPattern `
   | Where Description -NotMatch $excludeTerritoryPattern
 
-# The first territory is the oldest, or the same age as the oldest
-$oldest = $available | Sort MonthsAgoCompleted -Descending | Select -First 1
+$oldest = $available | Sort LastCompleted | Select -First 1
 
 $users = Get-AlbaUser
 
@@ -42,3 +45,5 @@ $assigned = $territories | Where Id -eq $oldest.Id | Select -First 1
 # Print territory number, description, and the newly generated mobile link 
 #   to the output
 Write-Output "$($assigned.Number) $($assigned.Description) $($assigned.MobileLink)"
+}
+

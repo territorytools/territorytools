@@ -4,9 +4,9 @@ using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.Kml
 {
-    public class TerritoryToKmlConverter
+    public class AlbaTerritoryBorderToKmlConverter
     {
-        public GoogleMapsKml KmlFrom(IEnumerable<Territory> territories)
+        public GoogleMapsKml KmlFrom(IEnumerable<AlbaTerritoryBorder> territories)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             }
         }
 
-        Document DocumentFrom(IEnumerable<Territory> territories)
+        Document DocumentFrom(IEnumerable<AlbaTerritoryBorder> territories)
         {
             return new Document()
             {
@@ -31,7 +31,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        DocumentFolder[] FoldersFrom(IEnumerable<Territory> territories)
+        DocumentFolder[] FoldersFrom(IEnumerable<AlbaTerritoryBorder> territories)
         {
             return new DocumentFolder[]
             {
@@ -42,22 +42,24 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        Placemark[] PlacemarksFrom(IEnumerable<Territory> territories)
+        Placemark[] PlacemarksFrom(IEnumerable<AlbaTerritoryBorder> territories)
         {
             var placemarks = new List<Placemark>();
             foreach (var territory in territories)
-                placemarks.Add(new PlacemarkConverter().PlacemarkFrom(territory));
+                placemarks.Add(new PlacemarkConverterToAlbaTerritoryBorder().PlacemarkFrom(territory));
 
             return placemarks.ToArray();
         }
 
-        Style[] StylesFrom(IEnumerable<Territory> territories)
+        Style[] StylesFrom(IEnumerable<AlbaTerritoryBorder> territories)
         {
             var styles = new List<Style>();
 
             foreach (var t in territories)
             {
-                string color = PlacemarkConverter.ColorString(t.FillColor);
+                string color = PlacemarkConverterToAlbaTerritoryBorder
+                    .ColorString(PlacemarkConverterToAlbaTerritoryBorder.Green);
+
                 string style = $"t-fill-color-{color}";
                 if (!styles.Exists(s => s.id.StartsWith(style)))
                 {
@@ -99,13 +101,13 @@ namespace TerritoryTools.Alba.Controllers.Kml
             return styles.ToArray();
         }
 
-        StyleMap[] StyleMapsFrom(IEnumerable<Territory> territories)
+        StyleMap[] StyleMapsFrom(IEnumerable<AlbaTerritoryBorder> territories)
         {
             var maps = new List<StyleMap>();
 
             foreach (var t in territories)
             {
-                string style = $"t-fill-color-{PlacemarkConverter.ColorString(t.FillColor)}";
+                string style = $"t-fill-color-{PlacemarkConverterToAlbaTerritoryBorder.ColorString(PlacemarkConverterToAlbaTerritoryBorder.Green)}";
                 if (!maps.Exists(s => s.id.Equals(style)))
                 {
                     maps.Add(

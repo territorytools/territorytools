@@ -184,7 +184,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrl", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrl", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -208,7 +208,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("ShortUrls");
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrlActivity", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrlActivity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

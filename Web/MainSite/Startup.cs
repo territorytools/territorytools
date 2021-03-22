@@ -1,21 +1,28 @@
-using Certes;
+﻿using Certes;
 using FluffySpoon.AspNet.LetsEncrypt;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
+//using Microsoft.Extensions.Hosting;
 using System;
 using System.Globalization;
 using System.Linq;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
+using TerritoryTools.Web.Data;
+using TerritoryTools.Entities;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -33,17 +40,35 @@ namespace TerritoryTools.Web.MainSite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                    ForwardedHeaders.XForwardedProto;
+                // Only loopback proxies are allowed by default.
+                // Clear that restriction because forwarders are enabled by explicit 
+                // configuration.
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MainDbContextConnection")));
-
+            
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
                     options.ClientId = Configuration["Authentication:Google:ClientId"];
                     options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
                 });
-
+            
             //services.AddAuthentication()
             //    .AddMicrosoftAccount(options =>
             //    {
@@ -52,11 +77,13 @@ namespace TerritoryTools.Web.MainSite
             //    });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-
+            
+            services.Configure<MvcOptions>(options => options.EnableEndpointRouting = false);
+            
             services.AddMvc()
-            //  .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-              .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-              .AddDataAnnotationsLocalization();
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization();
 
             services.AddScoped<IAlbaCredentials>(ac => new AlbaCredentials(
                 Configuration["AlbaAccount"],
@@ -69,9 +96,9 @@ namespace TerritoryTools.Web.MainSite
             services.Configure<WebUIOptions>(Configuration);
 
             var users = (Configuration["Users"] ?? string.Empty)
-             .Split(';')
-             .ToList();
-
+               .Split(';')
+               .ToList(); 
+            
             var adminUsers = (Configuration["AdminUsers"] ?? string.Empty)
                 .Split(';')
                 .ToList();
@@ -84,15 +111,25 @@ namespace TerritoryTools.Web.MainSite
 
             services.AddScoped<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
 
-            // New with .NET Core 3.1
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            if (!NoSsl)
+            {
+                //ConfigureLetsEncryptServices(services);
+            }
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        // This method gets called by the runtime. Use this method to configure
+        // the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            app.Use(async (ctx, next) =>
+            {
+                ctx.Request.Scheme = "https";
+                ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
+
+                await next();
+            });
+
+            if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -100,8 +137,15 @@ namespace TerritoryTools.Web.MainSite
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                ////////app.UseHsts();
+                // The default HSTS value is 30 days. You may want to change 
+                // this for production scenarios,
+                // see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            if (!NoSsl)
+            {
+               // app.UseFluffySpoonLetsEncryptChallengeApprovalMiddleware();
             }
 
             var supportedCultures = new[]
@@ -121,7 +165,7 @@ namespace TerritoryTools.Web.MainSite
                 SupportedUICultures = supportedCultures
             });
 
-            ////////app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             var provider = new FileExtensionContentTypeProvider();
             provider.Mappings[".kml"] = "application/vnd.google-earth.kml+xml";
@@ -132,39 +176,21 @@ namespace TerritoryTools.Web.MainSite
                 ContentTypeProvider = provider
             });
 
-           ////// UpdateDatabase(app);
-
-            // New with .NET Core 3.1
-            app.UseRouting();
+            UpdateDatabase(app);
 
             app.UseAuthentication();
-            app.UseAuthorization();
 
-            // New with .NET Core 3.1
-            app.UseEndpoints(endpoints =>
+            app.UseMvc(routes =>
             {
-                endpoints.MapControllerRoute(
+                routes.MapRoute(
+                    name: "areas",
+                    template: "{area:exists}/{controller=ShortUrls}/{action=Index}");
+
+                routes.MapRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-                // Added areas
-                //////endpoints.MapControllerRoute(
-                //////    name: "areas",
-                //////    pattern: "{area:exists}/{controller=ShortUrls}/{action=Index}");
-                endpoints.MapRazorPages();
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "areas",
-            //        template: "{area:exists}/{controller=ShortUrls}/{action=Index}");
-
-            //    routes.MapRoute(
-            //        name: "default",
-            //        template: "{controller=Home}/{action=Index}/{id?}");
-            //});
         }
-
 
         private static void UpdateDatabase(IApplicationBuilder app)
         {

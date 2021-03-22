@@ -11,10 +11,10 @@ namespace TerritoryTools.Alba.PowerShell
     [OutputType(typeof(AlbaConnection))]
     public class GetAlbaConnection : PSCmdlet
     {
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public string AlbaHost { get; set; }
 
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public string Account { get; set; }
 
         [Parameter]
@@ -30,16 +30,44 @@ namespace TerritoryTools.Alba.PowerShell
         {
             try
             {
-                if(string.IsNullOrWhiteSpace(User)
-                    && string.IsNullOrWhiteSpace(Password)
-                    && string.IsNullOrWhiteSpace(Credential.UserName)
-                    && Credential.Password.Length == 0)
+                WriteVerbose("Checking environment variables...");
+
+                if(string.IsNullOrWhiteSpace(AlbaHost))
                 {
-                    throw new ArgumentException("Missing User and Password, or Credential");
+                    AlbaHost = Environment.GetEnvironmentVariable("ALBA_HOST");
+                }
+                
+                WriteVerbose($"{nameof(AlbaHost)}: {AlbaHost}");
+
+                if (string.IsNullOrWhiteSpace(Account))
+                {
+                    Account = Environment.GetEnvironmentVariable("ALBA_ACCOUNT");
+                }
+
+                WriteVerbose($"{nameof(Account)}: {Account}");
+
+                if (string.IsNullOrWhiteSpace(User))
+                {
+                    User = Environment.GetEnvironmentVariable("ALBA_USER");
+                }
+
+                WriteVerbose($"{nameof(User)}: {User}");
+
+                if (string.IsNullOrWhiteSpace(Password))
+                {
+                    Password = Environment.GetEnvironmentVariable("ALBA_PASSWORD");
+                }
+
+                WriteVerbose($"{nameof(Password)} has been set: {!string.IsNullOrWhiteSpace(Password)}");
+
+                if (string.IsNullOrWhiteSpace(AlbaHost)
+                    || string.IsNullOrWhiteSpace(Account))
+                {
+                    throw new ArgumentException($"Missing {nameof(AlbaHost)} or {nameof(Account)}");
                 }
 
                 if(string.IsNullOrWhiteSpace(User)
-                    && string.IsNullOrWhiteSpace(Password))
+                    || string.IsNullOrWhiteSpace(Password))
                 {
                     User = Credential.UserName;
 
@@ -47,6 +75,12 @@ namespace TerritoryTools.Alba.PowerShell
                         Credential.Password);
                     
                     Password = Marshal.PtrToStringUni(ptr);
+                }
+
+                if (string.IsNullOrWhiteSpace(User)
+                   || string.IsNullOrWhiteSpace(Password))
+                {
+                    throw new ArgumentException($"Missing {nameof(User)} or {nameof(Password)}");
                 }
 
                 WriteObject(GetConnection());

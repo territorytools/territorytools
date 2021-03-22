@@ -357,11 +357,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 Guid albaAccountId = albaCredentialService
                     .GetAlbaAccountIdFor(User.Identity.Name);
 
-                var users = GetAlbaUsers(albaAccountId)
+                var userListView = new AlbaUserListView();
+                userListView.Users = GetAlbaUsers(albaAccountId)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                return View(users);
+                return View(userListView);
             }
             catch (Exception)
             {

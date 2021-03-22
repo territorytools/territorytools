@@ -184,7 +184,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrl", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrl", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -215,7 +215,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("ShortUrls");
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrlActivity", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrlActivity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,7 +232,7 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.ToTable("ShortUrlActivity");
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrlHost", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrlHost", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -404,9 +404,9 @@ namespace TerritoryTools.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("WebUI.Areas.UrlShortener.Models.ShortUrl", b =>
+            modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrl", b =>
                 {
-                    b.HasOne("WebUI.Areas.UrlShortener.Models.ShortUrlHost", "Host")
+                    b.HasOne("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrlHost", "Host")
                         .WithMany("Urls")
                         .HasForeignKey("HostId")
                         .HasConstraintName("ForeignKey_ShortUrl_Host")

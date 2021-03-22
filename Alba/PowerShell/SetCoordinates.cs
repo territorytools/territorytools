@@ -46,7 +46,7 @@ namespace TerritoryTools.Alba.PowerShell
                 Thread.Sleep(DelayMs);
 
                 var geocodedAddress = new AzureMapsmGeocodeAddress(client)
-                    .Geocode(Address);
+                    .Geocode(Address, Force.IsPresent);
 
                 WriteObject(geocodedAddress);
             }

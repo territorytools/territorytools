@@ -38,6 +38,7 @@ namespace TerritoryTools.Alba.PowerShell
             }
             catch(Exception e)
             {
+                WriteVerbose(Address.ToAddressString());
                 WriteError(new ErrorRecord(e, "1", ErrorCategory.NotSpecified, null));
             }
         }

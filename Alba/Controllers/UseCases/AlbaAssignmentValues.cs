@@ -1,8 +1,9 @@
 ﻿using System;
+using TerritoryTools.Alba.Controllers.AlbaServer;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
 {
-    public class Assignment
+    public class AlbaAssignmentValues
     {
         public int Id { get; set; }
         public string IdString { get; set; }
@@ -18,6 +19,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
         public string SignedOutTo { get; set; }
         public int? MonthsSignedOut { get; set; }
         public int? MonthsAgoCompleted { get; set; }
+        public string MobileLink { get; set; }
 
         public string TimeSpanCompletedString()
         {
@@ -45,6 +47,22 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
             return DateTime.Now.Subtract((DateTime)LastCompleted);
         }
-        public string MobileLink { get; set; }
+
+        public AlbaAssignment ToAlbaAssignment()
+        {
+            return new AlbaAssignment
+            {
+                Id = Id,
+                Number = Number,
+                Description = Description,
+                Kind = Kind,
+                Status = Status,
+                LastCompleted = LastCompleted,
+                LastCompletedBy = LastCompletedBy,
+                SignedOut = SignedOut,
+                SignedOutTo = SignedOutTo,
+                MobileLink = MobileLink,
+            };
+        }
     }
 }

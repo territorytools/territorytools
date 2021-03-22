@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Entities;
@@ -53,42 +54,151 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 return View();
             }
+            catch(AlbaCredentialException e)
+            {
+                return Redirect($"~/Home/LoginError?message={e.Message}");
+            }
             catch (Exception e)
             {
                 return NotFound(e.Message);
+            }
+        }
+        public class UserInvitation
+        {
+            public bool Selected { get; set; }
+            public string Email { get; set; }
+            public string Name { get; set; }
+        }
+
+        [HttpPost]
+        public IActionResult AddUsers([FromBody] List<UserInvitation> invitations)
+        {
+            try
+            {
+                var now = DateTime.Now;
+                Console.WriteLine($"Adding Users...");
+                Console.WriteLine($"    Adding User: {now.ToString("HH:mm:ss")}");
+                Console.WriteLine($"    User Count: {invitations.Count}");
+
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
+                Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+
+                foreach(var invitation in invitations)
+                {
+                    Console.WriteLine($"    Adding User: {now.ToString("HH:mm:ss")}: {invitation.Email} {invitation.Name}");
+                    
+                    if(!invitation.Selected || string.IsNullOrWhiteSpace(invitation.Email))
+                    {
+                        continue;
+                    }
+
+                    if (database.TerritoryUser.Any(u => BasicStrings.StringsEqual(u.Email, invitation.Email)))
+                    {
+                        continue; // Move to the next invite
+                    }
+
+                    var user = new TerritoryUser
+                    {
+                        Id = Guid.NewGuid(),
+                        Email = invitation.Email,
+                        GivenName = invitation.Name,
+                        Created = now,
+                        Updated = now,
+                        Role = "Added"
+                    };
+
+                    database.TerritoryUser.Add(user);
+                    database
+                        .TerritoryUserAlbaAccountLink
+                        .Add(
+                            new TerritoryUserAlbaAccountLink()
+                            {
+                                TerritoryUserId = user.Id,
+                                AlbaAccountId = albaAccountId,
+                                Role = "Added",
+                                Created = now,
+                                Updated = now
+                            });
+                }
+
+                database.SaveChanges();
+
+                return Ok();
+            }
+            catch(AlbaCredentialException e)
+            {
+                return Redirect($"~/Home/LoginError?message={e.Message}");
+            }
+            catch(Exception)
+            {
+                throw;
             }
         }
 
         [HttpPost]
         public IActionResult Invitation(TerritoryUserInvitation invitation)
         {
-            if (!IsUser())
-            {
-                return Forbid();
+            try
+                {
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
+                if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
+                {
+                    return RedirectToAction(nameof(AlreadyInvited), invitation);
+                }
+
+                var now = DateTime.Now;
+
+                var user = new TerritoryUser
+                {
+                    Id = Guid.NewGuid(),
+                    Email = invitation.Email,
+                    Surname = invitation.Surname,
+                    GivenName = invitation.GivenName,
+                    Created = now,
+                    Updated = now,
+                    Role = "Invited"
+                };
+
+                database.TerritoryUser.Add(user);
+
+                if(string.Equals(invitation.AlbaAccount, "this-account"))
+                {
+                    Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+
+                    database
+                        .TerritoryUserAlbaAccountLink
+                        .Add(
+                            new TerritoryUserAlbaAccountLink()
+                            {
+                                TerritoryUserId = user.Id,
+                                AlbaAccountId = albaAccountId,
+                                Role = "Invited",
+                                Created = DateTime.Now,
+                                Updated = DateTime.Now
+                            });
+
+                }
+
+                database.SaveChanges();
+
+                return Ok();
             }
-
-            if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
+            catch(AlbaCredentialException e)
             {
-                return RedirectToAction(nameof(AlreadyInvited), invitation);
+                return Redirect($"~/Home/LoginError?message={e.Message}");
             }
-
-            var now = DateTime.Now;
-
-            var user = new TerritoryUser
+            catch(Exception)
             {
-                Id = Guid.NewGuid(),
-                Email = invitation.Email,
-                Surname = invitation.Surname,
-                GivenName = invitation.GivenName,
-                Created = now,
-                Updated = now,
-                Role = "Invited"
-            };
-
-            database.TerritoryUser.Add(user);
-            database.SaveChanges();
-
-            return Ok();
+                throw;
+            }
         }
 
         public IActionResult AlreadyInvited(TerritoryUserInvitation invitation)

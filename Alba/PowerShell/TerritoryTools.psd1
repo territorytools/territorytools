@@ -12,7 +12,7 @@
 RootModule = 'TerritoryTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.14'
+ModuleVersion = '0.1.17'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -27,7 +27,7 @@ Author = 'Marc Durham'
 CompanyName = 'Territory Tools'
 
 # Copyright statement for this module
-Copyright = '(c) 2020 Marc Durham. All rights reserved.'
+Copyright = '(c) 2021 Marc Durham. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Tools for downloading data from Alba, parsing, normalizing, and manipulating address data'
@@ -42,7 +42,7 @@ Description = 'Tools for downloading data from Alba, parsing, normalizing, and m
 # PowerShellHostVersion = ''
 
 # Minimum version of Microsoft .NET Framework required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
-DotNetFrameworkVersion = '4.8'
+# DotNetFrameworkVersion = '4.8'
 
 # Minimum version of the common language runtime (CLR) required by this module. This prerequisite is valid for the PowerShell Desktop edition only.
 CLRVersion = '4.0'
@@ -69,22 +69,41 @@ CLRVersion = '4.0'
 NestedModules = @('TerritoryTools.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+FunctionsToExport = @(
+    'ConnectToAlba',
+    'Send-SendGridMail',
+    'AssignNewTerritoryTo',
+    'ShowTerritoriesForUser')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = `
-    'Get-AlbaConnect', `
-    'Get-AlbaLanguage', `
-    'Get-AlbaLanguageId', `
-    'Get-AlbaUser', `
-    'Get-AlbaAddress', `
-    'Add-AlbaAddress', `
-    'Edit-AlbaAddress', `
-    'Remove-AlbaAddress', `
-    'Set-AlbaTerritoryUser', `
-    'Clear-AlbaTerritoryUser', `
-    'Get-AlbaTerritory', `
-    'Get-AlbaTerritoryWithBorder'
+CmdletsToExport = 'Add-AlbaAddress',
+    'Add-AlbaTerritoryBorder',
+    'Clear-AlbaTerritoryUser',
+    'ConvertTo-AlbaAddressExport',
+    'ConvertTo-AlbaAddressImport',
+    'ConvertTo-AlbaTerritoryBorder',
+    'Convert-ToKml',
+    'Edit-AlbaAddress',
+    'Edit-AlbaTerritoryBorder',
+    'Get-AlbaAddress',
+    'Get-AlbaConnection',
+    'Get-AlbaLanguage',
+    'Get-AlbaLanguageId',
+    'Get-AlbaTerritory',    
+    'Get-AlbaTerritoryWithBorder',
+    'Get-AlbaUser',
+    'Get-Coordinates',
+    'Get-DuplicateAddress',
+    'Get-NormalizedAddress',
+    'Get-OriginalAddress'
+    'Import-AlbaAddressFile',
+    'Invoke-AlbaWebRequest',
+    'Normalize-AlbaAddressImport',
+    'Remove-AlbaAddress',
+    'Set-AlbaTerritoryComplete',
+    'Set-AlbaTerritoryUser',
+    'Set-Coordinates',
+    'Skip-DuplicateAddresses'
 
 # Variables to export from this module
 VariablesToExport = '*'
@@ -97,6 +116,10 @@ AliasesToExport = @()
 
 # List of all modules packaged with this module
 ModuleList = @()
+   #'$PSScriptRoot\Modules\AlbaConnectionFunctions.psm1','.\Modules\Send-SendGridMail.psm1')
+    #,'$PSScriptRoot\Modules\AssignNewTerritoryTo.psm1', 
+    #'$PSScriptRoot\Modules\Send-SendGridMail.psm1',
+    #'$PSScriptRoot\Modules\ShowTerritoriesForUser.psm1')
 
 # List of all files packaged with this module
 # FileList = @()

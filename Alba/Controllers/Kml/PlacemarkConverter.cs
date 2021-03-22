@@ -5,7 +5,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
 {
     public class PlacemarkConverter
     {
-        public static Territory From(Placemark placemark)
+        public static TerritoryDetail From(Placemark placemark)
         {
             return new PlacemarkConverter().TerritoryFrom(placemark);
         }
@@ -18,7 +18,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                  + $"{color.Red.ToString("X2")}";
         }
 
-        public Placemark PlacemarkFrom(Territory territory)
+        public Placemark PlacemarkFrom(TerritoryDetail territory)
         {
             return new Placemark()
             {
@@ -30,9 +30,11 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        Territory TerritoryFrom(Placemark placemark)
+        TerritoryDetail TerritoryFrom(Placemark placemark)
         {
-            return new Territory(placemark.name)
+            int.TryParse(placemark.name, out int id);
+
+            return new TerritoryDetail(id)
             {
                 Number = placemark?.name,
                 Description = placemark?.description,
@@ -64,11 +66,9 @@ namespace TerritoryTools.Alba.Controllers.Kml
             };
         }
 
-        ExtendedData ExtendedDataFrom(Territory territory)
+        ExtendedData ExtendedDataFrom(TerritoryDetail territory)
         {
-            int.TryParse(territory.CountOfAddresses, out int addresses);
-
-            int density = addresses / 10;
+            int density = territory.CountOfAddresses / 10;
 
             return new ExtendedData
             {
@@ -82,7 +82,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                     new Data { name = "Status", value = territory.Status},
                     new Data { name = "LastCompleted", value = territory.LastCompleted?.ToString()},
                     new Data { name = "LastCompletedBy", value = territory.LastCompletedBy},
-                    new Data { name = "CountOfAddresses", value = territory.CountOfAddresses},
+                    new Data { name = "CountOfAddresses", value = territory.CountOfAddresses.ToString()},
                     new Data { name = "Description", value = territory.Description},
                     new Data { name = "AddressDensity", value = density.ToString()},
                     new Data { name = "MonthsAgoCompleted", value = territory.MonthsAgoCompleted?.ToString()},

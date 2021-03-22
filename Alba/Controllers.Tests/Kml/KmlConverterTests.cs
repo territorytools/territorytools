@@ -17,7 +17,7 @@ namespace AlbaClient.Tests.KmlGateways
 
             kml.Document.Folder.First().Placemark = PlacemarkWithTwoCoordinates();
 
-            var territories = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             AssertTwoCoordinatesAreNowVertices(territories);
         }
@@ -29,7 +29,7 @@ namespace AlbaClient.Tests.KmlGateways
 
             kml.Document.Placemark = PlacemarkWithTwoCoordinates();
 
-            var territories = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             AssertTwoCoordinatesAreNowVertices(territories);
         }
@@ -40,7 +40,7 @@ namespace AlbaClient.Tests.KmlGateways
             GoogleMapsKml kml = DefaultKml();
             kml.Document.Placemark = PlacemarkWithTwoCoordinates();
 
-            var territories = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             Assert.AreEqual("TEST321-654", territories.First().Number);
         }
@@ -65,23 +65,23 @@ namespace AlbaClient.Tests.KmlGateways
         [Test]
         public void Convert_WithSmallTerritory_IsNotNull()
         {
-            var territories = new List<Territory>()
+            var territories = new List<TerritoryDetail>()
             {
-                new Territory("test id")
+                new TerritoryDetail(111)
                 {
                     Number = "test number",
                     Border = new Border()
                     {
                         Vertices = new List<Vertex>()
-                          {
-                               new Vertex(1.23, 4.56),
-                               new Vertex(2.34, 6.78)
-                          }
+                        {
+                            new Vertex(1.23, 4.56),
+                            new Vertex(2.34, 6.78)
+                        }
                     }
                 }
             };
 
-            var kml = new TerritoryToKmlConverter().KmlFrom(territories);
+            var kml = new TerritoryDetailToKmlConverter().KmlFrom(territories);
 
             Assert.IsNotNull(kml);
         }
@@ -89,9 +89,9 @@ namespace AlbaClient.Tests.KmlGateways
         [Test]
         public void Convert_WithSmallTerritory_DescriptionIsSet()
         {
-            var territories = new List<Territory>()
+            var territories = new List<TerritoryDetail>()
             {
-                new Territory("test id")
+                new TerritoryDetail(111)
                 {
                     Number = "test number",
                     Description = "test description",
@@ -106,19 +106,19 @@ namespace AlbaClient.Tests.KmlGateways
                 }
             };
 
-            var kml = new TerritoryToKmlConverter().KmlFrom(territories);
+            var kml = new TerritoryDetailToKmlConverter().KmlFrom(territories);
 
             Assert.AreEqual("test description", kml.Document.Folder[0].Placemark[0].description);
         }
 
         private static void AssertSkipped(GoogleMapsKml kml)
         {
-            var territories2 = new KmlToTerritoryConverter().TerritoryListFrom(kml);
+            var territories2 = new KmlToTerritoryDetailConverter().TerritoryListFrom(kml);
 
             Assert.AreEqual("TEST321-654", territories2.First().Number);
         }
 
-        private static void AssertTwoCoordinatesAreNowVertices(IEnumerable<Territory> territories)
+        private static void AssertTwoCoordinatesAreNowVertices(IEnumerable<TerritoryDetail> territories)
         {
             Assert.AreEqual(2, territories.First().Border.Vertices.Count);
             Assert.AreEqual(11.11, territories.First().Border.Vertices[0].Longitude);

@@ -145,7 +145,7 @@ services:
     networks:
       - main  
     ports:
-      - "6000:5000"
+      - "6000:6000"
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT

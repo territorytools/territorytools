@@ -17,10 +17,10 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             this.client = client;
         }
 
-        public List<Territory> AllTerritories { get; set; } 
-            = new List<Territory>();
+        public List<TerritoryDetail> AllTerritories { get; set; } 
+            = new List<TerritoryDetail>();
 
-        public List<Territory> SaveAs(string fileName)
+        public List<TerritoryDetail> SaveAs(string fileName)
         {
             var resultString = client.DownloadString(RelativeUrlBuilder.GetAllTerritoriesWithBorders());
             AllTerritories = TerritoryResultParser.Parse(resultString);
@@ -62,18 +62,18 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 t.FillColor = FillColorFor(t);
             }
 
-            var kml = new TerritoryToKmlConverter().KmlFrom(filteredTerritories);
+            var kml = TerritoryDetailToKmlConverter.Convert(filteredTerritories);
             new KmlGateway().Save(fileName, kml);
 
             return filteredTerritories.ToList();
         }
 
-        protected virtual IEnumerable<Territory> Filter(IEnumerable<Territory> territories)
+        protected virtual IEnumerable<TerritoryDetail> Filter(IEnumerable<TerritoryDetail> territories)
         {
             return territories;
         }
 
-        protected virtual Color FillColorFor(Territory territory)
+        protected virtual Color FillColorFor(TerritoryDetail territory)
         {
             var color = new Color();
 

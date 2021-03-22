@@ -12,7 +12,7 @@ namespace TerritoryTools.Web.MainSite.Models
         public List<User> Publishers { get; set; } 
             = new List<User>();
 
-        public List<Assignment> Assignments { get; set; } 
-            = new List<Assignment>();
+        public List<AlbaAssignmentValues> Assignments { get; set; } 
+            = new List<AlbaAssignmentValues>();
     }
 }
