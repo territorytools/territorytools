@@ -71,10 +71,15 @@ namespace WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult InviteMultiple(List<UserInvitation> invitations)
+        public IActionResult AddUsers([FromBody] List<UserInvitation> invitations)
         {
             try
             {
+                var now = DateTime.Now;
+                Console.WriteLine($"Adding Users...");
+                Console.WriteLine($"    Adding User: {now.ToString("HH:mm:ss")}");
+                Console.WriteLine($"    User Count: {invitations.Count}");
+
                 if (!IsUser())
                 {
                     return Forbid();
@@ -84,6 +89,8 @@ namespace WebUI.Controllers
 
                 foreach(var invitation in invitations)
                 {
+                    Console.WriteLine($"    Adding User: {now.ToString("HH:mm:ss")}: {invitation.Email} {invitation.Name}");
+                    
                     if(!invitation.Selected)
                     {
                         continue;
@@ -94,8 +101,6 @@ namespace WebUI.Controllers
                         //return RedirectToAction(nameof(AlreadyInvited), invitation);
                         continue; // Move to the next invite
                     }
-
-                    var now = DateTime.Now;
 
                     var user = new TerritoryUser
                     {
@@ -112,8 +117,6 @@ namespace WebUI.Controllers
                     //if(string.Equals(invitation.AlbaAccount, "this-account"))
                     // Assume all "Invite Alls" are for "this-account"
                     {
-                        
-
                         database
                             .TerritoryUserAlbaAccountLink
                             .Add(
@@ -122,10 +125,9 @@ namespace WebUI.Controllers
                                     TerritoryUserId = user.Id,
                                     AlbaAccountId = albaAccountId,
                                     Role = "AllInvited",
-                                    Created = DateTime.Now,
-                                    Updated = DateTime.Now
+                                    Created = now,
+                                    Updated = now
                                 });
-
                     }
                 }
 
