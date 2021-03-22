@@ -1,4 +1,4 @@
-﻿namespace TerritoryTools.Web.MainSite.Models
+﻿namespace WebUI
 {
     public class QRCodeHit
     {

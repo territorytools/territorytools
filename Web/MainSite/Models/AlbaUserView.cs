@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TerritoryTools.Web.MainSite.Models
+namespace WebUI.Models
 {
     public class AlbaUserView
     {
@@ -11,5 +11,6 @@ namespace TerritoryTools.Web.MainSite.Models
         public string Name { get; set; }
         public string Role { get; set; }
         public DateTime Created { get; set; }
+        public bool IsChecked { get; set; }
     }
 }

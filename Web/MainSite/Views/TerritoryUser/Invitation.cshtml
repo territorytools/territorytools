@@ -1,4 +1,4 @@
-﻿@model TerritoryTools.Web.MainSite.Models.TerritoryUserInvitation
+﻿@model WebUI.Models.TerritoryUserInvitation
 
 @{
     ViewData["Title"] = "TerritoryUserInvitation";
@@ -13,6 +13,20 @@
         <form asp-action="Invitation">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <div class="form-check">
+                    <label class="form-check-label" for="radio1">
+                        <input type="radio" class="form-check-input" id="new-account" name="AlbaAccount" value="new-account">
+                        Invite to create their own Alba account
+                    </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label" for="radio2">
+                        <input type="radio" class="form-check-input" id="this-account" name="AlbaAccount" value="this-account" checked>
+                        Invite to my Alba account
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
@@ -23,7 +37,7 @@
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="GivenName" class="control-label"></label>
+                <label class="control-label">Given Name</label>
                 <input asp-for="GivenName" class="form-control" />
                 <span asp-validation-for="GivenName" class="text-danger"></span>
             </div>

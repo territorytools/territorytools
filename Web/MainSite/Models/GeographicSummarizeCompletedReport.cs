@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TerritoryTools.Web.MainSite.Models
+namespace WebUI
 {
     public class GeographicSummaryReport
     {

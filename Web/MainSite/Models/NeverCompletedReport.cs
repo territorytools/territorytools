@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using TerritoryTools.Alba.Controllers.UseCases;
 using Controllers.UseCases;
 
-namespace TerritoryTools.Web.MainSite.Models
+namespace WebUI
 {
     public class NeverCompletedReport
     {
         public List<User> Publishers { get; set; } 
             = new List<User>();
 
-        public List<AlbaAssignmentValues> Assignments { get; set; } 
-            = new List<AlbaAssignmentValues>();
+        public List<Assignment> Assignments { get; set; } 
+            = new List<Assignment>();
     }
 }

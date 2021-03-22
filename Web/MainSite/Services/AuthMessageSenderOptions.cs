@@ -1,4 +1,4 @@
-﻿namespace TerritoryTools.Web.MainSite.Services
+﻿namespace WebUI.Services
 {
     public class AuthMessageSenderOptions
     {

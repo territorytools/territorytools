@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TerritoryTools.Web.MainSite.Services
+namespace WebUI.Services
 {
     public interface IAccountLists
     {

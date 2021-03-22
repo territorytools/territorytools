@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Models
+namespace WebUI.Areas.UrlShortener.Models
 {
     public class ShortUrlShow
     {

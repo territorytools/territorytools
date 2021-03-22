@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace TerritoryTools.Web.MainSite.Services
+namespace WebUI.Services
 {
     public interface IEmailSender
     {

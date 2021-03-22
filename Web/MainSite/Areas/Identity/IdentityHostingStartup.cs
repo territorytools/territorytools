@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TerritoryTools.Web.Data;
+using WebUI.Areas.Identity.Data;
 
-[assembly: HostingStartup(typeof(TerritoryTools.Web.MainSite.Areas.Identity.IdentityHostingStartup))]
-namespace TerritoryTools.Web.MainSite.Areas.Identity
+[assembly: HostingStartup(typeof(WebUI.Areas.Identity.IdentityHostingStartup))]
+namespace WebUI.Areas.Identity
 {
     public class IdentityHostingStartup : IHostingStartup
     {
@@ -14,11 +16,10 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity
         {
             builder.ConfigureServices((context, services) => {
                 services.AddDbContext<MainDbContext>(options =>
-                   options.UseSqlServer(
-                       context.Configuration.GetConnectionString("MainDbContextConnection")));
+                    options.UseSqlServer(
+                        context.Configuration.GetConnectionString("MainDbContextConnection")));
 
-                services.AddDefaultIdentity<IdentityUser>(
-                    options => options.SignIn.RequireConfirmedAccount = true)
+                services.AddDefaultIdentity<IdentityUser>()
                     .AddEntityFrameworkStores<MainDbContext>();
             });
         }

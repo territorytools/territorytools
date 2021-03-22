@@ -1,6 +1,6 @@
 using System;
 
-namespace TerritoryTools.Web.MainSite
+namespace WebUI
 {
     public static class BasicStrings
     {

@@ -1,19 +1,18 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.MainSite.Services;
+using TerritoryTools.Alba.Controllers.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 using cuc = Controllers.UseCases;
+using Microsoft.Extensions.Options;
+using WebUI.Services;
 
-namespace TerritoryTools.Web.MainSite.Controllers
+namespace WebUI.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
@@ -42,11 +41,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var client = AuthorizationClient();
             client.Authenticate(credentials);
 
+            string date = DateTime.Now.ToString("yyyy-MM-dd");
+
             string result = client.DownloadString(
-                RelativeUrlBuilder.AssignTerritory(
-                    territoryId, 
-                    userId, 
-                    DateTime.Now));
+                $"/ts?mod=assigned&cmd=assign&id={territoryId}&date={date}&user={userId}");
 
             var myUser = GetUsersFor(credentials.AlbaAccountId)
                 .FirstOrDefault(u => u.Id == userId);
@@ -72,19 +70,19 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string date = DateTime.Now.ToString("yyyy-MM-dd");
 
             string result = client.DownloadString(
-                RelativeUrlBuilder.UnassignTerritory(territoryId));
+                $"/ts?mod=assigned&cmd=unassign&id={territoryId}");
 
             return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
+        public IEnumerable<Assignment> All(string account, string user, string password)
         {
             return GetAllAssignments();
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<AlbaAssignmentValues> NeverCompleted()
+        public IEnumerable<Assignment> NeverCompleted()
         {
             try
             {
@@ -105,7 +103,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         public class Publisher
         {
             public string Name { get; set; }
-            public List<AlbaAssignmentValues> Territories { get; set; } = new List<AlbaAssignmentValues>();
+            public List<Assignment> Territories { get; set; } = new List<Assignment>();
         }
 
         [HttpGet("[action]")]
@@ -241,7 +239,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, html);
         }
 
-        IEnumerable<AlbaAssignmentValues> GetAllAssignments()
+        IEnumerable<Assignment> GetAllAssignments()
         {
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
 
@@ -299,7 +297,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, usersHtml);
         }
 
-        private AlbaConnection AuthorizationClient()
+        private AuthorizationClient AuthorizationClient()
         {
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
@@ -307,7 +305,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 site: options.AlbaHost,
                 applicationPath: "/alba");
 
-            var client = new AlbaConnection(
+            var client = new AuthorizationClient(
                 webClient: webClient,
                 basePath: basePath);
 

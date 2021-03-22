@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TerritoryTools.Web.MainSite.Models
+namespace WebUI.Models
 {
     public class LinkAlbaAccount
     {

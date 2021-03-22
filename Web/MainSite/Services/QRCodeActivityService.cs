@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Entities;
-using TerritoryTools.Web.Data;
+using WebUI.Areas.Identity.Data;
 
-namespace TerritoryTools.Web.MainSite.Services
+namespace WebUI.Services
 {
     public interface IQRCodeActivityService
     {

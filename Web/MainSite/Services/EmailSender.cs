@@ -5,7 +5,7 @@ using SendGrid.Helpers.Mail;
 using System;
 using System.Threading.Tasks;
 
-namespace TerritoryTools.Web.MainSite.Services
+namespace WebUI.Services
 {
     // This class is used by the application to send email for account confirmation and password reset.
     // For more details see https://go.microsoft.com/fwlink/?LinkID=532713

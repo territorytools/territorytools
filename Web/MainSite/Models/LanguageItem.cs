@@ -1,6 +1,6 @@
 using System;
 
-namespace TerritoryTools.Web.MainSite.Models
+namespace WebUI.Models
 {
     public class LanguageItem
     {

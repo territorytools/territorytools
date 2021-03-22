@@ -1,4 +1,4 @@
-namespace TerritoryTools.Web.MainSite
+namespace WebUI
 {
     public class WebUIOptions
     {
@@ -14,7 +14,5 @@ namespace TerritoryTools.Web.MainSite
         public string AzureClientSecret { get; set; }
         public string UrlShortenerDomain { get; set; }
         public string CompletionMapUrl { get; set; }
-        public string Users { get; set; }
-        public string AdminUsers { get; set; }
     }
 }
