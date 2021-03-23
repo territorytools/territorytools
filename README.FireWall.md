@@ -15,6 +15,8 @@ sudo systemctl restart docker
 ````
 
 ## SQL IP Address Whitelist
+Source Article: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-14-04
+
 Only allow IP 1.2.3.4 to access port 1433
 ````
 ufw allow from 1.2.3.4 to any port 1433
