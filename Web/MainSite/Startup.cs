@@ -92,7 +92,8 @@ namespace TerritoryTools.Web.MainSite
 
             services.AddScoped<IShortUrlService, ShortUrlService>();
             services.AddScoped<IQRCodeActivityService, QRCodeActivityService>();
-
+            services.AddScoped<IEmailSender, EmailSender>();
+            
             services.Configure<WebUIOptions>(Configuration);
 
             var users = (Configuration["Users"] ?? string.Empty)
