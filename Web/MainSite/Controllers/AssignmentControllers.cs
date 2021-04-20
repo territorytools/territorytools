@@ -39,7 +39,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
             string result = client.DownloadString(
@@ -66,7 +66,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
             string date = DateTime.Now.ToString("yyyy-MM-dd");
@@ -171,7 +171,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
             string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
 
             var downloader = new DownloadTerritoryAssignments(client);
 
@@ -200,7 +200,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
             string filePath = "wwwroot/borders.kml";
@@ -216,7 +216,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect("/Report/Index");
         }
 
-        private void Load(Guid albaAccountId)
+        void Load(Guid albaAccountId)
         {
             string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
 
@@ -225,7 +225,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 System.IO.File.Delete(path);
             }
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
 
             var useCase = new DownloadTerritoryAssignments(client);
 
@@ -252,7 +252,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 Load(albaAccountId);
             }
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
 
             // TODO: Probably don't need a dependency on client here
             var useCase = new DownloadTerritoryAssignments(client); 
@@ -288,7 +288,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             // TODO: Get credentials with albaAccountId
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = AuthorizationClient();
+            var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
             var assignedHtml = client.DownloadString(
@@ -299,7 +299,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             System.IO.File.WriteAllText(path, usersHtml);
         }
 
-        private AlbaConnection AuthorizationClient()
+        AlbaConnection AuthorizedConnection()
         {
             return AlbaConnection.From(options.AlbaHost);
         }
