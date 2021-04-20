@@ -5,9 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.MainSite.Services;
@@ -57,6 +55,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 userName = myUser.Name;
             }
 
+            // This should refresh the mobile territory link to send to the user
+            LoadForCurrentAccount();
 
             return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={userName}");
         }
