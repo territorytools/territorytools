@@ -35,6 +35,21 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         public double? Latitude { get; private set; }
         public double? Longitude { get; private set; }
 
+        public static AlbaConnection From(string site)
+        {
+            var webClient = new CookieWebClient();
+            var basePath = new ApplicationBasePath(
+                protocolPrefix: "https://",
+                site: site,
+                applicationPath: "/alba");
+
+            var client = new AlbaConnection(
+                webClient: webClient,
+                basePath: basePath);
+
+            return client;
+        }
+
         public void Authenticate(Credentials credentials)
         {
             // We need to load the logon page first to get the session key

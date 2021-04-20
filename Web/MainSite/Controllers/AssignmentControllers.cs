@@ -301,17 +301,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         private AlbaConnection AuthorizationClient()
         {
-            var webClient = new CookieWebClient();
-            var basePath = new ApplicationBasePath(
-                protocolPrefix: "https://",
-                site: options.AlbaHost,
-                applicationPath: "/alba");
-
-            var client = new AlbaConnection(
-                webClient: webClient,
-                basePath: basePath);
-
-            return client;
+            return AlbaConnection.From(options.AlbaHost);
         }
     }
 }
