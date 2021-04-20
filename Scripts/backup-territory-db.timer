@@ -1,0 +1,15 @@
+[Unit]
+Description=Backup Territory Tools MS SQL Server database
+Requires=backup-territory-db.service
+
+[Timer]
+# Help link: https://linuxconfig.org/how-to-schedule-tasks-with-systemd-timers-in-linux
+# OnCalendar=daily # This backs up at midnight every day
+# Backs up at 01:11:11 am every day
+OnCalendar=*-*-* 01:11:11
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
