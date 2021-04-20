@@ -76,7 +76,9 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var territoryUser = _database.TerritoryUser
-                    .FirstOrDefault(u => BasicStrings.StringsEqual(u.Email, Input.Email));
+                    .FirstOrDefault(u => u.Email != null 
+                        && Input.Email != null 
+                        && string.Equals(u.Email.ToUpper(), Input.Email.ToUpper()));
 
                 if(territoryUser == null)
                 {
