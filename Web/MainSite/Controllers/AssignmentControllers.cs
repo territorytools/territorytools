@@ -157,8 +157,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IActionResult LoadAssignments()
         {
-            Guid id = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
-            Load(id);
+            LoadForCurrentAccount();
 
             // TODO: Use with React or other UI
             // return new LoadAssignmentsResult() { Successful = true };
@@ -216,6 +215,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect("/Report/Index");
         }
 
+        void LoadForCurrentAccount()
+        {
+            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            Load(albaAccountId);
+        }
+
         void Load(Guid albaAccountId)
         {
             string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
@@ -249,7 +254,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if (!System.IO.File.Exists(path))
             {
-                Load(albaAccountId);
+                LoadForCurrentAccount();
             }
 
             var client = AuthorizedConnection();
