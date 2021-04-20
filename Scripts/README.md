@@ -26,4 +26,5 @@ systemctl enable backup-territory-db
 systemctl list-timers
 systemctl enable backup-territory-db.timer
 journalctl -u backup-territory-db
+systemctl stop backup-territory-db
 

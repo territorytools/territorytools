@@ -3,9 +3,9 @@ Description=Backing up Territory Tools database
 Requires=backup-territory-db.timer
 
 [Service]
-ExecStart=/bin/sh /root/TerritoryWeb/Scripts/backup-territory-db.sh
-WorkingDirectory=/root/TerritoryWeb/Scripts
-EnvironmentFile=/root/TerritoryWeb/Scripts/.env
+ExecStart=/bin/sh /root/BackupTerritoryScripts/Scripts/backup-territory-db.sh
+WorkingDirectory=/root/BackupTerritoryScripts/Scripts
+EnvironmentFile=/root/BackupTerritoryScripts/Scripts/.env
 
 [Install]
 WantedBy=multi-user.target
