@@ -24,10 +24,9 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             var urls = context
                 .ShortUrls
-                .Where(url => string.Equals(
-                    url.UserName,
-                    userName,
-                    StringComparison.OrdinalIgnoreCase))
+                .Where(url => url.UserName != null &&
+                    userName != null &&
+                    url.UserName.ToUpper() == userName.ToUpper())
                 .ToList();
 
             var hits = new List<QRCodeHit>();

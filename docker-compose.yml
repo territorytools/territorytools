@@ -143,6 +143,7 @@ services:
       - AuthMessageSender:AuthEmailTo
       - AuthMessageSender:PurchaseManager
       - AuthMessageSender:BuyerEmail
+      - HOST_NAME=$HOST_NAME
   tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
@@ -194,6 +195,7 @@ services:
       - AuthMessageSender:AuthEmailFromEmailAddress=$AuthMessageSender_AuthEmailFromEmailAddress
       - AuthMessageSender:AuthEmailFromName=$AuthMessageSender_AuthEmailFromName
       - AuthMessageSender:AuthEmailTo=$AuthMessageSender_AuthEmailTo
+      - HOST_NAME=$HOST_NAME
   db:
     container_name: tt-db
     image: "microsoft/mssql-server-linux"

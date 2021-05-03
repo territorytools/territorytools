@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
@@ -108,7 +109,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch (Exception e)
             {
-                return Redirect($"~/Home/LoginError?message={e.Message}");
+                return Redirect($"~/Home/LoginError?message={WebUtility.UrlEncode(e.Message)}");
             }
         }
 
