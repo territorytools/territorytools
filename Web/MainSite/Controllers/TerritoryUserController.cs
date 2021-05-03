@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
@@ -56,7 +57,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch(AlbaCredentialException e)
             {
-                return Redirect($"~/Home/LoginError?message={e.Message}");
+                return Redirect($"~/Home/LoginError?message={WebUtility.UrlEncode(e.Message)}");
             }
             catch (Exception e)
             {
@@ -131,7 +132,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch(AlbaCredentialException e)
             {
-                return Redirect($"~/Home/LoginError?message={e.Message}");
+                return Redirect($"~/Home/LoginError?message={WebUtility.UrlEncode(e.Message)}");
             }
             catch(Exception)
             {
@@ -193,7 +194,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch(AlbaCredentialException e)
             {
-                return Redirect($"~/Home/LoginError?message={e.Message}");
+                return Redirect($"~/Home/LoginError?message={WebUtility.UrlEncode(e.Message)}");
             }
             catch(Exception)
             {
