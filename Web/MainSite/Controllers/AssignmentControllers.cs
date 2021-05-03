@@ -74,6 +74,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string result = client.DownloadString(
                 RelativeUrlBuilder.UnassignTerritory(territoryId));
 
+            LoadForCurrentAccount();
+
             return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
         }
 
@@ -217,13 +219,17 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         void LoadForCurrentAccount()
         {
-            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            Guid albaAccountId = albaCredentialService
+                .GetAlbaAccountIdFor(User.Identity.Name);
+
             Load(albaAccountId);
         }
 
         void Load(Guid albaAccountId)
         {
-            string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
+            string path = string.Format(
+                options.AlbaAssignmentsHtmlPath, 
+                albaAccountId);
 
             if (System.IO.File.Exists(path))
             {
