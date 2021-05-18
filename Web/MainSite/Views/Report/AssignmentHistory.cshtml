@@ -13,12 +13,12 @@
         </div>
         @foreach (var item in @Model.Records)
         {
-    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-        <div class="p-2" style="min-width:100px;"><strong>@item.TerritoryNumber</strong></div>
-        <div class="p-2" style="min-width:100px;"><strong>@item.PublisherName</strong></div>
-        <div class="p-2" style="min-width:100px;"><strong>@item.CheckedIn</strong></div>
-        <div class="p-2" style="min-width:100px;"><strong>@item.CheckedOut</strong></div>
-        <div class="p-2" style="min-width:100px;"><strong>@item.Note</strong></div>
-    </div>
+            <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                <div class="p-2" style="min-width:100px;"><strong>@item.TerritoryNumber</strong></div>
+                <div class="p-2" style="min-width:100px;">@item.PublisherName</div>
+                <div class="p-2" style="min-width:100px;">@item.CheckedIn</div>
+                <div class="p-2" style="min-width:100px;">@item.CheckedOut</div>
+                <div class="p-2" style="min-width:100px;">@item.Note</div>
+            </div>
         }
     </div>
