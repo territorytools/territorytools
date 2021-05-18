@@ -269,8 +269,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var accountName = database
                 .AlbaAccounts
                 .FirstOrDefault(a => a.AccountName != null
-                && link.AccountName != null
-                && a.AccountName.ToUpper() == link.AccountName.ToUpper());
+                    && link.AccountName != null
+                    && a.AccountName.ToUpper() == link.AccountName.ToUpper());
 
             if (accountName != null)
             {

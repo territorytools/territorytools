@@ -56,5 +56,6 @@ namespace TerritoryTools.Web.Data
         public DbSet<AlbaUser> AlbaUsers { get; set; }
         public DbSet<TerritoryUser> TerritoryUser { get; set; }
         public DbSet<TerritoryUserAlbaAccountLink> TerritoryUserAlbaAccountLink { get; set; }
+        public DbSet<TerritoryAssignment> TerritoryAssignments { get; set; }
     }
 }

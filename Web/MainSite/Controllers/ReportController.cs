@@ -370,6 +370,43 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
         }
 
+        [Authorize]
+        public IActionResult AssignmentHistory()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var assignments = database
+                    .TerritoryAssignments
+                    .ToList();
+
+                var report = new AssignmentHistoryReport();
+
+                foreach(var assignment in assignments)
+                {
+                    report.Records.Add(
+                        new AssignmentRecord
+                        {
+                            TerritoryNumber = assignment.TerritoryNumber,
+                            PublisherName = assignment.PublisherName,
+                            CheckedIn = assignment.CheckedIn?.ToString("yyyy-MM-dd"),
+                            CheckedOut = assignment.CheckedOut?.ToString("yyyy-MM-dd"),
+                            Note = assignment.Note
+                        });
+                }
+
+                return View(report);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         DateTime ServiceYearFrom(DateTime date, DateTime now)
         {
             return date.Month >= 9
