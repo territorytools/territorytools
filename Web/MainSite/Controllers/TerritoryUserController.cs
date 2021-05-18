@@ -248,7 +248,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var user = database
                 .TerritoryUser
-                .FirstOrDefault(u => BasicStrings.StringsEqual(u.Email, link.TerritoryUserEmail));
+                .FirstOrDefault(u => u.Email != null
+                    && link.TerritoryUserEmail != null
+                    && u.Email.ToUpper() == link.TerritoryUserEmail.ToUpper());
                 
             if (user == null)
             {
@@ -266,7 +268,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var accountName = database
                 .AlbaAccounts
-                .FirstOrDefault(a => BasicStrings.StringsEqual(a.AccountName, link.AccountName));
+                .FirstOrDefault(a => a.AccountName != null
+                && link.AccountName != null
+                && a.AccountName.ToUpper() == link.AccountName.ToUpper());
 
             if (accountName != null)
             {
