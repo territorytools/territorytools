@@ -35,11 +35,5 @@ Under 'URIS' add the URI for your site
 Or you may be able to just find it here  
 https://console.developers.google.com/apis/credentials/oauthclient
 
-# Add a Data Migration
-From PowerShell:
-````
-  Add-Migration -Name AddAlbaAccountEtc
-````
-Make sure that the Properties/launchSettings.json file has a 
-connection string set in it
-
+# Database README
+[Web.Data README](./Data/README.md)
