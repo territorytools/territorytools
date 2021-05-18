@@ -7,48 +7,6 @@ namespace TerritoryTools.Web.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
-                name: "TerritoryUserAlbaAccountLinkId",
-                table: "TerritoryUserAlbaAccountLink",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrls",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlHosts",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlActivity",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetUserClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetRoleClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("SqlServer:Identity", "1, 1");
-
             migrationBuilder.CreateTable(
                 name: "TerritoryAssignments",
                 columns: table => new
@@ -74,48 +32,6 @@ namespace TerritoryTools.Web.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "TerritoryAssignments");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "TerritoryUserAlbaAccountLinkId",
-                table: "TerritoryUserAlbaAccountLink",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrls",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlHosts",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlActivity",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetUserClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetRoleClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
         }
     }
 }
