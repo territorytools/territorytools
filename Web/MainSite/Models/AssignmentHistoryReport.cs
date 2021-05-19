@@ -11,6 +11,7 @@ namespace TerritoryTools.Web.MainSite.Models
     public class AssignmentRecord
     {
         public string TerritoryNumber { get; set; }
+        public DateTime? Date { get; set; }
         public string PublisherName { get; set; }
         public string CheckedOut { get; set; }
         public string CheckedIn { get; set; }

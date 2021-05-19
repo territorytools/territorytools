@@ -398,6 +398,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                         new AssignmentRecord
                         {
                             TerritoryNumber = territoryNumber,
+                            Date = assignment.Date,
                             PublisherName = assignment.PublisherName,
                             CheckedIn = assignment.CheckedIn?.Year == 1900
                                 ? ""
@@ -412,8 +413,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 report.Records = report
                     .Records
                     .OrderBy(r => r.TerritoryNumber)
-                    .ThenBy(r => r.CheckedOut)
-                    .ThenBy(r => r.CheckedIn)
+                    .ThenBy(r => r.Date)
                     .ToList();
 
                 return View(report);

@@ -9,6 +9,14 @@ namespace TerritoryTools.Entities
         public Guid Id { get; set; }
         public string TerritoryNumber { get; set; }
         public string PublisherName { get; set; }
+        public DateTime? Date
+        {
+            get
+            {
+                return CheckedIn?.Year == 1900 ? CheckedOut : CheckedIn;
+            }
+        }
+
         public DateTime? CheckedOut { get; set; }
         public DateTime? CheckedIn { get; set; }
         public string Note { get; set; }
