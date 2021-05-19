@@ -2,23 +2,25 @@
 @{
     ViewData["Title"] = "Territory Assignment History Report";
 }
-    <div class="container mt-3" style="max-width:600px;">
+    <div class="container mt-3" style="max-width:1000px;">
         <h3>@ViewData["Title"]</h3>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="pr-2 pl-2" style="min-width:100px;">Territory</div>
-            <div class="pr-2 pl-2" style="min-width:100px;">Publisher</div>
-            <div class="pr-2 pl-2" style="min-width:100px;">Checked Out</div>
-            <div class="pr-2 pl-2" style="min-width:100px;">Checked In</div>
-            <div class="pr-2 pl-2" style="min-width:100px;">Note</div>
-        </div>
-        @foreach (var item in @Model.Records)
-        {
-            <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-                <div class="p-2" style="min-width:100px;"><strong>@item.TerritoryNumber</strong></div>
-                <div class="p-2" style="min-width:100px;">@item.PublisherName</div>
-                <div class="p-2" style="min-width:100px;">@item.CheckedIn</div>
-                <div class="p-2" style="min-width:100px;">@item.CheckedOut</div>
-                <div class="p-2" style="min-width:100px;">@item.Note</div>
-            </div>
-        }
+        <table>
+            <tr>
+                <th>Territory</th>
+                <th>Publisher</th>
+                <th>Checked Out</th>
+                <th>Checked In</th>
+                <th>Note</th>
+            </tr>
+            @foreach (var item in @Model.Records)
+            {
+                <tr>
+                    <td>@item.TerritoryNumber</td>
+                    <td>@item.PublisherName</td>
+                    <td>@item.CheckedOut</td>
+                    <td>@item.CheckedIn</td>
+                    <td>@item.Note</td>
+                </tr>
+            }
+        </table>
     </div>

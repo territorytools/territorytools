@@ -391,16 +391,32 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 foreach(var assignment in assignments)
                 {
+                    string territoryNumber = assignment.TerritoryNumber;
+                    if(int.TryParse(assignment.TerritoryNumber, out int number))
+                    {
+                        territoryNumber = number.ToString("0000");
+                    }
+
                     report.Records.Add(
                         new AssignmentRecord
                         {
-                            TerritoryNumber = assignment.TerritoryNumber,
+                            TerritoryNumber = territoryNumber,
                             PublisherName = assignment.PublisherName,
-                            CheckedIn = assignment.CheckedIn?.ToString("yyyy-MM-dd"),
-                            CheckedOut = assignment.CheckedOut?.ToString("yyyy-MM-dd"),
+                            CheckedIn = assignment.CheckedIn?.Year == 1900
+                                ? ""
+                                : assignment.CheckedIn?.ToString("yyyy-MM-dd"),
+                            CheckedOut = assignment.CheckedOut?.Year == 1900
+                                ? ""
+                                : assignment.CheckedOut?.ToString("yyyy-MM-dd"),
                             Note = assignment.Note
                         });
                 }
+
+                report.Records = report
+                    .Records
+                    .OrderBy(r => r.TerritoryNumber)
+                    .ThenBy(r => r.CheckedOut)
+                    .ToList();
 
                 return View(report);
             }
