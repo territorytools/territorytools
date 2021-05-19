@@ -15,6 +15,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Authorize]
     public class ReportController : AuthorizedController
     {
+        public const string DATE_FORMAT = "yyyy-MM-dd";
+
         IAccountLists accountLists;
         public ReportController(
             MainDbContext database,
@@ -202,7 +204,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                     summaries.Add(new Summary
                     {
-                        Period = $"{periodStart:yyyy-MM-dd}---{periodStart.AddYears(1).AddDays(-1):yyyy-MM-dd}",
+                        Period = $"{periodStart.ToString(DATE_FORMAT)}---{periodStart.AddYears(1).AddDays(-1).ToString(DATE_FORMAT)}",
                         Area = areaName,
                         Group = groupName,
                         Addresses = a.Addresses
@@ -402,10 +404,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             PublisherName = assignment.PublisherName,
                             CheckedIn = assignment.CheckedIn?.Year == 1900
                                 ? ""
-                                : assignment.CheckedIn?.ToString("yyyy-MM-dd"),
+                                : assignment.CheckedIn?.ToString(DATE_FORMAT),
                             CheckedOut = assignment.CheckedOut?.Year == 1900
                                 ? ""
-                                : assignment.CheckedOut?.ToString("yyyy-MM-dd"),
+                                : assignment.CheckedOut?.ToString(DATE_FORMAT),
                             Note = assignment.Note
                         });
                 }
