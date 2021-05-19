@@ -1,0 +1,26 @@
+@model AssignmentHistoryReport;
+@{
+    ViewData["Title"] = "Territory Assignment History Report";
+}
+    <div class="container mt-3">
+        <h3>@ViewData["Title"]</h3>
+        <table>
+            <tr>
+                <th>Territory</th>
+                <th>Publisher</th>
+                <th>Checked Out</th>
+                <th>Checked In</th>
+                <th>Note</th>
+            </tr>
+            @foreach (var item in @Model.Records)
+            {
+                <tr>
+                    <td>@item.TerritoryNumber</td>
+                    <td>@item.PublisherName</td>
+                    <td>@item.CheckedOut</td>
+                    <td>@item.CheckedIn</td>
+                    <td>@item.Note</td>
+                </tr>
+            }
+        </table>
+    </div>

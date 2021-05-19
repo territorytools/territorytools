@@ -15,6 +15,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Authorize]
     public class ReportController : AuthorizedController
     {
+        public const string DATE_FORMAT = "yyyy-MM-dd";
+
         IAccountLists accountLists;
         public ReportController(
             MainDbContext database,
@@ -202,7 +204,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                     summaries.Add(new Summary
                     {
-                        Period = $"{periodStart:yyyy-MM-dd}---{periodStart.AddYears(1).AddDays(-1):yyyy-MM-dd}",
+                        Period = $"{periodStart.ToString(DATE_FORMAT)}---{periodStart.AddYears(1).AddDays(-1).ToString(DATE_FORMAT)}",
                         Area = areaName,
                         Group = groupName,
                         Addresses = a.Addresses
@@ -363,6 +365,60 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .ToList();
 
                 return View(userListView);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        public IActionResult AssignmentHistory()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var assignments = database
+                    .TerritoryAssignments
+                    .ToList();
+
+                var report = new AssignmentHistoryReport();
+
+                foreach(var assignment in assignments)
+                {
+                    string territoryNumber = assignment.TerritoryNumber;
+                    if(int.TryParse(assignment.TerritoryNumber, out int number))
+                    {
+                        territoryNumber = number.ToString("0000");
+                    }
+
+                    report.Records.Add(
+                        new AssignmentRecord
+                        {
+                            TerritoryNumber = territoryNumber,
+                            Date = assignment.Date,
+                            PublisherName = assignment.PublisherName,
+                            CheckedIn = assignment.CheckedIn?.Year == 1900
+                                ? ""
+                                : assignment.CheckedIn?.ToString(DATE_FORMAT),
+                            CheckedOut = assignment.CheckedOut?.Year == 1900
+                                ? ""
+                                : assignment.CheckedOut?.ToString(DATE_FORMAT),
+                            Note = assignment.Note
+                        });
+                }
+
+                report.Records = report
+                    .Records
+                    .OrderBy(r => r.TerritoryNumber)
+                    .ThenBy(r => r.Date)
+                    .ToList();
+
+                return View(report);
             }
             catch (Exception)
             {

@@ -9,6 +9,7 @@ CheckedOutByPublishers=Checked Out By Publishers
 GeographicCompletionSummaryServiceYears=Geographic Completion Summary (Service Years)
 GeographicCompletionSummaryFromNow=Geographic Completion Summary (From Today)
 AlbaUsers=Alba Users
+AssignmentHistory=Assignment History
 UpdateAssignmentCSVFiles=Update Assignment CSV Files
 DownloadAssignmentCSV=Download assignment.csv
 DownloadAddressesCSV=Download addresses.csv
