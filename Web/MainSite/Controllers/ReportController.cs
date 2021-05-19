@@ -382,9 +382,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 var assignments = database
                     .TerritoryAssignments
-                    .OrderBy(a => a.TerritoryNumber)
-                    .ThenBy(a => a.CheckedOut)
-                    .ThenBy(a => a.CheckedIn)
                     .ToList();
 
                 var report = new AssignmentHistoryReport();
@@ -416,6 +413,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .Records
                     .OrderBy(r => r.TerritoryNumber)
                     .ThenBy(r => r.CheckedOut)
+                    .ThenBy(r => r.CheckedIn)
                     .ToList();
 
                 return View(report);
