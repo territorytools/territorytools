@@ -1,26 +1,28 @@
+@using Microsoft.AspNetCore.Mvc.Localization
 @model AssignmentHistoryReport;
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Territory Assignment History Report";
+    ViewData["Title"] = Localizer["TitleAssignmentHistory"].Value;
 }
-    <div class="container mt-3">
-        <h3>@ViewData["Title"]</h3>
-        <table>
+<div class="container mt-3">
+    <h3>@ViewData["Title"]</h3>
+    <table>
+        <tr>
+            <th>Territory</th>
+            <th>Publisher</th>
+            <th>Checked Out</th>
+            <th>Checked In</th>
+            <th>Note</th>
+        </tr>
+        @foreach (var item in @Model.Records)
+        {
             <tr>
-                <th>Territory</th>
-                <th>Publisher</th>
-                <th>Checked Out</th>
-                <th>Checked In</th>
-                <th>Note</th>
+                <td>@item.TerritoryNumber</td>
+                <td>@item.PublisherName</td>
+                <td>@item.CheckedOut</td>
+                <td>@item.CheckedIn</td>
+                <td>@item.Note</td>
             </tr>
-            @foreach (var item in @Model.Records)
-            {
-                <tr>
-                    <td>@item.TerritoryNumber</td>
-                    <td>@item.PublisherName</td>
-                    <td>@item.CheckedOut</td>
-                    <td>@item.CheckedIn</td>
-                    <td>@item.Note</td>
-                </tr>
-            }
-        </table>
-    </div>
+        }
+    </table>
+</div>

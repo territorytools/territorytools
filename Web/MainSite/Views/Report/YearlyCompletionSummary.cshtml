@@ -1,19 +1,22 @@
 @model SummarizeCompletedReport;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Yearly Totals";
+    ViewData["Title"] = Localizer["YearlyTotals"].Value;
 }
-    <div class="container mt-3" style="max-width:600px;">
-        <h3>@ViewData["Title"]</h3>
-        <p>Service Years Start September 1, End August 31</p>
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="pr-2 pl-2" style="min-width:100px;">Service Year</div>
-            <div class="pr-2 pl-2" style="min-width:100px;">Territories Completed</div>
-        </div>
-        @foreach (var item in @Model.SummaryItems)
-        {
-              <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-                   <div class="p-2" style="min-width:100px;"><strong>@item.Name</strong></div>
-                   <div class="p-2" style="min-width:100px;"><strong>@item.Value</strong></div>
-              </div>
-        }
+
+<div class="container mt-3" style="max-width:600px;">
+    <h3>@ViewData["Title"]</h3>
+    <p>Service Years Start September 1, End August 31</p>
+    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="pr-2 pl-2" style="min-width:100px;">Service Year</div>
+        <div class="pr-2 pl-2" style="min-width:100px;">Territories Completed</div>
     </div>
+    @foreach (var item in @Model.SummaryItems)
+    {
+        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+            <div class="p-2" style="min-width:100px;"><strong>@item.Name</strong></div>
+            <div class="p-2" style="min-width:100px;"><strong>@item.Value</strong></div>
+        </div>
+    }
+</div>

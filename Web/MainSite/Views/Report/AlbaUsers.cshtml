@@ -1,13 +1,15 @@
 @using TerritoryTools.Alba.Controllers.UseCases;
 @using TerritoryTools.Web.MainSite;
 @using TerritoryTools.Web.MainSite.Models;
+@using Microsoft.AspNetCore.Mvc.Localization
 @model AlbaUserListView
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Alba Users";
+    ViewData["Title"] = Localizer["AlbaUsers"].Value;
 }
 
 <div class="container mt-3" style="max-width:1200px;">
-    <h3>Alba Users</h3>
+    <h3>@ViewData["Title"]</h3>
     <button id="add-users" class="btn btn-primary">Add Selected Users to Territory Tools</button>
     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
         <div class="pr-2 pl-2" style="min-width:40px;"><input id="check-all" asp-for="IsChecked" /></div>
@@ -21,14 +23,12 @@
     {
         <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
             <div class="p-2" style="min-width:40px;">
-                <input 
-                    id="checkbox-@user.Id"
-                    type="checkbox"
-                    class="add-checkbox"
-                    data-id="@user.Id"
-                    data-email="@user.Email"
-                    data-name="@user.Name"
-                />
+                <input id="checkbox-@user.Id"
+                       type="checkbox"
+                       class="add-checkbox"
+                       data-id="@user.Id"
+                       data-email="@user.Email"
+                       data-name="@user.Name" />
             </div>
             <div class="p-2" style="min-width:100px;"><strong>@user.Id</strong></div>
             <div class="p-2" style="min-width:200px;"><strong>@user.UserName</strong></div>
