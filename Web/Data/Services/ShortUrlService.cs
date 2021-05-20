@@ -117,10 +117,9 @@ namespace TerritoryTools.Web.Data.Services
             return context
                 .ShortUrlHosts
                 .SingleOrDefault(
-                    h => string.Equals(
-                        h.Name,
-                        name,
-                        StringComparison.OrdinalIgnoreCase));
+                    h => h.Name != null
+                    && name != null
+                    && h.Name.ToUpper() == name.ToUpper());
         }
 
         public void Update(ShortUrl shortUrl)

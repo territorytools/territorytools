@@ -1,7 +1,10 @@
 @model NeverCompletedReport;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Never Completed";
+    ViewData["Title"] = Localizer["TerritoriesNeverCompleted"].Value;
 }
+
 <div class="container mt-3" style="max-width:600px;">
     <h3>Territories that have never been worked</h3>
     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
@@ -10,7 +13,7 @@
         <div class="pr-2 pl-2" style="width:50px;">Addr.</div>
         <div class="pr-1 pl-1" style="min-width:40px;"></div>
     </div>
-    @foreach (var assignment in Model.Assignments) 
+    @foreach (var assignment in Model.Assignments)
     {
         <form action="/api/Assignments/Assign" id="assign-form-@(assignment.Id)">
             <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
@@ -28,7 +31,7 @@
                     <div class="p-2">
                         <select name="userId" form="assign-form-@(assignment.Id)" class="custom-select m-2">
                             <option selected value="0">Select Publisher</option>
-                            @foreach(var publisher in Model.Publishers)
+                            @foreach (var publisher in Model.Publishers)
                             {
                                 <option value=@(publisher.Id)>@publisher.Name</option>
                             }

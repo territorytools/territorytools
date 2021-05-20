@@ -1,10 +1,10 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = Localizer["TitleTerritoryReports"];
+    ViewData["Title"] = Localizer["TitleTerritoryReports"].Value;
 }
 
-<h3 class="display-4 text-center">@Localizer["TitleTerritoryReports"]</h3>
+<h3 class="display-4 text-center">@ViewData["Title"]</h3>
 <div class="container" style="max-width:500px;">
     <div class="d-flex flex-column">
         <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">@Localizer["LoadDataFromAlba"]</a>
