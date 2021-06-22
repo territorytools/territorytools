@@ -47,6 +47,12 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Given Name")]
+            public string GivenName { get; set; }
+
+            [Display(Name = "Family Name")]
+            public string FamilyName { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync()
