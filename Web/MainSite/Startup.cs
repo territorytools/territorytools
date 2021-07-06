@@ -61,7 +61,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("MainDbContextConnection")));
-            
+
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
@@ -98,11 +98,23 @@ namespace TerritoryTools.Web.MainSite
 
             var users = (Configuration["Users"] ?? string.Empty)
                .Split(';')
-               .ToList(); 
-            
+               .ToList();
+
+            Console.WriteLine($"Users Loaded from Configuration:");
+            foreach (string user in users)
+            {
+                Console.WriteLine($"    {user}");
+            }
+
             var adminUsers = (Configuration["AdminUsers"] ?? string.Empty)
                 .Split(';')
                 .ToList();
+
+            Console.WriteLine($"Admin Users Loaded from Configuration:");
+            foreach (string user in adminUsers)
+            {
+                Console.WriteLine($"    {user}");
+            }
 
             services.AddSingleton<IAccountLists>(l => new AccountLists(
                 Configuration["TT_AreaNames"] ?? string.Empty));
