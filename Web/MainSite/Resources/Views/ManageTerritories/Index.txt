@@ -1,5 +1,5 @@
 # Manage Territories Index Page
-
+MenuHomeButton=Home
 Title=Manage Territories
 LoadDataFromAlba=Load Data From Alba
 YearlyTotals=Yearly Totals
