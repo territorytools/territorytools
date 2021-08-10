@@ -1,6 +1,6 @@
-# Territory Reports Index Page
-MenuHomeButton=Home
-TitleTerritoryReports=Territory Reports
+# Manage Territories Index Page
+
+Title=Manage Territories
 LoadDataFromAlba=Load Data From Alba
 YearlyTotals=Yearly Totals
 TerritoriesNeverCompleted=Territories Never Completed
