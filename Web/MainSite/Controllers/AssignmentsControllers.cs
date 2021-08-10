@@ -78,13 +78,16 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
 
             // TODO: Remove this magic RegEx string...
+            var includePattern = new Regex(
+                @"^\w{3}\d{3}$");
+
             var excludePattern = new Regex(
                 @"(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\-BUSINESS)");
 
             var queryMatching =
-                (from t in territories
-                 where excludePattern.IsMatch(t.Number)
-                 select t);
+                from t in territories
+                where includePattern.IsMatch(t.Number) && !excludePattern.IsMatch(t.Number)
+                select t;
 
             if(queryMatching.Count() == 0)
             {
