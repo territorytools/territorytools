@@ -91,7 +91,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if(queryMatching.Count() == 0)
             {
-                throw new Exception("There are no territories that match the pattern!");
+                throw new Exception($"There are {territories} territories, but none match the pattern!");
             }
 
             var queryMatchingFiles = queryMatching.Take(1);
