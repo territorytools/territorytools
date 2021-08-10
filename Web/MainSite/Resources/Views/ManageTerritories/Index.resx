@@ -117,11 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuHomeButton" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="TitleTerritoryReports" xml:space="preserve">
-    <value>Territory Reports</value>
+  <data name="Title" xml:space="preserve">
+    <value>Manage Territories</value>
   </data>
   <data name="LoadDataFromAlba" xml:space="preserve">
     <value>Load Data From Alba</value>

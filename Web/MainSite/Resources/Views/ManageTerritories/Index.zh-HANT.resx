@@ -117,26 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MenuHomeButton" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="TitleTerritoryReports" xml:space="preserve">
-    <value>Territory Reports</value>
+  <data name="Title" xml:space="preserve">
+    <value>區域報告</value>
   </data>
   <data name="LoadDataFromAlba" xml:space="preserve">
-    <value>Load Data From Alba</value>
+    <value>更新Alba數據</value>
   </data>
   <data name="YearlyTotals" xml:space="preserve">
-    <value>Yearly Totals</value>
+    <value>年度總計</value>
   </data>
   <data name="TerritoriesNeverCompleted" xml:space="preserve">
-    <value>Territories Never Completed</value>
+    <value>沒做過的區域卡</value>
   </data>
   <data name="AvailableTerritories" xml:space="preserve">
-    <value>Available Territories</value>
+    <value>可以分配的區域卡</value>
   </data>
   <data name="CheckedOutByPublishers" xml:space="preserve">
-    <value>Checked Out By Publishers</value>
+    <value>傳道員簽出的區域卡</value>
   </data>
   <data name="GeographicCompletionSummaryServiceYears" xml:space="preserve">
     <value>Geographic Completion Summary (Service Years)</value>
@@ -145,96 +142,93 @@
     <value>Geographic Completion Summary (From Today)</value>
   </data>
   <data name="AlbaUsers" xml:space="preserve">
-    <value>Alba Users</value>
-  </data>
-  <data name="AssignmentHistory" xml:space="preserve">
-    <value>Assignment History</value>
+    <value>Alba用戶</value>
   </data>
   <data name="UpdateAssignmentCSVFiles" xml:space="preserve">
-    <value>Update Assignment CSV Files</value>
+    <value>更新 Assignment CSV 文件</value>
   </data>
   <data name="DownloadAssignmentCSV" xml:space="preserve">
-    <value>Download assignment.csv</value>
+    <value>下載 assignment.csv</value>
   </data>
   <data name="DownloadAddressesCSV" xml:space="preserve">
-    <value>Download addresses.csv</value>
+    <value>下載 addresses.csv</value>
   </data>
   <data name="UpdateBorderKMLFiles" xml:space="preserve">
-    <value>Update Border KML Files</value>
+    <value>更新 Border KML 文件</value>
   </data>
   <data name="DownloadBordersKML" xml:space="preserve">
-    <value>Download borders.kml</value>
+    <value>下載 borders.kml</value>
   </data>
   <data name="CompletionMapUrl" xml:space="preserve">
-    <value>Completion Map (Google My Maps)</value>
+    <value>地圖  (谷歌  “My Maps”)</value>
   </data>
   <data name="ReportSelectPublisher" xml:space="preserve">
-    <value>Select Publisher</value>
+    <value>選傳道員</value>
   </data>
   <data name="ReportButtonAssign" xml:space="preserve">
-    <value>Assign</value>
+    <value>分配</value>
   </data>
   <data name="ReportButtonMap" xml:space="preserve">
-    <value>Map</value>
+    <value>地址</value>
   </data>
   <data name="ReportDescription" xml:space="preserve">
-    <value>Description</value>
+    <value>稱號</value>
   </data>
   <data name="ReportAddresses" xml:space="preserve">
-    <value>Addr.</value>
+    <value>地址數目</value>
   </data>
   <data name="ReportsAccessDenied" xml:space="preserve">
-    <value>Access Denied</value>
+    <value>禁止進入</value>
   </data>
   <data name="ReportsAccessDeniedMessage" xml:space="preserve">
-    <value>You do not have access to this resource.</value>
+    <value>你需要許可才能進入</value>
   </data>
   <data name="TitleYearlyTotals" xml:space="preserve">
-    <value>Yearly Totals</value>
+    <value>年度總計</value>
   </data>
   <data name="YearlyTotalsMessage" xml:space="preserve">
-    <value>Service Years Start September 1, End August 31</value>
+    <value>傳道工作年度是9月1日開始,8月31日結束</value>
   </data>
   <data name="YearlyTotalsServiceYear" xml:space="preserve">
-    <value>Service Year</value>
+    <value>工作年度</value>
   </data>
   <data name="YearlyTotalsTerritoriesCompleted" xml:space="preserve">
-    <value>Territories Completed</value>
+    <value>完成的區域卡</value>
   </data>
   <data name="TitleTerritoriesNeverCompleted" xml:space="preserve">
-    <value>Territories that have never been worked</value>
+    <value>沒做過的區域卡</value>
   </data>
   <data name="TitleTerritoriesAvailable" xml:space="preserve">
-    <value>Territories available to be checked out</value>
+    <value>可以分配的區域卡</value>
   </data>
   <data name="ReportCompleted" xml:space="preserve">
-    <value>Completed</value>
+    <value>完成</value>
   </data>
   <data name="TitleTerritoriesCheckedOut" xml:space="preserve">
-    <value>Territories grouped by publisher</value>
+    <value>區域卡按傳道員分組</value>
   </data>
   <data name="ReportAssigned" xml:space="preserve">
-    <value>Assigned</value>
+    <value>分配</value>
   </data>
   <data name="ReportButtonUnassign" xml:space="preserve">
-    <value>Unassign</value>
+    <value>取消分配</value>
   </data>
   <data name="TitleAlbaUsers" xml:space="preserve">
-    <value>Alba Users</value>
+    <value>Alba用戶</value>
   </data>
   <data name="AlbaUserID" xml:space="preserve">
     <value>ID</value>
   </data>
   <data name="AlbaUserName" xml:space="preserve">
-    <value>User Name</value>
+    <value>用戶名</value>
   </data>
   <data name="AlbaName" xml:space="preserve">
-    <value>Name</value>
+    <value>名字</value>
   </data>
   <data name="AlbaEMail" xml:space="preserve">
-    <value>Email</value>
+    <value>電郵</value>
   </data>
   <data name="AlbaRole" xml:space="preserve">
-    <value>Role</value>
+    <value>角色</value>
   </data>
 </root>
