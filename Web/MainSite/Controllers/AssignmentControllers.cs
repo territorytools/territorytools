@@ -62,7 +62,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={userName}");
         }
 
-        [HttpGet("[action]")]
+        [HttpPost("[action]")]
         public IActionResult AssignLatest(int userId)
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
@@ -72,6 +72,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var territories = GetAllAssignments();
 
+            // TODO: Remove this magic RegEx string...
             var excludePattern = new Regex(
                 @"(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\-BUSINESS)");
 
