@@ -14,4 +14,4 @@ MenuUserSignOut=退出
 
 # If User is Admin
 ReportsButton=Reports
-ManageButton=Manage
+ManageTerritoriesButton=Manage Territories
