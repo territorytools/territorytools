@@ -79,13 +79,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var includePattern = new Regex("^\\w{3}\\d{3}$");
 
-            // TODO: Remove this magic RegEx string...
-            var excludePattern = new Regex(
-                "(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\\-BUSINESS)");
-
             var queryInclude =
                 from t in territories
-                where includePattern.IsMatch(t.Number)
+                where includePattern.IsMatch(t.Description)
                 select t;
 
             if (queryInclude.Count() == 0)
@@ -93,9 +89,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 throw new Exception($"There are {territories.Count()} territories, but none match the include pattern!");
             }
 
+            // TODO: Remove this magic RegEx string...
+            var excludePattern = new Regex(
+                "(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\\-BUSINESS)");
+
             var queryExclude =
                 from t in queryInclude
-                where !excludePattern.IsMatch(t.Number)
+                where !excludePattern.IsMatch(t.Description)
                 select t;
 
             if (queryExclude.Count() == 0)
