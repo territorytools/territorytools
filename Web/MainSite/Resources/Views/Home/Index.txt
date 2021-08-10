@@ -8,3 +8,7 @@ LoginMissingEmail=We do not have a name for your email address!
 # After loggedin (Home page)
 
 HomeQRCodeButton=QR Code Generator
+
+# If User is Admin
+ReportsButton=Reports
+ManageButton=Manage

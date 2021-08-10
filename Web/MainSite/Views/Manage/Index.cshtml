@@ -1,0 +1,50 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@model ReportIndexPage;
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["TitleTerritoryReports"].Value;
+}
+
+<h3 class="display-4 text-center">Manage Territories</h3>
+
+<div class="container" style="max-width:500px;">
+    <div class="d-flex flex-column">
+        <form action="/api/Assignments/AssignLatest" id="assign-latest-form">
+            <div class="d-flex mb-0">
+                <div class="p-2">
+                    <select name="userId" form="assign-latest-form" class="custom-select m-2">
+                        <option selected value="0">Select User</option>
+                        @foreach (var user in Model.Users)
+                        {
+                            <option value=@(user.Id)>@user.Name</option>
+                        }
+                    </select>
+                    <input class="btn btn-primary" type="submit" value="Assign Oldest Territory">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<h3 class="display-4 text-center">@ViewData["Title"]</h3>
+
+<div class="container" style="max-width:500px;">
+    <div class="d-flex flex-column">
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">@Localizer["LoadDataFromAlba"]</a>
+        @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">@Localizer["YearlyTotals"]</a>*@
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="YearlyCompletionSummary">@Localizer["YearlyTotals"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompleted">@Localizer["GeographicCompletionSummaryServiceYears"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="SummarizeCompletedFromNow">@Localizer["GeographicCompletionSummaryFromNow"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AlbaUsers">@Localizer["AlbaUsers"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AssignmentHistory">@Localizer["AssignmentHistory"]</a>
+        <a href="/api/Assignments/DownloadCsvFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateAssignmentCSVFiles"]</a>
+        <a href="/assignments.csv" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadAssignmentCSV"]</a>
+        <a href="/addresses.txt" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadAddressesCSV"]</a>
+        <a href="/api/Assignments/DownloadBorderKmlFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateBorderKMLFiles"]</a>
+        <a href="/borders.kml" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadBordersKML"]</a>
+        <a href="@ViewData["CompletionMapUrl"]" class="p-2 m-2 btn btn-outline-primary" target="_blank">@Localizer["CompletionMapUrl"]</a>
+    </div>
+</div>

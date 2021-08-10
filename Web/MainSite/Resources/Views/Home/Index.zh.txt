@@ -7,3 +7,7 @@ LoginAccountPassword=用户和密码
 # After loggedin (Home page)
 
 HomeQRCodeButton=制造二维码
+
+# If User is Admin
+ReportsButton=Reports
+ManageButton=Manage

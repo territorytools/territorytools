@@ -11,3 +11,7 @@ HomeQRCodeButton=製造二維碼
 MenuUser=用戶
 MenuUserManageAccount=管理賬戶
 MenuUserSignOut=退出
+
+# If User is Admin
+ReportsButton=Reports
+ManageButton=Manage
