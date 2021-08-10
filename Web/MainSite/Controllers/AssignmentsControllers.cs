@@ -77,24 +77,33 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 throw new Exception("There are no territories to assign!");
             }
 
-            // TODO: Remove this magic RegEx string...
-            var includePattern = new Regex(
-                @"^\w{3}\d{3}$");
+            var includePattern = new Regex(@"^\w{3}\d{3}$");
 
+            // TODO: Remove this magic RegEx string...
             var excludePattern = new Regex(
                 @"(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\-BUSINESS)");
 
-            var queryMatching =
+            var queryInclude =
                 from t in territories
-                where includePattern.IsMatch(t.Number) && !excludePattern.IsMatch(t.Number)
+                where includePattern.IsMatch(t.Number)
                 select t;
 
-            if(queryMatching.Count() == 0)
+            if (queryInclude.Count() == 0)
             {
-                throw new Exception($"There are {territories.Count()} territories, but none match the pattern!");
+                throw new Exception($"There are {territories.Count()} territories, but none match the include pattern!");
             }
 
-            var queryMatchingFiles = queryMatching.Take(1);
+            var queryExclude =
+                from t in queryInclude
+                where !excludePattern.IsMatch(t.Number)
+                select t;
+
+            if (queryExclude.Count() == 0)
+            {
+                throw new Exception($"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!");
+            }
+
+            var queryMatchingFiles = queryExclude.Take(1);
 
             var first = queryMatchingFiles
                 .First(t => excludePattern.IsMatch(t.Number));
