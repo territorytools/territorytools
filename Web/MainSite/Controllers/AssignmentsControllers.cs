@@ -77,11 +77,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 throw new Exception("There are no territories to assign!");
             }
 
-            var includePattern = new Regex(@"^\w{3}\d{3}$");
+            var includePattern = new Regex("^\\w{3}\\d{3}$");
 
             // TODO: Remove this magic RegEx string...
             var excludePattern = new Regex(
-                @"(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\-BUSINESS)");
+                "(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\\-BUSINESS)");
 
             var queryInclude =
                 from t in territories
