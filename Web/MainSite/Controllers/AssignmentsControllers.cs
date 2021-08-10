@@ -103,10 +103,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 throw new Exception($"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!");
             }
 
-            var queryMatchingFiles = queryExclude.Take(1);
-
-            var first = queryMatchingFiles
-                .First(t => excludePattern.IsMatch(t.Number));
+            var first = queryExclude
+                .OrderBy(t => t.LastCompleted)
+                .First();
 
             try
             {
