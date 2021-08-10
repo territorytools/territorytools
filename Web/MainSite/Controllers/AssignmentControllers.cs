@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Entities;
@@ -59,6 +60,49 @@ namespace TerritoryTools.Web.MainSite.Controllers
             LoadForCurrentAccount();
 
             return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={userName}");
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult AssignLatest(int userId)
+        {
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+
+            var client = AuthorizedConnection();
+            client.Authenticate(credentials);
+
+            var territories = GetAllAssignments();
+
+            var excludePattern = new Regex(
+                @"(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\-BUSINESS)");
+
+            var queryMatchingFiles =
+                (from t in territories
+                 where excludePattern.IsMatch(t.Number)
+                 select t)
+                .Take(1);
+
+            var first = queryMatchingFiles
+                .First(t => excludePattern.IsMatch(t.Number));
+
+            string result = client.DownloadString(
+                RelativeUrlBuilder.AssignTerritory(
+                    first.Id,
+                    userId,
+                    DateTime.Now));
+
+            var myUser = GetUsersFor(credentials.AlbaAccountId)
+                .FirstOrDefault(u => u.Id == userId);
+
+            string userName = "Somebody";
+            if (myUser != null)
+            {
+                userName = myUser.Name;
+            }
+
+            // This should refresh the mobile territory link to send to the user
+            LoadForCurrentAccount();
+
+            return Redirect($"/Home/AssignSuccess?territoryId={first.Id}&userName={userName}");
         }
 
         [HttpGet("[action]")]
