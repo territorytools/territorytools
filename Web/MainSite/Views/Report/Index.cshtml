@@ -7,20 +7,24 @@
 
 <h3 class="display-4 text-center">Manage Territories</h3>
 
-<form action="/api/Assignments/AssignLatest" id="assign-latest-form">
-    <div class="d-flex mb-0">
-        <div class="p-2">
-            <select name="userId" form="assign-latest-form" class="custom-select m-2">
-                <option selected value="0">Select User</option>
-                @foreach (var user in Model.Users)
-                {
-                    <option value=@(user.Id)>@user.Name</option>
-                }
-            </select>
-            <input class="btn btn-primary hidden" type="submit" value="Assign Latest Territory">
-        </div>
+<div class="container" style="max-width:500px;">
+    <div class="d-flex flex-column">
+        <form action="/api/Assignments/AssignLatest" id="assign-latest-form">
+            <div class="d-flex mb-0">
+                <div class="p-2">
+                    <select name="userId" form="assign-latest-form" class="custom-select m-2">
+                        <option selected value="0">Select User</option>
+                        @foreach (var user in Model.Users)
+                        {
+                            <option value=@(user.Id)>@user.Name</option>
+                        }
+                    </select>
+                    <input class="btn btn-primary" type="submit" value="Assign Oldest Territory">
+                </div>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 
 <h3 class="display-4 text-center">@ViewData["Title"]</h3>
 

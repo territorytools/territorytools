@@ -62,7 +62,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={userName}");
         }
 
-        [HttpPost("[action]")]
+        [HttpGet("[action]")]
         public IActionResult AssignLatest(int userId)
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
