@@ -55,8 +55,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Users= users,
                 };
 
-                ViewData["CompletionMapUrl"] = options.CompletionMapUrl;
-
                 return View(report);
             }
             catch (Exception)

@@ -11,4 +11,4 @@ HomeQRCodeButton=QR Code Generator
 
 # If User is Admin
 ReportsButton=Reports
-ManageButton=Manage
+ManageTerritoriesButton=Manage Territories

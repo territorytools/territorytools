@@ -10,4 +10,4 @@ HomeQRCodeButton=制造二维码
 
 # If User is Admin
 ReportsButton=Reports
-ManageButton=Manage
+ManageTerritoriesButton=Manage Territories
