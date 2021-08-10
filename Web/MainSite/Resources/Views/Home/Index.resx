@@ -138,7 +138,7 @@
   <data name="ReportsButton" xml:space="preserve">
     <value>Reports</value>
   </data>
-  <data name="ManageButton" xml:space="preserve">
-    <value>Manage</value>
+  <data name="ManageTerritoriesButton" xml:space="preserve">
+    <value>Manage Territories</value>
   </data>
 </root>
