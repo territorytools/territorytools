@@ -18,10 +18,10 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Web/MainSite/Web.MainSite.csproj
     - name: Generate (Localized) Resource Files
       run: pwsh Web/MainSite/Resources/Generate-ResourceFiles.ps1
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore Web/MainSite/Web.MainSite.csproj
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
