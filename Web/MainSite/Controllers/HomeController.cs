@@ -51,10 +51,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return View(publisher);
                 }
 
-                 string myName = User.Identity.Name;
+                publisher.IsAdmin = IsAdmin();
 
-                // try
-                // {
+
+                string myName = User.Identity.Name;
+
+                try
+                {
                     var users = GetUsers(account, user, password);
                     var me = users.FirstOrDefault(
                         u => string.Equals(
@@ -68,11 +71,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     }
 
                     myName = me.Name;
-                // }
-                // catch(Exception e)
-                // {
-                //     return NotFound(e.Message);
-                // }
+                }
+                catch(Exception e)
+                {
+                     return NotFound(e.Message);
+                }
 
                 var assignments = GetAllAssignments()
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
