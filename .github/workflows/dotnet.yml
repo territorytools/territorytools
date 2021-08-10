@@ -21,7 +21,7 @@ jobs:
       run: dotnet restore Web/MainSite/Web.MainSite.csproj
     - name: Generate (Localized) Resource Files
       run: pwsh Web/MainSite/Resources/Generate-ResourceFiles.ps1
-    - name: Build
+    - name: Build Territory Tools Main Web Site
       run: dotnet build --no-restore Web/MainSite/Web.MainSite.csproj
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
