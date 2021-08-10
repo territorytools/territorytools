@@ -141,4 +141,10 @@
   <data name="MenuUserSignOut" xml:space="preserve">
     <value>退出</value>
   </data>
+  <data name="ReportsButton" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="ManageButton" xml:space="preserve">
+    <value>Manage</value>
+  </data>
 </root>

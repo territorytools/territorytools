@@ -132,4 +132,10 @@
   <data name="HomeQRCodeButton" xml:space="preserve">
     <value>制造二维码</value>
   </data>
+  <data name="ReportsButton" xml:space="preserve">
+    <value>Reports</value>
+  </data>
+  <data name="ManageButton" xml:space="preserve">
+    <value>Manage</value>
+  </data>
 </root>

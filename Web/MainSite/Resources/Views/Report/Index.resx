@@ -144,6 +144,9 @@
   <data name="AlbaUsers" xml:space="preserve">
     <value>Alba Users</value>
   </data>
+  <data name="AssignmentHistory" xml:space="preserve">
+    <value>Assignment History</value>
+  </data>
   <data name="UpdateAssignmentCSVFiles" xml:space="preserve">
     <value>Update Assignment CSV Files</value>
   </data>
