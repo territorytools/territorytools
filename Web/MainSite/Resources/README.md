@@ -17,8 +17,12 @@ WelcomeBanner=这里
 ````
 
 ### ﻿How to Create all .resx Files in PowerShell:
-(From the same folder where this README.md is)
+The easy way is to just run the Generate-ResourceFiles.ps1 PowerShell script.
+
+Or you can just run this in a PowerShell console:
+
 ````
+cd Web/MainSite/Resources
 ls *.txt -Recurse |
   % { resgen $_.FullName $_.FullName.Replace(".txt", ".resx") }
 ````
