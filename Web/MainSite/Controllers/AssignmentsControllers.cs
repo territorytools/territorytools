@@ -72,36 +72,70 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var territories = GetAllAssignments();
 
+            if(territories.Count() == 0)
+            {
+                throw new Exception("There are no territories to assign!");
+            }
+
             // TODO: Remove this magic RegEx string...
             var excludePattern = new Regex(
                 @"(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\-BUSINESS)");
 
-            var queryMatchingFiles =
+            var queryMatching =
                 (from t in territories
                  where excludePattern.IsMatch(t.Number)
-                 select t)
-                .Take(1);
+                 select t);
+
+            if(queryMatching.Count() == 0)
+            {
+                throw new Exception("There are no territories that match the pattern!");
+            }
+
+            var queryMatchingFiles = queryMatching.Take(1);
 
             var first = queryMatchingFiles
                 .First(t => excludePattern.IsMatch(t.Number));
 
-            string result = client.DownloadString(
-                RelativeUrlBuilder.AssignTerritory(
-                    first.Id,
-                    userId,
-                    DateTime.Now));
-
-            var myUser = GetUsersFor(credentials.AlbaAccountId)
-                .FirstOrDefault(u => u.Id == userId);
-
-            string userName = "Somebody";
-            if (myUser != null)
+            try
             {
-                userName = myUser.Name;
+                string result = client.DownloadString(
+                    RelativeUrlBuilder.AssignTerritory(
+                        first.Id,
+                        userId,
+                        DateTime.Now));
+            }
+            catch(Exception)
+            {
+                throw new Exception($"Cannot assign territory {first.Id} to user {userId}");
             }
 
-            // This should refresh the mobile territory link to send to the user
-            LoadForCurrentAccount();
+            string userName = "Somebody";
+
+            try
+            {
+                var myUser = GetUsersFor(credentials.AlbaAccountId)
+                    .FirstOrDefault(u => u.Id == userId);
+
+                if (myUser != null)
+                {
+                    userName = myUser.Name;
+                }
+            }
+            catch(Exception)
+            {
+                throw new Exception($"Cannot get user name for user id {userId}");
+            }
+
+
+            try
+            {
+                // This should refresh the mobile territory link to send to the user
+                LoadForCurrentAccount();
+            }
+            catch(Exception)
+            {
+                throw new Exception("Cannot refresh mobile territory link");
+            }
 
             return Redirect($"/Home/AssignSuccess?territoryId={first.Id}&userName={userName}");
         }
