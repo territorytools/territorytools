@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@model ReportIndexPage;
 @inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["TitleTerritoryReports"].Value;
@@ -10,15 +11,15 @@
     <div class="d-flex mb-0">
         <div class="p-2">
             <select name="userId" form="assign-latest-form" class="custom-select m-2">
-                <option selected value="0">Select Publisher</option>
-                @foreach (var publisher in Model.Publishers)
+                <option selected value="0">Select User</option>
+                @foreach (var user in Model.Users)
                 {
-                    <option value=@(publisher.Id)>@publisher.Name</option>
+                    <option value=@(user.Id)>@user.Name</option>
                 }
             </select>
-            <input class="btn btn-primary hidden" type="submit" value="Assign">               
+            <input class="btn btn-primary hidden" type="submit" value="Assign Latest Territory">
         </div>
-    </div>  
+    </div>
 </form>
 
 <h3 class="display-4 text-center">@ViewData["Title"]</h3>

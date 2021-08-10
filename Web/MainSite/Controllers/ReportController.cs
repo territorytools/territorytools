@@ -39,14 +39,30 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            if (!IsAdmin())
+            try
             {
-                return Forbid();
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var users = GetUsers(account, user, password)
+                    .OrderBy(u => u.Name)
+                    .ToList();
+
+                var report = new ReportIndexPage()
+                {
+                    Users= users,
+                };
+
+                ViewData["CompletionMapUrl"] = options.CompletionMapUrl;
+
+                return View(report);
             }
-
-            ViewData["CompletionMapUrl"] = options.CompletionMapUrl;
-
-            return View();
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [Authorize]
