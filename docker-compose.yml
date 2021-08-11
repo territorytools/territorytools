@@ -198,7 +198,7 @@ services:
       - HOST_NAME=$HOST_NAME
   db:
     container_name: tt-db
-    image: "microsoft/mssql-server-linux"
+    image: "mcr.microsoft.com/mssql/server"
     restart: always
     volumes:
       - "${DataVolume}/db:/var/opt/mssql"
