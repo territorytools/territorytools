@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
@@ -47,6 +48,16 @@ namespace TerritoryTools.Web.Data
              .WithMany(a => a.Urls)
              .HasForeignKey(u => u.HostId)
              .HasConstraintName("ForeignKey_ShortUrl_Host");
+
+            builder.Entity<TerritoryUser>()
+                .HasData(new TerritoryUser
+                {  
+                    Id = Guid.NewGuid(),
+                    Email = "admin@territorytools.org", 
+                    GivenName = "Admin", 
+                    Role = "Administrator",
+                    Created = new DateTime(2021,8,1)
+                });
         }
 
         public DbSet<ShortUrl> ShortUrls { get; set; }
