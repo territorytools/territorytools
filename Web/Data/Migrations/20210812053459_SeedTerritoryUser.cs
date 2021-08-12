@@ -7,54 +7,6 @@ namespace TerritoryTools.Web.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
-                name: "TerritoryUserAlbaAccountLinkId",
-                table: "TerritoryUserAlbaAccountLink",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrls",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlHosts",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlActivity",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetUserClaims",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetRoleClaims",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1");
-
             migrationBuilder.InsertData(
                 table: "TerritoryUser",
                 columns: new[] { "Id", "Alias", "AspNetUserId", "Created", "Email", "GivenName", "LastSignIn", "Role", "Surname", "Telephone", "Updated" },
@@ -67,54 +19,6 @@ namespace TerritoryTools.Web.Data.Migrations
                 table: "TerritoryUser",
                 keyColumn: "Id",
                 keyValue: new Guid("0714316c-8a94-438d-9f76-4c4c9b77ef89"));
-
-            migrationBuilder.AlterColumn<int>(
-                name: "TerritoryUserAlbaAccountLinkId",
-                table: "TerritoryUserAlbaAccountLink",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrls",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlHosts",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "ShortUrlActivity",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetUserClaims",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetRoleClaims",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("SqlServer:Identity", "1, 1");
         }
     }
 }
