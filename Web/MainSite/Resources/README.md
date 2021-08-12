@@ -1,4 +1,12 @@
-﻿# How to Make Localization Files (Translations)
+﻿﻿# How to Edit resx Files
+In Visual Studio Code install the ResX Editor
+
+Link: https://github.com/DominicVonk/vscode-resx
+
+The resgen.exe doesn't exist in Linux or Mac, but VSCode does. 
+In Visual Studio there is a built-in resource (resx) editor.
+
+# How to Make Localization Files (Translations)
 Run this command to create a resx file
 ````
   resgen .\Index.zh-HANT.txt .\Index.zh-HANT.resx

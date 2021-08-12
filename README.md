@@ -25,3 +25,23 @@ docker image prune
 ````
 
 Reference link: https://docs.docker.com/engine/reference/commandline/image_prune/
+
+## Error: It was not possible to find any installed .NET Core SDKs
+
+This happens when trying to run in VSCode inside a container and after adding Docker files
+
+### Full error message:
+````
+It was not possible to find any installed .NET Core SDKs
+  Did you mean to run .NET Core SDK commands? Install a .NET Core SDK from:
+      https://aka.ms/dotnet-download
+The target process exited without raising a CoreCLR started event. Ensure that the target process is configured to use .NET Core. This may be expected if the target process did not run on .NET Core.
+The program '[24] dotnet' has exited with code 145 (0x91).
+````
+
+Reference: https://github.com/microsoft/vscode-docker/issues/1793
+
+### Fix:
+After running this command (Ctrl+Shift+P):: "Docker: Add Docker Files to Worksapce"
+
+Run this command (Ctrl+Shift+P): ".NET: Generate Assets for Build and Debug"
