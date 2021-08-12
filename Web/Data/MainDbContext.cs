@@ -52,7 +52,7 @@ namespace TerritoryTools.Web.Data
             builder.Entity<TerritoryUser>()
                 .HasData(new TerritoryUser
                 {  
-                    Id = Guid.NewGuid(),
+                    Id = new Guid("0714316c-8a94-438d-9f76-4c4c9b77ef89"),
                     Email = "admin@territorytools.org", 
                     GivenName = "Admin", 
                     Role = "Administrator",
