@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TerritoryTools.Web.Data;
 
 namespace TerritoryTools.Web.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210812053459_SeedTerritoryUser")]
+    partial class SeedTerritoryUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,18 +248,6 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AlbaAccounts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("90bc0598-1907-4384-8d8d-e5d336c769c3"),
-                            AccountName = "account-name",
-                            Created = new DateTime(2021, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            HostName = "host-name",
-                            IdInAlba = 1,
-                            LongName = "Long Name for Alba Account",
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TerritoryTools.Entities.AlbaUser", b =>
@@ -422,16 +412,6 @@ namespace TerritoryTools.Web.Data.Migrations
                     b.HasIndex("TerritoryUserId");
 
                     b.ToTable("TerritoryUserAlbaAccountLink");
-
-                    b.HasData(
-                        new
-                        {
-                            TerritoryUserAlbaAccountLinkId = 1,
-                            AlbaAccountId = new Guid("90bc0598-1907-4384-8d8d-e5d336c769c3"),
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            TerritoryUserId = new Guid("0714316c-8a94-438d-9f76-4c4c9b77ef89"),
-                            Updated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("TerritoryTools.Web.MainSite.Areas.UrlShortener.Models.ShortUrl", b =>
