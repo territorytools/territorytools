@@ -58,6 +58,26 @@ namespace TerritoryTools.Web.Data
                     Role = "Administrator",
                     Created = new DateTime(2021,8,1)
                 });
+
+            builder.Entity<AlbaAccount>()
+                .HasData(new AlbaAccount
+                {
+                     Id = new Guid("90BC0598-1907-4384-8D8D-E5D336C769C3"),
+                     AccountName = "account-name",
+                     HostName = "host-name",
+                     IdInAlba = 1,
+                     LongName = "Long Name for Alba Account", 
+                     Created = new DateTime(2021,8,1)
+                });
+
+            builder.Entity<TerritoryUserAlbaAccountLink>()
+                .HasData(new TerritoryUserAlbaAccountLink
+                {
+                    TerritoryUserAlbaAccountLinkId = 1,
+                    AlbaAccountId = new Guid("90BC0598-1907-4384-8D8D-E5D336C769C3"),
+                    TerritoryUserId = new Guid("0714316c-8a94-438d-9f76-4c4c9b77ef89")
+                });
+
         }
 
         public DbSet<ShortUrl> ShortUrls { get; set; }
