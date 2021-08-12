@@ -198,16 +198,20 @@ services:
       - HOST_NAME=$HOST_NAME
   db:
     container_name: tt-db
-    image: "mcr.microsoft.com/mssql/server"
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    #build:
+    #  context: .
+    #  dockerfile: ./db/Dockerfile
     restart: always
-    volumes:
-      - "${DataVolume}/db:/var/opt/mssql"
+    #volumes:
+    #  - "${DataVolume}/db:/var/opt/mssql"
+    #  - "/run/desktop/mnt/host/c/Code/territory-tools:/src"
     environment:
       - MSSQL_PID=Express
       - ACCEPT_EULA=Y
       - SA_PASSWORD=$SA_PASSWORD
-    networks:
-      - main
+    #networks:
+    #  - main
     ports:
       - "1433:1433"
   tt-url:
