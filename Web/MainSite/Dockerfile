@@ -14,11 +14,11 @@ RUN dotnet restore Web/MainSite/Web.MainSite.csproj --packages /src/packages
 
 COPY . .
 
-RUN dotnet build Web/MainSite/Web.MainSite.csproj -c Release -o /app --no-restore -f netcoreapp3.1
+RUN dotnet build Web/MainSite/Web.MainSite.csproj -c Release -o /app --no-restore
 
 FROM build AS publish
 RUN mkdir /app/publish && mkdir /app/publish/zh-Hant/
-RUN dotnet publish Web/MainSite/Web.MainSite.csproj -c Release -o /app/publish --no-restore -f netcoreapp3.1
+RUN dotnet publish Web/MainSite/Web.MainSite.csproj -c Release -o /app/publish --no-restore
 
 FROM base AS final
 WORKDIR /app
