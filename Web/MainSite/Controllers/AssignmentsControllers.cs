@@ -70,7 +70,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
-            var territories = GetAllAssignments();
+            var territories = GetAllAssignmentsFresh();
 
             if(territories.Count() == 0)
             {
@@ -81,9 +81,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var queryInclude =
                 from t in territories
-                where includePattern.IsMatch(t.Description)
+                where includePattern.IsMatch(t.Description) 
+                    && t.Status != null 
+                    && t.Status.ToUpper() == "AVAILABLE"
                 select t;
 
+            //logger.Message($"queryInclude.Count(): {queryInclude.Count()}");
             if (queryInclude.Count() == 0)
             {
                 throw new Exception($"There are {territories.Count()} territories, but none match the include pattern!");
@@ -98,13 +101,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 where !excludePattern.IsMatch(t.Description)
                 select t;
 
+            //logger.Message($"queryExclude.Count(): {queryExclude.Count()}");
             if (queryExclude.Count() == 0)
             {
                 throw new Exception($"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!");
             }
 
             var first = queryExclude
-                .OrderBy(t => t.LastCompleted)
+                .OrderBy(t => t.LastCompleted ?? DateTime.MinValue)
                 .First();
 
             try
@@ -314,8 +318,43 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             Load(albaAccountId);
         }
+        
+        void LoadForCurrentAccountFresh()
+        {
+            Guid albaAccountId = albaCredentialService
+                .GetAlbaAccountIdFor(User.Identity.Name);
+
+            LoadFresh(albaAccountId);
+        }
 
         void Load(Guid albaAccountId)
+        {
+            string path = string.Format(
+                options.AlbaAssignmentsHtmlPath, 
+                albaAccountId);
+
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+
+            var client = AuthorizedConnection();
+
+            var useCase = new DownloadTerritoryAssignments(client);
+
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+
+            client.Authenticate(credentials);
+
+            var resultString = client.DownloadString(
+                RelativeUrlBuilder.GetTerritoryAssignments());
+
+            string html = TerritoryAssignmentParser.Parse(resultString);
+
+            System.IO.File.WriteAllText(path, html);
+        }
+
+        void LoadFresh(Guid albaAccountId)
         {
             string path = string.Format(
                 options.AlbaAssignmentsHtmlPath, 
@@ -361,6 +400,22 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string html = System.IO.File.ReadAllText(path);
 
             return useCase.GetAssignments(html);
+        }
+
+        IEnumerable<AlbaAssignmentValues> GetAllAssignmentsFresh()
+        {
+            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+
+            LoadForCurrentAccountFresh();
+
+            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+            var client = AuthorizedConnection();
+            client.Authenticate(credentials);
+
+            // TODO: Probably don't need a dependency on client here
+            var downloader = new DownloadTerritoryAssignments(client); 
+
+            return downloader.GetAssignments();
         }
 
         IEnumerable<cuc.User> GetUsersFor(Guid albaAccountId)

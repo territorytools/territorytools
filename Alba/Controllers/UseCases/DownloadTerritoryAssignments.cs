@@ -63,6 +63,16 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             }
         }
 
+        public List<AlbaAssignmentValues> GetAssignments()
+        {
+            var resultString = client.DownloadString(
+                RelativeUrlBuilder.GetTerritoryAssignments());
+
+            string html = TerritoryAssignmentParser.Parse(resultString);
+
+            return GetAssignments(html);
+        }
+
         public List<AlbaAssignmentValues> GetAssignments(string html)
         {
             //string html = File.ReadAllText("assignments.html");
