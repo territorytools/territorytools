@@ -86,7 +86,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     && t.Status.ToUpper() == "AVAILABLE"
                 select t;
 
-            //logger.Message($"queryInclude.Count(): {queryInclude.Count()}");
             if (queryInclude.Count() == 0)
             {
                 throw new Exception($"There are {territories.Count()} territories, but none match the include pattern!");
@@ -101,7 +100,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 where !excludePattern.IsMatch(t.Description)
                 select t;
 
-            //logger.Message($"queryExclude.Count(): {queryExclude.Count()}");
             if (queryExclude.Count() == 0)
             {
                 throw new Exception($"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!");
