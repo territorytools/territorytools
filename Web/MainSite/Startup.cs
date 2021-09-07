@@ -3,26 +3,21 @@ using FluffySpoon.AspNet.LetsEncrypt;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
-//using Microsoft.Extensions.Hosting;
 using System;
 using System.Globalization;
 using System.Linq;
+using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
-using TerritoryTools.Web.Data;
-using TerritoryTools.Entities;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -93,6 +88,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IShortUrlService, ShortUrlService>();
             services.AddScoped<IQRCodeActivityService, QRCodeActivityService>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<ITerritoryAssignmentService, TerritoryAssignmentService>();
             
             services.Configure<WebUIOptions>(Configuration);
 

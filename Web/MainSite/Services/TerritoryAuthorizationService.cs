@@ -15,7 +15,9 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         IEnumerable<string> userNames;
         IEnumerable<string> adminUserNames;
-        public TerritoryAuthorizationService(IEnumerable<string> userNames, IEnumerable<string> adminUserNames)
+        public TerritoryAuthorizationService(
+            IEnumerable<string> userNames, 
+            IEnumerable<string> adminUserNames)
         {
             this.userNames = userNames;
             this.adminUserNames = adminUserNames;
@@ -30,6 +32,8 @@ namespace TerritoryTools.Web.MainSite.Services
                     return true;
                 }
             }
+
+            // TODO: Check the database for Admin users too
 
             return false;
         }

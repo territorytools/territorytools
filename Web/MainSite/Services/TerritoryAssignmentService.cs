@@ -6,7 +6,12 @@ using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
 {
-    public class TerritoryAssignmentService
+    public interface ITerritoryAssignmentService
+    {
+        IEnumerable<AlbaAssignmentValues> GetAllAssignmentsFresh(string userName);
+    }
+
+    public class TerritoryAssignmentService : ITerritoryAssignmentService
     {
         readonly IAlbaCredentialService albaCredentialService;
         readonly WebUIOptions options;
@@ -21,12 +26,10 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public IEnumerable<AlbaAssignmentValues> GetAllAssignmentsFresh(string userName)
         {
-            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(userName);
-
             LoadForCurrentAccountFresh(userName);
 
             var credentials = albaCredentialService.GetCredentialsFrom(userName);
-            ////var client = AuthorizedConnection();
+            var client = AuthorizedConnection();
             
             // TODO: Refactoring to use TerritoryAssignmentService.cs
             client.Authenticate(credentials);
@@ -70,9 +73,9 @@ namespace TerritoryTools.Web.MainSite.Services
             System.IO.File.WriteAllText(path, html);
         }
 
-        //AlbaConnection AuthorizedConnection()
-        //{
-        //    return AlbaConnection.From(options.AlbaHost);
-        //}
+        AlbaConnection AuthorizedConnection()
+        {
+            return AlbaConnection.From(options.AlbaHost);
+        }
     }
 }

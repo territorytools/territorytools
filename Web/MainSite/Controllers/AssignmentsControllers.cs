@@ -19,16 +19,19 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public class AssignmentsController : Controller
     {
         readonly IAlbaCredentialService albaCredentialService;
+        readonly ITerritoryAssignmentService territoryAssignmentService;
         readonly ILogger logger;
         readonly WebUIOptions options;
 
         public AssignmentsController(
             IAlbaCredentialService albaCredentialService,
+            ITerritoryAssignmentService territoryAssignmentService,
             IAlbaCredentials credentials,
             ILogger<AssignmentsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
             this.albaCredentialService = albaCredentialService;
+            this.territoryAssignmentService = territoryAssignmentService;
             this.logger = logger;
             options = optionsAccessor.Value;
         }
@@ -70,7 +73,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
-            var territories = GetAllAssignmentsFresh();
+            var territories = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
 
             if(territories.Count() == 0)
             {
@@ -174,7 +177,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
         {
-            return GetAllAssignments();
+            return territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
         }
 
         [HttpGet("[action]")]
@@ -182,7 +185,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                return GetAllAssignments()
+                return territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null) 
                     .OrderBy(a => a.Description)
@@ -207,7 +210,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                var groups = GetAllAssignments()
+                var groups = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
@@ -377,43 +380,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string html = TerritoryAssignmentParser.Parse(resultString);
 
             System.IO.File.WriteAllText(path, html);
-        }
-
-        IEnumerable<AlbaAssignmentValues> GetAllAssignments()
-        {
-            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
-
-            string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
-
-            if (!System.IO.File.Exists(path))
-            {
-                LoadForCurrentAccount();
-            }
-
-            var client = AuthorizedConnection();
-
-            // TODO: Probably don't need a dependency on client here
-            var useCase = new DownloadTerritoryAssignments(client); 
-
-            string html = System.IO.File.ReadAllText(path);
-
-            return useCase.GetAssignments(html);
-        }
-
-        IEnumerable<AlbaAssignmentValues> GetAllAssignmentsFresh()
-        {
-            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
-
-            LoadForCurrentAccountFresh();
-
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
-            var client = AuthorizedConnection();
-            client.Authenticate(credentials);
-
-            // TODO: Probably don't need a dependency on client here
-            var downloader = new DownloadTerritoryAssignments(client); 
-
-            return downloader.GetAssignments();
         }
 
         IEnumerable<cuc.User> GetUsersFor(Guid albaAccountId)
