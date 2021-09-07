@@ -219,7 +219,7 @@ services:
     networks:
       - main
     ports:
-      - "5010:80"
+      - "5016:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      

@@ -1,7 +1,7 @@
 # Fire Wall
 On an Ubuntu server you can use **ufw** as a firewall
 
-## Docky Ignores ufw Rules! Fix it
+## Docker Ignores ufw Rules! Fix it
 Source Article: https://www.techrepublic.com/article/how-to-fix-the-docker-and-ufw-security-flaw/
 
 File: /etc/default/docker

@@ -41,7 +41,7 @@ namespace TerritoryTools.Web.UrlShortener
 
             // Add framework services.
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             // Reference: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-3.1
             services.Configure<ForwardedHeadersOptions>(options =>
@@ -81,7 +81,12 @@ namespace TerritoryTools.Web.UrlShortener
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseMvcWithDefaultRoute();
+            // app.UseMvc(routes =>
+            // {
+            //     routes.MapRoute(
+            //         name: "default",
+            //         template: "{controller=Home}/{action=Index}/{id?}");
+            // });
         }
     }
 }
