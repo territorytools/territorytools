@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Alba.Service
+namespace TerritoryTools.Web.Alba.Service
 {
     public class Program
     {
