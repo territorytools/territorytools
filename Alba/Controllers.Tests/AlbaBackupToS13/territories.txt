@@ -1,0 +1,4 @@
+﻿"Id"	"Number"	"Description"	"Kind"	"Status"	"LastCompleted"	"LastCompletedBy"	"SignedOut"	"SignedOutTo"	"MobileLink"
+"11111"	"1001"	"ABC123"	"Regular"	"Available"	"2001-01-01 00:00:00"	"Bruce Wayne"			"https://www.test.com/path?q=3003"
+"22222"	"2002"	"ABC123"	"Regular"	"Signed-out"			"2002-02-02 00:00:00"	"Clark Kent"	"https://www.test.com/path?q=3003"
+"33333"	"3003"	"ABC123"	"Regular"	"Available"	"2003-03-03 00:00:00"	"Lana Lang"			"https://www.test.com/path?q=3003"

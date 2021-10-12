@@ -29,4 +29,10 @@
     <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AlbaBackupToS13\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
