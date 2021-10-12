@@ -150,7 +150,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                if (database.TerritoryUser.Count(u => BasicStrings.StringsEqual(u.Email, invitation.Email)) > 0)
+                if (database.TerritoryUser.Count(u => 
+                       u.Email != null 
+                    && invitation.Email != null 
+                    && u.Email.ToUpper() == invitation.Email.ToUpper()) > 0)
                 {
                     return RedirectToAction(nameof(AlreadyInvited), invitation);
                 }
