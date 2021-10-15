@@ -40,5 +40,27 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             return changes;
         }
 
+        public static List<S13Entry> LoadS13Entries(string path)
+        {
+            List<AssignmentChange> changes = Load(path);
+
+            var entries = new List<S13Entry>();
+            for (int i = 0; i < changes.Count; i++)
+            {
+                if (i == 0)
+                {
+                    var entry = new S13Entry
+                    {
+                        Publisher = changes[i].Publisher,
+                        CheckOut = (changes[i].Status == AssignmentStatus.CheckedOut ? changes[i].Date : (DateTime?)null),
+                        CheckIn = (changes[i].Status == AssignmentStatus.CheckedIn ? changes[i].Date : (DateTime?)null),
+                    };
+
+                    entries.Add(entry);
+                }
+            }
+
+            return entries;
+        }
     }
 }

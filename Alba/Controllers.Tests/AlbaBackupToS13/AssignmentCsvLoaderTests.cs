@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using TerritoryTools.Alba.Controllers.AlbaBackupToS13;
 
@@ -57,7 +58,8 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         [Test]
         public void Load_Changes()
         {
-            var result = AssignmentCsvLoader.Load("AlbaBackupToS13/territories.txt");
+            List<AssignmentChange> result = AssignmentCsvLoader
+                .Load("AlbaBackupToS13/2004-04-04_125959/territories.txt");
 
             Assert.AreEqual("Bruce Wayne", result[0].Publisher);
             Assert.AreEqual(DateTime.Parse("2001-01-01"), result[0].Date);
@@ -66,6 +68,22 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
             Assert.AreEqual("Clark Kent", result[1].Publisher);
             Assert.AreEqual(DateTime.Parse("2002-02-02"), result[1].Date);
             Assert.AreEqual(AssignmentStatus.CheckedOut, result[1].Status);
+        }
+
+        [Test]
+        public void Load_S13Entries()
+        {
+            List<S13Entry> entries = AssignmentCsvLoader
+                .LoadS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+
+            Assert.AreEqual("Bruce Wayne", entries[0].Publisher);
+            Assert.AreEqual(DateTime.Parse("2001-01-01"), entries[0].CheckOut);
+            Assert.AreEqual(DateTime.Parse("2001-02-01"), entries[0].CheckIn);
+            //Assert.AreEqual(AssignmentStatus.CheckedIn, result[0].Status);
+
+            //Assert.AreEqual("Clark Kent", result[1].Publisher);
+            //Assert.AreEqual(DateTime.Parse("2002-02-02"), result[1].Date);
+            //Assert.AreEqual(AssignmentStatus.CheckedOut, result[1].Status);
         }
 
         public void AssertValues(AssignmentValues expected, AssignmentValues actual)
@@ -81,7 +99,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         }
 
         public void AssertValues(
-            AssignmentValues actual, 
+            AssignmentValues actual,
             string number = null,
             DateTime? signedOut = null,
             string signedOutTo = null,
