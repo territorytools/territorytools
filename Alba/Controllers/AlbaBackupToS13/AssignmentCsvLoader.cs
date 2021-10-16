@@ -17,6 +17,16 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             return csv.ToList();
         }
 
+        public static List<S13Entry> LoadS13FromCsv(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+
+            var csv = LoadCsv.LoadFrom<S13Entry>(path, ",");
+
+            return csv.ToList();
+        }
+
         public static List<AssignmentChange> Load(string path)
         {
             var values = LoadFromCsv(path);
@@ -41,7 +51,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             return changes;
         }
 
-        public static List<S13Entry> LoadS13Entries(string path)
+        public static List<S13Entry> ConvertToS13Entries(string path)
         {
             List<AssignmentChange> changes = Load(path);
 
@@ -51,11 +61,12 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 var current = changes[i];
                 var entry = new S13Entry
                 {
+                    Number = current.TerritoryNumber,
                     Publisher = current.Publisher,
-                    CheckOut = (current.Status == AssignmentStatus.CheckedOut
+                    CheckedOut = (current.Status == AssignmentStatus.CheckedOut
                         ? current.Date
                         : (DateTime?)null),
-                    CheckIn = (current.Status == AssignmentStatus.CheckedIn
+                    CheckedIn = (current.Status == AssignmentStatus.CheckedIn
                         ? current.Date
                         : (DateTime?)null),
                 };
@@ -78,7 +89,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                     && next.Status == AssignmentStatus.CheckedIn)
                 {
                     entry.Publisher = next.Publisher;
-                    entry.CheckIn = next.Date;
+                    entry.CheckedIn = next.Date;
                     entries.Add(entry);
                     i++; // Skip next entry because we merged it with current
                     continue;

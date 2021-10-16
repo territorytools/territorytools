@@ -36,7 +36,7 @@
     <None Update="AlbaBackupToS13\2004-04-04_125959\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="AlbaBackupToS13\territories.txt">
+    <None Update="AlbaBackupToS13\expected.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
