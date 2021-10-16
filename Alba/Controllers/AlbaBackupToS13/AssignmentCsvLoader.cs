@@ -25,6 +25,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             {
                 var change = new AssignmentChange
                 {
+                    TerritoryNumber = value.Number,
                     Date = (DateTime)(value.LastCompleted ?? value.SignedOut),
                     Publisher = value.LastCompleted == null
                         ? value.SignedOutTo
@@ -47,15 +48,44 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             var entries = new List<S13Entry>();
             for (int i = 0; i < changes.Count; i++)
             {
-                if (i == 0)
+                var current = changes[i];
+                var entry = new S13Entry
                 {
-                    var entry = new S13Entry
-                    {
-                        Publisher = changes[i].Publisher,
-                        CheckOut = (changes[i].Status == AssignmentStatus.CheckedOut ? changes[i].Date : (DateTime?)null),
-                        CheckIn = (changes[i].Status == AssignmentStatus.CheckedIn ? changes[i].Date : (DateTime?)null),
-                    };
+                    Publisher = current.Publisher,
+                    CheckOut = (current.Status == AssignmentStatus.CheckedOut
+                        ? current.Date
+                        : (DateTime?)null),
+                    CheckIn = (current.Status == AssignmentStatus.CheckedIn
+                        ? current.Date
+                        : (DateTime?)null),
+                };
 
+                if (i == (changes.Count - 1))
+                {
+                    entries.Add(entry);
+                    continue;
+                }
+                
+                var next = changes[i + 1];
+                if(current.TerritoryNumber.TrimStart(' ', '0').ToUpper()
+                    != next.TerritoryNumber.TrimStart(' ', '0').ToUpper())
+                {
+                    entries.Add(entry);
+                    continue;
+                }
+
+                if(current.Status == AssignmentStatus.CheckedOut
+                    && next.Status == AssignmentStatus.CheckedIn)
+                {
+                    entry.Publisher = next.Publisher;
+                    entry.CheckIn = next.Date;
+                    entries.Add(entry);
+                    i++; // Skip next entry because we merged it with current
+                    continue;
+                }
+
+                if (current.Status == AssignmentStatus.CheckedIn)
+                {
                     entries.Add(entry);
                 }
             }

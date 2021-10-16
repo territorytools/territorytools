@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NUnit.Framework;
 using TerritoryTools.Alba.Controllers.AlbaBackupToS13;
 
 namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
@@ -71,19 +71,54 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         }
 
         [Test]
-        public void Load_S13Entries()
+        public void GivenTwoValueEntriesSameNameInThenOut_ShouldBeOneS13Entry()
         {
             List<S13Entry> entries = AssignmentCsvLoader
                 .LoadS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
 
-            Assert.AreEqual("Bruce Wayne", entries[0].Publisher);
-            Assert.AreEqual(DateTime.Parse("2001-01-01"), entries[0].CheckOut);
-            Assert.AreEqual(DateTime.Parse("2001-02-01"), entries[0].CheckIn);
-            //Assert.AreEqual(AssignmentStatus.CheckedIn, result[0].Status);
+            var entry = entries[0];
 
-            //Assert.AreEqual("Clark Kent", result[1].Publisher);
-            //Assert.AreEqual(DateTime.Parse("2002-02-02"), result[1].Date);
-            //Assert.AreEqual(AssignmentStatus.CheckedOut, result[1].Status);
+            Assert.AreEqual("Bruce Wayne", entry.Publisher);
+            Assert.AreEqual(DateTime.Parse("2001-01-01"), entry.CheckOut);
+            Assert.AreEqual(DateTime.Parse("2001-02-01"), entry.CheckIn);
+        }
+
+        [Test]
+        public void GivenDifferentPublisherNameInOut_ShouldBeLastPublisher()
+        {
+            List<S13Entry> entries = AssignmentCsvLoader
+                .LoadS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+
+            var entry = entries[1];
+      
+            Assert.AreEqual("Superman", entry.Publisher);
+            Assert.AreEqual(DateTime.Parse("2002-02-02"), entry.CheckOut);
+            Assert.AreEqual(DateTime.Parse("2002-03-02"), entry.CheckIn);
+
+            var entry2 = entries[2];
+
+            Assert.AreEqual("Clark Kent", entry2.Publisher);
+            Assert.AreEqual(DateTime.Parse("2002-05-05"), entry2.CheckOut);
+            Assert.AreEqual(null, entry2.CheckIn);
+        }
+
+        [Test]
+        public void GivenInThenOut_ShouldAddTwo()
+        {
+            List<S13Entry> entries = AssignmentCsvLoader
+                .LoadS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+
+            var entry = entries[3];
+
+            Assert.AreEqual("Lana Lang", entry.Publisher);
+            Assert.AreEqual(null, entry.CheckOut);
+            Assert.AreEqual(DateTime.Parse("2003-01-01"), entry.CheckIn);
+
+            var entry2 = entries[4];
+
+            Assert.AreEqual("Lana Lang", entry2.Publisher);
+            Assert.AreEqual(DateTime.Parse("2003-02-02"), entry2.CheckOut);
+            Assert.AreEqual(null, entry2.CheckIn);
         }
 
         public void AssertValues(AssignmentValues expected, AssignmentValues actual)
