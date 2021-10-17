@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <None Remove="AllTerritories.json.txt" />
+    <None Remove="AlbaBackupToS13\2004-04-04_125959 %28copy%29\" />
+    <None Remove="AlbaBackupToS13\2005-05-05_125959 %28copy%29\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +41,16 @@
     <None Update="AlbaBackupToS13\expected.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="AlbaBackupToS13\2004-04-04_125959 %28copy%29\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AlbaBackupToS13\2005-05-05_125959 %28copy%29\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AlbaBackupToS13\2005-05-05_125959\" />
+    <Folder Include="AlbaBackupToS13\2005-05-05_125959 %28copy%29\" />
+  </ItemGroup>
 </Project>

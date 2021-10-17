@@ -30,10 +30,10 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
             var result = AssignmentCsvLoader.LoadFromCsv("AlbaBackupToS13/2004-04-04_125959/territories.txt");
 
             Assert.That(result != null);
-            Assert.AreEqual(3, result.Count, "Result count");
+            Assert.AreEqual(4, result.Count, "Result count");
 
             AssertValues(result[0],
-                number: "1001",
+                number: "1",
                 signedOut: null,
                 signedOutTo: "",
                 lastCompleted: DateTime.Parse("2001-01-01"),
