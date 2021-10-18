@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Controllers.UseCases;
 
 namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 {
@@ -13,5 +16,16 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
         public DateTime? SignedOut { get; set; }
         public string SignedOutString { get; set; }
         public string SignedOutTo { get; set; }
+
+        public static List<AssignmentValues> LoadFromCsv(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+
+            IEnumerable<AssignmentValues> csv = LoadCsv
+                .LoadFrom<AssignmentValues>(path);
+
+            return csv.ToList();
+        }
     }
 }

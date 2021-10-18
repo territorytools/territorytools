@@ -8,11 +8,27 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
 {
     public class AssignmentCsvLoaderTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            
+        }
+
+        public IList<AssignmentChange> LoadChanges()
+        {
+            List<AssignmentValues> values = AssignmentValues
+                .LoadFromCsv("AlbaBackupToS13/2004-04-04_125959/territories.txt");
+
+            List<AssignmentChange> changes = AssignmentChange.Load(values);
+
+            return changes;
+        }
+
         [Test]
         public void LoadFromNullPath_ThrowsException()
         {
             Assert.That(
-                () => AssignmentCsvLoader.LoadFromCsv(null),
+                () => AssignmentValues.LoadFromCsv(null),
                 Throws.InstanceOf(typeof(Exception)));
         }
 
@@ -20,14 +36,14 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         public void LoadNonExistantFile_ThrowsException()
         {
             Assert.That(
-                () => AssignmentCsvLoader.LoadFromCsv("non-existant-file.txt"),
+                () => AssignmentValues.LoadFromCsv("non-existant-file.txt"),
                 Throws.TypeOf(typeof(FileNotFoundException)));
         }
 
         [Test]
         public void LoadTestFileInFolder_OK()
         {
-            var result = AssignmentCsvLoader.LoadFromCsv("AlbaBackupToS13/2004-04-04_125959/territories.txt");
+            var result = S13EntryConverter.Convert(LoadChanges());
 
             Assert.That(result != null);
             Assert.AreEqual(4, result.Count, "Result count");
@@ -58,7 +74,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         [Test]
         public void Load_Changes()
         {
-            List<AssignmentChange> result = AssignmentCsvLoader
+            List<AssignmentChange> result = S13EntryConverter
                 .Load("AlbaBackupToS13/2004-04-04_125959/territories.txt");
 
             Assert.AreEqual("Bruce Wayne", result[0].Publisher);
@@ -73,8 +89,8 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         [Test]
         public void GivenTwoValueEntriesSameNameInThenOut_ShouldBeOneS13Entry()
         {
-            List<S13Entry> entries = AssignmentCsvLoader
-                .ConvertToS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+            List<S13Entry> entries = S13EntryConverter
+                .Convert("AlbaBackupToS13/1900-01-01_000000/territories.txt");
 
             var entry = entries[0];
 
@@ -86,9 +102,9 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         [Test]
         public void GivenDifferentPublisherNameInOut_ShouldBeLastPublisher()
         {
-            List<S13Entry> entries = AssignmentCsvLoader
-                .ConvertToS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
-
+            List<S13Entry> entries = S13EntryConverter
+                .Convert("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+            
             var entry = entries[1];
 
             Assert.AreEqual("Superman", entry.Publisher);
@@ -105,8 +121,8 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         [Test]
         public void GivenInThenOut_ShouldAddTwo()
         {
-            List<S13Entry> entries = AssignmentCsvLoader
-                .ConvertToS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+            List<S13Entry> entries = S13EntryConverter
+                .Convert("AlbaBackupToS13/1900-01-01_000000/territories.txt");
 
             var entry = entries[3];
 
@@ -124,11 +140,10 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         [Test]
         public void CompareCsvToS13()
         {
-            List<S13Entry> actuals = AssignmentCsvLoader
-               .ConvertToS13Entries("AlbaBackupToS13/1900-01-01_000000/territories.txt");
+            List<S13Entry> actuals = S13EntryConverter
+               .Convert("AlbaBackupToS13/1900-01-01_000000/territories.txt");
 
-            List<S13Entry> expecteds = AssignmentCsvLoader
-                .LoadS13FromCsv("AlbaBackupToS13/expected.txt");
+            List<S13Entry> expecteds = S13Entry.LoadCsv("AlbaBackupToS13/expected.txt");
 
             Assert.AreEqual(expecteds.Count, actuals.Count);
             for(int i = 0; i < expecteds.Count; i++)
@@ -141,7 +156,6 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
                 Assert.AreEqual(expected.CheckedIn, actual.CheckedIn);
             }
         }
-
 
         public void AssertValues(AssignmentValues expected, AssignmentValues actual)
         {
