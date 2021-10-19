@@ -48,7 +48,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AlbaBackupToS13\2005-05-05_125959\" />
-  </ItemGroup>
 </Project>
