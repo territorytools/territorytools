@@ -31,19 +31,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="AlbaBackupToS13\expected.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="AlbaBackupToS13\1900-01-01_000000\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="AlbaBackupToS13\2004-04-04_125959\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="AlbaBackupToS13\expected.txt">
+    <None Update="AlbaBackupToS13\2005-05-05_125959\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="AlbaBackupToS13\2004-04-04_125959 %28copy%29\territories.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="AlbaBackupToS13\2005-05-05_125959 %28copy%29\territories.txt">
+    <None Update="AlbaBackupToS13\2004-06-06_125959\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
