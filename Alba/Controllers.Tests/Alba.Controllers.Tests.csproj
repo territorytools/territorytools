@@ -37,13 +37,13 @@
     <None Update="AlbaBackupToS13\1900-01-01_000000\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="AlbaBackupToS13\2003-03-03_125959\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="AlbaBackupToS13\2004-04-04_125959\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="AlbaBackupToS13\2005-05-05_125959\territories.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="AlbaBackupToS13\2004-06-06_125959\territories.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
