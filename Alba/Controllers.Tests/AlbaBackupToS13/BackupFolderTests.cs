@@ -25,7 +25,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         }
 
         [Test]
-        public void ReturnOneFolder()
+        public void CompareExpectedToAllFiles()
         {
             string[] paths = {
                 "AlbaBackupToS13\\1900-01-01_000000\\territories.txt",
@@ -42,10 +42,10 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
             {
                 var expected = expecteds[i];
                 var actual = actuals[i];
-                Assert.AreEqual(expected.Number, actual.Number);
-                Assert.AreEqual(expected.Publisher, actual.Publisher);
-                Assert.AreEqual(expected.CheckedOut, actual.CheckedOut);
-                Assert.AreEqual(expected.CheckedIn, actual.CheckedIn);
+                Assert.AreEqual(expected.Number, actual.Number, $"Row {i}");
+                Assert.AreEqual(expected.Publisher, actual.Publisher, $"Row {i}");
+                Assert.AreEqual(expected.CheckedOut, actual.CheckedOut, $"Row {i}");
+                Assert.AreEqual(expected.CheckedIn, actual.CheckedIn, $"Row {i}");
             }
         }
     }

@@ -12,7 +12,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
             List<AssignmentValues> values = AssignmentValues
                 .LoadFromCsv("AlbaBackupToS13/1900-01-01_000000/territories.txt");
 
-            List<AssignmentChange> changes = AssignmentChange.Load(values);
+            List<AssignmentChange> changes = AssignmentChange.Load(values, "AlbaBackupToS13/1900-01-01_000000/territories.txt");
 
             return changes;
         }
@@ -58,14 +58,14 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
             var entry = entries[3];
 
             Assert.AreEqual("Lana Lang", entry.Publisher);
-            Assert.AreEqual(null, entry.CheckedOut);
+            Assert.AreEqual(null, entry.CheckedOut, "First entry");
             Assert.AreEqual(DateTime.Parse("2003-01-01"), entry.CheckedIn);
 
             var entry2 = entries[4];
 
             Assert.AreEqual("Lana Lang", entry2.Publisher);
             Assert.AreEqual(DateTime.Parse("2003-02-02"), entry2.CheckedOut);
-            Assert.AreEqual(null, entry2.CheckedIn);
+            Assert.AreEqual(null, entry2.CheckedIn, "Second entry");
         }
 
         [Test]
@@ -73,7 +73,6 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         {
             List<S13Entry> actuals = S13EntryConverter
                .Convert(LoadSeedValues());
-
             List <S13Entry> expecteds = S13Entry.LoadCsv("AlbaBackupToS13/expected.csv");
 
             Assert.AreEqual(expecteds.Count, actuals.Count);

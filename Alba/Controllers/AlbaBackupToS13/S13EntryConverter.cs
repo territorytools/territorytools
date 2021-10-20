@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 {
     public class S13EntryConverter
     {
-        public static void LoadFrom()
-        {
-
-        }
-
         public static List<S13Entry> Convert(
             IList<AssignmentChange> changes)
         {
+            // TODO: Make a better test
+            var ordered = changes.OrderBy(c => c.Date).ToList();
             var entries = new List<S13Entry>();
-            for (int i = 0; i < changes.Count; i++)
+            for (int i = 0; i < ordered.Count; i++)
             {
-                var current = changes[i];
+                var current = ordered[i];
                 var entry = new S13Entry
                 {
                     Number = current.TerritoryNumber,
@@ -29,13 +27,13 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                         : (DateTime?)null),
                 };
 
-                if (i == (changes.Count - 1))
+                if (i == (ordered.Count - 1))
                 {
                     entries.Add(entry);
                     continue;
                 }
                 
-                var next = changes[i + 1];
+                var next = ordered[i + 1];
                 if(current.TerritoryNumber.TrimStart(' ', '0').ToUpper()
                     != next.TerritoryNumber.TrimStart(' ', '0').ToUpper())
                 {
