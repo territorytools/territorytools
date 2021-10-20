@@ -19,7 +19,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         public IList<AssignmentValues> LoadValues()
         {
             List<AssignmentValues> values = AssignmentValues
-                .LoadFromCsv("AlbaBackupToS13/2003-03-03_125959/territories.txt");
+                .LoadFromCsv("AlbaBackupToS13/2003-03-03_235959/territories.txt");
 
             return values;
         }

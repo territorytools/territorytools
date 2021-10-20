@@ -28,7 +28,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         public void GivenNormalFile_ShouldLoadTwoRowsSuccessfully()
         {
             List<AssignmentValues> result = AssignmentValues
-                .LoadFromCsv("AlbaBackupToS13/2003-03-03_125959/territories.txt");
+                .LoadFromCsv("AlbaBackupToS13/2003-03-03_235959/territories.txt");
 
             Assert.That(result != null);
             Assert.AreEqual(4, result.Count, "Result count");

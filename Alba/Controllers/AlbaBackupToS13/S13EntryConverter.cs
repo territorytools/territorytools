@@ -5,6 +5,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 {
     public class S13EntryConverter
     {
+        public static void LoadFrom()
+        {
+
+        }
+
         public static List<S13Entry> Convert(
             IList<AssignmentChange> changes)
         {

@@ -7,16 +7,6 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
 {
     public class S13EntryConverterTests
     {
-        public IList<AssignmentChange> LoadChanges()
-        {
-            List<AssignmentValues> values = AssignmentValues
-                .LoadFromCsv("AlbaBackupToS13/2004-04-04_125959/territories.txt");
-
-            List<AssignmentChange> changes = AssignmentChange.Load(values);
-
-            return changes;
-        }
-
         public IList<AssignmentChange> LoadSeedValues()
         {
             List<AssignmentValues> values = AssignmentValues
