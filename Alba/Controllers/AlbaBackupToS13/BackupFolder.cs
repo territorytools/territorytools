@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
@@ -14,17 +15,40 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
             string[] folders = Directory.GetDirectories(path);
 
-            return folders;
-            //List<S13Entry> actuals = S13EntryConverter
-            //      .Convert(LoadSeedValues());
+            var files = new List<string>();
+            foreach(string folder in folders)
+            {
+                string filePath = Path.Combine(folder, "territories.txt");
+                if(File.Exists(filePath))
+                {
+                    files.Add(filePath);
+                }
+            }
 
-            //List<S13Entry> expecteds = S13Entry.LoadCsv("AlbaBackupToS13/expected.csv");
-
+            return files.ToArray();
         }
-    }
 
-    public class DayFolder
-    {
+        public static List<S13Entry> LoadStuff(string[] paths)
+        {
+            var allEntries = new List<S13Entry>();
+            foreach (var file in paths)
+            {
+                List<AssignmentValues> values = AssignmentValues
+                  .LoadFromCsv(file);
 
+                List<AssignmentChange> changes = AssignmentChange
+                    .Load(values);
+
+                List<S13Entry> entries = S13EntryConverter
+                    .Convert(changes);
+
+                //foreach()
+
+                allEntries.AddRange(entries);
+                break;
+            }
+
+            return allEntries;
+        }
     }
 }
