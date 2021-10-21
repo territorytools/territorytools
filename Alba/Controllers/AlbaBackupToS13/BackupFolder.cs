@@ -7,7 +7,12 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 {
     public class BackupFolder
     {
-        public static string[] Load(string path)
+        public static List<S13Entry> LoadFolder(string path)
+        {
+            return ConvertFiles(LoadFolders(path));
+        }
+
+        static string[] LoadFolders(string path)
         {
             if (!Directory.Exists(path))
             {
@@ -29,7 +34,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             return files.ToArray();
         }
 
-        public static List<S13Entry> LoadStuff(string[] paths)
+        static List<S13Entry> ConvertFiles(string[] paths)
         {
             var allEntries = new List<S13Entry>();
             var allChanges = new List<AssignmentChange>();
