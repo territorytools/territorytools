@@ -73,7 +73,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         {
             List<S13Entry> actuals = S13EntryConverter
                .Convert(LoadSeedValues());
-            List <S13Entry> expecteds = S13Entry.LoadCsv("AlbaBackupToS13/expected.csv");
+            List <S13Entry> expecteds = S13Entry.LoadCsv("AlbaBackupToS13/1900-expected.csv");
 
             Assert.AreEqual(expecteds.Count, actuals.Count);
             for(int i = 0; i < expecteds.Count; i++)

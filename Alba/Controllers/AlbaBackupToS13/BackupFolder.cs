@@ -32,42 +32,30 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
         public static List<S13Entry> LoadStuff(string[] paths)
         {
             var allEntries = new List<S13Entry>();
-            int startIndex = 0;
-            if(paths.Length > 0 
-                && Path.GetDirectoryName(paths[0]).EndsWith($"{Path.DirectorySeparatorChar}1900-01-01_000000"))
+            var allChanges = new List<AssignmentChange>();
+            for (int i = 0; i < paths.Length; i++)
             {
-                startIndex = 1;
-                List<AssignmentValues> values = AssignmentValues
-                        .LoadFromCsv(paths[0]);
+                string file = paths[i];
+                List<AssignmentValues> values2 = AssignmentValues
+                  .LoadFromCsv(file);
 
-                List<AssignmentChange> changes = AssignmentChange
-                    .Load(values, paths[0]);
+                List<AssignmentChange> changes2 = AssignmentChange
+                    .Load(values2, file);
 
-                List<S13Entry> entries = S13EntryConverter
-                    .Convert(changes);
-
-                allEntries.AddRange(entries);
+                allChanges.AddRange(changes2);
             }
 
-            //for(int i = startIndex; i < paths.Length; i++)
-            //{
-            //    string file = paths[i];
-            //    List<AssignmentValues> values2 = AssignmentValues
-            //      .LoadFromCsv(file);
+            var orderedChanges = allChanges
+                .OrderBy(c => c.TerritoryNumber.TrimStart(' ', '0').ToUpper())
+                .ThenBy(c => c.TimeStamp)
+                .ThenBy(c => c.Date)
+                .ThenBy(c => c.Status)
+                .ToList();
 
-            //    List<AssignmentChange> changes2 = AssignmentChange
-            //        .Load(values2);
+            List<S13Entry> entries = S13EntryConverter
+                   .Convert(orderedChanges);
 
-            //    List<S13Entry> entries2 = S13EntryConverter
-            //        .Convert(changes2);
-
-            //    //foreach()
-
-            //    allEntries.AddRange(entries2);
-            //    break;
-            //}
-
-            return allEntries;
+            return entries;
         }
     }
 }

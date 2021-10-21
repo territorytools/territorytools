@@ -31,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="AlbaBackupToS13\1900-expected.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="AlbaBackupToS13\expected.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

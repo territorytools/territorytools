@@ -54,5 +54,10 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
             return changes;
         }
+
+        public override string ToString()
+        {
+            return $"{TerritoryNumber} {TimeStamp} {Date} {Status} {Publisher}";
+        }
     }
 }

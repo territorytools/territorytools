@@ -10,7 +10,13 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             IList<AssignmentChange> changes)
         {
             // TODO: Make a better test
-            var ordered = changes.OrderBy(c => c.Date).ToList();
+            var ordered = changes
+                .OrderBy(c => c.TerritoryNumber.TrimStart(' ', '0').ToUpper())
+                .ThenBy(c => c.TimeStamp)
+                .ThenBy(c => c.Date)
+                .ThenBy(c => c.Status)
+                .ToList();
+
             var entries = new List<S13Entry>();
             for (int i = 0; i < ordered.Count; i++)
             {
@@ -27,8 +33,26 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                         : (DateTime?)null),
                 };
 
+                if (entries.Count > 0)
+                {
+                    var last = entries.Last();
+                    if (current.TerritoryNumber.TrimStart(' ', '0').ToUpper()
+                        == last.Number.TrimStart(' ', '0').ToUpper()
+                        && string.Equals(current.Publisher, last.Publisher)
+                        && (current.Status == AssignmentStatus.CheckedIn
+                            && current.Date == last.CheckedIn
+                          || current.Status == AssignmentStatus.CheckedOut
+                            && current.Date == last.CheckedOut
+                            && last.CheckedIn != null))
+                    {
+                        // already added
+                        continue;
+                    }
+                }
+
                 if (i == (ordered.Count - 1))
                 {
+                    // Add the final entry
                     entries.Add(entry);
                     continue;
                 }
@@ -37,12 +61,14 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 if(current.TerritoryNumber.TrimStart(' ', '0').ToUpper()
                     != next.TerritoryNumber.TrimStart(' ', '0').ToUpper())
                 {
+                    // Add entries for new territory numbers
                     entries.Add(entry);
                     continue;
                 }
 
                 if(current.Status == AssignmentStatus.CheckedOut
-                    && next.Status == AssignmentStatus.CheckedIn)
+                    && next.Status == AssignmentStatus.CheckedIn
+                    && next.Date >= entry.CheckedOut)
                 {
                     entry.Publisher = next.Publisher;
                     entry.CheckedIn = next.Date;
@@ -51,7 +77,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                     continue;
                 }
 
-                if (current.Status == AssignmentStatus.CheckedIn)
+                if (current.Status == AssignmentStatus.CheckedIn
+                    || (current.Status == AssignmentStatus.CheckedOut 
+                        && next.Date < entry.CheckedOut))
                 {
                     entries.Add(entry);
                 }

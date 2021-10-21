@@ -21,5 +21,10 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
             return csv.ToList();
         }
+
+        public override string ToString()
+        {
+            return $"{Number} {Publisher} Out:{CheckedOut} In:{CheckedIn}";
+        }
     }
 }
