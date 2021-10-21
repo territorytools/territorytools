@@ -36,10 +36,21 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
             foreach (var value in values)
             {
+                if(value.LastCompleted == null && value.SignedOut == null)
+                {
+                    continue;
+                }
+
+                string numberString = value.Number;
+                if(int.TryParse(value.Number, out int number))
+                {
+                    numberString = $"{number:0000}";
+                }
+
                 var change = new AssignmentChange
                 {
                     TimeStamp = folderDate,
-                    TerritoryNumber = value.Number,
+                    TerritoryNumber = numberString,
                     Date = (DateTime)(value.LastCompleted ?? value.SignedOut),
                     Publisher = value.LastCompleted == null
                         ? value.SignedOutTo

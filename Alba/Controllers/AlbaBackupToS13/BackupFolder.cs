@@ -40,18 +40,20 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             var allChanges = new List<AssignmentChange>();
             for (int i = 0; i < paths.Length; i++)
             {
-                string file = paths[i];
-                List<AssignmentValues> values2 = AssignmentValues
-                  .LoadFromCsv(file);
 
-                List<AssignmentChange> changes2 = AssignmentChange
-                    .Load(values2, file);
+                    string file = paths[i];
+                    List<AssignmentValues> values2 = AssignmentValues
+                      .LoadFromCsv(file);
 
-                allChanges.AddRange(changes2);
+                    List<AssignmentChange> changes2 = AssignmentChange
+                        .Load(values2, file);
+
+                    allChanges.AddRange(changes2);
+
             }
 
             var orderedChanges = allChanges
-                .OrderBy(c => c.TerritoryNumber.TrimStart(' ', '0').ToUpper())
+                .OrderBy(c => c.TerritoryNumber)
                 .ThenBy(c => c.TimeStamp)
                 .ThenBy(c => c.Date)
                 .ThenBy(c => c.Status)

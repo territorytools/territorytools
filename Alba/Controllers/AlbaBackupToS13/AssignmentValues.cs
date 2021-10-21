@@ -13,19 +13,24 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
         public string Status { get; set; }
         public DateTime? LastCompleted { get; set; }
         public string LastCompletedBy { get; set; }
-        public DateTime? SignedOut { get; set; }
-        public string SignedOutString { get; set; }
+        public DateTime? SignedOut { get; set; }   
         public string SignedOutTo { get; set; }
 
         public static List<AssignmentValues> LoadFromCsv(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
+            try
+            {
+                IEnumerable<AssignmentValues> csv = LoadCsv
+                    .LoadFrom<AssignmentValues>(path);
 
-            IEnumerable<AssignmentValues> csv = LoadCsv
-                .LoadFrom<AssignmentValues>(path);
-
-            return csv.ToList();
+                return csv.ToList();
+            }
+            catch(Exception e)
+            {
+                throw new Exception($"Path:{path} Error:{e.Message}", e);
+            }
         }
     }
 }

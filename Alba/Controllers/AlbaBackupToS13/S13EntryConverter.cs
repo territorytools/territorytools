@@ -11,7 +11,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
         {
             // TODO: Make a better test
             var ordered = changes
-                .OrderBy(c => c.TerritoryNumber.TrimStart(' ', '0').ToUpper())
+                .OrderBy(c => c.TerritoryNumber)
                 .ThenBy(c => c.TimeStamp)
                 .ThenBy(c => c.Date)
                 .ThenBy(c => c.Status)

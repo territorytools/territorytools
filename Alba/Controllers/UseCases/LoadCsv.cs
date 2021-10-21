@@ -35,13 +35,14 @@ namespace Controllers.UseCases
             using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 csv.Configuration.Delimiter = delimiter;
-                csv.Configuration.PrepareHeaderForMatch = 
+                csv.Configuration.PrepareHeaderForMatch =
                     (string header, int index) => header.ToLower();
 
                 csv.Configuration.BadDataFound = null;
                 csv.Configuration.HeaderValidated = null;
                 csv.Configuration.MissingFieldFound = null;
                 csv.Configuration.IgnoreBlankLines = true;
+                csv.Configuration.ShouldSkipRecord = row => row[0].StartsWith("#TYPE");
                 return csv.GetRecords<T>().ToList();
             }
         }
