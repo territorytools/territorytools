@@ -20,6 +20,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
+
             try
             {
                 IEnumerable<AssignmentValues> csv = LoadCsv

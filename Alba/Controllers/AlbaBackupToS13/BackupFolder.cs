@@ -36,24 +36,21 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
         static List<S13Entry> ConvertFiles(string[] paths)
         {
-            var allEntries = new List<S13Entry>();
             var allChanges = new List<AssignmentChange>();
             for (int i = 0; i < paths.Length; i++)
             {
+                string path = paths[i];
+                List<AssignmentValues> values = AssignmentValues
+                    .LoadFromCsv(path);
 
-                    string file = paths[i];
-                    List<AssignmentValues> values2 = AssignmentValues
-                      .LoadFromCsv(file);
+                List<AssignmentChange> changes = AssignmentChange
+                    .Load(values, path);
 
-                    List<AssignmentChange> changes2 = AssignmentChange
-                        .Load(values2, file);
-
-                    allChanges.AddRange(changes2);
-
+                allChanges.AddRange(changes);
             }
 
-            var orderedChanges = allChanges
-                .OrderBy(c => c.TerritoryNumber)
+            List<AssignmentChange> orderedChanges = allChanges
+                .OrderBy(c => c.TerritoryNumber, new NumberComparer())
                 .ThenBy(c => c.TimeStamp)
                 .ThenBy(c => c.Date)
                 .ThenBy(c => c.Status)

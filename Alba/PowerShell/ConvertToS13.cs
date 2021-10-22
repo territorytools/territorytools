@@ -5,7 +5,7 @@ using TerritoryTools.Alba.Controllers.AlbaBackupToS13;
 namespace TerritoryTools.Alba.PowerShell
 {
     [Cmdlet(VerbsData.ConvertTo, "S13")]
-    [OutputType(typeof(S13Entry))]
+    [OutputType(typeof(S13EntryCsvRow))]
     public class ConvertToS13 : PSCmdlet
     {
         [Parameter]
@@ -19,7 +19,7 @@ namespace TerritoryTools.Alba.PowerShell
                 WriteVerbose($"Entries Loaded: {s13entries.Count}");
                 foreach (var entry in s13entries)
                 {
-                    WriteObject(entry);
+                    WriteObject(new S13EntryCsvRow(entry));
                 }
             }
             catch (Exception e)

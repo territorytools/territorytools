@@ -44,23 +44,31 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 string numberString = value.Number;
                 if(int.TryParse(value.Number, out int number))
                 {
-                    numberString = $"{number:0000}";
+                    // TODO: This only works if the account uses 4 digit numbers with padded zeros
+                    numberString = $"{number}";
+                }
+                try
+                {
+                    var change = new AssignmentChange
+                    {
+                        TimeStamp = folderDate,
+                        TerritoryNumber = numberString,
+                        Date = (DateTime)(value.LastCompleted ?? value.SignedOut),
+                        Publisher = value.LastCompleted == null
+                            ? value.SignedOutTo
+                            : value.LastCompletedBy,
+                        Status = value.LastCompleted == null
+                            ? AssignmentStatus.CheckedOut
+                            : AssignmentStatus.CheckedIn
+                    };
+
+                    changes.Add(change);
+                }
+                catch(Exception e)
+                {
+                    throw new Exception("Error converting values to changes", e);
                 }
 
-                var change = new AssignmentChange
-                {
-                    TimeStamp = folderDate,
-                    TerritoryNumber = numberString,
-                    Date = (DateTime)(value.LastCompleted ?? value.SignedOut),
-                    Publisher = value.LastCompleted == null
-                        ? value.SignedOutTo
-                        : value.LastCompletedBy,
-                    Status = value.LastCompleted == null
-                        ? AssignmentStatus.CheckedOut
-                        : AssignmentStatus.CheckedIn
-                };
-
-                changes.Add(change);
             }
 
             return changes;
