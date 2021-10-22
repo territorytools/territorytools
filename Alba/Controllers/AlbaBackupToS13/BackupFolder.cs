@@ -7,7 +7,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 {
     public class BackupFolder
     {
-        public static List<S13Entry> LoadFolder(string path)
+        public static S13EntryCollection LoadFolder(string path)
         {
             return ConvertFiles(LoadFolders(path));
         }
@@ -34,7 +34,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             return files.ToArray();
         }
 
-        static List<S13Entry> ConvertFiles(string[] paths)
+        static S13EntryCollection ConvertFiles(string[] paths)
         {
             var allChanges = new List<AssignmentChange>();
             for (int i = 0; i < paths.Length; i++)
@@ -76,7 +76,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 .ThenBy(c => c.Status)
                 .ToList();
 
-            List<S13Entry> entries = S13EntryConverter
+            S13EntryCollection entries = S13EntryConverter
                    .Convert(orderedChanges);
 
             return entries;

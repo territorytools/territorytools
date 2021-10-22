@@ -11,15 +11,28 @@ namespace TerritoryTools.Alba.PowerShell
         [Parameter]
         public string FolderPath { get; set; }
 
+        [Parameter]
+        public SwitchParameter Publishers { get; set; }
+
         protected override void ProcessRecord()
         {
             try
             {
-                var s13entries = BackupFolder.LoadFolder(FolderPath);
-                WriteVerbose($"Entries Loaded: {s13entries.Count}");
-                foreach (var entry in s13entries)
+                S13EntryCollection entries = BackupFolder.LoadFolder(FolderPath);
+                WriteVerbose($"Entries Loaded: {entries.Count}");
+                if (Publishers.IsPresent)
                 {
-                    WriteObject(new S13EntryCsvRow(entry));
+                    foreach(string publisher in entries.Publishers)
+                    {
+                        WriteObject(publisher);
+                    }
+                }
+                else
+                {
+                    foreach (var entry in entries)
+                    {
+                        WriteObject(new S13EntryCsvRow(entry));
+                    }
                 }
             }
             catch (Exception e)

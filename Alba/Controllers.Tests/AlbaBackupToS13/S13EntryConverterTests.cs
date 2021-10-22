@@ -63,7 +63,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
 
             var entry2 = entries[4];
 
-            Assert.AreEqual("Lana Lang", entry2.Publisher);
+            Assert.AreEqual("LANA Lang", entry2.Publisher);
             Assert.AreEqual(DateTime.Parse("2003-02-02"), entry2.CheckedOut);
             Assert.AreEqual(null, entry2.CheckedIn, "Second entry");
         }

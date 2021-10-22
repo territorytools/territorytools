@@ -1,26 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 {
+    public class S13EntryCollection : List<S13Entry>
+    {
+        public List<string> Publishers { get; set; } = new List<string>();
+    }
+
     public class S13EntryConverter
     {
-        public static List<S13Entry> Convert(
-            IList<AssignmentChange> changes)
+        public static S13EntryCollection Convert(IList<AssignmentChange> changes)
         {
             // TODO: Make a better test
-            var ordered = changes
+            foreach(AssignmentChange change in changes)
+            {
+                if (change.Publisher != null)
+                {
+                    change.Publisher = change.Publisher.Replace("(Deleted)", "").Trim();
+
+                    Match match = Regex.Match(change.Publisher, @"([^,]+), ([^,]+)");
+                    if (match.Success)
+                    {
+                        change.Publisher = $"{match.Groups[2].Value} {match.Groups[1].Value}";
+                    }
+
+                }
+            }
+
+            List<AssignmentChange> ordered = changes
                 .OrderBy(c => c.TerritoryNumber, new NumberComparer())
                 .ThenBy(c => c.TimeStamp)
                 .ThenBy(c => c.Date)
                 .ThenBy(c => c.Status)
                 .ToList();
 
-            var entries = new List<S13Entry>();
+            var entries = new S13EntryCollection();
+
+            entries.Publishers = changes
+                .Select(c => c.Publisher)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
             for (int i = 0; i < ordered.Count; i++)
             {
-                var current = ordered[i];
+                AssignmentChange current = ordered[i];
                 var entry = new S13Entry
                 {
                     Number = current.TerritoryNumber,
@@ -35,10 +62,10 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
                 if (entries.Count > 0)
                 {
-                    var last = entries.Last();
+                    S13Entry last = entries.Last();
                     if (current.TerritoryNumber.TrimStart(' ', '0').ToUpper()
                         == last.Number.TrimStart(' ', '0').ToUpper()
-                        && string.Equals(current.Publisher, last.Publisher)
+                        && string.Equals(current.Publisher, last.Publisher, StringComparison.OrdinalIgnoreCase)
                         && (current.Status == AssignmentStatus.CheckedIn
                             && current.Date == last.CheckedIn
                           || current.Status == AssignmentStatus.CheckedOut
