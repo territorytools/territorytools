@@ -1,7 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using NUnit.Framework;
 using TerritoryTools.Alba.Controllers.AlbaBackupToS13;
 
 namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
@@ -21,7 +20,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
         {
             Assert.That(
                 () => AssignmentValues.LoadFromCsv("non-existant-file.txt"),
-                Throws.TypeOf(typeof(FileNotFoundException)));
+                Throws.TypeOf(typeof(Exception)));
         }
 
         [Test]
@@ -31,7 +30,7 @@ namespace TerritoryTools.Alba.Controllers.Tests.AlbaBackupToS13
                 .LoadFromCsv("AlbaBackupToS13/2003-03-03_235959/territories.txt");
 
             Assert.That(result != null);
-            Assert.AreEqual(4, result.Count, "Result count");
+            Assert.AreEqual(5, result.Count, "Result count");
 
             AssertValues(result[0],
                 number: "1",

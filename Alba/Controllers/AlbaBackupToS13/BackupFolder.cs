@@ -46,7 +46,27 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 List<AssignmentChange> changes = AssignmentChange
                     .Load(values, path);
 
-                allChanges.AddRange(changes);
+                var duplicates = changes
+                    // Exclude seeding folder
+                    .Where(c => c.TimeStamp != DateTime.Parse("1900-01-01"))
+                    .GroupBy(c => c.TerritoryNumber)
+                    .Where(g => g.Count() > 1)
+                    .ToDictionary(c => c.Key);
+
+                var uniques = new List<AssignmentChange>();
+                foreach(var change in changes)
+                {
+                    if (duplicates.ContainsKey(change.TerritoryNumber))
+                    {
+                        uniques.Add(duplicates[change.TerritoryNumber].First());
+                    }
+                    else
+                    {
+                        uniques.Add(change);
+                    }
+                }
+
+                allChanges.AddRange(uniques);
             }
 
             List<AssignmentChange> orderedChanges = allChanges

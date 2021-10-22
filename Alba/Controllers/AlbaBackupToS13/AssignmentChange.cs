@@ -36,7 +36,10 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
             foreach (var value in values)
             {
-                if(value.LastCompleted == null && value.SignedOut == null)
+                if(value.LastCompleted == null && value.SignedOut == null
+                    // Skip blank entries, or entries probably marked 'Gap'
+                    || value.LastCompleted == DateTime.Parse("1900-01-01")
+                    || value.SignedOut == DateTime.Parse("1900-01-01"))
                 {
                     continue;
                 }

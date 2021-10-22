@@ -3,3 +3,4 @@
 "22222"	"2002"	"ABC123"	"Regular"	"Signed-out"			"2002-02-02 00:00:00"	"Clark Kent"	"https://www.test.com/path?q=3003"
 "33333"	"3003"	"ABC123"	"Regular"	"Available"	"2003-03-03 00:00:00"	"Lana Lang"			"https://www.test.com/path?q=3003"
 "44444"	"4004"	"ABC123"	"Regular"	"Available"	"2003-03-03 00:00:00"	"Peter Parker"			"https://www.test.com/path?q=4004"
+"44444"	"4004"	"DUP000"	"Regular"	"Available"	"2003-03-03 00:00:00"	"Duplicate Same File"			"https://www.test.com/path?q=4004"
