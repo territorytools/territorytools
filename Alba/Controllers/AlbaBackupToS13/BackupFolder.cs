@@ -42,7 +42,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 string path = paths[i];
                 List<AssignmentValues> values = AssignmentValues
                     .LoadFromCsv(path);
-
+ 
                 List<AssignmentChange> changes = AssignmentChange
                     .Load(values, path);
 
