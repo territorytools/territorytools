@@ -79,7 +79,9 @@ namespace TerritoryTools.Web.MainSite
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             
             services.Configure<MvcOptions>(options => options.EnableEndpointRouting = false);
-            
+
+            services.AddApplicationInsightsTelemetry();
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
