@@ -19,7 +19,7 @@ if [ -z "${SqlDockerContainerName}" ]; then echo "The environment variable SqlDo
 if [ -z "${DatabaseName}" ]; then echo "The environment variable DatabaseName must be set first"; exit 1; fi
 if [ -z "${AzureStorageContainerName}" ]; then echo "The environment variable AzureStorageContainerName must be set first"; exit 1; fi
 
-export TimeStamp=$(date -u "+%Y-%m-%d_%H%M")
+export TimeStamp=$(date -u "+%Y-%m-%d_%H%M%s")
 export GeneratedSqlFileRelativePath=./backup-$DatabaseName-db-to-disk.generated.sql
 export BackupFile=$DatabaseName.$TimeStamp.bak
 export ArchiveFileName=$BackupFile.gz
@@ -31,29 +31,32 @@ echo "SqlDockerContainerName: $SqlDockerContainerName"
 echo "Database: $DatabaseName"
 echo "TimeStamp: $TimeStamp"
 
-# Generate SQL Script
+echo "Generating SQL Script..."
 echo ":setvar SqlDockerContainerName $SqlDockerContainerName" > $GeneratedSqlFileRelativePath
 echo ":setvar DatabaseName $DatabaseName" >> $GeneratedSqlFileRelativePath
 echo ":setvar TimeStamp $TimeStamp" >> $GeneratedSqlFileRelativePath
 cat ./backup-db-to-disk.sql >> $GeneratedSqlFileRelativePath
 
-# Connect to MS-SQL Docker Container
+echo "Connecting to MS-SQL Docker Container..."
 docker cp $GeneratedSqlFileRelativePath $SqlDockerContainerName:/var/opt/mssql
 
-# Clean up logs older than 120 days
+echo "Cleaning up logs older than 120 days..."
 find $TargetFolderPath/db/log -mtime +120 -type f -delete
 
-# Create back-up file
+echo "Running back-up SQL script to back up database..."
 docker exec $SqlDockerContainerName /opt/mssql-tools/bin/sqlcmd \
     -S localhost \
     -U sa \
     -P $SA_PASSWORD \
     -i /var/opt/mssql/$GeneratedSqlFileRelativePath
 
+echo "Moving back-up file..."
 docker exec $SqlDockerContainerName ls /var/opt/mssql/$BackupFile
 docker exec $SqlDockerContainerName /bin/gzip /var/opt/mssql/$BackupFile
 ls $DockerVolumeDbFolderPath/$ArchiveFileName
 mv $DockerVolumeDbFolderPath/$ArchiveFileName $TargetFolderPath
 ls $TargetFolderPath/$ArchiveFileName
+
+echo "Uploading back-up file to cloud..."
 az storage blob upload -f $TargetFolderPath/$ArchiveFileName --container-name x-fire-db-backups -n $ArchiveFileName
 
