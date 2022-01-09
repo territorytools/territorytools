@@ -32,6 +32,13 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return ExportAddresses(accountId);
         }
 
+        public static string SearchAddresses(int accountId, string searchText)
+        {
+            return ExportAddresses(
+                accountId: accountId,
+                searchText: searchText);
+        }
+
         public static string ExportAddresses(
             int accountId, 
             int territoryId = 0,
