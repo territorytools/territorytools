@@ -344,3 +344,4 @@ data/nginx.conf
 *.pem
 
 *.generated.sql
+/.vscode-remote/
