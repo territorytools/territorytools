@@ -56,6 +56,18 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        public AlbaConnection GetAlbaConnection()
+        {
+            var credentials = GetCredentialsFrom(User.Identity.Name);
+
+            var client = AuthClient();
+            
+            client.Authenticate(credentials);
+
+            return client;
+        }
+
+
         protected void LoadAssignmentData()
         {
             var credentials = GetCredentialsFrom(User.Identity.Name);
