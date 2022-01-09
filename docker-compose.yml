@@ -107,6 +107,8 @@ services:
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.ApplicationInsights.HostingStartup
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=$APPLICATIONINSIGHTS_CONNECTION_STRING
       - Authentication:Google:ClientId=$GoogleClientId
       - Authentication:Google:ClientSecret=$GoogleClientSecret
       - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
@@ -161,6 +163,8 @@ services:
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=$APPLICATIONINSIGHTS_CONNECTION_STRING
+      - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.ApplicationInsights.HostingStartup
       - Authentication:Google:ClientId=$GoogleClientId
       - Authentication:Google:ClientSecret=$GoogleClientSecret
       - ConnectionStrings:MainDbContextConnection=$MainDbContextConnection

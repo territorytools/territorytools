@@ -343,3 +343,5 @@ data/certbot_certificates_copied.txt
 data/nginx.conf
 *.pem
 
+*.generated.sql
+/.vscode-remote/
