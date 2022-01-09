@@ -1,0 +1,35 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using TerritoryTools.Web.MainSite.Controllers
+@model AddressSearchPage;
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Title"].Value;
+}
+
+<h3 class="display-4 text-center">Address Search</h3>
+
+<div class="container" style="max-width:500px;">
+    <div class="d-flex flex-column">
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index"><i class="fas fa-arrow-left text-body"></i></a>
+        <form action="/ManageTerritories/AddressSearch" id="search-form">
+            <div class="form-group">
+                <input type="text" class="form-control" name="searchText" placeholder="Enter part of the address">
+            </div>
+            <button type="submit" class="btn btn-primary">Search Addresses</button>
+        </form>
+    </div>
+</div>
+<div class="container mt-3" style="max-width:1600px;">
+    <p>@Model.Addresses.Count Results</p>
+    <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+            <div class="p-2" style="width:80px;">Territory</div>
+            <div class="p-2 flex-grow-1">Address</div>
+        </div>
+    @foreach (AddressSearchResult address in Model.Addresses)
+    {
+        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+            <div class="p-2" style="width:80px;"><strong>@address.Territory</strong></div>
+            <div class="p-2 flex-grow-1">@address.Address</div>
+        </div>
+    }
+</div>

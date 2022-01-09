@@ -1,4 +1,5 @@
-﻿using TerritoryTools.Alba.ListServices;
+﻿using System;
+using TerritoryTools.Alba.ListServices;
 
 namespace Controllers.AlbaServer
 {
@@ -28,6 +29,16 @@ namespace Controllers.AlbaServer
         public string Geocoded { get; set; }
         public string Territory_number { get; set; }
         public string Territory_description { get; set; }
+
+        public string OneLine()
+        {
+            return $"{Address}, {Suite}, {City} {Postal_code}";
+        }
+
+        public override string ToString()
+        {
+            return $"{Territory_number}: {Name} ({Language}/{Status}) {Address}, {Suite}, {City} {Postal_code}";
+        }
 
         public static AlbaAddressExport From(AddressCsv from)
         {
