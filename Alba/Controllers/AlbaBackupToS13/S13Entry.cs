@@ -16,7 +16,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
 
-            IEnumerable<S13Entry> csv = global::Controllers.UseCases.LoadCsv.LoadFrom<S13Entry>(path, ",");
+            IEnumerable<S13Entry> csv = global::Controllers.UseCases.LoadCsv<S13Entry>.LoadFrom(path, ",");
 
             return csv.ToList();
         }
@@ -33,7 +33,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                 rows.Add(new S13EntryCsvRow(entry));
             }
 
-            global::Controllers.UseCases.LoadCsv.SaveTo(rows, path);
+            global::Controllers.UseCases.LoadCsv<S13EntryCsvRow>.SaveTo(rows, path);
         }
 
         public override string ToString()

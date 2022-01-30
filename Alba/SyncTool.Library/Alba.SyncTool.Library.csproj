@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework2>net48;netstandard2.1</TargetFramework2>
+    <TargetFramework>net5.0-windows</TargetFramework>
 	<UseWpf>true</UseWpf>
 	<UseWinForms>true</UseWinForms>
 	<RootNamespace>TerritoryTools.Alba.SyncTool.Library</RootNamespace>

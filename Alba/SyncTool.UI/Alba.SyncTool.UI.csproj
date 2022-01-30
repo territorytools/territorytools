@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net48;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <AssemblyName>AlbaSyncTool</AssemblyName>
   	<UseWpf>true</UseWpf>
   	<RootNamespace>TerritoryTools.Alba.SyncTool.UI</RootNamespace>

@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace Controllers.UseCases
 {
-    public class LoadCsv
+    public class LoadCsv<T>
     {
-        public static IEnumerable<T> LoadFrom<T>(
+        public static IEnumerable<T> LoadFrom(
             string path, 
             string delimiter = null)
         {
@@ -47,7 +47,7 @@ namespace Controllers.UseCases
             }
         }
 
-        public static void SaveTo<T>(
+        public static void SaveTo(
             IEnumerable<T> addresses, 
             string path)
         {

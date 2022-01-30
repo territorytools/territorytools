@@ -23,8 +23,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
 
             try
             {
-                IEnumerable<AssignmentValues> csv = LoadCsv
-                    .LoadFrom<AssignmentValues>(path);
+                IEnumerable<AssignmentValues> csv = LoadCsv<AssignmentValues>
+                    .LoadFrom(path);
 
                 return csv.ToList();
             }
