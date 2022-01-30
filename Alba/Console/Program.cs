@@ -169,7 +169,7 @@ namespace TerritoryTools.Alba.Cli
         public static AlbaConnection AlbaClient()
         {
             string albaHost = Environment.GetEnvironmentVariable("alba_host");
-            if(string.IsNullOrWhiteSpace(albaHost))
+            if (string.IsNullOrWhiteSpace(albaHost))
             {
                 throw new Exception("ALBA_HOST environment variable is missing!");
             }
@@ -213,7 +213,7 @@ namespace TerritoryTools.Alba.Cli
             Console.WriteLine("  PowerShell: $Env:alba_account=\"mygroup\"");
             Console.WriteLine("  Linux/macOS: export alba_account=mygroup");
         }
-       
+
         static void FilterLanguage(List<string> args)
         {
             Console.WriteLine("Filtering Languages");
@@ -249,7 +249,7 @@ namespace TerritoryTools.Alba.Cli
                 .ToList();
 
             Console.WriteLine($"After Filter Count: {filtered.Count}");
-            
+
             LoadTsvAlbaAddresses.SaveTo(filtered, outputPath);
         }
 
@@ -382,7 +382,7 @@ namespace TerritoryTools.Alba.Cli
 
             var f = File.OpenText(inputPath);
             var o = File.CreateText(outputPath);
-            for(int i = 0; i <= lines; i++) 
+            for (int i = 0; i <= lines; i++)
             {
                 o.WriteLine(f.ReadLine());
             }
@@ -406,7 +406,7 @@ namespace TerritoryTools.Alba.Cli
             Console.WriteLine($"Input File Path: {inputPath}");
             Console.WriteLine($"Output File Path: {outputPath}");
 
-            var writingAddresses = LoadCsv<LetterWritingSheet>.LoadFrom(inputPath);
+            var writingAddresses = LoadCsv.LoadFrom<LetterWritingSheet>(inputPath);
             var albaAddresses = new List<AlbaAddressExport>();
             var errors = new List<LetterWritingSheet>();
 
@@ -545,7 +545,7 @@ namespace TerritoryTools.Alba.Cli
                 LoadTsvAlbaAddresses.SaveTo(errors, $"{outputPath}.errors.txt");
             }
         }
-        
+
         static void ListLanguages(List<string> args)
         {
             Console.WriteLine("List Languages from Alba TSV Address File");
@@ -564,7 +564,7 @@ namespace TerritoryTools.Alba.Cli
                 .GroupBy(a => a.Language);
 
             Console.WriteLine("Languages:");
-            foreach(var group in langGroups.OrderBy(g => g.Key))
+            foreach (var group in langGroups.OrderBy(g => g.Key))
             {
                 Console.WriteLine($"{group.Key}: {group.Count()}");
             }

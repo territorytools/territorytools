@@ -14,14 +14,14 @@ namespace AlbaClient.Tests
 
             var territories = TerritoryResultParser.Parse(json);
 
-            Assert.AreEqual("36950", territories[0].Id);
-            Assert.AreEqual("17", territories[0].CountOfAddresses);
+            Assert.AreEqual(36950, territories[0].Id);
+            Assert.AreEqual(17, territories[0].CountOfAddresses);
 
             VerticesAreEqual(new Vertex(47.566613, -122.276787), territories[0].Border.Vertices[0]);
             VerticesAreEqual(new Vertex(47.557899, -122.274213), territories[0].Border.Vertices[1]);
 
-            Assert.AreEqual("67186", territories[1].Id);
-            Assert.AreEqual("19", territories[1].CountOfAddresses);
+            Assert.AreEqual(67186, territories[1].Id);
+            Assert.AreEqual(19, territories[1].CountOfAddresses);
         }
 
         private void VerticesAreEqual(Vertex vertexA, Vertex vertexB)

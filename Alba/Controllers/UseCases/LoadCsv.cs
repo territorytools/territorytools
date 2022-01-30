@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace Controllers.UseCases
 {
-    public class LoadCsv<T>
+    public class LoadCsv
     {
-        public static IEnumerable<T> LoadFrom(
+        public static IEnumerable<T> LoadFrom<T>(
             string path, 
-            string deliminator = "\t")
+            string delimiter = null)
         {
             var list = new List<T>();
             if (string.IsNullOrWhiteSpace(path))
@@ -18,21 +18,36 @@ namespace Controllers.UseCases
                 return list;
             }
 
+            if (delimiter == null)
+            {
+                switch(Path.GetExtension(path).ToLower())
+                {
+                    case ".csv":
+                        delimiter = ",";
+                        break;
+                    default: // .txt .tsv
+                        delimiter = "\t";
+                        break;
+                }
+            }
+
             using (var reader = new StreamReader(path))
             using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csv.Configuration.Delimiter = deliminator;
-                csv.Configuration.PrepareHeaderForMatch = 
+                csv.Configuration.Delimiter = delimiter;
+                csv.Configuration.PrepareHeaderForMatch =
                     (string header, int index) => header.ToLower();
 
                 csv.Configuration.BadDataFound = null;
                 csv.Configuration.HeaderValidated = null;
                 csv.Configuration.MissingFieldFound = null;
+                csv.Configuration.IgnoreBlankLines = true;
+                csv.Configuration.ShouldSkipRecord = row => row[0].StartsWith("#TYPE");
                 return csv.GetRecords<T>().ToList();
             }
         }
 
-        public static void SaveTo(
+        public static void SaveTo<T>(
             IEnumerable<T> addresses, 
             string path)
         {

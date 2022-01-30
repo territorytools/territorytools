@@ -12,7 +12,7 @@
 RootModule = 'TerritoryTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.17'
+ModuleVersion = '0.1.18'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -82,7 +82,8 @@ CmdletsToExport = 'Add-AlbaAddress',
     'ConvertTo-AlbaAddressExport',
     'ConvertTo-AlbaAddressImport',
     'ConvertTo-AlbaTerritoryBorder',
-    'Convert-ToKml',
+    'ConvertTo-S13',
+    'ConvertTo-Kml',
     'Edit-AlbaAddress',
     'Edit-AlbaTerritoryBorder',
     'Get-AlbaAddress',

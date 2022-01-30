@@ -39,7 +39,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             this.msDelay = msDelay;
         }
 
-        public string Update(AlbaAddressImport address)
+        public string Update(AlbaAddressImport address, bool printUrlOnly = false)
         {
             if (client.BasePath == null)
             {
@@ -54,6 +54,12 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             AlbaAddressSave save = Convert(address);
 
             var url = RelativeUrlBuilder.UpdateAddress(save);
+            
+            if(printUrlOnly)
+            {
+                return url;
+            }
+
             var resultString = client.DownloadString(url);
 
             return resultString;
@@ -142,15 +148,13 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             {
                 throw new Exception("There are no languages loaded. Please run Get-AlbaLangauge");
             }
-            
-            //throw new Exception($"Got this far");
 
             int languageId = languages
-                .First(l => string.Equals(
+                .FirstOrDefault(l => string.Equals(
                     l?.Name,
                     address?.Language,
                     StringComparison.OrdinalIgnoreCase))
-                .Id;
+                ?.Id ?? 1; // 1 = Unknown
 
             int statusId = AddressStatusText.Status[address.Status];
 

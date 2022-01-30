@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="AllTerritories.json.txt" />
+    <None Remove="AlbaBackupToS13\2004-04-04_125959 %28copy%29\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,27 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Controllers\Alba.Controllers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AlbaBackupToS13\1900-expected.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AlbaBackupToS13\expected.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AlbaBackupToS13\1900-01-01_000000\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AlbaBackupToS13\2003-03-03_235959\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AlbaBackupToS13\2004-04-04_235959\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="AlbaBackupToS13\2005-05-05_235959\territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

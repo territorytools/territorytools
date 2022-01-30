@@ -17,6 +17,9 @@ namespace TerritoryTools.Alba.PowerShell
 
         [Parameter]
         public int UploadDelayMs { get; set; } = 300;
+        
+        [Parameter]
+        public SwitchParameter PrintUriOnly { get; set; }
 
         AddressImporter importer;
 
@@ -32,7 +35,7 @@ namespace TerritoryTools.Alba.PowerShell
         {
             try
             {
-                string result = importer.Update(Address);
+                string result = importer.Update(Address, PrintUriOnly.IsPresent);
                 
                 WriteVerbose($"Result: {result}");
             }
