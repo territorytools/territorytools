@@ -15,7 +15,7 @@ using cuc = Controllers.UseCases;
 namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/assignments")]
     public class AssignmentsController : Controller
     {
         readonly IAlbaCredentialService albaCredentialService;
@@ -65,8 +65,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={userName}");
         }
 
-        [HttpGet("[action]")]
-        public IActionResult AssignLatest(int userId)
+        [HttpPost("latest")]
+        public ActionResult<AssignmentResult> AssignLatest(int userId)
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
@@ -77,7 +77,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if(territories.Count() == 0)
             {
-                throw new Exception("There are no territories to assign!");
+                string message = "There are no territories to assign!";
+                logger.LogError(message);
+                return BadRequest(message);
             }
 
             var includePattern = new Regex("^\\w{3}\\d{3}$");
@@ -91,7 +93,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if (queryInclude.Count() == 0)
             {
-                throw new Exception($"There are {territories.Count()} territories, but none match the include pattern!");
+                string message = $"There are {territories.Count()} territories, but none match the include pattern!";
+                logger.LogError(message);
+                return BadRequest(message);
             }
 
             // TODO: Remove this magic RegEx string...
@@ -105,10 +109,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if (queryExclude.Count() == 0)
             {
-                throw new Exception($"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!");
+                string message = $"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!";
+                logger.LogError(message);
+                return BadRequest(message);
             }
 
-            var first = queryExclude
+            var latestTerritory = queryExclude
                 .OrderBy(t => t.LastCompleted ?? DateTime.MinValue)
                 .First();
 
@@ -116,13 +122,15 @@ namespace TerritoryTools.Web.MainSite.Controllers
             {
                 string result = client.DownloadString(
                     RelativeUrlBuilder.AssignTerritory(
-                        first.Id,
+                        latestTerritory.Id,
                         userId,
                         DateTime.Now));
             }
             catch(Exception)
             {
-                throw new Exception($"Cannot assign territory {first.Id} to user {userId}");
+                string message = $"Cannot assign territory {latestTerritory.Id} to user {userId}";
+                logger.LogError(message);
+                return BadRequest(message);
             }
 
             string userName = "Somebody";
@@ -139,21 +147,42 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch(Exception)
             {
-                throw new Exception($"Cannot get user name for user id {userId}");
+                string message = $"Cannot get user name for user id {userId}";
+                logger.LogError(message);
+                return BadRequest(message);
             }
 
+            AlbaAssignmentValues refreshedTerritory = new AlbaAssignmentValues();
 
             try
             {
                 // This should refresh the mobile territory link to send to the user
-                LoadForCurrentAccount();
+                refreshedTerritory = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
+                    .FirstOrDefault(a => a.Id == latestTerritory.Id);
             }
             catch(Exception)
             {
-                throw new Exception("Cannot refresh mobile territory link");
+                string message = "Cannot refresh mobile territory link";
+                logger.LogError(message);
+                return BadRequest(message);
             }
 
-            return Redirect($"/Home/AssignSuccess?territoryId={first.Id}&userName={userName}");
+            return Ok(
+                new AssignmentResult
+                {
+                    Success = true,
+                    Message = $"Successfully assigned to {userName} ({refreshedTerritory.SignedOutTo})",
+                    TerritoryUri = refreshedTerritory.MobileLink,
+                    TerritoryDescription = $"{refreshedTerritory.Number} {refreshedTerritory.Description}"
+                });
+        }
+
+        public class AssignmentResult
+        {
+            public bool Success { get; internal set; }
+            public string Message { get; set; }
+            public string TerritoryUri { get; set;  }
+            public string TerritoryDescription { get; internal set; }
         }
 
         [HttpGet("[action]")]

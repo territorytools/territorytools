@@ -29,6 +29,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         protected string password;
         protected IAuthorizationService authorizationService;
         protected IAlbaCredentialService albaCredentialService;
+        readonly ITerritoryAssignmentService territoryAssignmentService;
 
         public AuthorizedController(
             MainDbContext database,
@@ -36,6 +37,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAlbaCredentials credentials,
             IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
+            ITerritoryAssignmentService territoryAssignmentService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             this.database = database;
@@ -45,6 +47,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             password = credentials.Password;
             this.authorizationService = authorizationService;
             this.albaCredentialService = albaCredentialService;
+            this.territoryAssignmentService = territoryAssignmentService;
             options = optionsAccessor.Value;
         }
 
@@ -66,7 +69,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             return client;
         }
-
 
         protected void LoadAssignmentData()
         {
@@ -154,7 +156,15 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         protected IEnumerable<AlbaAssignmentValues> GetAllAssignments()
         {
-            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            return GetAllAssignmentsPlease(User.Identity.Name, options, albaCredentialService);
+        }
+
+        protected IEnumerable<AlbaAssignmentValues> GetAllAssignmentsPlease(
+            string userName, 
+            WebUIOptions options,
+            IAlbaCredentialService albaCredentialService)
+        {
+            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(userName);
             string path = string.Format(
                options.AlbaAssignmentsHtmlPath,
                albaAccountId);

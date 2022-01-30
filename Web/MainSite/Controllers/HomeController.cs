@@ -26,12 +26,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
             IAlbaCredentialService albaCredentialService,
+            ITerritoryAssignmentService assignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
                 credentials,
                 authorizationService,
                 albaCredentialService,
+                assignmentService,
                 optionsAccessor)
         {
             this.qrCodeActivityService = qrCodeActivityService;

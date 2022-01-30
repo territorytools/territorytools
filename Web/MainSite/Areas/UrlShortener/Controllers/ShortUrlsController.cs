@@ -30,12 +30,14 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
             IAlbaCredentials credentials,
             TerritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
+            ITerritoryAssignmentService assignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
                 credentials,
                 authorizationService,
                 albaCredentialService,
+                assignmentService,
                 optionsAccessor)
         {
             this.service = service;

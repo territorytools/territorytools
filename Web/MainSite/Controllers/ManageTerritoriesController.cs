@@ -30,12 +30,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
+            ITerritoryAssignmentService assignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
                 credentials,
                 authorizationService,
                 albaCredentialService,
+                assignmentService,
                 optionsAccessor)
         {
             this.accountLists = accountLists;
