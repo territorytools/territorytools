@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
@@ -66,7 +67,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [HttpPost("latest")]
-        public ActionResult<AssignmentResult> AssignLatest(int userId)
+        public ActionResult<AssignmentResult> AssignLatest(
+            int userId,
+            [Range(1, 99)]
+            int count = 1)
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
@@ -75,7 +79,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var territories = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
 
-            if(territories.Count() == 0)
+            if (territories.Count() == 0)
             {
                 string message = "There are no territories to assign!";
                 logger.LogError(message);
@@ -86,8 +90,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var queryInclude =
                 from t in territories
-                where includePattern.IsMatch(t.Description) 
-                    && t.Status != null 
+                where includePattern.IsMatch(t.Description)
+                    && t.Status != null
                     && t.Status.ToUpper() == "AVAILABLE"
                 select t;
 
@@ -114,23 +118,29 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return BadRequest(message);
             }
 
-            var latestTerritory = queryExclude
+            var latestTerritories = queryExclude
                 .OrderBy(t => t.LastCompleted ?? DateTime.MinValue)
-                .First();
+                .Take(count);
 
-            try
+            var latestTerritoryIds = new List<int>();
+            foreach (var territory in latestTerritories)
             {
-                string result = client.DownloadString(
-                    RelativeUrlBuilder.AssignTerritory(
-                        latestTerritory.Id,
-                        userId,
-                        DateTime.Now));
-            }
-            catch(Exception)
-            {
-                string message = $"Cannot assign territory {latestTerritory.Id} to user {userId}";
-                logger.LogError(message);
-                return BadRequest(message);
+                try
+                {
+                    latestTerritoryIds.Add(territory.Id);
+                    string result = client.DownloadString(
+                        RelativeUrlBuilder.AssignTerritory(
+                            territory.Id,
+                            userId,
+                            DateTime.Now));
+
+                }
+                catch (Exception)
+                {
+                    string message = $"Cannot assign territory {territory.Id} to user {userId}";
+                    logger.LogError(message);
+                    return BadRequest(message);
+                }
             }
 
             string userName = "Somebody";
@@ -152,13 +162,17 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return BadRequest(message);
             }
 
-            AlbaAssignmentValues refreshedTerritory = new AlbaAssignmentValues();
+            var refreshedTerritories = new List<AlbaAssignmentValues>();
 
             try
             {
                 // This should refresh the mobile territory link to send to the user
-                refreshedTerritory = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
-                    .FirstOrDefault(a => a.Id == latestTerritory.Id);
+                var allAssignments = territoryAssignmentService
+                    .GetAllAssignmentsFresh(User.Identity.Name);
+
+                refreshedTerritories = allAssignments
+                    .Where(a => latestTerritoryIds.Contains(a.Id))
+                    .ToList();
             }
             catch(Exception)
             {
@@ -167,13 +181,20 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return BadRequest(message);
             }
 
+            var items = refreshedTerritories.Select(a =>
+                new TerritoryResultItem
+                {
+                    Uri = a.MobileLink,
+                    Description = $"{a.Number} {a.Description}"
+                })
+                .ToList();
+
             return Ok(
                 new AssignmentResult
                 {
                     Success = true,
-                    Message = $"Successfully assigned to {userName} ({refreshedTerritory.SignedOutTo})",
-                    TerritoryUri = refreshedTerritory.MobileLink,
-                    TerritoryDescription = $"{refreshedTerritory.Number} {refreshedTerritory.Description}"
+                    Message = $"Successfully assigned to {userName}",
+                    Items = items
                 });
         }
 
@@ -181,8 +202,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             public bool Success { get; internal set; }
             public string Message { get; set; }
-            public string TerritoryUri { get; set;  }
-            public string TerritoryDescription { get; internal set; }
+            public List<TerritoryResultItem> Items { get; set; } = new List<TerritoryResultItem>();
+        }
+
+        public class TerritoryResultItem
+        {
+            public string Uri { get; set;  }
+            public string Description { get; internal set; }
+
         }
 
         [HttpGet("[action]")]

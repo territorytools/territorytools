@@ -22,16 +22,19 @@
                             <option value=@(user.Id)>@user.Name</option>
                         }
                     </select>
-                    <input type="button" class="btn btn-primary" value="Assign Oldest Territory"  onclick="submitForm($('#assign-latest-form'))" />
-                    <div style="padding:5px;display:inline;">
-                        <span id="assign-latest-form-loading" style="color:blue;display:none;">
-                            <i class='fa fa-spinner fa-spin'></i>
-                            Assigning latest territory...
-                        </span>
+                    <label for="count">Count:</label>
+                    <input type="number" id="count" name="count" min="1" max="99" value="1" />
+                    <input type="button" class="btn btn-primary" value="Assign Oldest Territories"  onclick="submitForm($('#assign-latest-form'))" />
+                    <div id="assign-latest-form-loading" style="color:blue;display:none;">
+                        <i class='fa fa-spinner fa-spin'></i>
+                        Assigning oldest territories...
+                    </div>
+                    <div style="padding:5px;">
                         <div id="assign-latest-form-message"></div>
-                        <div id="assign-latest-form-territory-description"></div>
-                        <a id="assign-latest-form-territory-uri" href=""></a>
                         <div id="assign-latest-form-error" style="color:red;"></div>
+                        <div id="assign-latest-territories-container">
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -55,10 +58,12 @@
 
         function submitForm(form)
         {
-            $('#assign-latest-form-loading').show();
-            $('#assign-latest-form-territory-description').text('');
-            $('#assign-latest-form-message').text('');
-            $('#assign-latest-form-territory-uri').text('');
+            $('#assign-latest-form-loading')
+                .show();
+            $('#assign-latest-form-message')
+                .text('');
+            $('#assign-latest-territories-container')
+                .html('');
 
             var form_data = new FormData(form[0]);
             $.ajax({
@@ -69,15 +74,15 @@
                 processData: false,
                 contentType: false,
                 error: function (xhr, status) {
-                    $('#assign-latest-form-loading').hide();
-                    $('#assign-latest-form-territory-description').text('');
+                    $('#assign-latest-form-loading')
+                        .hide();
                     $('#assign-latest-form-message')
                         .css('color', 'red')
                         .text(xhr.status + ' '+ status + ' ' + xhr.responseText);
-                    $('#assign-latest-form-territory-uri').attr('href', '').text('');
                 },
                 success: function (data) {
-                    $('#assign-latest-form-loading').hide();
+                    $('#assign-latest-form-loading')
+                        .hide();
                     $('#assign-latest-form-territory-description')
                         .text(data.territoryDescription);
                     $('#assign-latest-form-message')
@@ -86,7 +91,15 @@
                     $('#assign-latest-form-territory-uri')
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
-                },
+
+                    data.items.forEach(function(item) {
+                       var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
+                       $('#assign-latest-territories-container')
+                            .append(html);
+                    });
+
+                        
+                }
             });
         }
 
