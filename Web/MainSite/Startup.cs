@@ -120,7 +120,9 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IAuthorizationService>(s =>
                 new TerritoryAuthorizationService(users, adminUsers));
 
-            services.AddScoped<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
+            services.AddTransient<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
+
+            services.AddHostedService<TimedHostedService>();
 
             if (!NoSsl)
             {
