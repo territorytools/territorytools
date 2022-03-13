@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvHelper.Configuration;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
 {
@@ -52,13 +53,18 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 return list;
             }
 
-            using (var reader = new StreamReader(path))
-            using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = ",";
-                csv.Configuration.BadDataFound = null;
-                csv.Configuration.HeaderValidated = null;
-                csv.Configuration.MissingFieldFound = null;
+                Delimiter = "\t",
+                BadDataFound = null,
+                //BadDataFound = null,
+                HeaderValidated = null,
+                MissingFieldFound = null,
+            };
+
+            using (var reader = new StreamReader(path))
+            using (CsvReader csv = new CsvReader(reader, configuration))
+            {
                 return csv.GetRecords<AlbaAssignmentValues>().ToList();
             }
         }

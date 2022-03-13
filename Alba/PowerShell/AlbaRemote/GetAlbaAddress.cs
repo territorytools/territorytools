@@ -1,5 +1,6 @@
 ﻿using Controllers.AlbaServer;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -59,16 +60,18 @@ namespace TerritoryTools.Alba.PowerShell
                     searchText: search));
 
             string text = AddressExportParser.Parse(resultString);
-
-            using (var reader = new StringReader(text))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = "\t";
-                csv.Configuration.BadDataFound = (rc) =>
+                Delimiter = "\t",
+                BadDataFound =  (rc) =>
                 {
                     WriteVerbose($"CSV Address Parsing Error: {rc.RawRecord} ");
-                };
+                },
+            };
 
+            using (var reader = new StringReader(text))
+            using (var csv = new CsvReader(reader, configuration))
+            {
                 return csv.GetRecords<AlbaAddressExport>().ToList();
             }
         }

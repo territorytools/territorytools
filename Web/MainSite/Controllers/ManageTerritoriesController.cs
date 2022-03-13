@@ -1,5 +1,6 @@
 using Controllers.AlbaServer;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -97,12 +98,15 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 string text = AddressExportParser.Parse(resultString);
 
-                using (var reader = new StringReader(text))
-                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    csv.Configuration.Delimiter = "\t";
-                    csv.Configuration.BadDataFound = null;
+                    Delimiter = "\t",
+                    BadDataFound = null
+                };
 
+                using (var reader = new StringReader(text))
+                using (var csv = new CsvReader(reader, configuration))
+                {
                     var addressExport = csv.GetRecords<AlbaAddressExport>().ToList();
                     foreach(AlbaAddressExport address in addressExport)
                     {

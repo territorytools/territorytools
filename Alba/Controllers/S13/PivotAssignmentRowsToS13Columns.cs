@@ -1,5 +1,6 @@
 ﻿using Controllers.S13;
 using CsvHelper;
+using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,19 @@ namespace Controllers.UseCases
                 return list;
             }
 
-            using (var reader = new StreamReader(path))
-            using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = ",";
-                csv.Configuration.BadDataFound = null;
-                csv.Configuration.HeaderValidated = null;
-                csv.Configuration.MissingFieldFound = null;
+                Delimiter = "\t",
+                BadDataFound = null,
+                DetectDelimiterValues = new string[]{","},
+                //BadDataFound = null,
+                HeaderValidated = null,
+                MissingFieldFound = null,
+            };
+
+            using (var reader = new StreamReader(path))
+            using (CsvReader csv = new CsvReader(reader, configuration)) // (reader, CultureInfo.InvariantCulture))
+            {
                 return csv.GetRecords<AssignmentRowRaw>().ToList();
             }
         }
@@ -123,10 +130,14 @@ namespace Controllers.UseCases
             IList<S13Column> columns, 
             string path)
         {
-            using (var writer = new StreamWriter(path))
-            using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = ",";
+                Delimiter = ",",
+            };
+
+            using (var writer = new StreamWriter(path))
+            using (CsvWriter csv = new CsvWriter(writer, configuration))
+            {
                 int columnCount = columns.Count;
                 int rowCount = columns.Max(c => c.Entries.Count);
 
@@ -195,12 +206,17 @@ namespace Controllers.UseCases
                IEnumerable<TerritoryLastCompleted> assignments,
                string path)
         {
-            using (var writer = new StreamWriter(path))
-            using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = ",";
+                Delimiter = ",",
+                
+            };
+
+            using (var writer = new StreamWriter(path))
+            using (CsvWriter csv = new CsvWriter(writer, configuration))
+            {
                 var options = new TypeConverterOptions { Formats = new[] { "MM/dd/yyyy" } };
-                csv.Configuration.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+                csv.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
                 csv.WriteRecords(assignments);
             }
         }

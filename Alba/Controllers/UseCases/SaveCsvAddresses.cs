@@ -1,5 +1,6 @@
 ﻿using Controllers.AlbaServer;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -12,10 +13,14 @@ namespace Controllers.UseCases
             IEnumerable<AlbaAddressImport> addresses,
             string path)
         {
-            using (var writer = new StreamWriter(path))
-            using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = ",";
+                Delimiter = ",",
+            };
+
+            using (var writer = new StreamWriter(path))
+            using (CsvWriter csv = new CsvWriter(writer, configuration))
+            {
                 csv.WriteRecords(addresses);
             }
         }

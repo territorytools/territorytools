@@ -1,5 +1,6 @@
 ﻿using Controllers.AlbaServer;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -17,11 +18,15 @@ namespace Controllers.UseCases
                 return list;
             }
 
-            using (var reader = new StreamReader(path))
-            using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = "\t";
-                csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
+                Delimiter = "\t",
+                PrepareHeaderForMatch = args => args.Header.ToLower()
+            };
+
+            using (var reader = new StreamReader(path))
+            using (CsvReader csv = new CsvReader(reader, configuration))
+            {
                 return csv.GetRecords<AlbaAddressImport>().ToList();
             }
         }
@@ -30,10 +35,14 @@ namespace Controllers.UseCases
             IEnumerable<AlbaAddressImport> addresses, 
             string path)
         {
-            using (var writer = new StreamWriter(path))
-            using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = "\t";
+                Delimiter = "\t",
+            };
+
+            using (var writer = new StreamWriter(path))
+            using (CsvWriter csv = new CsvWriter(writer, configuration))
+            {
                 csv.WriteRecords(addresses);
             }
         }
