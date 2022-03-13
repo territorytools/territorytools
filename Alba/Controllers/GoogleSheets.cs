@@ -1,166 +1,165 @@
-﻿//using Google.Apis.Auth.OAuth2;
-//using Google.Apis.Services;
-//using Google.Apis.Sheets.v4;
-//using Google.Apis.Sheets.v4.Data;
-//using Google.Apis.Util.Store;
-//using System.Text;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4.Data;
+using Google.Apis.Util.Store;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 //using System.Text.Json;
+using System.Threading;
 
-//namespace TerritoryTools.Alba.Controllers
-//{
-//    public interface ISheets
-//    {
-//        void Write(string documentId, string range, IList<IList<object>> values);
-//        IList<IList<object>> Read(string documentId, string range);
-//    }
+namespace TerritoryTools.Alba.Controllers
+{
+    public interface ISheets
+    {
+        void Write(string documentId, string range, IList<IList<object>> values);
+        IList<IList<object>> Read(string documentId, string range);
+    }
 
-//    public class GoogleSheets : ISheets
-//    {
-//        // Some APIs, like Storage, accept a credential in their Create()
-//        // method.
-//        static string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly, SheetsService.Scope.Spreadsheets };
-//        static string ApplicationName = "Google Sheets API .NET Experiment";
-//        const string CredPath = "token.json";
+    public class GoogleSheets : ISheets
+    {
+        // Some APIs, like Storage, accept a credential in their Create()
+        // method.
+        static string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly, SheetsService.Scope.Spreadsheets };
+        static string ApplicationName = "Google Sheets API .NET Experiment";
+        const string CredPath = "token.json";
 
-//        readonly SheetsService _service;
+        readonly SheetsService _service;
 
-//        public GoogleSheets(string json)
-//        {
-//            if (IsJsonForAServiceAccount(json))
-//            {
-//                _service = GetSheetUserService(ServiceCredentials(json));
-//            }
-//            else
-//            {
-//                _service = GetSheetUserService(UserCredentials(json));
-//            }
-//        }
+        public GoogleSheets(string json)
+        {
+            if (IsJsonForAServiceAccount(json))
+            {
+                _service = GetSheetUserService(ServiceCredentials(json));
+            }
+            else
+            {
+                _service = GetSheetUserService(UserCredentials(json));
+            }
+        }
 
-//        public void Write(string documentId, string range, IList<IList<object>> values)
-//        {
-//            ValueRange valueRange = new() { Values = values };
-//            SpreadsheetsResource.ValuesResource.UpdateRequest updateRequest =
-//                _service.Spreadsheets.Values.Update(valueRange, documentId, range);
+        public void Write(string documentId, string range, IList<IList<object>> values)
+        {
+            var valueRange = new ValueRange() { Values = values };
+            SpreadsheetsResource.ValuesResource.UpdateRequest updateRequest =
+                _service.Spreadsheets.Values.Update(valueRange, documentId, range);
 
-//            updateRequest.ValueInputOption =
-//                SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+            updateRequest.ValueInputOption =
+                SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
 
-//            updateRequest.Execute();
-//        }
+            updateRequest.Execute();
+        }
 
-//        public IList<IList<object>> Read(string documentId, string range)
-//        {
-//            try
-//            {
-//                SpreadsheetsResource.ValuesResource.GetRequest request =
-//                    _service.Spreadsheets.Values.Get(documentId, range);
+        public IList<IList<object>> Read(string documentId, string range)
+        {
+            try
+            {
+                SpreadsheetsResource.ValuesResource.GetRequest request =
+                    _service.Spreadsheets.Values.Get(documentId, range);
 
-//                ValueRange response = request.Execute();
+                ValueRange response = request.Execute();
 
-//                return response.Values;
-//            }
-//            catch (Exception e)
-//            {
-//                throw new System.Exception($"Read Google Sheet Error! DocumentId: {documentId} Range: {range} Error Message: {e.Message}", e);
-//            }
-//        }
+                return response.Values;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Read Google Sheet Error! DocumentId: {documentId} Range: {range} Error Message: {e.Message}", e);
+            }
+        }
 
-//        public static bool IsJsonForAServiceAccount(string? json)
-//        {
-//            var options = new JsonDocumentOptions
-//            {
-//                AllowTrailingCommas = true,
-//                MaxDepth = 3
-//            };
+        public static bool IsJsonForAServiceAccount(string json)
+        {
+            JObject document = JObject.Parse(json);
+            
 
-//            JsonDocument document = JsonDocument.Parse(json, options);
+            bool isServiceAccount;
+            if ((string)document.SelectToken("type") == "service_account")
+            {
+                isServiceAccount = true;
+            }
+            // This file looks like an OAuth 2.0 JSON fileren.
+            else if(document.SelectToken("installed.redirect_uris") != null)
+            {
+                isServiceAccount = false;
+            }
+            else
+            {
+                throw new Exception("Unknown secrets json file type");
+            }
 
-//            bool isServiceAccount;
-//            if (document.RootElement.TryGetProperty("type", out JsonElement element)
-//                && element.GetString() == "service_account")
-//            {
-//                isServiceAccount = true;
-//            }
+            return isServiceAccount;
+        }
 
-//            // This file looks like an OAuth 2.0 JSON file
-//            else if (document.RootElement.TryGetProperty("installed", out JsonElement installedElement)
-//                    && installedElement.TryGetProperty("redirect_uris", out _))
-//            {
-//                isServiceAccount = false;
-//            }
-//            else
-//            {
-//                throw new Exception("Unknown secrets json file type");
-//            }
+        static SheetsService GetSheetUserService(ICredential credential)
+        {
+            //UserCredential credential = Credentials(jsonPath);
 
-//            return isServiceAccount;
-//        }
+            // Create Google Sheets API service.
+            SheetsService service = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
 
-//        static SheetsService GetSheetUserService(ICredential credential)
-//        {
-//            //UserCredential credential = Credentials(jsonPath);
+            return service;
+        }
 
-//            // Create Google Sheets API service.
-//            SheetsService service = new(new BaseClientService.Initializer()
-//            {
-//                HttpClientInitializer = credential,
-//                ApplicationName = ApplicationName,
-//            });
+        static SheetsService GetSheetServiceService(string json)
+        {
+            GoogleCredential credential = ServiceCredentials(json);
 
-//            return service;
-//        }
+            // Create Google Sheets API service.
+            SheetsService service = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
 
-//        static SheetsService GetSheetServiceService(string json)
-//        {
-//            GoogleCredential credential = ServiceCredentials(json);
+            return service;
+        }
 
-//            // Create Google Sheets API service.
-//            SheetsService service = new(new BaseClientService.Initializer()
-//            {
-//                HttpClientInitializer = credential,
-//                ApplicationName = ApplicationName,
-//            });
+        static UserCredential UserCredentials(string json)
+        {
+            UserCredential credential;
 
-//            return service;
-//        }
+            byte[] byteArray = Encoding.ASCII.GetBytes(json);
+            using (MemoryStream stream = new MemoryStream(byteArray))
+            {
+                // The file token.json stores the user's access and refresh tokens, and is created
+                // automatically when the authorization flow completes for the first time.
 
-//        static UserCredential UserCredentials(string json)
-//        {
-//            UserCredential credential;
+                string path = Path.Combine(Path.GetTempPath(), CredPath);
 
-//            byte[] byteArray = Encoding.ASCII.GetBytes(json);
-//            using (MemoryStream stream = new MemoryStream(byteArray))
-//            {
-//                // The file token.json stores the user's access and refresh tokens, and is created
-//                // automatically when the authorization flow completes for the first time.
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.FromStream(stream).Secrets,
+                    Scopes,
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(path, true)).Result;
 
-//                string path = Path.Combine(Path.GetTempPath(), CredPath);
+                Console.WriteLine("Credential file saved to: " + CredPath);
+            }
 
-//                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-//                    GoogleClientSecrets.FromStream(stream).Secrets,
-//                    Scopes,
-//                    "user",
-//                    CancellationToken.None,
-//                    new FileDataStore(path, true)).Result;
+            return credential;
+        }
 
-//                Console.WriteLine("Credential file saved to: " + CredPath);
-//            }
+        static GoogleCredential ServiceCredentials(string json)
+        {
+            GoogleCredential credential;
 
-//            return credential;
-//        }
+            byte[] byteArray = Encoding.ASCII.GetBytes(json);
+            using (MemoryStream stream = new MemoryStream(byteArray))
+            {
+                var serviceCred = ServiceAccountCredential.FromServiceAccountData(stream);
+                credential = GoogleCredential.FromServiceAccountCredential(serviceCred);
+            }
 
-//        static GoogleCredential ServiceCredentials(string json)
-//        {
-//            GoogleCredential credential;
-
-//            byte[] byteArray = Encoding.ASCII.GetBytes(json);
-//            using (MemoryStream stream = new MemoryStream(byteArray))
-//            {
-//                var serviceCred = ServiceAccountCredential.FromServiceAccountData(stream);
-//                credential = GoogleCredential.FromServiceAccountCredential(serviceCred);
-//            }
-
-//            return credential;
-//        }
-//    }
-//}
+            return credential;
+        }
+    }
+}
