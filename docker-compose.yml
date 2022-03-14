@@ -157,7 +157,7 @@ services:
     networks:
       - main  
     ports:
-      - "6000:6000"
+      - "127.0.0.1:6000:6000"
     depends_on:
       - db
     environment:
@@ -213,7 +213,7 @@ services:
     networks:
       - main
     ports:
-      - "1433:1433"
+      - "127.0.0.1:1433:1433"
   tt-url:
     container_name: tt-url
     restart: unless-stopped
@@ -223,7 +223,7 @@ services:
     networks:
       - main
     ports:
-      - "5016:80"
+      - "127.0.0.1:5016:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - UrlShortenerDbConnectionString=$ConnectionStrings_UrlShortenerDb      
