@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,29 +17,39 @@ namespace TerritoryTools.Web.MainSite
         private readonly ILogger<TimedHostedService> _logger;
         private Timer _timer = null!;
         private readonly int _intervalSeconds = 3600;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly IAlbaCredentialService _credentialService;
         private readonly IConfiguration Configuration;
         private readonly IMemoryCache _memoryCache;
         readonly WebUIOptions options;
+        //private readonly IServiceScopeFactory scopeFactory;
 
         public TimedHostedService(
-            IAlbaCredentialService credentialService, 
-            IConfiguration configuration,
-            ILogger<TimedHostedService> logger, 
-            IMemoryCache memoryCache,
-            IOptions<WebUIOptions> optionsAccessor)
+            IServiceScopeFactory scopeFactory
+            //IAlbaCredentialService credentialService, 
+            //IConfiguration configuration,
+            //ILogger<TimedHostedService> logger, 
+            //IMemoryCache memoryCache,
+            //IOptions<WebUIOptions> optionsAccessor
+            )
         {
-            _credentialService = credentialService;
-            Configuration = configuration;
-            _intervalSeconds = int.Parse(Configuration["TimerIntervalSeconds"]);
-            _logger = logger;
-            _memoryCache = memoryCache;
-            options = optionsAccessor.Value;
+            _scopeFactory = scopeFactory;
+            //_credentialService = credentialService;
+            //Configuration = configuration;
+            using var scope = _scopeFactory.CreateScope();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            _intervalSeconds = int.Parse(configuration["TimerIntervalSeconds"]);
+            //_logger = logger;
+            //_memoryCache = memoryCache;
+            //options = optionsAccessor.Value;
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Timed Hosted Service running.");
+            using var scope = _scopeFactory.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<TimedHostedService>>();
+
+            logger.LogInformation("Timed Hosted Service running.");
 
             _timer = new Timer(DoWork, null, TimeSpan.Zero,
                 TimeSpan.FromSeconds(_intervalSeconds));
@@ -50,7 +61,10 @@ namespace TerritoryTools.Web.MainSite
         {
             var count = Interlocked.Increment(ref executionCount);
 
-            _logger.LogInformation($"Timed Hosted Service is working. Interval (sec): {_intervalSeconds} Count: {count}");
+            using var scope = _scopeFactory.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<TimedHostedService>>();
+
+            logger.LogInformation($"Timed Hosted Service is working. Interval (sec): {_intervalSeconds} Count: {count}");
 
             //Guid albaAccountId = _credentialService
             //    .GetAlbaAccountIdFor(User.Identity.Name);
@@ -60,7 +74,10 @@ namespace TerritoryTools.Web.MainSite
 
         public Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Timed Hosted Service is stopping.");
+            using var scope = _scopeFactory.CreateScope();
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<TimedHostedService>>();
+
+            logger.LogInformation("Timed Hosted Service is stopping.");
 
             _timer?.Change(Timeout.Infinite, 0);
 

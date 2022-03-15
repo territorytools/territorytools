@@ -53,9 +53,9 @@ namespace TerritoryTools.Web.MainSite
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            string connectionString = Configuration.GetConnectionString("MainDbContextConnection");
             services.AddDbContext<MainDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("MainDbContextConnection")));
+                options.UseSqlServer(connectionString));
 
             services.AddAuthentication()
                 .AddGoogle(options =>
