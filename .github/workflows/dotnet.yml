@@ -12,17 +12,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore Web/MainSite/Web.MainSite.csproj
-    - name: Generate (Localized) Resource Files
-      run: pwsh Web/MainSite/Resources/Generate-ResourceFiles.ps1
-    - name: Build Territory Tools Main Web Site
-      run: dotnet build --no-restore Web/MainSite/Web.MainSite.csproj
+##    - uses: actions/checkout@v2
+##    - name: Setup .NET
+##      uses: actions/setup-dotnet@v1
+##      with:
+##        dotnet-version: 5.0.x
+##    - name: Restore dependencies
+##      run: dotnet restore Web/MainSite/Web.MainSite.csproj
+##    - name: Generate (Localized) Resource Files
+##      run: pwsh Web/MainSite/Resources/Generate-ResourceFiles.ps1
+##    - name: Build Territory Tools Main Web Site
+##      run: dotnet build --no-restore Web/MainSite/Web.MainSite.csproj
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
     - name: Set up QEMU
@@ -38,4 +38,5 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: user/app:latest
+        tags: territorytools/territorytools:latest
+        file: Web/MainSite/Dockerfile
