@@ -213,7 +213,7 @@ services:
     networks:
       - main
     ports:
-      - "1433:1433"
+      - "127.0.0.1:1433:1433"
   tt-url:
     container_name: tt-url
     restart: unless-stopped
