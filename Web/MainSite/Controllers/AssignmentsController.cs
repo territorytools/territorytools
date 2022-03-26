@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.MainSite.Services;
@@ -389,9 +390,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string path = string.Format(
                 options.AlbaAssignmentsHtmlPath, 
                 albaAccountId);
-
             if (System.IO.File.Exists(path))
             {
+                DateTime lastWrite = System.IO.File.GetLastWriteTime(path);
+                if(DateTime.Now.Subtract(lastWrite).TotalMinutes < 15)
+                {
+                    return;
+                }
+
                 System.IO.File.Delete(path);
             }
 
@@ -462,12 +468,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
 
             // TODO: Get credentials with albaAccountId
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+            Credentials credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
-            var client = AuthorizedConnection();
+            AlbaConnection client = AuthorizedConnection();
             client.Authenticate(credentials);
 
-            var assignedHtml = client.DownloadString(
+            string assignedHtml = client.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignmentsPage());
 
             string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);

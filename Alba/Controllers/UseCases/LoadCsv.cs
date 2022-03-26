@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -31,30 +32,35 @@ namespace Controllers.UseCases
                 }
             }
 
-            using (var reader = new StreamReader(path))
-            using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = delimiter;
-                csv.Configuration.PrepareHeaderForMatch =
-                    (string header, int index) => header.ToLower();
+                Delimiter = delimiter,
+                PrepareHeaderForMatch = args => args.Header.ToLower(),
+                BadDataFound = null,
+                HeaderValidated = null,
+                MissingFieldFound = null,
+                IgnoreBlankLines = true,
+                ShouldSkipRecord = args => args.Record[0].StartsWith("#TYPE"),
+            };
 
-                csv.Configuration.BadDataFound = null;
-                csv.Configuration.HeaderValidated = null;
-                csv.Configuration.MissingFieldFound = null;
-                csv.Configuration.IgnoreBlankLines = true;
-                csv.Configuration.ShouldSkipRecord = row => row[0].StartsWith("#TYPE");
+            using (var reader = new StreamReader(path))
+            using (CsvReader csv = new CsvReader(reader, configuration))
+            {
                 return csv.GetRecords<T>().ToList();
             }
         }
 
         public static void SaveTo(
-            IEnumerable<T> addresses, 
+            IEnumerable<T> addresses,
             string path)
         {
-            using (var writer = new StreamWriter(path))
-            using (CsvWriter csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = "\t";
+                Delimiter = "\t"
+            };
+            using (var writer = new StreamWriter(path))
+            using (CsvWriter csv = new CsvWriter(writer, configuration))
+            {
                 csv.WriteRecords(addresses);
             }
         }

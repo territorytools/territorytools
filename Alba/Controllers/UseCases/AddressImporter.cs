@@ -1,5 +1,6 @@
 ﻿using Controllers.AlbaServer;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -103,12 +104,16 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
             if (string.IsNullOrWhiteSpace(path))
                 return;
- 
-            using (var reader = new StreamReader(path))
-            using (CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                csv.Configuration.Delimiter = "\t";
-                csv.Configuration.PrepareHeaderForMatch = (string header, int index) => header.ToLower();
+                Delimiter = "\t",
+                PrepareHeaderForMatch = args => args.Header.ToLower()
+            };
+
+            using (var reader = new StreamReader(path))
+            using (CsvReader csv = new CsvReader(reader, configuration))
+            {
                 var addresses = csv.GetRecords<AlbaAddressImport>();
                 foreach (var address in addresses)
                 {

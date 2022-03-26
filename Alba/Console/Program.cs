@@ -406,7 +406,7 @@ namespace TerritoryTools.Alba.Cli
             Console.WriteLine($"Input File Path: {inputPath}");
             Console.WriteLine($"Output File Path: {outputPath}");
 
-            var writingAddresses = LoadCsv.LoadFrom<LetterWritingSheet>(inputPath);
+            var writingAddresses = LoadCsv<LetterWritingSheet>.LoadFrom(inputPath);
             var albaAddresses = new List<AlbaAddressExport>();
             var errors = new List<LetterWritingSheet>();
 
