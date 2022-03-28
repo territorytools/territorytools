@@ -21,18 +21,21 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public class AssignmentsController : Controller
     {
         readonly IAlbaCredentialService albaCredentialService;
+        private readonly AreaService _areaService;
         readonly ITerritoryAssignmentService territoryAssignmentService;
         readonly ILogger logger;
         readonly WebUIOptions options;
 
         public AssignmentsController(
             IAlbaCredentialService albaCredentialService,
+            AreaService areaService,
             ITerritoryAssignmentService territoryAssignmentService,
             IAlbaCredentials credentials,
             ILogger<AssignmentsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
             this.albaCredentialService = albaCredentialService;
+            _areaService = areaService;
             this.territoryAssignmentService = territoryAssignmentService;
             this.logger = logger;
             options = optionsAccessor.Value;
@@ -88,10 +91,33 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return BadRequest(message);
             }
 
+            var areas = _areaService.All();
             var includePattern = new Regex("^\\w{3}\\d{3}$");
             if(area != "*")
             {
-                includePattern = new Regex("^" + area + "\\d{3}$");
+                var matchedArea = areas.FirstOrDefault(a => a.Code == area);
+                if (matchedArea == null)
+                {
+                    string message = $"There are {territories.Count()} territories, but none in the area you have requested! (1)";
+                    logger.LogError(message);
+                    return BadRequest(message);
+                }
+
+                if (matchedArea.IsParent)
+                {
+                    string areaPattern = "";
+                    var children = areas.Where(a => a.Parent == matchedArea.Parent).Select(a => a.Code);
+                    if (children.Count() > 0)
+                    {
+                        areaPattern = string.Join('|', children);
+                        includePattern = new Regex("^(" + areaPattern + ")\\d{3}$");
+                    }
+                }
+                else
+                {
+                    includePattern = new Regex("^" + area + "\\d{3}$");
+
+                }
             }
 
             var queryInclude =

@@ -3,7 +3,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
@@ -23,12 +22,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
-        private readonly IConfiguration _configuration;
+        private readonly AreaService _areaService;
         IAccountLists accountLists;
 
         public ManageTerritoriesController(
             MainDbContext database,
-            IConfiguration configuration,
+            AreaService areaService,
             IAccountLists accountLists,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
@@ -44,7 +43,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 assignmentService,
                 optionsAccessor)
         {
-            _configuration = configuration;
+            _areaService = areaService;
             this.accountLists = accountLists;
         }
 
@@ -62,40 +61,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var areas = new List<Models.Area>();
-                string areaNamesString = _configuration.GetValue<string>("TT_AreaNames");
-                if (!string.IsNullOrWhiteSpace(areaNamesString))
-                {
-                    string[] areaRows = areaNamesString.Split(";", StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string areaRow in areaRows)
-                    {
-                        string[] areaRowParts = areaRow.Split(":", StringSplitOptions.RemoveEmptyEntries);
-                        Models.Area area = new Models.Area
-                        {
-                            Code = areaRowParts.Length > 0 ? areaRowParts[0] : "",
-                            Name = areaRowParts.Length > 1 ? areaRowParts[1] : "",
-                            Parent = areaRowParts.Length > 2 ? areaRowParts[2] : "",
-                        };
-
-                        areas.Add(area);
-                    }
-                }
-
-                var parents = areas.GroupBy(a => a.Parent).Select(a => a.Key).ToList();
-                foreach(var parent in parents)
-                {
-                    areas.Add(new Models.Area { Code = "PARENT-" + parent, Parent = parent });
-                }
-
-                areas = areas
-                    .OrderBy(a => a.Parent)
-                    .ThenBy(a => a.Name)
-                    .ToList();
-
                 var report = new ReportIndexPage()
                 {
                     Users= users,
-                    Areas = areas
+                    Areas = _areaService.All()
                 };
 
                 return View(report);
