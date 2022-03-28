@@ -214,7 +214,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                     string areaName = prefix;
                     string groupName = "?";
-                    if (accountLists.Areas.TryGetValue(prefix, out Area area))
+                    if (accountLists.Areas.TryGetValue(prefix, out Services.Area area))
                     {
                         areaName = string.IsNullOrWhiteSpace(area.Name) ? prefix : area.Name;
                         groupName = string.IsNullOrWhiteSpace(area.Group) ? "?" : area.Group;

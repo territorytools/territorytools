@@ -91,6 +91,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IQRCodeActivityService, QRCodeActivityService>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ITerritoryAssignmentService, TerritoryAssignmentService>();
+            services.AddScoped<AreaService>();
             
             services.Configure<WebUIOptions>(Configuration);
 

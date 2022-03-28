@@ -19,13 +19,15 @@ using TerritoryTools.Web.MainSite.Services;
 namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
-    public class ManageTerritoriesController : AuthorizedController
+    public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
-
+        private readonly AreaService _areaService;
         IAccountLists accountLists;
+
         public ManageTerritoriesController(
             MainDbContext database,
+            AreaService areaService,
             IAccountLists accountLists,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
@@ -41,6 +43,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 assignmentService,
                 optionsAccessor)
         {
+            _areaService = areaService;
             this.accountLists = accountLists;
         }
 
@@ -61,6 +64,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 var report = new ReportIndexPage()
                 {
                     Users= users,
+                    Areas = _areaService.All()
                 };
 
                 return View(report);
