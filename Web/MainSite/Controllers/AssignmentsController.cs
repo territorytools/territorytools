@@ -71,7 +71,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
         public ActionResult<AssignmentResult> AssignLatest(
             int userId,
             [Range(1, 99)]
-            int count = 1)
+            int count = 1,
+            string area = "*")
         {
             var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
@@ -88,6 +89,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
 
             var includePattern = new Regex("^\\w{3}\\d{3}$");
+            if(area != "*")
+            {
+                includePattern = new Regex("^" + area + "\\d{3}$");
+            }
 
             var queryInclude =
                 from t in territories
@@ -98,7 +103,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if (queryInclude.Count() == 0)
             {
-                string message = $"There are {territories.Count()} territories, but none match the include pattern!";
+                string message = $"There are {territories.Count()} territories, but none in the area you have requested!";
                 logger.LogError(message);
                 return BadRequest(message);
             }

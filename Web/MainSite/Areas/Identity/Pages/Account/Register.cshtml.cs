@@ -75,12 +75,21 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
+                _logger.LogInformation($"Registering a new user: {Input?.Email}");
+
+                string normalizedEmail = Input?.Email?.ToLower();
+                if(string.IsNullOrEmpty(normalizedEmail))
+                {
+                    ModelState.AddModelError(string.Empty, $"The email address you entered '{normalizedEmail}' is not valid.");
+                    return Page();
+                }
+
                 var territoryUser = _database.TerritoryUser
                     .FirstOrDefault(u => u.Email != null 
-                        && Input.Email != null 
-                        && string.Equals(u.Email.ToUpper(), Input.Email.ToUpper()));
+                        && normalizedEmail != null
+                        && string.Equals(u.Email, normalizedEmail));
 
-                if(territoryUser == null)
+                if (territoryUser == null)
                 {
                     ModelState.AddModelError(string.Empty, "That email is not in our system.  You must be invited.");
                     return Page();
