@@ -345,3 +345,5 @@ data/nginx.conf
 
 *.generated.sql
 /.vscode-remote/
+
+*.secrets.json

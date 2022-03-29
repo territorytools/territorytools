@@ -1,5 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Google.Apis.Sheets.v4.Data;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace TerritoryTools.Alba.Controllers.Tests
 {
@@ -51,6 +55,29 @@ namespace TerritoryTools.Alba.Controllers.Tests
             ";
 
             Assert.IsFalse(GoogleSheets.IsJsonForAServiceAccount(json));
+        }
+
+        [Test]
+        public void CreateTest()
+        {
+            string json = File.ReadAllText("./client.secrets.json");
+            Assert.IsNotNull(json);
+
+            GoogleSheets googleSheets = new GoogleSheets(json);
+            Assert.IsNotNull(googleSheets);
+
+            Spreadsheet sheet = googleSheets.CreateSheet($"Test Sheet {DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}");
+            //Assert.IsNotNull(sheet.SpreadsheetUrl);
+
+            IList<IList<object>> values = new List<IList<object>>()
+            {
+                new List<object>() { "Hi", "there", "world "},
+                new List<object>() { null, null, null},
+                new List<object>() { "Hello", null, "marc"},
+            };
+
+            googleSheets.Write(sheet.SpreadsheetId, "Requests!A1:C3", values);
+            // TODO: This could be tested by downloading the CSV for the google sheet...
         }
     }
 }

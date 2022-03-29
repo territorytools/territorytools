@@ -16,6 +16,7 @@ namespace TerritoryTools.Alba.Controllers
     {
         void Write(string documentId, string range, IList<IList<object>> values);
         IList<IList<object>> Read(string documentId, string range);
+        Spreadsheet CreateSheet(string title);
     }
 
     public class GoogleSheets : ISheets
@@ -72,7 +73,6 @@ namespace TerritoryTools.Alba.Controllers
         public static bool IsJsonForAServiceAccount(string json)
         {
             JObject document = JObject.Parse(json);
-            
 
             bool isServiceAccount;
             if ((string)document.SelectToken("type") == "service_account")
@@ -90,6 +90,44 @@ namespace TerritoryTools.Alba.Controllers
             }
 
             return isServiceAccount;
+        }
+
+        public Spreadsheet CreateSheet(string title)
+        {
+            Spreadsheet spreadsheet = new Spreadsheet();
+            var properties = new SpreadsheetProperties()
+            {
+                Title = title,
+            };
+            spreadsheet.Properties = properties;
+            Sheet sheet = new Sheet();
+            var sheetProperties = new SheetProperties()
+            {
+                Title = "My Sheet"
+            };
+            sheet.Properties = sheetProperties;
+            spreadsheet.Sheets = new List<Sheet>();
+            spreadsheet.Sheets.Add(sheet);
+
+            Sheet sheet2 = new Sheet();
+            var sheetProperties2 = new SheetProperties()
+            {
+                Title = "Requests"
+            };
+            sheet2.Properties = sheetProperties2;
+            spreadsheet.Sheets.Add(sheet2);
+
+            var newSheetRequest = new SpreadsheetsResource.CreateRequest(_service, spreadsheet);
+            SpreadsheetsResource.CreateRequest request = _service.Spreadsheets.Create(spreadsheet);
+            Spreadsheet result = request.Execute();
+            Console.WriteLine($"SpreadsheetID: {result.SpreadsheetId}");
+            Console.WriteLine($"SpreadsheetUrl: {result.SpreadsheetUrl}");
+            foreach(var s in result.Sheets)
+            {
+                Console.WriteLine($"{s.Properties.Title} ID: {s.Properties.SheetId}");
+            }
+
+            return result;
         }
 
         static SheetsService GetSheetUserService(ICredential credential)
