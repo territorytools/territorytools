@@ -11,12 +11,12 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
         {
             var googleSheets = new GoogleSheets(request.SecurityToken);
 
-            IList<IList<object>> numbers = googleSheets.Read(
+            IList<IList<object>> masterPhoneList = googleSheets.Read(
                 documentId: request.FromDocumentId,
                 range: request.FromSheetName);
 
             List<PhoneRow> phoneRows = new List<PhoneRow>();
-            foreach (IList<object> row in numbers)
+            foreach (IList<object> row in masterPhoneList)
             {
                 phoneRows.Add(new PhoneRow
                 {
@@ -123,47 +123,11 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 );
             }
 
-            //// Add results column drop downs
-            //for (int row = 1; row < phoneRows.Count; row++)
-            //{
-            //    phoneNumberSheet.Data[0].RowData.Add(
-            //        new RowData
-            //        {
-            //            Values = new List<CellData>()
-            //            {
-            //                new CellData(),
-            //                new CellData(),
-            //                new CellData(),
-            //                new CellData(),
-            //                ResultsDropDownCellData(),
-            //                ResultsDropDownCellData()
-            //            }
-            //        }
-            //    );
-            //}
-
-            // Make top row bold, 10 columns
-            //for (int col = 0; col < 10; col++)
-            //{
-            //    phoneNumberSheet.Data[0].RowData[0].Values.Add(
-            //        new CellData
-            //        {
-            //            UserEnteredFormat = new CellFormat
-            //            {
-            //                TextFormat = new TextFormat
-            //                {
-            //                    Bold = true,
-            //                }
-            //            },
-            //            //Note = "Yep this is a note",
-            //        });
-            //}
-
-
             Spreadsheet sheet = googleSheets.CreateSheet(
                 title: $"Territory {request.TerritoryNumber} {DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}",
                 sheets: new List<Sheet> { phoneNumberSheet, resultsSheet });
 
+            // TODO: Instead of creating Results sheet this way, copy this from the master sheet
             IList<IList<object>> values = new List<IList<object>>()
             {
                 new List<object>() { "Skipped" },
@@ -198,9 +162,6 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 
             foreach (PhoneRow phoneRow in phoneRows)
             {
-                //if (phoneRow.TerritoryNumber != request.TerritoryNumber)
-                //    continue;
-
                 newNumbers.Add(
                     new List<object>()
                     {
@@ -217,8 +178,8 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     });
             }
 
-            //googleSheets.Write(sheet.SpreadsheetId, $"Phone Numbers!A1:J{newNumbers.Count}", newNumbers);
-
+            // TODO: Update 'Checkout' status too (for now)
+            // TODO: Write publisher name to original masterPhoneList !!!!!!!!!!!!! Important
             var spreadsheet = googleSheets.GetSpreadsheet(request.FromDocumentId);
             var log = spreadsheet.Sheets.FirstOrDefault(sh => "CheckOutLog".Equals(sh.Properties?.Title));
             googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
