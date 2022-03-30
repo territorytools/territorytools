@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+using data = Google.Apis.Sheets.v4.Data;
 
 namespace TerritoryTools.Alba.Controllers
 {
@@ -16,7 +17,7 @@ namespace TerritoryTools.Alba.Controllers
     {
         void Write(string documentId, string range, IList<IList<object>> values);
         IList<IList<object>> Read(string documentId, string range);
-        Spreadsheet CreateSheet(string title);
+        Spreadsheet CreateSheet(string title, List<Sheet> sheets);
     }
 
     public class GoogleSheets : ISheets
@@ -92,42 +93,101 @@ namespace TerritoryTools.Alba.Controllers
             return isServiceAccount;
         }
 
-        public Spreadsheet CreateSheet(string title)
+        public Spreadsheet CreateSheet(string title, List<Sheet> sheets)
         {
-            Spreadsheet spreadsheet = new Spreadsheet();
+            var spreadsheet = new Spreadsheet();
             var properties = new SpreadsheetProperties()
             {
                 Title = title,
             };
+
             spreadsheet.Properties = properties;
-            Sheet sheet = new Sheet();
-            var sheetProperties = new SheetProperties()
-            {
-                Title = "My Sheet"
-            };
-            sheet.Properties = sheetProperties;
             spreadsheet.Sheets = new List<Sheet>();
-            spreadsheet.Sheets.Add(sheet);
 
-            Sheet sheet2 = new Sheet();
-            var sheetProperties2 = new SheetProperties()
+            foreach (Sheet sheet in sheets)
             {
-                Title = "Requests"
-            };
-            sheet2.Properties = sheetProperties2;
-            spreadsheet.Sheets.Add(sheet2);
+                //Sheet sheet = new Sheet();
+                //sheet.Properties = new SheetProperties()
+                //{
+                //    Title = name,
+                //    GridProperties = new GridProperties()
+                //    {
+                        
+                //    }
+                //};
 
-            var newSheetRequest = new SpreadsheetsResource.CreateRequest(_service, spreadsheet);
+                //if(true)
+                //{
+                //    sheet.Properties.GridProperties.FrozenRowCount = 1;
+                //    sheet.Properties.GridProperties.RowCount = 10;
+                //}
+
+                spreadsheet.Sheets.Add(sheet);
+            }
+
             SpreadsheetsResource.CreateRequest request = _service.Spreadsheets.Create(spreadsheet);
             Spreadsheet result = request.Execute();
             Console.WriteLine($"SpreadsheetID: {result.SpreadsheetId}");
             Console.WriteLine($"SpreadsheetUrl: {result.SpreadsheetUrl}");
             foreach(var s in result.Sheets)
             {
-                Console.WriteLine($"{s.Properties.Title} ID: {s.Properties.SheetId}");
+                Console.WriteLine($"Sheet: {s.Properties.Title} ID: {s.Properties.SheetId}");
             }
 
             return result;
+        }
+
+        public void InsertRows(string documentId, int? sheetId, int startIndex, int endIndex)
+        {
+            data.Request insertRowRequest = new data.Request();
+            insertRowRequest.InsertDimension = new InsertDimensionRequest()
+            {
+                InheritFromBefore = false,
+                Range = new DimensionRange()
+                {
+                    Dimension = "ROWS",
+                    StartIndex = startIndex,
+                    EndIndex = endIndex,
+                    SheetId = sheetId
+                }
+            };
+
+            List<data.Request> requests = new List<data.Request>();
+            requests.Add(insertRowRequest);
+
+            // TODO: Assign values to desired properties of `requestBody`:
+            data.BatchUpdateSpreadsheetRequest requestBody = new data.BatchUpdateSpreadsheetRequest();
+            requestBody.Requests = requests;
+
+            SpreadsheetsResource.BatchUpdateRequest req = _service.Spreadsheets.BatchUpdate(requestBody, documentId);
+
+            // To execute asynchronously in an async method, replace `request.Execute()` as shown:
+            data.BatchUpdateSpreadsheetResponse response = req.Execute();
+        }
+
+        public Spreadsheet GetSpreadsheet(string documentId)
+        {
+            SpreadsheetsResource.GetRequest request = _service.Spreadsheets.Get(documentId);
+            ////request.Ranges = ranges;
+            request.IncludeGridData = false;
+
+            // To execute asynchronously in an async method, replace `request.Execute()` as shown:
+            data.Spreadsheet response = request.Execute();
+            return response;
+        }
+
+        public void UpdateFrozenRow()
+        {
+            UpdateSheetPropertiesRequest request = new UpdateSheetPropertiesRequest()
+            {
+                Properties = new SheetProperties
+                {
+                    GridProperties = new GridProperties()
+                    {
+                        FrozenRowCount = 1
+                    }
+                }
+            };
         }
 
         static SheetsService GetSheetUserService(ICredential credential)
