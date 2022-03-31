@@ -87,7 +87,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     GridProperties = new GridProperties
                     {
                         RowCount = phoneRows.Count + 1,
-                        ColumnCount = 7, //10,
+                        ColumnCount = 10,
                         FrozenRowCount = 1,
                     }
                 }
@@ -106,7 +106,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             };
 
             var columnHeadings = new List<string>() {
-                //"Order",
+                "Order",
                 "Publisher",
                 "Category",
                 "Phone",
@@ -114,8 +114,8 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 "Phone 2 Results",
                 "Notes",
                 "Date",
-                //"Territory",
-                //"Added"
+                "Territory",
+                "Added"
             };
 
             //Make top row bold, 10 columns
@@ -134,7 +134,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     {
                         Values = new List<CellData>()
                         {
-                            //StringCellData(phoneRow.Order),
+                            StringCellData(phoneRow.Order),
                             StringCellData(phoneRow.Publisher),
                             StringCellData(phoneRow.Category),
                             StringCellData(phoneRow.PhoneNumber),
@@ -142,8 +142,8 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                             ResultsDropDownCellData(phoneRow.PhoneResults2),
                             StringCellData(phoneRow.Notes),
                             StringCellData(phoneRow.Date),
-                            //StringCellData(phoneRow.TerritoryNumber),
-                            //StringCellData(phoneRow.Added)
+                            StringCellData(phoneRow.TerritoryNumber),
+                            StringCellData(phoneRow.Added)
                         }
                     }
                 );
