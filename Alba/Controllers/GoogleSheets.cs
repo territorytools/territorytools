@@ -1,4 +1,6 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
@@ -24,20 +26,28 @@ namespace TerritoryTools.Alba.Controllers
     {
         // Some APIs, like Storage, accept a credential in their Create()
         // method.
-        static string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly, SheetsService.Scope.Spreadsheets };
+        static string[] Scopes = { 
+            SheetsService.Scope.SpreadsheetsReadonly, 
+            SheetsService.Scope.Spreadsheets, 
+            DriveService.Scope.DriveFile, 
+            DriveService.Scope.DriveMetadata,
+            DriveService.Scope.Drive};
         static string ApplicationName = "Google Sheets API .NET Experiment";
         const string CredPath = "token.json";
 
         readonly SheetsService _service;
+        readonly DriveService _driveService;
 
         public GoogleSheets(string json)
         {
             if (IsJsonForAServiceAccount(json))
             {
+                _driveService = GetDriveUserService(ServiceCredentials(json));
                 _service = GetSheetUserService(ServiceCredentials(json));
             }
             else
             {
+                _driveService = GetDriveUserService(UserCredentials(json));
                 _service = GetSheetUserService(UserCredentials(json));
             }
         }
@@ -190,12 +200,88 @@ namespace TerritoryTools.Alba.Controllers
             };
         }
 
+        public enum Role
+        {
+            Reader,
+            Writer,
+            FileOrganizer,
+            Owner,
+        }
+
+        public void ShareFile(string documentId, string email, Role role = Role.Reader)
+        {
+            try
+            {
+                Permission userPermission = new Permission()
+                {
+                    Type = "user",
+                    Role = CamelCase(role),
+                    EmailAddress = email,
+                };
+
+                PermissionsResource.CreateRequest request = _driveService.Permissions
+                    .Create(userPermission, documentId);
+
+                if (role == Role.Owner)
+                {
+                    request.TransferOwnership = true;
+                }
+
+                request.Execute();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error changing permissions. {ex.Message}", ex);
+            }
+        }
+
+        public static string ColumnName(int number)
+        {
+            number++; // Input is zero based
+
+            var builder = new StringBuilder();
+            while (number > 0)
+            {
+                int index = (number - 1) % 26;
+                builder.Append((char)(index + 'A'));
+                number = (number - 1) / 26;
+            }
+
+            string result = builder.ToString();
+            char[] reversed = new char[result.Length];
+            for (int i = 0; i < result.Length; i++)
+            {
+                reversed[i] = result[result.Length - i - 1];
+            }
+
+            return new string(reversed);
+        }
+
+        static string CamelCase(Role role)
+        {
+            return $"{role.ToString().Substring(0, 1).ToLower()}{role.ToString().Substring(1)}";
+        }
+
         static SheetsService GetSheetUserService(ICredential credential)
         {
             //UserCredential credential = Credentials(jsonPath);
 
             // Create Google Sheets API service.
             SheetsService service = new SheetsService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+
+            return service;
+        }
+
+        static DriveService GetDriveUserService(ICredential credential)
+        {
+            //UserCredential credential = Credentials(jsonPath);
+
+            // Create Google Drive API service.
+            DriveService service = new DriveService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
@@ -245,15 +331,10 @@ namespace TerritoryTools.Alba.Controllers
 
         static GoogleCredential ServiceCredentials(string json)
         {
-            GoogleCredential credential;
-
-            byte[] byteArray = Encoding.ASCII.GetBytes(json);
-            using (MemoryStream stream = new MemoryStream(byteArray))
-            {
-                var serviceCred = ServiceAccountCredential.FromServiceAccountData(stream);
-                credential = GoogleCredential.FromServiceAccountCredential(serviceCred);
-            }
-
+            GoogleCredential credential = GoogleCredential
+                .FromJson(json)
+                .CreateScoped(Scopes); 
+ 
             return credential;
         }
     }

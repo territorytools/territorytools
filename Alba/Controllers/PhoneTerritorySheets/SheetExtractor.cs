@@ -15,10 +15,10 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 documentId: request.FromDocumentId,
                 range: request.FromSheetName);
 
-            List<PhoneRow> phoneRows = new List<PhoneRow>();
+            List<PhoneRow> allPhoneRows = new List<PhoneRow>();
             foreach (IList<object> row in masterPhoneList)
             {
-                phoneRows.Add(new PhoneRow
+                allPhoneRows.Add(new PhoneRow
                 {
                     Order = row.Count > 0 ? row[0] as string : null,
                     Publisher = row.Count > 1 ? row[1] as string : null,
@@ -33,9 +33,20 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 });
             }
 
-            phoneRows = phoneRows
+            List<PhoneRow> phoneRows = allPhoneRows
                 .Where(r => r.TerritoryNumber == request.TerritoryNumber)
                 .ToList();
+
+            foreach(PhoneRow phoneRow in phoneRows)
+            {
+                if(string.IsNullOrWhiteSpace(phoneRow.Publisher))
+                {
+                    phoneRow.Publisher = request.PublisherName;
+                }
+            }
+
+            int phoneRowStartIndex = allPhoneRows.IndexOf(phoneRows[0]);
+            int phoneRowEndIndex = phoneRowStartIndex + phoneRows.Count;
 
             Sheet resultsSheet = new Sheet
             {
@@ -68,8 +79,6 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             {
                 new GridData
                 {
-                    //StartColumn = 0,
-                    //StartRow = 0,
                     RowData = new List<RowData> {
                         new RowData {
                              Values = new List<CellData>()
@@ -98,7 +107,6 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     BoldStringCellData(heading));
             }
 
-
             // Add data with formatting and validation
             for (int r = 0; r < phoneRows.Count; r++)
             {
@@ -124,7 +132,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             }
 
             Spreadsheet sheet = googleSheets.CreateSheet(
-                title: $"Territory {request.TerritoryNumber} {DateTime.Now.ToString("yyyy-MM-dd_hhmmss")}",
+                title: $"Territory {request.TerritoryNumber}",
                 sheets: new List<Sheet> { phoneNumberSheet, resultsSheet });
 
             // TODO: Instead of creating Results sheet this way, copy this from the master sheet
@@ -179,16 +187,38 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             }
 
             // TODO: Update 'Checkout' status too (for now)
-            // TODO: Write publisher name to original masterPhoneList !!!!!!!!!!!!! Important
+            IList<IList<object>> checkedOutRows = new List<IList<object>>();
+            foreach (PhoneRow phoneRow in phoneRows)
+            {
+                checkedOutRows.Add(new List<object>()
+                {
+                    null, //phoneRow.Order,
+                    string.IsNullOrWhiteSpace(phoneRow.Publisher) ? request.PublisherName : null,
+                    null, //phoneRow.Category,
+                    null, //phoneRow.PhoneNumber,
+                    null, //phoneRow.PhoneResults1,
+                    null, //phoneRow.PhoneResults2,
+                    null, //phoneRow.Notes,
+                    null, //phoneRow.Date,
+                    null, //phoneRow.TerritoryNumber,
+                    null, //phoneRow.Added
+                });
+            };
+
+            googleSheets.Write(request.FromDocumentId, $"{request.FromSheetName}!A{phoneRowStartIndex + 1}:J{phoneRowEndIndex + 1}", checkedOutRows);
+
             var spreadsheet = googleSheets.GetSpreadsheet(request.FromDocumentId);
             var log = spreadsheet.Sheets.FirstOrDefault(sh => "CheckOutLog".Equals(sh.Properties?.Title));
             googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
             IList<IList<object>> logRow = new List<IList<object>>
                 {
-                    new List<object> { DateTime.Today.ToShortDateString(), request.TerritoryNumber, request.Publisher, "Checked Out", "No notes"}
+                    new List<object> { DateTime.Today.ToShortDateString(), request.TerritoryNumber, request.PublisherName, "Checked Out", "No notes"}
                 };
 
             googleSheets.Write(request.FromDocumentId, $"CheckOutLog!A2:E2", logRow);
+
+            googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
+            googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Owner);
 
             return sheet.SpreadsheetUrl;
         }
