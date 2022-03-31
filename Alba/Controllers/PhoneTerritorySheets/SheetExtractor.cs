@@ -79,6 +79,19 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 }
             };
 
+            var columnHeadings = new List<string>() {
+                "Order",
+                "Publisher",
+                "Category",
+                "Phone",
+                "Phone 1 Results",
+                "Phone 2 Results",
+                "Notes",
+                "Date",
+                "Territory",
+                "Added"
+            };
+
             Sheet phoneNumberSheet = new Sheet
             {
                 Properties = new SheetProperties
@@ -87,7 +100,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     GridProperties = new GridProperties
                     {
                         RowCount = phoneRows.Count + 1,
-                        ColumnCount = 10,
+                        ColumnCount = columnHeadings.Count,
                         FrozenRowCount = 1,
                     }
                 }
@@ -103,19 +116,6 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                         }
                     }
                 }
-            };
-
-            var columnHeadings = new List<string>() {
-                "Order",
-                "Publisher",
-                "Category",
-                "Phone",
-                "Phone 1 Results",
-                "Phone 2 Results",
-                "Notes",
-                "Date",
-                "Territory",
-                "Added"
             };
 
             //Make top row bold, 10 columns
