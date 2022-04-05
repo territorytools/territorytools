@@ -7,57 +7,21 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 {
     public class SheetExtractor
     {
+        GoogleSheets _googleSheets;
+
         public string Extract(SheetExtractionRequest request)
         {
-            var googleSheets = new GoogleSheets(request.SecurityToken);
+            _googleSheets = new GoogleSheets(request.SecurityToken);
 
-            IList<IList<object>> assignmentList = googleSheets.Read(
-              documentId: request.FromDocumentId,
-              range: "Assignments");
-
-            List<AssignmentRow> assignmentRows = new List<AssignmentRow>();
-            foreach (IList<object> row in assignmentList)
-            {
-                assignmentRows.Add(new AssignmentRow
-                {
-                    TerritoryNumber = row.Count > 0 ? row[0] as string : null,
-                    Date = row.Count > 1 ? row[1] as string : null,
-                    Transaction = row.Count > 2 ? row[2] as string : null,
-                    Publisher = row.Count > 3 ? row[3] as string : null,
-                    Notes = row.Count > 4 ? row[4] as string : null,
-                    DocumentLink = row.Count > 5 ? row[5] as string : null,
-                });
-            }
-
-            IList<IList<object>> masterPhoneList = googleSheets.Read(
-                documentId: request.FromDocumentId,
-                range: request.FromSheetName);
-
-            List<PhoneRow> allPhoneRows = new List<PhoneRow>();
-            foreach (IList<object> row in masterPhoneList)
-            {
-                allPhoneRows.Add(new PhoneRow
-                {
-                    Order = row.Count > 0 ? row[0] as string : null,
-                    Publisher = row.Count > 1 ? row[1] as string : null,
-                    Category = row.Count > 2 ? row[2] as string : null,
-                    PhoneNumber = row.Count > 3 ? row[3] as string : null,
-                    PhoneResults1 = row.Count > 4 ? row[4] as string : null,
-                    PhoneResults2 = row.Count > 5 ? row[5] as string : null,
-                    Notes = row.Count > 6 ? row[6] as string : null,
-                    Date = row.Count > 7 ? row[7] as string : null,
-                    TerritoryNumber = row.Count > 8 ? row[8] as string : null,
-                    Added = row.Count > 9 ? row[9] as string : null,
-                });
-            }
-
+            List<AssignmentRow> assignmentRows = LoadAssignments(request.FromDocumentId, "Assignments");
+            List<PhoneRow> allPhoneRows = LoadPhoneRows(request.FromDocumentId, request.FromSheetName);
             List<PhoneRow> phoneRows = allPhoneRows
                 .Where(r => r.TerritoryNumber == request.TerritoryNumber)
                 .ToList();
 
-            foreach(PhoneRow phoneRow in phoneRows)
+            foreach (PhoneRow phoneRow in phoneRows)
             {
-                if(string.IsNullOrWhiteSpace(phoneRow.Publisher))
+                if (string.IsNullOrWhiteSpace(phoneRow.Publisher))
                 {
                     phoneRow.Publisher = request.PublisherName;
                 }
@@ -119,7 +83,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             };
 
             //Make top row bold, 10 columns
-            foreach(string heading in columnHeadings)
+            foreach (string heading in columnHeadings)
             {
                 phoneNumberSheet.Data[0].RowData[0].Values.Add(
                     BoldStringCellData(heading));
@@ -149,12 +113,102 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 );
             }
 
-            Spreadsheet sheet = googleSheets.CreateSheet(
+            Spreadsheet sheet = _googleSheets.CreateSheet(
                 title: $"Territory {request.TerritoryNumber}",
                 sheets: new List<Sheet> { phoneNumberSheet, resultsSheet });
 
             // TODO: Instead of creating Results sheet this way, copy this from the master sheet
-            IList<IList<object>> values = new List<IList<object>>()
+            _googleSheets.Write(sheet.SpreadsheetId, "Results!A1:A10", ResultsList());
+
+            PrepareForSheet(phoneRows);
+
+            // TODO: Compare data?
+            // TODO: Sometimes delete the source data (from the public sheet)
+            // TODO: Update 'Checkout' status too (for now)
+            _googleSheets.Write(
+                documentId: request.FromDocumentId, 
+                range: $"{request.FromSheetName}!A{phoneRowStartIndex + 1}:J{phoneRowEndIndex + 1}", 
+                values: CheckedOutRows(phoneRows, request.PublisherName));
+
+            var spreadsheet = _googleSheets.GetSpreadsheet(request.FromDocumentId);
+            var log = spreadsheet.Sheets.FirstOrDefault(sh => "AssignmentLog".Equals(sh.Properties?.Title));
+            if (log == null)
+            {
+                throw new Exception("Cannot find AssignmentLog sheet");
+            }
+
+            _googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
+
+            var logRowContents = new List<object> {
+                        DateTime.Today.ToShortDateString(),
+                        request.TerritoryNumber,
+                        request.PublisherName,
+                        "Checked Out",
+                        null,
+                        sheet.SpreadsheetUrl};
+
+            IList<IList<object>> logRow = new List<IList<object>>
+                {
+                   logRowContents
+                };
+
+            string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
+            _googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
+
+
+
+
+            var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == request.TerritoryNumber);
+            int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
+            var assignmentRowContents = new List<object> {
+                        assignment.TerritoryNumber,
+                        DateTime.Today.ToShortDateString(),
+                        "Checked Out",
+                        request.PublisherName,
+                        null,
+                        sheet.SpreadsheetUrl};
+
+            IList<IList<object>> assignmentRow = new List<IList<object>>
+                {
+                   assignmentRowContents
+                };
+
+            string assignmentEndColumnName = GoogleSheets.ColumnName(assignmentRowContents.Count);
+            _googleSheets.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
+
+
+
+            _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
+            _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Owner);
+
+            return sheet.SpreadsheetUrl;
+        }
+
+        private static IList<IList<object>> CheckedOutRows(List<PhoneRow> phoneRows, string publisherName)
+        {
+            IList<IList<object>> checkedOutRows = new List<IList<object>>();
+            foreach (PhoneRow phoneRow in phoneRows)
+            {
+                checkedOutRows.Add(new List<object>()
+                {
+                    null, //phoneRow.Order,
+                    string.IsNullOrWhiteSpace(phoneRow.Publisher) ? publisherName : null,
+                    null, //phoneRow.Category,
+                    null, //phoneRow.PhoneNumber,
+                    null, //phoneRow.PhoneResults1,
+                    null, //phoneRow.PhoneResults2,
+                    null, //phoneRow.Notes,
+                    null, //phoneRow.Date,
+                    null, //phoneRow.TerritoryNumber,
+                    null, //phoneRow.Added
+                });
+            };
+            return checkedOutRows;
+        }
+
+        private static IList<IList<object>> ResultsList()
+        {
+            return new List<IList<object>>()
             {
                 new List<object>() { "Skipped" },
                 new List<object>() { "Disconnected" },
@@ -167,9 +221,10 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 new List<object>() { "Chinese" },
                 new List<object>() { "See Notes" },
             };
+        }
 
-            googleSheets.Write(sheet.SpreadsheetId, "Results!A1:A10", values);
-
+        static IList<IList<object>> PrepareForSheet(List<PhoneRow> phoneRows)
+        {
             IList<IList<object>> newNumbers = new List<IList<object>>()
             {
                 new List<object>() {
@@ -204,79 +259,57 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     });
             }
 
-            // TODO: Update 'Checkout' status too (for now)
-            IList<IList<object>> checkedOutRows = new List<IList<object>>();
-            foreach (PhoneRow phoneRow in phoneRows)
+            return newNumbers;
+        }
+
+        List<PhoneRow> LoadPhoneRows(string documentId, string sheetName)
+        {
+            IList<IList<object>> masterPhoneList = _googleSheets.Read(
+               documentId: documentId,
+               range: sheetName);
+
+            List<PhoneRow> allPhoneRows = new List<PhoneRow>();
+            foreach (IList<object> row in masterPhoneList)
             {
-                checkedOutRows.Add(new List<object>()
+                allPhoneRows.Add(new PhoneRow
                 {
-                    null, //phoneRow.Order,
-                    string.IsNullOrWhiteSpace(phoneRow.Publisher) ? request.PublisherName : null,
-                    null, //phoneRow.Category,
-                    null, //phoneRow.PhoneNumber,
-                    null, //phoneRow.PhoneResults1,
-                    null, //phoneRow.PhoneResults2,
-                    null, //phoneRow.Notes,
-                    null, //phoneRow.Date,
-                    null, //phoneRow.TerritoryNumber,
-                    null, //phoneRow.Added
+                    Order = row.Count > 0 ? row[0] as string : null,
+                    Publisher = row.Count > 1 ? row[1] as string : null,
+                    Category = row.Count > 2 ? row[2] as string : null,
+                    PhoneNumber = row.Count > 3 ? row[3] as string : null,
+                    PhoneResults1 = row.Count > 4 ? row[4] as string : null,
+                    PhoneResults2 = row.Count > 5 ? row[5] as string : null,
+                    Notes = row.Count > 6 ? row[6] as string : null,
+                    Date = row.Count > 7 ? row[7] as string : null,
+                    TerritoryNumber = row.Count > 8 ? row[8] as string : null,
+                    Added = row.Count > 9 ? row[9] as string : null,
                 });
-            };
-
-            googleSheets.Write(request.FromDocumentId, $"{request.FromSheetName}!A{phoneRowStartIndex + 1}:J{phoneRowEndIndex + 1}", checkedOutRows);
-
-            var spreadsheet = googleSheets.GetSpreadsheet(request.FromDocumentId);
-            var log = spreadsheet.Sheets.FirstOrDefault(sh => "AssignmentLog".Equals(sh.Properties?.Title));
-            if(log == null)
-            {
-                throw new Exception("Cannot find AssignmentLog sheet");
             }
 
-            googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
+            return allPhoneRows;
+        }
 
-            var logRowContents = new List<object> {
-                        DateTime.Today.ToShortDateString(),
-                        request.TerritoryNumber,
-                        request.PublisherName,
-                        "Checked Out",
-                        null,
-                        sheet.SpreadsheetUrl};
+        List<AssignmentRow> LoadAssignments(string documentId, string range)
+        {
+            IList<IList<object>> assignmentList = _googleSheets.Read(
+                documentId: documentId,
+                range: range);
 
-            IList<IList<object>> logRow = new List<IList<object>>
+            List<AssignmentRow> assignmentRows = new List<AssignmentRow>();
+            foreach (IList<object> row in assignmentList)
+            {
+                assignmentRows.Add(new AssignmentRow
                 {
-                   logRowContents
-                };
-
-            string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
-            googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
-
-
-
-
-            var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == request.TerritoryNumber);
-            int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
-            var assignmentRowContents = new List<object> {
-                        assignment.TerritoryNumber,
-                        DateTime.Today.ToShortDateString(),
-                        "Checked Out",
-                        request.PublisherName,
-                        null,
-                        sheet.SpreadsheetUrl};
-
-            IList<IList<object>> assignmentRow = new List<IList<object>>
-                {
-                   assignmentRowContents
-                };
-
-            string assignmentEndColumnName = GoogleSheets.ColumnName(assignmentRowContents.Count);
-            googleSheets.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
-
-
-
-            googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
-            googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Owner);
-
-            return sheet.SpreadsheetUrl;
+                    TerritoryNumber = row.Count > 0 ? row[0] as string : null,
+                    Date = row.Count > 1 ? row[1] as string : null,
+                    Transaction = row.Count > 2 ? row[2] as string : null,
+                    Publisher = row.Count > 3 ? row[3] as string : null,
+                    Notes = row.Count > 4 ? row[4] as string : null,
+                    DocumentLink = row.Count > 5 ? row[5] as string : null,
+                });
+            }
+            
+            return assignmentRows;
         }
 
         private static CellData ResultsDropDownCellData(string value)
