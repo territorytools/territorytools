@@ -26,7 +26,7 @@ namespace TerritoryTools.Alba.Controllers
     {
         // Some APIs, like Storage, accept a credential in their Create()
         // method.
-        static string[] Scopes = { 
+        static readonly string[] Scopes = { 
             SheetsService.Scope.SpreadsheetsReadonly, 
             SheetsService.Scope.Spreadsheets, 
             DriveService.Scope.DriveFile, 
@@ -34,7 +34,7 @@ namespace TerritoryTools.Alba.Controllers
             DriveService.Scope.Drive
         };
 
-        static string ApplicationName = "Google Sheets API .NET Experiment";
+        static string ApplicationName = "Territory Tools";
         const string CredPath = "token.json";
 
         readonly SheetsService _service;
@@ -44,13 +44,13 @@ namespace TerritoryTools.Alba.Controllers
         {
             if (IsJsonForAServiceAccount(json))
             {
-                _driveService = GetDriveUserService(ServiceCredentials(json));
-                _service = GetSheetUserService(ServiceCredentials(json));
+                _driveService = new DriveService(BaseClientInit(ServiceCredentials(json)));
+                _service = new SheetsService(BaseClientInit(ServiceCredentials(json)));
             }
             else
             {
-                _driveService = GetDriveUserService(UserCredentials(json));
-                _service = GetSheetUserService(UserCredentials(json));
+                _driveService = new DriveService(BaseClientInit(UserCredentials(json)));
+                _service = new SheetsService(BaseClientInit(UserCredentials(json)));
             }
         }
 
@@ -246,7 +246,7 @@ namespace TerritoryTools.Alba.Controllers
 
         public static string ColumnName(int number)
         {
-            number++; // Input is zero based
+            number++; // Input is zero based, output starts at 1
 
             var builder = new StringBuilder();
             while (number > 0)
@@ -271,46 +271,13 @@ namespace TerritoryTools.Alba.Controllers
             return $"{role.ToString().Substring(0, 1).ToLower()}{role.ToString().Substring(1)}";
         }
 
-        static SheetsService GetSheetUserService(ICredential credential)
+        private static BaseClientService.Initializer BaseClientInit(ICredential credential)
         {
-            //UserCredential credential = Credentials(jsonPath);
-
-            // Create Google Sheets API service.
-            SheetsService service = new SheetsService(new BaseClientService.Initializer()
+            return new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
-            });
-
-            return service;
-        }
-
-        static DriveService GetDriveUserService(ICredential credential)
-        {
-            //UserCredential credential = Credentials(jsonPath);
-
-            // Create Google Drive API service.
-            DriveService service = new DriveService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
-
-            return service;
-        }
-
-        static SheetsService GetSheetServiceService(string json)
-        {
-            GoogleCredential credential = ServiceCredentials(json);
-
-            // Create Google Sheets API service.
-            SheetsService service = new SheetsService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
-
-            return service;
+            };
         }
 
         static UserCredential UserCredentials(string json)
