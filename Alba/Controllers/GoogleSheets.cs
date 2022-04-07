@@ -237,31 +237,6 @@ namespace TerritoryTools.Alba.Controllers
                 }
 
                 Permission permResult = request.Execute();
-
-                //Permission ownerPermission = new Permission()
-                //{
-                //    Type = "user",
-                //    // You must set owner to writer, then set pending owner to get consent
-                //    //Role = CamelCase(role == Role.Owner ? Role.Writer : role),
-                //    Role = CamelCase(role),
-                //    ///EmailAddress = email,
-                //    ///PendingOwner = role == Role.Owner,
-
-                //};
-
-                //PermissionsResource.UpdateRequest updateRequest = _driveService.Permissions
-                //    .Update(ownerPermission, documentId, permResult.Id);
-
-
-                //if (role == Role.Owner)
-                //{
-                //    updateRequest.TransferOwnership = true;
-                //    //updateRequest.EmailMessage = "This territory has been assigned to you.";
-                //    //updateRequest.SendNotificationEmail = true;
-                //    //updateRequest.MoveToNewOwnersRoot = true;
-                //}
-
-                //updateRequest.Execute();
             }
             catch (Exception ex)
             {
