@@ -30,7 +30,80 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             int phoneRowStartIndex = allPhoneRows.IndexOf(phoneRows[0]);
             int phoneRowEndIndex = phoneRowStartIndex + phoneRows.Count;
 
-            Sheet resultsSheet = new Sheet
+            Spreadsheet sheet = _googleSheets.CreateSheet(
+                title: $"Territory {request.TerritoryNumber}",
+                sheets: new List<Sheet> { PhoneNumberSheet(phoneRows), ResultsSheet() });
+
+            // TODO: Instead of creating Results sheet this way, copy this from the master sheet
+            _googleSheets.Write(sheet.SpreadsheetId, "Results!A1:A10", ResultsList());
+
+            PrepareForSheet(phoneRows);
+
+            // TODO: Compare data?
+            // TODO: Sometimes delete the source data (from the public sheet)
+            // TODO: Update 'Checkout' status too (for now)
+            _googleSheets.Write(
+                documentId: request.FromDocumentId,
+                range: $"{request.FromSheetName}!A{phoneRowStartIndex + 1}:J{phoneRowEndIndex + 1}",
+                values: CheckedOutRows(phoneRows, request.PublisherName));
+
+            var spreadsheet = _googleSheets.GetSpreadsheet(request.FromDocumentId);
+            var log = spreadsheet.Sheets.FirstOrDefault(sh => "AssignmentLog".Equals(sh.Properties?.Title));
+            if (log == null)
+            {
+                throw new Exception("Cannot find AssignmentLog sheet");
+            }
+
+            _googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
+
+            var logRowContents = new List<object> {
+                        DateTime.Today.ToShortDateString(),
+                        request.TerritoryNumber,
+                        request.PublisherName,
+                        "Checked Out",
+                        null,
+                        sheet.SpreadsheetUrl};
+
+            IList<IList<object>> logRow = new List<IList<object>>
+                {
+                   logRowContents
+                };
+
+            string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
+            _googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
+
+
+
+
+            var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == request.TerritoryNumber);
+            int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
+            var assignmentRowContents = new List<object> {
+                        assignment.TerritoryNumber,
+                        DateTime.Today.ToShortDateString(),
+                        "Checked Out",
+                        request.PublisherName,
+                        null,
+                        sheet.SpreadsheetUrl};
+
+            IList<IList<object>> assignmentRow = new List<IList<object>>
+                {
+                   assignmentRowContents
+                };
+
+            string assignmentEndColumnName = GoogleSheets.ColumnName(assignmentRowContents.Count);
+            _googleSheets.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
+
+
+
+            _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
+            _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Owner);
+
+            return sheet.SpreadsheetUrl;
+        }
+
+        private static Sheet ResultsSheet()
+        {
+            return new Sheet
             {
                 Properties = new SheetProperties
                 {
@@ -42,7 +115,10 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     }
                 }
             };
+        }
 
+        private static Sheet PhoneNumberSheet(List<PhoneRow> phoneRows)
+        {
             var columnHeadings = new List<string>() {
                 "Order",
                 "Publisher",
@@ -113,75 +189,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 );
             }
 
-            Spreadsheet sheet = _googleSheets.CreateSheet(
-                title: $"Territory {request.TerritoryNumber}",
-                sheets: new List<Sheet> { phoneNumberSheet, resultsSheet });
-
-            // TODO: Instead of creating Results sheet this way, copy this from the master sheet
-            _googleSheets.Write(sheet.SpreadsheetId, "Results!A1:A10", ResultsList());
-
-            PrepareForSheet(phoneRows);
-
-            // TODO: Compare data?
-            // TODO: Sometimes delete the source data (from the public sheet)
-            // TODO: Update 'Checkout' status too (for now)
-            _googleSheets.Write(
-                documentId: request.FromDocumentId, 
-                range: $"{request.FromSheetName}!A{phoneRowStartIndex + 1}:J{phoneRowEndIndex + 1}", 
-                values: CheckedOutRows(phoneRows, request.PublisherName));
-
-            var spreadsheet = _googleSheets.GetSpreadsheet(request.FromDocumentId);
-            var log = spreadsheet.Sheets.FirstOrDefault(sh => "AssignmentLog".Equals(sh.Properties?.Title));
-            if (log == null)
-            {
-                throw new Exception("Cannot find AssignmentLog sheet");
-            }
-
-            _googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
-
-            var logRowContents = new List<object> {
-                        DateTime.Today.ToShortDateString(),
-                        request.TerritoryNumber,
-                        request.PublisherName,
-                        "Checked Out",
-                        null,
-                        sheet.SpreadsheetUrl};
-
-            IList<IList<object>> logRow = new List<IList<object>>
-                {
-                   logRowContents
-                };
-
-            string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
-            _googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
-
-
-
-
-            var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == request.TerritoryNumber);
-            int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
-            var assignmentRowContents = new List<object> {
-                        assignment.TerritoryNumber,
-                        DateTime.Today.ToShortDateString(),
-                        "Checked Out",
-                        request.PublisherName,
-                        null,
-                        sheet.SpreadsheetUrl};
-
-            IList<IList<object>> assignmentRow = new List<IList<object>>
-                {
-                   assignmentRowContents
-                };
-
-            string assignmentEndColumnName = GoogleSheets.ColumnName(assignmentRowContents.Count);
-            _googleSheets.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
-
-
-
-            _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
-            _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Owner);
-
-            return sheet.SpreadsheetUrl;
+            return phoneNumberSheet;
         }
 
         private static IList<IList<object>> CheckedOutRows(List<PhoneRow> phoneRows, string publisherName)

@@ -31,7 +31,9 @@ namespace TerritoryTools.Alba.Controllers
             SheetsService.Scope.Spreadsheets, 
             DriveService.Scope.DriveFile, 
             DriveService.Scope.DriveMetadata,
-            DriveService.Scope.Drive};
+            DriveService.Scope.Drive
+        };
+
         static string ApplicationName = "Google Sheets API .NET Experiment";
         const string CredPath = "token.json";
 
@@ -215,8 +217,12 @@ namespace TerritoryTools.Alba.Controllers
                 Permission userPermission = new Permission()
                 {
                     Type = "user",
-                    Role = CamelCase(role),
+                    // You must set owner to writer, then set pending owner to get consent
+                    Role = CamelCase(role == Role.Owner ? Role.Writer : role),
+                    //Role = CamelCase(role),
                     EmailAddress = email,
+                    //PendingOwner = role == Role.Owner,
+                     
                 };
 
                 PermissionsResource.CreateRequest request = _driveService.Permissions
@@ -224,10 +230,38 @@ namespace TerritoryTools.Alba.Controllers
 
                 if (role == Role.Owner)
                 {
-                    request.TransferOwnership = true;
+                    //request.TransferOwnership = true;
+                    ////request.EmailMessage = "This territory has been assigned to you.";
+                    ////request.SendNotificationEmail = true;
+                    //request.MoveToNewOwnersRoot = true;
                 }
 
-                request.Execute();
+                Permission permResult = request.Execute();
+
+                //Permission ownerPermission = new Permission()
+                //{
+                //    Type = "user",
+                //    // You must set owner to writer, then set pending owner to get consent
+                //    //Role = CamelCase(role == Role.Owner ? Role.Writer : role),
+                //    Role = CamelCase(role),
+                //    ///EmailAddress = email,
+                //    ///PendingOwner = role == Role.Owner,
+
+                //};
+
+                //PermissionsResource.UpdateRequest updateRequest = _driveService.Permissions
+                //    .Update(ownerPermission, documentId, permResult.Id);
+
+
+                //if (role == Role.Owner)
+                //{
+                //    updateRequest.TransferOwnership = true;
+                //    //updateRequest.EmailMessage = "This territory has been assigned to you.";
+                //    //updateRequest.SendNotificationEmail = true;
+                //    //updateRequest.MoveToNewOwnersRoot = true;
+                //}
+
+                //updateRequest.Execute();
             }
             catch (Exception ex)
             {
