@@ -1,5 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Google.Apis.Sheets.v4.Data;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace TerritoryTools.Alba.Controllers.Tests
 {
@@ -51,6 +55,19 @@ namespace TerritoryTools.Alba.Controllers.Tests
             ";
 
             Assert.IsFalse(GoogleSheets.IsJsonForAServiceAccount(json));
+        }
+
+        [Test]
+        public void ColumnNameTest()
+        {
+            Assert.AreEqual("A", GoogleSheets.ColumnName(0));
+            Assert.AreEqual("B", GoogleSheets.ColumnName(1));
+            Assert.AreEqual("Z", GoogleSheets.ColumnName(25));
+            Assert.AreEqual("AA", GoogleSheets.ColumnName(26));
+            Assert.AreEqual("AB", GoogleSheets.ColumnName(27));
+            Assert.AreEqual("ZZ", GoogleSheets.ColumnName(701));
+            Assert.AreEqual("AAA", GoogleSheets.ColumnName(702));
+            Assert.AreEqual("AAB", GoogleSheets.ColumnName(703));
         }
     }
 }

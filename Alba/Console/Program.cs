@@ -13,8 +13,6 @@ using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
-using TerritoryTools.Entities;
-using TerritoryTools.Entities.AddressParsers;
 
 namespace TerritoryTools.Alba.Cli
 {
@@ -41,7 +39,10 @@ namespace TerritoryTools.Alba.Cli
                         NormalizeAddressesOptions,
                         MatchAddressOptions,
                         RemoveAssignedTerritoriesOptions,
-                        RemoveAddressIdsOptions>
+                        RemoveAddressIdsOptions,
+                        ExtractSheetOptions,
+                        AssignSheetOptions,
+                        AddSheetWriterOptions>
                     (args)
                     .MapResult(
                         (UploadAddressesOptions opts) => opts.Run(),
@@ -56,6 +57,9 @@ namespace TerritoryTools.Alba.Cli
                         (MatchAddressOptions opts) => opts.Run(),
                         (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
                         (RemoveAddressIdsOptions opts) => opts.Run(),
+                        (ExtractSheetOptions opts) => opts.Run(),
+                        (AssignSheetOptions opts) => opts.Run(),
+                        (AddSheetWriterOptions opts) => opts.Run(),
                     errs => 1);
 
                 /*
