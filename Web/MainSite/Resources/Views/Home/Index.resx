@@ -141,4 +141,7 @@
   <data name="ManageTerritoriesButton" xml:space="preserve">
     <value>Manage Territories</value>
   </data>
+  <data name="ManagePhoneTerritoryButton" xml:space="preserve">
+    <value>Manage Phone Territory</value>
+  </data>
 </root>

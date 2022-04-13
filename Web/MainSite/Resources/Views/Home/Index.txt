@@ -12,3 +12,4 @@ HomeQRCodeButton=QR Code Generator
 # If User is Admin
 ReportsButton=Reports
 ManageTerritoriesButton=Manage Territories
+ManagePhoneTerritoryButton=Manage Phone Territory

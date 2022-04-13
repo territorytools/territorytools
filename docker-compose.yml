@@ -146,6 +146,8 @@ services:
       - AuthMessageSender:PurchaseManager
       - AuthMessageSender:BuyerEmail
       - HOST_NAME=$HOST_NAME
+      - DefaultPhoneTerritorySourceDocumentId=$DefaultPhoneTerritorySourceDocumentId
+      - DefaultPhoneTerritorySourceSheetName=$DefaultPhoneTerritorySourceSheetName
   tt-web-test:
     container_name: tt-web-test
     restart: unless-stopped
@@ -200,6 +202,8 @@ services:
       - AuthMessageSender:AuthEmailFromName=$AuthMessageSender_AuthEmailFromName
       - AuthMessageSender:AuthEmailTo=$AuthMessageSender_AuthEmailTo
       - HOST_NAME=$HOST_NAME
+      - DefaultPhoneTerritorySourceDocumentId=$DefaultPhoneTerritorySourceDocumentId
+      - DefaultPhoneTerritorySourceSheetName=$DefaultPhoneTerritorySourceSheetName
   db:
     container_name: tt-db
     image: "mcr.microsoft.com/mssql/server:2017-latest"

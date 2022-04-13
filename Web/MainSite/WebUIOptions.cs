@@ -16,5 +16,7 @@ namespace TerritoryTools.Web.MainSite
         public string CompletionMapUrl { get; set; }
         public string Users { get; set; }
         public string AdminUsers { get; set; }
+        public string DefaultPhoneTerritorySourceDocumentId { get; set; }
+        public string DefaultPhoneTerritorySourceSheetName { get; set; }
     }
 }
