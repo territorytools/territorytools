@@ -40,7 +40,9 @@ namespace TerritoryTools.Alba.Cli
                         MatchAddressOptions,
                         RemoveAssignedTerritoriesOptions,
                         RemoveAddressIdsOptions,
-                        ExtractSheetOptions>
+                        ExtractSheetOptions,
+                        AssignSheetOptions,
+                        AddSheetWriterOptions>
                     (args)
                     .MapResult(
                         (UploadAddressesOptions opts) => opts.Run(),
@@ -56,6 +58,8 @@ namespace TerritoryTools.Alba.Cli
                         (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
                         (RemoveAddressIdsOptions opts) => opts.Run(),
                         (ExtractSheetOptions opts) => opts.Run(),
+                        (AssignSheetOptions opts) => opts.Run(),
+                        (AddSheetWriterOptions opts) => opts.Run(),
                     errs => 1);
 
                 /*

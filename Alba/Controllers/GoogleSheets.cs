@@ -35,7 +35,7 @@ namespace TerritoryTools.Alba.Controllers
         };
 
         static string ApplicationName = "Territory Tools";
-        const string CredPath = "token.json";
+        const string CredPath = "token2.json";
 
         readonly SheetsService _service;
         readonly DriveService _driveService;
@@ -221,7 +221,7 @@ namespace TerritoryTools.Alba.Controllers
                     Role = CamelCase(role == Role.Owner ? Role.Writer : role),
                     //Role = CamelCase(role),
                     EmailAddress = email,
-                    //PendingOwner = role == Role.Owner,
+                    PendingOwner = role == Role.Owner,
                      
                 };
 
@@ -230,7 +230,7 @@ namespace TerritoryTools.Alba.Controllers
 
                 if (role == Role.Owner)
                 {
-                    //request.TransferOwnership = true;
+                    request.TransferOwnership = true;
                     ////request.EmailMessage = "This territory has been assigned to you.";
                     ////request.SendNotificationEmail = true;
                     //request.MoveToNewOwnersRoot = true;
@@ -241,6 +241,30 @@ namespace TerritoryTools.Alba.Controllers
             catch (Exception ex)
             {
                 throw new Exception($"Error changing permissions. {ex.Message}", ex);
+            }
+        }
+
+        public void AddWriter(string documentId, string email)
+        {
+            try
+            {
+                Permission userPermission = new Permission()
+                {
+                    Type = "user",
+                    Role = CamelCase(Role.Writer),
+                    EmailAddress = email,
+                    PendingOwner = false
+
+                };
+
+                PermissionsResource.CreateRequest request = _driveService.Permissions
+                    .Create(userPermission, documentId);
+
+                Permission permResult = request.Execute();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error adding writer permission. {ex.Message}", ex);
             }
         }
 
