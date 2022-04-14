@@ -2,13 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.Data;
-using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -16,33 +10,22 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/sms")]
     public class SmsController : Controller
     {
-        private readonly MainDbContext _mainDbContext;
-        readonly IAlbaCredentialService albaCredentialService;
-        private readonly AreaService _areaService;
-        readonly ITerritoryAssignmentService territoryAssignmentService;
         readonly ILogger logger;
         readonly WebUIOptions _options;
 
         public SmsController(
-            MainDbContext mainDbContext,
-            IAlbaCredentialService albaCredentialService,
-            AreaService areaService,
-            ITerritoryAssignmentService territoryAssignmentService,
-            IAlbaCredentials credentials,
-            ILogger<AssignmentsController> logger,
+            ILogger<SmsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
-            _mainDbContext = mainDbContext;
-            this.albaCredentialService = albaCredentialService;
-            _areaService = areaService;
-            this.territoryAssignmentService = territoryAssignmentService;
             this.logger = logger;
             _options = optionsAccessor.Value;
         }
 
-        [HttpPost("receive")]
+        [HttpGet("receive")]
         public ActionResult<PhoneTerritoryCreateResult> Receive(string id, string timestamp, string from, string to, string message)
         {
+            logger.LogInformation($"Received SMS: id: {id}, timestamp: {timestamp}, to: {to}, from: {from}, message: {message}");
+
             var service = new SheetExtractor();
             var sms = new SmsMessage()
             {
