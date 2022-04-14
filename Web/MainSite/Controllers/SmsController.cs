@@ -54,7 +54,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
             }
 
-            return Ok();
+            return Ok("ok");
         }
     }
 }
