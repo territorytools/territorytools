@@ -44,11 +44,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             if((message??"").ToLower().Contains("territory"))
             {
+                logger.LogInformation("Territory related message detected. Responding...");
                 var client = new HttpClient();
                 string smsResponseMessage = "Your territory request has been logged, thank you.".Replace(" ","+");
-                string uriString = $"https://voip.ms/api/v1/rest.php?api_username={_options.SmsApiUserName}&api_password={_options.SmsApiPassword}&method=sendSMS&did={_options.SmsFromPhoneNumber}&dst={from}&message={smsResponseMessage}";
+                string uri = $"https://voip.ms/api/v1/rest.php?api_username={_options.SmsApiUserName}&api_password={_options.SmsApiPassword}&method=sendSMS&did={_options.SmsFromPhoneNumber}&dst={from}&message={smsResponseMessage}";
                 //var req = new HttpRequestMessage(HttpMethod.Get, new Uri(uriString));
-                client.GetAsync(uriString).Wait();
+                logger.LogInformation($"URI: {uri}");
+                var response = client.GetAsync(uri).Result;
+                logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}")
             }
 
             return Ok();
