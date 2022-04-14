@@ -177,6 +177,11 @@ namespace TerritoryTools.Alba.Controllers
             data.BatchUpdateSpreadsheetResponse response = req.Execute();
         }
 
+        internal object GetSpreadsheet(object fromDocumentId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Spreadsheet GetSpreadsheet(string documentId)
         {
             SpreadsheetsResource.GetRequest request = _service.Spreadsheets.Get(documentId);

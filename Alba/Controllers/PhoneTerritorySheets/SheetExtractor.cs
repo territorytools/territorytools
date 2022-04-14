@@ -115,6 +115,36 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             return $"https://docs.google.com/spreadsheets/d/{request.DocumentId}";
         }
 
+
+        public void LogMessage(SmsMessage message)
+        {
+            _googleSheets = new GoogleSheets(message.SecurityToken);
+
+            var spreadsheet = _googleSheets.GetSpreadsheet(message.FromDocumentId);
+            var log = spreadsheet.Sheets.FirstOrDefault(sh => "Messages".Equals(sh.Properties?.Title));
+            if (log == null)
+            {
+                throw new Exception("Cannot find Messages sheet");
+            }
+
+            _googleSheets.InsertRows(message.FromDocumentId, log.Properties.SheetId, 1, 2);
+
+            var messageRowContents = new List<object> {
+                        message.Timestamp,
+                        message.Id,
+                        message.To,
+                        message.From,
+                        message.Message};
+
+            IList<IList<object>> messageRow = new List<IList<object>>
+                {
+                   messageRowContents
+                };
+
+            string logEndColumnName = GoogleSheets.ColumnName(messageRowContents.Count);
+            _googleSheets.Write(message.FromDocumentId, $"Messages!A2:{logEndColumnName}2", messageRow);
+        }
+
         private static Sheet ResultsSheet()
         {
             return new Sheet
