@@ -6,7 +6,7 @@ using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [Route("api/sms")]
     public class SmsController : Controller
     {
