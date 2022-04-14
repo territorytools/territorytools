@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Net.Http;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 
 namespace TerritoryTools.Web.MainSite.Controllers
@@ -39,6 +41,15 @@ namespace TerritoryTools.Web.MainSite.Controllers
             };
 
             service.LogMessage(sms);
+
+            if((message??"").ToLower().Contains("territory"))
+            {
+                var client = new HttpClient();
+                string smsResponseMessage = "Your territory request has been logged, thank you.".Replace(" ","+");
+                string uriString = $"https://voip.ms/api/v1/rest.php?api_username={_options.SmsApiUserName}&api_password={_options.SmsApiPassword}&method=sendSMS&did={_options.SmsFromPhoneNumber}&dst={from}&message={smsResponseMessage}";
+                //var req = new HttpRequestMessage(HttpMethod.Get, new Uri(uriString));
+                client.GetAsync(uriString).Wait();
+            }
 
             return Ok();
         }
