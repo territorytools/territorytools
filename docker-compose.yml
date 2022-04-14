@@ -4,6 +4,7 @@ services:
   tt-web:
     container_name: tt-web-${SlotPort}
     restart: unless-stopped
+    image: territorytools/web-main-site
     build:
       context: .
       dockerfile: ./Web/MainSite/Dockerfile
@@ -12,9 +13,7 @@ services:
     networks:
       - main  
     ports:
-      - "127.0.0.1:${SlotPort}:5000"
-    depends_on:
-      - db
+      - "127.0.0.1:${SlotPort}:80"
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
