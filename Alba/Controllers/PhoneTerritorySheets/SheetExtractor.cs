@@ -72,9 +72,6 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
             _googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
 
-
-
-
             var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == request.TerritoryNumber);
             int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
             var assignmentRowContents = new List<object> {
@@ -93,11 +90,8 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             string assignmentEndColumnName = GoogleSheets.ColumnName(assignmentRowContents.Count);
             _googleSheets.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
 
-
-
             _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
-            //_googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
-            //_googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Owner);
+            _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
 
             return sheet.SpreadsheetUrl;
         }
@@ -107,7 +101,6 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             _googleSheets = new GoogleSheets(request.SecurityToken);
 
             _googleSheets.ShareFile(request.DocumentId, request.PublisherEmail, GoogleSheets.Role.Writer);
-            //_googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
             _googleSheets.ShareFile(request.DocumentId, request.OwnerEmail, GoogleSheets.Role.Owner);
 
             return $"https://docs.google.com/spreadsheets/d/{request.DocumentId}";

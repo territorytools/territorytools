@@ -21,7 +21,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly AreaService _areaService;
         readonly ITerritoryAssignmentService territoryAssignmentService;
         readonly ILogger logger;
-        readonly WebUIOptions options;
+        readonly WebUIOptions _options;
 
         public PhoneTerritoryController(
             MainDbContext mainDbContext,
@@ -37,32 +37,48 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _areaService = areaService;
             this.territoryAssignmentService = territoryAssignmentService;
             this.logger = logger;
-            options = optionsAccessor.Value;
+            _options = optionsAccessor.Value;
         }
 
         [HttpPost("create")]
         public ActionResult<PhoneTerritoryCreateResult> Create(string sourceDocumentId, string sourceSheetName, string territoryNumber, string userId)
         {
-            if(!Guid.TryParse(userId, out Guid userGuid))
+            string userEmail = string.Empty;
+            string userFullName = string.Empty;
+
+            bool userIdIsGuid = Guid.TryParse(userId, out Guid userGuid);
+
+            if (userId != "SHARED" && !userIdIsGuid)
             {
                 return BadRequest($"Badly formatted userID {userId}.  Select a valid user.");
             }
-            
-            var user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
-
-            if(user == null)
+            else if (userId == "SHARED")
             {
-                return BadRequest($"No such userID {userId}");
+                userEmail = _options.SharedPhoneTerritoryEmailAddress;
+                userFullName = _options.SharedPhoneTerritoryFullName;
             }
-
+            else
+            {
+                var user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
+                if (user == null)
+                {
+                    return BadRequest($"No such userID {userId}");
+                }
+                else
+                {
+                    userEmail = user.Email;
+                    userFullName = $"{user.GivenName} {user.Surname}".Trim();
+                }
+            }
+            
             var service = new SheetExtractor();
             var request = new SheetExtractionRequest()
             {
                 FromDocumentId = sourceDocumentId,
-                PublisherEmail = user.Email,
+                PublisherEmail = userEmail,
                 FromSheetName = sourceSheetName,
-                OwnerEmail = user.Email,
-                PublisherName = user.GivenName,
+                OwnerEmail = userEmail,
+                PublisherName = userFullName,
                 TerritoryNumber = territoryNumber,
                 SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
             };
@@ -73,7 +89,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                new PhoneTerritoryCreateResult
                {
                    Success = true,
-                   Message = $"Successfully created and assigned to {user.Email}",
+                   Message = $"Successfully created and assigned to {userEmail}",
                    Items = new List<PhoneTerritoryCreateItem>
                    {
                        new PhoneTerritoryCreateItem
@@ -84,6 +100,40 @@ namespace TerritoryTools.Web.MainSite.Controllers
                    }
                });
         }
+
+        [HttpPost("add-writer")]
+        public ActionResult<PhoneTerritoryCreateResult> AddWriter(string documentId, string userId)
+        {
+            if (!Guid.TryParse(userId, out Guid userGuid))
+            {
+                return BadRequest($"Badly formatted userID {userId}.  Select a valid user.");
+            }
+
+            var user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
+
+            if (user == null)
+            {
+                return BadRequest($"No such userID {userId}");
+            }
+
+            var service = new SheetExtractor();
+            var request = new AddSheetWriterRequest()
+            {
+                DocumentId = documentId,
+                UserEmail = user.Email,
+                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
+            };
+
+            string uri = service.AddSheetWriter(request);
+
+            return Ok(
+               new AddWriterResult
+               {
+                   Success = true,
+                   Message = $"Successfully added writer: {user.Email}",
+                   Uri = uri
+               });
+        }
     }
 
     public class PhoneTerritoryCreateResult
@@ -92,9 +142,17 @@ namespace TerritoryTools.Web.MainSite.Controllers
         public string Message { get; set; }
         public List<PhoneTerritoryCreateItem> Items { get; set; } = new List<PhoneTerritoryCreateItem>();
     }
+
     public class PhoneTerritoryCreateItem
     {
         public string Uri { get; set; }
         public string Description { get; internal set; }
+    }
+
+    public class AddWriterResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public string Uri { get; set; } = string.Empty;
     }
 }

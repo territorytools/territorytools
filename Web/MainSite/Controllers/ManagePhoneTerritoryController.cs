@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
-
+using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
@@ -14,34 +14,30 @@ using TerritoryTools.Web.MainSite.Services;
 namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
-    public partial class ManagePhoneTerritoryController : AuthorizedController
+    public partial class ManagePhoneTerritoryController : Controller
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
-        private readonly AreaService _areaService;
-        IAccountLists accountLists;
-        WebUIOptions _options;
+        
+        readonly AreaService _areaService;
+        readonly List<string> AllowedRoles = new()
+        {
+            "INVITED",
+            "ADMINISTRATOR",
+            "ADDED"
+        };
+
+        readonly MainDbContext _database;
+        readonly Services.IAuthorizationService _authorizationService;
+        readonly WebUIOptions _options;
 
         public ManagePhoneTerritoryController(
             MainDbContext database,
-            AreaService areaService,
-            IAccountLists accountLists,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
-            IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
-            IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
-                authorizationService,
-                albaCredentialService,
-                assignmentService,
-                optionsAccessor)
+            IOptions<WebUIOptions> optionsAccessor)
         {
-            _areaService = areaService;
-            this.accountLists = accountLists;
             _options = optionsAccessor.Value;
+            _database = database;
+            _authorizationService = authorizationService;
         }
 
         [Authorize]
@@ -49,22 +45,34 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!IsAdmin())
+                if (!User.Identity.IsAuthenticated || !_authorizationService.IsAdmin(User.Identity.Name))
                 {
                     return Forbid();
                 }
 
-                var users = database.TerritoryUser
+                List<ManagePhoneTerritorIndexPageUser> users = _database
+                    .TerritoryUser
+                    .Where(u => AllowedRoles.Contains(u.Role.ToUpper()))
                     .OrderBy(u => u.GivenName)
+                    .Select(u => new ManagePhoneTerritorIndexPageUser
+                        {
+                            Id = u.Id.ToString(),
+                            FullName = string.Join(' ', u.GivenName, u.Alias, u.Surname)
+                        })
                     .ToList();
 
-                var report = new ManagePhoneTerritoryIndexPage()
+                users.Insert(0, new ManagePhoneTerritorIndexPageUser
+                    {
+                        FullName = "Shared",
+                        Id = "SHARED"
+                    });
+
+                ManagePhoneTerritoryIndexPage report = new()
                 {
                     DefaultSourceDocumentId = _options.DefaultPhoneTerritorySourceDocumentId,
                     DefaultSourceSheetName = _options.DefaultPhoneTerritorySourceSheetName,
-                    //DefaultOwner = ...
+                    // TODO: DefaultOwner = ...
                     Users = users,
-                    Areas = _areaService.All()
                 };
 
                 return View(report);

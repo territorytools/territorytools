@@ -1,6 +1,4 @@
-﻿using Controllers.UseCases;
-using System.Collections.Generic;
-using TerritoryTools.Entities;
+﻿using System.Collections.Generic;
 
 namespace TerritoryTools.Web.MainSite.Models
 {
@@ -8,8 +6,13 @@ namespace TerritoryTools.Web.MainSite.Models
     {
         public string DefaultSourceDocumentId { get; set; }
         public string DefaultSourceSheetName { get; set; }
-        public List<TerritoryUser> Users { get; set; }
-            = new List<TerritoryUser>();
-        public List<Area> Areas { get; set; } = new List<Area>();
+        public List<ManagePhoneTerritorIndexPageUser> Users { get; set; }
+            = new List<ManagePhoneTerritorIndexPageUser>();
+    }
+
+    public class ManagePhoneTerritorIndexPageUser
+    {
+        public string? Id { get; set; }
+        public string? FullName { get; set; }
     }
 }

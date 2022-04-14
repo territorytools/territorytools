@@ -18,5 +18,7 @@ namespace TerritoryTools.Web.MainSite
         public string AdminUsers { get; set; }
         public string DefaultPhoneTerritorySourceDocumentId { get; set; }
         public string DefaultPhoneTerritorySourceSheetName { get; set; }
+        public string SharedPhoneTerritoryEmailAddress { get; set; }
+        public string SharedPhoneTerritoryFullName { get; set; }
     }
 }

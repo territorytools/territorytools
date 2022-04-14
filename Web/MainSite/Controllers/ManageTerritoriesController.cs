@@ -52,7 +52,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!IsAdmin())
+                if (!User.Identity.IsAuthenticated || !authorizationService.IsAdmin(User.Identity.Name))
                 {
                     return Forbid();
                 }
