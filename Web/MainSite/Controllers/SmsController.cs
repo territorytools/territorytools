@@ -51,7 +51,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 //var req = new HttpRequestMessage(HttpMethod.Get, new Uri(uriString));
                 logger.LogInformation($"URI: {uri}");
                 var response = client.GetAsync(uri).Result;
-                logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}")
+                logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
             }
 
             return Ok();
