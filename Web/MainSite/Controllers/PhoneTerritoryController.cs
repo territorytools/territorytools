@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
-using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.MainSite.Services;
 
@@ -16,89 +15,41 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/phoneterritory")]
     public class PhoneTerritoryController : Controller
     {
-        private readonly MainDbContext _mainDbContext;
-        readonly IAlbaCredentialService albaCredentialService;
-        private readonly AreaService _areaService;
-        readonly ITerritoryAssignmentService territoryAssignmentService;
-        readonly ILogger logger;
+        private readonly IPhoneTerritoryService _phoneTerritoryService;
+        readonly MainDbContext _mainDbContext;
+        readonly ILogger<PhoneTerritoryController> _logger;
         readonly WebUIOptions _options;
 
         public PhoneTerritoryController(
+            IPhoneTerritoryService phoneTerritoryService,
             MainDbContext mainDbContext,
-            IAlbaCredentialService albaCredentialService,
-            AreaService areaService,
-            ITerritoryAssignmentService territoryAssignmentService,
-            IAlbaCredentials credentials,
-            ILogger<AssignmentsController> logger,
+            ILogger<PhoneTerritoryController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
+            _phoneTerritoryService = phoneTerritoryService;
             _mainDbContext = mainDbContext;
-            this.albaCredentialService = albaCredentialService;
-            _areaService = areaService;
-            this.territoryAssignmentService = territoryAssignmentService;
-            this.logger = logger;
+            _logger = logger;
             _options = optionsAccessor.Value;
         }
 
         [HttpPost("create")]
-        public ActionResult<PhoneTerritoryCreateResult> Create(string sourceDocumentId, string sourceSheetName, string territoryNumber, string userId)
+        public ActionResult<PhoneTerritoryCreateResult> Create(
+            string sourceDocumentId, 
+            string sourceSheetName,
+            string territoryNumber, 
+            string userId)
         {
-            string userEmail = string.Empty;
-            string userFullName = string.Empty;
+            PhoneTerritoryCreateResult result = _phoneTerritoryService
+                .CreateTerritory(
+                    sourceDocumentId, 
+                    sourceSheetName, 
+                    territoryNumber, 
+                    userId);
 
-            bool userIdIsGuid = Guid.TryParse(userId, out Guid userGuid);
-
-            if (userId != "SHARED" && !userIdIsGuid)
-            {
-                return BadRequest($"Badly formatted userID {userId}.  Select a valid user.");
-            }
-            else if (userId == "SHARED")
-            {
-                userEmail = _options.SharedPhoneTerritoryEmailAddress;
-                userFullName = _options.SharedPhoneTerritoryFullName;
-            }
+            if(result.Success)
+                return Ok(result);
             else
-            {
-                var user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
-                if (user == null)
-                {
-                    return BadRequest($"No such userID {userId}");
-                }
-                else
-                {
-                    userEmail = user.Email;
-                    userFullName = $"{user.GivenName} {user.Surname}".Trim();
-                }
-            }
-            
-            var service = new SheetExtractor();
-            var request = new SheetExtractionRequest()
-            {
-                FromDocumentId = sourceDocumentId,
-                PublisherEmail = userEmail,
-                FromSheetName = sourceSheetName,
-                OwnerEmail = userEmail,
-                PublisherName = userFullName,
-                TerritoryNumber = territoryNumber,
-                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
-            };
-
-            string uri = service.Extract(request);
-
-            return Ok(
-               new PhoneTerritoryCreateResult
-               {
-                   Success = true,
-                   Message = $"Successfully created and assigned to {userEmail}",
-                   Items = new List<PhoneTerritoryCreateItem>
-                   {
-                       new PhoneTerritoryCreateItem
-                       { 
-                           Description = $"Territory {territoryNumber}", 
-                           Uri = uri
-                       }
-                   }
-               });
+                return BadRequest(result);
         }
 
         [HttpPost("add-writer")]

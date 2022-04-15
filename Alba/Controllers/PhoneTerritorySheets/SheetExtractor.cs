@@ -5,7 +5,12 @@ using System.Linq;
 
 namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 {
-    public class SheetExtractor
+    public interface ISheetExtractor
+    {
+        string Extract(SheetExtractionRequest request);
+    }
+
+    public class SheetExtractor : ISheetExtractor
     {
         GoogleSheets _googleSheets;
 

@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
+using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
@@ -92,6 +93,8 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ITerritoryAssignmentService, TerritoryAssignmentService>();
             services.AddScoped<AreaService>();
+            services.AddScoped<IPhoneTerritoryService, PhoneTerritoryService>();
+            services.AddScoped<ISheetExtractor, SheetExtractor>();
             
             services.Configure<WebUIOptions>(Configuration);
 
