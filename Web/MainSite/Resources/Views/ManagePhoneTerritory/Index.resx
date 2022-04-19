@@ -123,6 +123,9 @@
   <data name="Title" xml:space="preserve">
     <value>Manage Phone Territory</value>
   </data>
+  <data name="CheckOutTitle" xml:space="preserve">
+    <value>Check Out Phone Territory</value>
+  </data>
   <data name="SelectUser" xml:space="preserve">
     <value>Select User</value>
   </data>
@@ -135,17 +138,26 @@
   <data name="ExtractSourceDocumentId" xml:space="preserve">
     <value>Source Google Sheets Document Id</value>
   </data>
+  <data name="ExtractSourceDocumentIdLabel" xml:space="preserve">
+    <value>Google Sheets Source Document Id</value>
+  </data>
   <data name="ExtractSourceSheetName" xml:space="preserve">
     <value>Source Sheet Name</value>
   </data>
   <data name="ExtractButton" xml:space="preserve">
-    <value>Extract and Assign Phone Territory</value>
+    <value>Check Out Phone Territory</value>
   </data>
   <data name="ExtractingTerritoryMessage" xml:space="preserve">
     <value>Extracting a territory...</value>
   </data>
+  <data name="AssignWriterTitle" xml:space="preserve">
+    <value>Add Extra User as Writer to Territory</value>
+  </data>
   <data name="AddWriterToSheetHeader" xml:space="preserve">
     <value>Add Writer to Google Sheets Document</value>
+  </data>
+  <data name="SourceSheetNameLabel" xml:space="preserve">
+    <value>Google Sheets Source Sheet Name</value>
   </data>
   <data name="AddWriterDocumentId" xml:space="preserve">
     <value>Territory Google Document Id</value>
@@ -155,5 +167,11 @@
   </data>
   <data name="AddingWriterMessage" xml:space="preserve">
     <value>Adding user as writer...</value>
+  </data>
+  <data name="SelectUserItemName" xml:space="preserve">
+    <value>Select User</value>
+  </data>
+  <data name="AddWriterDocumentIdLabel" xml:space="preserve">
+    <value>Google Sheets Document Id</value>
   </data>
 </root>
