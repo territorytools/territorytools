@@ -93,7 +93,8 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ITerritoryAssignmentService, TerritoryAssignmentService>();
             services.AddScoped<AreaService>();
-            services.AddScoped<IPhoneTerritoryService, PhoneTerritoryService>();
+            services.AddScoped<IPhoneTerritoryCreationService, PhoneTerritoryCreationService>();
+            services.AddScoped<IPhoneTerritoryAddWriterService, PhoneTerritoryAddWriterService>();
             services.AddScoped<ISheetExtractor, SheetExtractor>();
             
             services.Configure<WebUIOptions>(Configuration);

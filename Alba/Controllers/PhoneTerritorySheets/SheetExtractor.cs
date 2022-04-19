@@ -8,6 +8,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
     public interface ISheetExtractor
     {
         string Extract(SheetExtractionRequest request);
+        string AddSheetWriter(AddSheetWriterRequest request);
     }
 
     public class SheetExtractor : ISheetExtractor

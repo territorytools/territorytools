@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Web.Data;
-using TerritoryTools.Web.MainSite.Controllers;
+using TerritoryTools.Web.MainSite.Models;
 
 namespace TerritoryTools.Web.MainSite.Services
 {
-    public interface IPhoneTerritoryService
+    public interface IPhoneTerritoryCreationService
     {
         PhoneTerritoryCreateResult CreateTerritory(
            string sourceDocumentId,
@@ -17,13 +17,13 @@ namespace TerritoryTools.Web.MainSite.Services
            string userId);
     }
 
-    public class PhoneTerritoryService : IPhoneTerritoryService
+    public class PhoneTerritoryCreationService : IPhoneTerritoryCreationService
     {
         private readonly ISheetExtractor _sheetExtractor;
         private readonly WebUIOptions _options;
         private readonly MainDbContext _mainDbContext;
 
-        public PhoneTerritoryService(
+        public PhoneTerritoryCreationService(
             ISheetExtractor sheetExtractor,
             IOptions<WebUIOptions> optionsAccessor, 
             MainDbContext mainDbContext)
