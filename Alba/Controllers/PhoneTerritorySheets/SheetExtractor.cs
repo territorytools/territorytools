@@ -20,9 +20,27 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             _googleSheets = new GoogleSheets(request.SecurityToken);
 
             List<AssignmentRow> assignmentRows = LoadAssignments(request.FromDocumentId, "Assignments");
-            List<PhoneRow> allPhoneRows = LoadPhoneRows(request.FromDocumentId, request.FromSheetName);
+
+            string requestedTerritoryNumber = request.TerritoryNumber;
+            if (string.Equals(request.TerritoryNumber, "NEW", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(request.TerritoryNumber, "NEXT", StringComparison.OrdinalIgnoreCase))
+            {
+                requestedTerritoryNumber = assignmentRows
+                    .Where(row => string.Equals(row.Transaction, "Available", StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(row => row.TerritoryNumber)
+                    .Take(1)
+                    .SingleOrDefault()
+                    ?.TerritoryNumber;
+            }
+
+            if(string.IsNullOrWhiteSpace(requestedTerritoryNumber))
+            {
+                throw new Exception("Cannot find available territory number");
+            }
+
+            List <PhoneRow> allPhoneRows = LoadPhoneRows(request.FromDocumentId, request.FromSheetName);
             List<PhoneRow> phoneRows = allPhoneRows
-                .Where(r => r.TerritoryNumber == request.TerritoryNumber)
+                .Where(r => r.TerritoryNumber == requestedTerritoryNumber)
                 .ToList();
 
             foreach (PhoneRow phoneRow in phoneRows)
@@ -37,7 +55,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             int phoneRowEndIndex = phoneRowStartIndex + phoneRows.Count;
 
             Spreadsheet sheet = _googleSheets.CreateSheet(
-                title: $"Territory {request.TerritoryNumber}",
+                title: $"Territory {requestedTerritoryNumber}",
                 sheets: new List<Sheet> { PhoneNumberSheet(phoneRows), ResultsSheet() });
 
             // TODO: Instead of creating Results sheet this way, copy this from the master sheet
@@ -64,7 +82,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 
             var logRowContents = new List<object> {
                         DateTime.Today.ToShortDateString(),
-                        request.TerritoryNumber,
+                        requestedTerritoryNumber,
                         request.PublisherName,
                         "Checked Out",
                         null,
@@ -78,10 +96,10 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
             _googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
 
-            var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == request.TerritoryNumber);
+            var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == requestedTerritoryNumber);
             int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
             var assignmentRowContents = new List<object> {
-                        assignment.TerritoryNumber,
+                        requestedTerritoryNumber,
                         DateTime.Today.ToShortDateString(),
                         "Checked Out",
                         request.PublisherName,
