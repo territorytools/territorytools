@@ -31,7 +31,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var service = new SheetExtractor();
             var sms = new SmsMessage()
             {
-                FromDocumentId = _options.DefaultPhoneTerritorySourceDocumentId,
+                LogDocumentId = _options.SmsMessageLogDocumentId,
+                LogSheetName = _options.SmsMessageLogSheetName,
                 Id = id,
                 To = to,
                 From = from,

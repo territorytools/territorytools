@@ -126,14 +126,17 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
         {
             _googleSheets = new GoogleSheets(message.SecurityToken);
 
-            var spreadsheet = _googleSheets.GetSpreadsheet(message.FromDocumentId);
-            var log = spreadsheet.Sheets.FirstOrDefault(sh => "Messages".Equals(sh.Properties?.Title));
+            Spreadsheet spreadsheet = _googleSheets.GetSpreadsheet(message.LogDocumentId);
+            Sheet log = spreadsheet.Sheets.FirstOrDefault(sh => 
+                !string.IsNullOrWhiteSpace(message.LogSheetName) 
+                && message.LogSheetName.Equals(sh.Properties?.Title));
+
             if (log == null)
             {
                 throw new Exception("Cannot find Messages sheet");
             }
 
-            _googleSheets.InsertRows(message.FromDocumentId, log.Properties.SheetId, 1, 2);
+            _googleSheets.InsertRows(message.LogDocumentId, log.Properties.SheetId, 1, 2);
 
             var messageRowContents = new List<object> {
                         message.Timestamp,
@@ -148,7 +151,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 };
 
             string logEndColumnName = GoogleSheets.ColumnName(messageRowContents.Count);
-            _googleSheets.Write(message.FromDocumentId, $"Messages!A2:{logEndColumnName}2", messageRow);
+            _googleSheets.Write(message.LogDocumentId, $"Messages!A2:{logEndColumnName}2", messageRow);
         }
 
         private static Sheet ResultsSheet()

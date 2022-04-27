@@ -23,5 +23,7 @@ namespace TerritoryTools.Web.MainSite
         public string SmsApiUserName { get; set; }
         public string SmsApiPassword { get; set; }
         public string SmsFromPhoneNumber { get; set; }
+        public string SmsMessageLogDocumentId { get; set; }
+        public string SmsMessageLogSheetName { get; set; }
     }
 }
