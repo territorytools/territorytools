@@ -143,15 +143,11 @@
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
 
-                    data.items.forEach(function(item) {
-                       var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
+                    var html = "<strong>" + data.item.description + "</strong>&nbsp;<a href='" + data.item.uri + "'>" + data.item.uri + "</a><br/>";
                        $('#assign-from-area-territories-container')
                            .append(html);
                        $('#add-writer-document-id')
-                           .val(data.documentId);
-                    });
-
-                        
+                           .val(data.item.documentId);                        
                 }
             });
         }

@@ -87,14 +87,11 @@ namespace TerritoryTools.Web.MainSite.Services
 
             result.Success = true;
             result.Message = $"Successfully created and assigned to {userEmail}";
-            result.Items = new List<PhoneTerritoryCreateItem>
+            result.Item = new PhoneTerritoryCreateItem
                 {
-                    new PhoneTerritoryCreateItem
-                    {
-                        Description = $"Territory {territoryNumber}",
-                        Uri = uri,
-                        DocumentId = documentId
-                    }
+                    Description = $"Territory {territoryNumber}",
+                    Uri = uri,
+                    DocumentId = documentId
                 };
 
             return result;
