@@ -74,7 +74,7 @@
                     </div>
                     <div class="form-group mx-3">
                         <label class="form-check-label">@Localizer["AddWriterDocumentIdLabel"]</label>
-                        <input id="add-writer-document-id" type="text" class="form-control" style="width:250px;" name="documentId" placeholder="@Localizer["AddWriterDocumentId"]" value="">
+                        <input id="add-writer-document-id" type="text" class="form-control" style="width:250px;" name="documentId" placeholder="@Localizer["AddWriterDocumentId"]">
                     </div>
                     <div class="form-group mx-3">
                         <input type="button" class="btn btn-primary" value="@Localizer["AddWriterButton"]" onclick="submitAddWriter($('#add-writer-form'))"/>
@@ -142,13 +142,13 @@
                     $('#assign-from-area-form-territory-uri')
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
-                    $('#add-writer-document-id')
-                        .val(data.documentId);
 
                     data.items.forEach(function(item) {
                        var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
                        $('#assign-from-area-territories-container')
-                            .append(html);
+                           .append(html);
+                       $('#add-writer-document-id')
+                           .val(data.documentId);
                     });
 
                         
