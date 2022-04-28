@@ -60,6 +60,9 @@ services:
       - DefaultPhoneTerritorySourceSheetName=$DefaultPhoneTerritorySourceSheetName
       - SharedPhoneTerritoryEmailAddress=$SharedPhoneTerritoryEmailAddress
       - SharedPhoneTerritoryFullName=$SharedPhoneTerritoryFullName
+      - SmsApiUserName=$SmsApiUserName
+      - SmsApiPassword=$SmsApiPassword
+      - SmsFromPhoneNumber=$SmsFromPhoneNumber
 
 networks:
   main:
