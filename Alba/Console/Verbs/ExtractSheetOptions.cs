@@ -57,7 +57,8 @@ namespace TerritoryTools.Alba.Cli.Verbs
                 SecurityToken = jsonToken
             };
 
-            string url = service.Extract(request);
+            string documentId = service.Extract(request);
+            string url = $"https://docs.google.com/spreadsheets/d/{documentId}";
 
             System.Diagnostics.Process.Start("explorer.exe", url);
 

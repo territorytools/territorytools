@@ -58,7 +58,7 @@ namespace TerritoryTools.Web.MainSite.Services
             }
             else
             {
-                var user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
+                Entities.TerritoryUser? user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
                 if (user == null)
                 {
                     result.Message = $"No such userID {userId}";
@@ -82,7 +82,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
             };
 
-            string uri = _sheetExtractor.Extract(request);
+            string documentId = _sheetExtractor.Extract(request);
+            string uri = $"https://docs.google.com/spreadsheets/d/{documentId}";
 
             result.Success = true;
             result.Message = $"Successfully created and assigned to {userEmail}";
@@ -91,7 +92,8 @@ namespace TerritoryTools.Web.MainSite.Services
                     new PhoneTerritoryCreateItem
                     {
                         Description = $"Territory {territoryNumber}",
-                        Uri = uri
+                        Uri = uri,
+                        DocumentId = documentId
                     }
                 };
 

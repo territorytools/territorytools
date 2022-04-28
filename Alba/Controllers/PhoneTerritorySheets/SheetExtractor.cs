@@ -15,6 +15,12 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
     {
         GoogleSheets _googleSheets;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>Google DocumentId for the Spreadsheet</returns>
+        /// <exception cref="Exception"></exception>
         public string Extract(SheetExtractionRequest request)
         {
             _googleSheets = new GoogleSheets(request.SecurityToken);
@@ -117,7 +123,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
             _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
 
-            return sheet.SpreadsheetUrl;
+            return sheet.SpreadsheetId;
         }
 
         public string Assign(AssignSheetRequest request)
