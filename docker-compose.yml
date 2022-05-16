@@ -63,6 +63,7 @@ services:
       - SmsApiUserName=$SmsApiUserName
       - SmsApiPassword=$SmsApiPassword
       - SmsFromPhoneNumber=$SmsFromPhoneNumber
+      - SlotPort=$SlotPort
 
 networks:
   main:
