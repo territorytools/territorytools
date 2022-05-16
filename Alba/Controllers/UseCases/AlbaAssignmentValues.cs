@@ -20,6 +20,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
         public int? MonthsSignedOut { get; set; }
         public int? MonthsAgoCompleted { get; set; }
         public string MobileLink { get; set; }
+        public string PrintLink { get; set; }
 
         public string TimeSpanCompletedString()
         {
