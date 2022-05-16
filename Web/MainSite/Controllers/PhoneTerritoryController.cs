@@ -10,8 +10,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/phoneterritory")]
     public class PhoneTerritoryController : Controller
     {
-        private readonly IPhoneTerritoryCreationService _phoneTerritoryService;
-        private readonly IPhoneTerritoryAddWriterService _phoneTerritoryAddWriterService;
+        readonly IPhoneTerritoryCreationService _phoneTerritoryService;
+        readonly IPhoneTerritoryAddWriterService _phoneTerritoryAddWriterService;
         readonly ILogger<PhoneTerritoryController> _logger;
 
         public PhoneTerritoryController(

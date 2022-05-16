@@ -8,7 +8,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "extract-sheet", 
         HelpText = "Extract territory sheet from master Google Sheet")]
-    public class ExtractSheetOptions
+    public class ExtractSheetOptions : IOptionsWithRun
     {
         [Option("territory-number", Required = true, HelpText = "Territory number to exctract")]
         [Value(0)]

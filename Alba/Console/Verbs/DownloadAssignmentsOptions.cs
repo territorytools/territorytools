@@ -9,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "download-assignments", 
         HelpText = "Download territory assignments using your account")]
-    public class DownloadAssignmentsOptions
+    public class DownloadAssignmentsOptions : IOptionsWithRun
     {
         [Option(
             "filepath", 

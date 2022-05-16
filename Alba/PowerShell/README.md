@@ -22,3 +22,6 @@ from a PowerShell console.
 
 ## Cmdlet That Connects to Azure Maps
 - Set-Coordinates
+
+## PowerShell Path
+`C:\Users\<User Name>\Documents\WindowsPowerShell\Modules\TerritoryTools\0.2.1\TerritoryTools.psd1`

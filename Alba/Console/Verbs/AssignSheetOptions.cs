@@ -8,7 +8,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "assign-sheet", 
         HelpText = "Assign an exsiting territory sheet to a user")]
-    public class AssignSheetOptions
+    public class AssignSheetOptions : IOptionsWithRun
     {
         [Option("document-id", Required = true, HelpText = "Input Google Sheet document ID")]
         [Value(1)]

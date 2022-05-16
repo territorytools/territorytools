@@ -8,7 +8,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "add-writer", 
         HelpText = "Add user as writer to territory sheet (Google Sheet)")]
-    public class AddSheetWriterOptions
+    public class AddSheetWriterOptions : IOptionsWithRun
     {
         [Option("document-id", Required = true, HelpText = "Input Google Sheet document ID")]
         [Value(1)]

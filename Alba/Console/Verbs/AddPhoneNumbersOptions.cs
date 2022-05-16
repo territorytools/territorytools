@@ -12,7 +12,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
        "add-phone-numbers",
        HelpText = "Add phone numbers to Alba CSV")]
-    public class AddPhoneNumbersOptions
+    public class AddPhoneNumbersOptions : IOptionsWithRun
     {
         [Option(
            "phone-numbers",

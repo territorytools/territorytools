@@ -9,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "download-languages", 
         HelpText = "Download language list from Alba using your account")]
-    public class DownloadLanguagesOptions
+    public class DownloadLanguagesOptions : IOptionsWithRun
     {
         [Option("filepath", Required = true, HelpText = "Output file path")]
         [Value(0)]

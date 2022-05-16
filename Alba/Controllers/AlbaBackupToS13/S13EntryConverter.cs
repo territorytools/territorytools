@@ -26,7 +26,6 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                     {
                         change.Publisher = $"{match.Groups[2].Value} {match.Groups[1].Value}";
                     }
-
                 }
             }
 

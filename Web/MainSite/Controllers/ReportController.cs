@@ -406,7 +406,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 var report = new AssignmentHistoryReport();
 
-                foreach(var assignment in assignments)
+                foreach(TerritoryAssignment assignment in assignments)
                 {
                     string territoryNumber = assignment.TerritoryNumber;
                     if(int.TryParse(assignment.TerritoryNumber, out int number))
@@ -421,10 +421,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             Date = assignment.Date,
                             PublisherName = assignment.PublisherName,
                             CheckedIn = assignment.CheckedIn?.Year == 1900
-                                ? ""
+                                ? string.Empty
                                 : assignment.CheckedIn?.ToString(DATE_FORMAT),
                             CheckedOut = assignment.CheckedOut?.Year == 1900
-                                ? ""
+                                ? string.Empty
                                 : assignment.CheckedOut?.ToString(DATE_FORMAT),
                             Note = assignment.Note
                         });

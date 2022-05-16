@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using TerritoryTools.Alba.Cli.Verbs;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.AlbaServer;
@@ -21,46 +22,31 @@ namespace TerritoryTools.Alba.Cli
         static List<string> Arguments;
         //const string StreetTypes = "ALLEY:ALY,ANNEX:ANX,ARCADE:ARC,AVENUE:AVE,BAYOO:BYU,BEACH:BCH,BEND:BND,BLUFF:BLF,BLUFFS:BLFS,BOTTOM:BTM,BOULEVARD:BLVD,BRANCH:BR,BRIDGE:BRG,BROOK:BRK,BROOKS:BRKS,BURG:BG,BURGS:BGS,BYPASS:BYP,CAMP:CP,CANYON:CYN,CAPE:CPE,CAUSEWAY:CSWY,CENTER:CTR,CENTERS:CTRS,CIRCLE:CIR,CIRCLES:CIRS,CLIFF:CLF,CLIFFS:CLFS,CLUB:CLB,COMMON:CMN,CORNER:COR,CORNERS:CORS,COURSE:CRSE,COURT:CT,COURTS:CTS,COVE:CV,COVES:CVS,CREEK:CRK,CRESCENT:CRES,CREST:CRST,CROSSING:XING,CROSSROAD:XRD,CURVE:CURV,DALE:DL,DAM:DM,DIVIDE:DV,DRIVE:DR,DRIVES:DRS,ESTATE:EST,ESTATES:ESTS,EXPRESSWAY:EXPY,EXTENSION:EXT,EXTENSIONS:EXTS,FALL:FALL,FALLS:FLS,FERRY:FRY,FIELD:FLD,FIELDS:FLDS,FLAT:FLT,FLATS:FLTS,FORD:FRD,FORDS:FRDS,FOREST:FRST,FORGE:FRG,FORGES:FRGS,FORK:FRK,FORKS:FRKS,FORT:FT,FREEWAY:FWY,GARDEN:GDN,GARDENS:GDNS,GATEWAY:GTWY,GLEN:GLN,GLENS:GLNS,GREEN:GRN,GREENS:GRNS,GROVE:GRV,GROVES:GRVS,HARBOR:HBR,HARBORS:HBRS,HAVEN:HVN,HEIGHTS:HTS,HIGHWAY:HWY,HILL:HL,HILLS:HLS,HOLLOW:HOLW,INLET:INLT,INTERSTATE:I,ISLAND:IS,ISLANDS:ISS,ISLE:ISLE,JUNCTION:JCT,JUNCTIONS:JCTS,KEY:KY,KEYS:KYS,KNOLL:KNL,KNOLLS:KNLS,LAKE:LK,LAKES:LKS,LAND:LAND,LANDING:LNDG,LANE:LN,LIGHT:LGT,LIGHTS:LGTS,LOAF:LF,LOCK:LCK,LOCKS:LCKS,LODGE:LDG,LOOP:LOOP,MALL:MALL,MANOR:MNR,MANORS:MNRS,MEADOW:MDW,MEADOWS:MDWS,MEWS:MEWS,MILL:ML,MILLS:MLS,MISSION:MSN,MOORHEAD:MHD,MOTORWAY:MTWY,MOUNT:MT,MOUNTAIN:MTN,MOUNTAINS:MTNS,NECK:NCK,ORCHARD:ORCH,OVAL:OVAL,OVERPASS:OPAS,PARK:PARK,PARKS:PARK,PARKWAY:PKWY,PARKWAYS:PKWY,PASS:PASS,PASSAGE:PSGE,PATH:PATH,PIKE:PIKE,PINE:PNE,PINES:PNES,PLACE:PL,PLAIN:PLN,PLAINS:PLNS,PLAZA:PLZ,POINT:PT,POINTS:PTS,PORT:PRT,PORTS:PRTS,PRAIRIE:PR,RADIAL:RADL,RAMP:RAMP,RANCH:RNCH,RAPID:RPD,RAPIDS:RPDS,REST:RST,RIDGE:RDG,RIDGES:RDGS,RIVER:RIV,ROAD:RD,ROADS:RDS,ROUTE:RTE,ROW:ROW,RUE:RUE,RUN:RUN,SHOAL:SHL,SHOALS:SHLS,SHORE:SHR,SHORES:SHRS,SKYWAY:SKWY,SPRING:SPG,SPRINGS:SPGS,SPUR:SPUR,SPURS:SPUR,SQUARE:SQ,SQUARES:SQS,STATION:STA,STREAM:STRM,STREET:ST,STREETS:STS,SUMMIT:SMT,TERRACE:TER,THROUGHWAY:TRWY,TRACE:TRCE,TRACK:TRAK,TRAIL:TRL,TUNNEL:TUNL,TURNPIKE:TPKE,UNDERPASS:UPAS,UNION:UN,UNIONS:UNS,VALLEY:VLY,VALLEYS:VLYS,VIADUCT:VIA,VIEW:VW,VIEWS:VWS,VILLAGE:VLG,VILLAGES:VLGS,VILLE:VL,VISTA:VIS,WALK:WALK,WALKS:WALK,WALL:WALL,WAY:WAY,WAYS:WAYS,WELL:WL,WELLS:WLS";
 
+        static void Run(object obj)
+        {
+            if (obj is IOptionsWithRun iowr)
+            {
+                iowr.Run();
+            }
+        }
         static void Main(string[] args)
         {
             try
             {
-                var result = Parser
-                    .Default
-                    .ParseArguments<
-                        UploadAddressesOptions,
-                        DownloadAddressesOptions,
-                        DownloadAssignmentsOptions,
-                        DownloadLanguagesOptions,
-                        ParseLanguageFileOptions,
-                        FilterAddressOptions,
-                        PivotS13Options,
-                        AddPhoneNumbersOptions,
-                        NormalizeAddressesOptions,
-                        MatchAddressOptions,
-                        RemoveAssignedTerritoriesOptions,
-                        RemoveAddressIdsOptions,
-                        ExtractSheetOptions,
-                        AssignSheetOptions,
-                        AddSheetWriterOptions>
-                    (args)
-                    .MapResult(
-                        (UploadAddressesOptions opts) => opts.Run(),
-                        (DownloadAddressesOptions opts) => opts.Run(),
-                        (DownloadAssignmentsOptions opts) => opts.Run(),
-                        (DownloadLanguagesOptions opts) => opts.Run(),
-                        (ParseLanguageFileOptions opts) => opts.Run(),
-                        (FilterAddressOptions opts) => opts.Run(),
-                        (PivotS13Options opts) => opts.Run(),
-                        (AddPhoneNumbersOptions opts) => opts.Run(),
-                        (NormalizeAddressesOptions opts) => opts.Run(),
-                        (MatchAddressOptions opts) => opts.Run(),
-                        (RemoveAssignedTerritoriesOptions opts) => opts.Run(),
-                        (RemoveAddressIdsOptions opts) => opts.Run(),
-                        (ExtractSheetOptions opts) => opts.Run(),
-                        (AssignSheetOptions opts) => opts.Run(),
-                        (AddSheetWriterOptions opts) => opts.Run(),
-                    errs => 1);
+                var types = LoadVerbs();
+
+                var errors = new List<Error>();
+
+                Parser.Default.ParseArguments(args, types)
+                   .WithParsed(Run)
+                    .WithNotParsed(x => errors = x.ToList());
+                
+                if (errors.Any())
+                {
+                    errors.ForEach(x => Console.WriteLine(x.ToString()));
+                    Console.ReadLine();
+                    return;
+                }
 
                 /*
                 if (args.Length < 1)
@@ -168,6 +154,13 @@ namespace TerritoryTools.Alba.Cli
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e);
             }
+        }
+
+        // Load all types using Reflection
+        private static Type[] LoadVerbs()
+        {
+            return Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetCustomAttribute<VerbAttribute>() != null).ToArray();
         }
 
         public static AlbaConnection AlbaClient()
