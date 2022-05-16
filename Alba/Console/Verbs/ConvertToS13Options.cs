@@ -1,8 +1,12 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using Controllers.UseCases;
+using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using TerritoryTools.Alba.Controllers.AlbaBackupToS13;
 
 namespace TerritoryTools.Alba.Cli.Verbs
@@ -12,6 +16,12 @@ namespace TerritoryTools.Alba.Cli.Verbs
     {
         [Option("folder-path", Required = true, HelpText = "Folder paths")]
         public string FolderPath { get; set; }
+        
+        [Option("output-file", HelpText = "Output file path")]
+        public string OutputFile { get; set; }
+
+        [Option("one-row", HelpText = "One row per territory, last row only")]
+        public bool OneRow { get; set; }
 
         [Usage(ApplicationAlias = "alba")]
         public static IEnumerable<Example> Examples
@@ -39,13 +49,45 @@ namespace TerritoryTools.Alba.Cli.Verbs
             Console.WriteLine("Removing entries with Checked-In and Checked-Out both blank...");
             try
             {
-                S13EntryCollection entries = BackupFolder.LoadFolder(FolderPath);
-                Console.WriteLine($"Entries Loaded: {entries.Count}");
-                foreach (var entry in entries)
+                List<S13Entry> entries = BackupFolder.LoadFolder(FolderPath);
+
+                if(OneRow)
                 {
-                    var row = new S13EntryCsvRow(entry);
-                    Console.WriteLine($"{row}");
-                    //WriteObject(new S13EntryCsvRow(entry));
+                    entries = entries
+                        .GroupBy(e => e.Number)
+                        .Select(e => e.Last())
+                        .ToList();
+                }
+
+                Console.WriteLine($"Entries Loaded: {entries.Count}");
+                if (string.IsNullOrWhiteSpace(OutputFile))
+                {
+                    foreach (var entry in entries)
+                    {
+                        var row = new S13EntryCsvRow(entry);
+                        Console.WriteLine($"{row}");
+                    }
+                }
+                else
+                {
+                    var options = new TypeConverterOptions 
+                    {
+                        Formats = new[] { "yyyy-MM-dd" } 
+                    };
+
+                    var configuration = new CsvConfiguration(System.Globalization.CultureInfo.CurrentCulture)
+                    {
+                        Delimiter = ","
+                    };
+
+                    using (var writer = File.CreateText(OutputFile))
+                    {
+                        var csvWriter = new CsvWriter(writer, configuration);
+                        csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                        csvWriter.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+
+                        csvWriter.WriteRecords(entries);
+                    }
                 }
             }
             catch (Exception e)
