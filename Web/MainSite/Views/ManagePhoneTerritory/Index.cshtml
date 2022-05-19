@@ -21,13 +21,16 @@
                             <option selected value="0">@Localizer["SelectUserItemName"]</option>
                             @foreach (var user in Model.Users)
                             {
-                                <option value=@(user.Id)>@user.FullName</option>
+                                if(@user.FullName == "Shared")
+                                {
+                                    <option value=@(user.Id) style="font-weight:bold;color:blue;">@user.FullName</option>
+                                }
+                                else
+                                {
+                                    <option value=@(user.Id)>@user.FullName</option>
+                                }
                             }
                         </select>
-                    </div>
-                     <div class="form-group mx-3">
-                        <label class="form-check-label">@Localizer["TerritoryNumber"]</label>
-                        <input type="text" class="form-control" style="width:250px;" name="territoryNumber" placeholder="@Localizer["TerritoryNumber"]" value="NEXT">
                     </div>
                      <div class="form-group mx-3">
                         <button onclick="hideAdvancedExtractFields()" class="btn btn-outline-secondary">
@@ -35,6 +38,10 @@
                         </button>
                     </div>
                     <div id="create-territory-advanced" style="display:none;">
+                        <div class="form-group mx-3">
+                            <label class="form-check-label">@Localizer["TerritoryNumber"]</label>
+                            <input type="text" class="form-control" style="width:250px;" name="territoryNumber" placeholder="@Localizer["TerritoryNumber"]" value="NEXT">
+                        </div>
                         <div class="form-group mx-3">
                             <label class="form-check-label">@Localizer["ExtractSourceDocumentIdLabel"]</label>
                             <input type="text" class="form-control" style="width:250px;" name="sourceDocumentId" value="@Model.DefaultSourceDocumentId" placeholder="@Localizer["ExtractSourceDocumentId"]">
