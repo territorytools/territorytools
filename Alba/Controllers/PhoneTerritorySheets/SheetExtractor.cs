@@ -9,12 +9,18 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
     {
         SheetExtractionResult Extract(SheetExtractionRequest request);
         string AddSheetWriter(AddSheetWriterRequest request);
+        void LogMessage(SmsMessage message);
     }
 
     public class SheetExtractor : ISheetExtractor
     {
         public const string AutoFindNextTerritoryNumber = "AUTO";
-        GoogleSheets _googleSheets;
+        ISpreadSheetService _spreadSheetService;
+
+        public SheetExtractor(ISpreadSheetService sheets)
+        {
+            _spreadSheetService = sheets;
+        }
 
         /// <summary>
         /// 
@@ -24,7 +30,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
         /// <exception cref="Exception"></exception>
         public SheetExtractionResult Extract(SheetExtractionRequest request)
         {
-            _googleSheets = new GoogleSheets(request.SecurityToken);
+            //_spreadSheetService = new GoogleSheets(request.SecurityToken);
 
             List<AssignmentRow> assignmentRows = LoadAssignments(request.FromDocumentId, "Assignments");
 
@@ -60,31 +66,31 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             int phoneRowStartIndex = allPhoneRows.IndexOf(phoneRows[0]);
             int phoneRowEndIndex = phoneRowStartIndex + phoneRows.Count;
 
-            Spreadsheet sheet = _googleSheets.CreateSheet(
+            Spreadsheet sheet = _spreadSheetService.CreateSheet(
                 title: $"Territory {requestedTerritoryNumber}",
                 sheets: new List<Sheet> { PhoneNumberSheet(phoneRows), ResultsSheet() });
 
             // TODO: Instead of creating Results sheet this way, copy this from the master sheet
-            _googleSheets.Write(sheet.SpreadsheetId, "Results!A1:A10", ResultsList());
+            _spreadSheetService.Write(sheet.SpreadsheetId, "Results!A1:A10", ResultsList());
 
             PrepareForSheet(phoneRows);
 
             // TODO: Compare data?
             // TODO: Sometimes delete the source data (from the public sheet)
             // TODO: Update 'Checkout' status too (for now)
-            _googleSheets.Write(
+            _spreadSheetService.Write(
                 documentId: request.FromDocumentId,
                 range: $"{request.FromSheetName}!A{phoneRowStartIndex + 1}:J{phoneRowEndIndex + 1}",
                 values: CheckedOutRows(phoneRows, request.PublisherName));
 
-            var spreadsheet = _googleSheets.GetSpreadsheet(request.FromDocumentId);
-            var log = spreadsheet.Sheets.FirstOrDefault(sh => "AssignmentLog".Equals(sh.Properties?.Title));
+            Spreadsheet spreadsheet = _spreadSheetService.GetSpreadsheet(request.FromDocumentId);
+            Sheet log = spreadsheet.Sheets.FirstOrDefault(sh => "AssignmentLog".Equals(sh.Properties?.Title));
             if (log == null)
             {
                 throw new Exception("Cannot find AssignmentLog sheet");
             }
 
-            _googleSheets.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
+            _spreadSheetService.InsertRows(request.FromDocumentId, log.Properties.SheetId, 1, 2);
 
             var logRowContents = new List<object> {
                         DateTime.Today.ToShortDateString(),
@@ -100,7 +106,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 };
 
             string logEndColumnName = GoogleSheets.ColumnName(logRowContents.Count);
-            _googleSheets.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
+            _spreadSheetService.Write(request.FromDocumentId, $"AssignmentLog!A2:{logEndColumnName}2", logRow);
 
             var assignment = assignmentRows.FirstOrDefault(row => row.TerritoryNumber == requestedTerritoryNumber);
             int assignmentRowNumber = assignmentRows.IndexOf(assignment) + 1;
@@ -118,10 +124,10 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 };
 
             string assignmentEndColumnName = GoogleSheets.ColumnName(assignmentRowContents.Count);
-            _googleSheets.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
+            _spreadSheetService.Write(request.FromDocumentId, $"Assignments!A{assignmentRowNumber}:{logEndColumnName}{assignmentRowNumber}", assignmentRow);
 
-            _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
-            _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
+            _spreadSheetService.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
+            _spreadSheetService.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
 
             return new SheetExtractionResult
             {
@@ -132,19 +138,19 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 
         public string Assign(AssignSheetRequest request)
         {
-            _googleSheets = new GoogleSheets(request.SecurityToken);
+            //_spreadSheetService = new GoogleSheets(request.SecurityToken);
 
-            _googleSheets.ShareFile(request.DocumentId, request.PublisherEmail, GoogleSheets.Role.Writer);
-            _googleSheets.ShareFile(request.DocumentId, request.OwnerEmail, GoogleSheets.Role.Owner);
+            _spreadSheetService.ShareFile(request.DocumentId, request.PublisherEmail, GoogleSheets.Role.Writer);
+            _spreadSheetService.ShareFile(request.DocumentId, request.OwnerEmail, GoogleSheets.Role.Owner);
 
             return $"https://docs.google.com/spreadsheets/d/{request.DocumentId}";
         }
 
         public string AddSheetWriter(AddSheetWriterRequest request)
         {
-            _googleSheets = new GoogleSheets(request.SecurityToken);
+            //_spreadSheetService = new GoogleSheets(request.SecurityToken);
 
-            _googleSheets.ShareFile(request.DocumentId, request.UserEmail, GoogleSheets.Role.Writer);
+            _spreadSheetService.ShareFile(request.DocumentId, request.UserEmail, GoogleSheets.Role.Writer);
 
             return $"https://docs.google.com/spreadsheets/d/{request.DocumentId}";
         }
@@ -152,9 +158,9 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 
         public void LogMessage(SmsMessage message)
         {
-            _googleSheets = new GoogleSheets(message.SecurityToken);
+            //_spreadSheetService = new GoogleSheets(message.SecurityToken);
 
-            Spreadsheet spreadsheet = _googleSheets.GetSpreadsheet(message.LogDocumentId);
+            Spreadsheet spreadsheet = _spreadSheetService.GetSpreadsheet(message.LogDocumentId);
             Sheet log = spreadsheet.Sheets.FirstOrDefault(sh => 
                 !string.IsNullOrWhiteSpace(message.LogSheetName) 
                 && message.LogSheetName.Equals(sh.Properties?.Title));
@@ -164,7 +170,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 throw new Exception("Cannot find Messages sheet");
             }
 
-            _googleSheets.InsertRows(message.LogDocumentId, log.Properties.SheetId, 1, 2);
+            _spreadSheetService.InsertRows(message.LogDocumentId, log.Properties.SheetId, 1, 2);
 
             var messageRowContents = new List<object> {
                         message.Timestamp,
@@ -179,7 +185,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 };
 
             string logEndColumnName = GoogleSheets.ColumnName(messageRowContents.Count);
-            _googleSheets.Write(message.LogDocumentId, $"Messages!A2:{logEndColumnName}2", messageRow);
+            _spreadSheetService.Write(message.LogDocumentId, $"Messages!A2:{logEndColumnName}2", messageRow);
         }
 
         private static Sheet ResultsSheet()
@@ -353,7 +359,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 
         List<PhoneRow> LoadPhoneRows(string documentId, string sheetName)
         {
-            IList<IList<object>> masterPhoneList = _googleSheets.Read(
+            IList<IList<object>> masterPhoneList = _spreadSheetService.Read(
                documentId: documentId,
                range: sheetName);
 
@@ -380,7 +386,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 
         List<AssignmentRow> LoadAssignments(string documentId, string range)
         {
-            IList<IList<object>> assignmentList = _googleSheets.Read(
+            IList<IList<object>> assignmentList = _spreadSheetService.Read(
                 documentId: documentId,
                 range: range);
 

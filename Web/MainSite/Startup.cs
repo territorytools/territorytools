@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
+using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
@@ -95,6 +96,8 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<AreaService>();
             services.AddScoped<IPhoneTerritoryCreationService, PhoneTerritoryCreationService>();
             services.AddScoped<IPhoneTerritoryAddWriterService, PhoneTerritoryAddWriterService>();
+            services.AddScoped<ISpreadSheetService>(s => new GoogleSheets(
+                System.IO.File.ReadAllText("./GoogleApi.secrets.json")));
             services.AddScoped<ISheetExtractor, SheetExtractor>();
             
             services.Configure<WebUIOptions>(Configuration);
