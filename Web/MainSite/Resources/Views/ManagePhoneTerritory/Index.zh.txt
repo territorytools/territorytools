@@ -19,6 +19,7 @@ CompletionMapUrl=地图 (谷歌 “My Maps”)
 ReportSelectPublisher=选传道员
 ReportButtonAssign=分配
 ReportButtonMap=地址
+ReportButtonMap=地址
 ReportDescription=称号
 ReportAddresses=地址数目
 

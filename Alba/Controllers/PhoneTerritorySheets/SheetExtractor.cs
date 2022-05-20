@@ -7,12 +7,13 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
 {
     public interface ISheetExtractor
     {
-        string Extract(SheetExtractionRequest request);
+        SheetExtractionResult Extract(SheetExtractionRequest request);
         string AddSheetWriter(AddSheetWriterRequest request);
     }
 
     public class SheetExtractor : ISheetExtractor
     {
+        public const string AutoFindNextTerritoryNumber = "AUTO";
         GoogleSheets _googleSheets;
 
         /// <summary>
@@ -21,15 +22,14 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
         /// <param name="request"></param>
         /// <returns>Google DocumentId for the Spreadsheet</returns>
         /// <exception cref="Exception"></exception>
-        public string Extract(SheetExtractionRequest request)
+        public SheetExtractionResult Extract(SheetExtractionRequest request)
         {
             _googleSheets = new GoogleSheets(request.SecurityToken);
 
             List<AssignmentRow> assignmentRows = LoadAssignments(request.FromDocumentId, "Assignments");
 
             string requestedTerritoryNumber = request.TerritoryNumber;
-            if (string.Equals(request.TerritoryNumber, "NEW", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(request.TerritoryNumber, "NEXT", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(request.TerritoryNumber, AutoFindNextTerritoryNumber, StringComparison.OrdinalIgnoreCase))
             {
                 requestedTerritoryNumber = assignmentRows
                     .Where(row => string.Equals(row.Transaction, "Available", StringComparison.OrdinalIgnoreCase))
@@ -123,7 +123,11 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             _googleSheets.ShareFile(sheet.SpreadsheetId, request.PublisherEmail, GoogleSheets.Role.Writer);
             _googleSheets.ShareFile(sheet.SpreadsheetId, request.OwnerEmail, GoogleSheets.Role.Writer);
 
-            return sheet.SpreadsheetId;
+            return new SheetExtractionResult
+            {
+                TerritoryNumber = requestedTerritoryNumber,
+                DocumentId = sheet.SpreadsheetId
+            };
         }
 
         public string Assign(AssignSheetRequest request)

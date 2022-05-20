@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Web.Data;
@@ -82,17 +81,17 @@ namespace TerritoryTools.Web.MainSite.Services
                 SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
             };
 
-            string documentId = _sheetExtractor.Extract(request);
-            string uri = $"https://docs.google.com/spreadsheets/d/{documentId}";
+            SheetExtractionResult extractionResult = _sheetExtractor.Extract(request);
+            string uri = $"https://docs.google.com/spreadsheets/d/{extractionResult.DocumentId}";
 
             result.Success = true;
             result.Message = $"Successfully created and assigned to {userEmail}";
             result.Item = new PhoneTerritoryCreateItem
                 {
-                    Description = $"Territory {territoryNumber}",
+                    Description = $"Territory {extractionResult.TerritoryNumber}",
                     Uri = uri,
-                    DocumentId = documentId
-                };
+                    DocumentId = extractionResult.DocumentId
+            };
 
             return result;
         }

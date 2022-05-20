@@ -132,8 +132,8 @@
   <data name="TerritoryNumber" xml:space="preserve">
     <value>Territory Number</value>
   </data>
-  <data name="Advanced" xml:space="preserve">
-    <value>Advanced</value>
+  <data name="MoreShowHideButton" xml:space="preserve">
+    <value>Advanced Options...</value>
   </data>
   <data name="ExtractSourceDocumentId" xml:space="preserve">
     <value>Source Google Sheets Document Id</value>
@@ -163,7 +163,7 @@
     <value>Territory Google Document Id</value>
   </data>
   <data name="AddWriterButton" xml:space="preserve">
-    <value>Add Writer to Sheet</value>
+    <value>Add Writer</value>
   </data>
   <data name="AddingWriterMessage" xml:space="preserve">
     <value>Adding user as writer...</value>
