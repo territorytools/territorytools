@@ -173,15 +173,16 @@ namespace TerritoryTools.Web.MainSite.Controllers
         protected IEnumerable<AlbaAssignmentValues> GetPhoneAssignments(string userName)
         {
             var allAssignments = new List<AlbaAssignmentValues>();
-            var phoneAssignments = _phoneTerritoryAssignmentService.GetAssignments(userName);
+            var phoneAssignments = _phoneTerritoryAssignmentService.GetAllAssignments();
+
             foreach (var phoneAssignment in phoneAssignments)
             {
                 DateTime.TryParse(phoneAssignment.Date, out DateTime date);
                 var assignment = new AlbaAssignmentValues
                 {
                     Number = phoneAssignment.TerritoryNumber,
-                    SignedOutTo = phoneAssignment.Publisher,
-                    SignedOut = date,
+                    SignedOutTo = phoneAssignment.Transaction == "Checked Out" ? phoneAssignment.Publisher : null,
+                    SignedOut = phoneAssignment.Transaction == "Checked Out" ? date : null,
                     Description = "PHONE",
                     MonthsAgoCompleted = 0,
                     MobileLink = phoneAssignment.SheetLink
