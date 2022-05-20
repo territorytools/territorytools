@@ -24,6 +24,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
     {
         protected readonly IStringLocalizer<AuthorizedController> localizer;
         protected readonly MainDbContext database;
+        protected readonly IPhoneTerritoryAssignmentService _phoneTerritoryAssignmentService;
         protected string account;
         protected string user;
         protected string password;
@@ -38,6 +39,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             ITerritoryAssignmentService territoryAssignmentService,
+            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             this.database = database;
@@ -48,6 +50,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             this.authorizationService = authorizationService;
             this.albaCredentialService = albaCredentialService;
             this.territoryAssignmentService = territoryAssignmentService;
+            _phoneTerritoryAssignmentService = phoneTerritoryAssignmentService;
             options = optionsAccessor.Value;
         }
 
@@ -156,10 +159,41 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         protected IEnumerable<AlbaAssignmentValues> GetAllAssignments()
         {
-            return GetAllAssignmentsPlease(User.Identity.Name, options, albaCredentialService);
+            var allAssignments = new List<AlbaAssignmentValues>();
+            
+            allAssignments.AddRange(GetAlbaAssignments(
+                User.Identity.Name, 
+                options, 
+                albaCredentialService));
+            allAssignments.AddRange(GetPhoneAssignments(User.Identity.Name));
+            
+            return allAssignments;
         }
 
-        protected IEnumerable<AlbaAssignmentValues> GetAllAssignmentsPlease(
+        protected IEnumerable<AlbaAssignmentValues> GetPhoneAssignments(string userName)
+        {
+            var allAssignments = new List<AlbaAssignmentValues>();
+            var phoneAssignments = _phoneTerritoryAssignmentService.GetAssignments(userName);
+            foreach (var phoneAssignment in phoneAssignments)
+            {
+                DateTime.TryParse(phoneAssignment.Date, out DateTime date);
+                var assignment = new AlbaAssignmentValues
+                {
+                    Number = phoneAssignment.TerritoryNumber,
+                    SignedOutTo = phoneAssignment.Publisher,
+                    SignedOut = date,
+                    Description = "PHONE",
+                    MonthsAgoCompleted = 0,
+                    MobileLink = phoneAssignment.SheetLink
+                };
+
+                allAssignments.Add(assignment);
+            }
+
+            return allAssignments;
+        }
+
+        protected IEnumerable<AlbaAssignmentValues> GetAlbaAssignments(
             string userName, 
             WebUIOptions options,
             IAlbaCredentialService albaCredentialService)

@@ -28,7 +28,7 @@
                 <div class="pr-2 pl-2 flex-grow-1">@Localizer["Description"]</div>
                 <div class="pr-2 pl-2 flex-grow-1"></div>
                 <div class="pr-2 pl-2" style="width:150px;">@Localizer["Assigned"]</div>
-                <div class="pr-2 pl-2" style="width:50px;">@Localizer["Addresses"]</div>
+@*                <div class="pr-2 pl-2" style="width:50px;">@Localizer["Addresses"]</div>*@
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
             </div>
@@ -49,18 +49,25 @@
                 {
                     signedOut = $"{days}";
                 }
-        <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-            <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
-            <div class="p-2 flex-grow-1">@assignment.Description</div>
-            <div class="p-2" style="width:150px;">@signedOut @unit</div>
-            <div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>
-            <div class="p-2" style="min-width:60px;">
-                <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">@Localizer["MapButton"]</a>
-            </div>
-            <div class="p-2" style="min-width:60px;">
-                <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Sheet</a>
-            </div>
-        </div>
+
+                <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                    <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
+                    <div class="p-2 flex-grow-1">@assignment.Description</div>
+                    <div class="p-2" style="width:150px;text-align:left;">@signedOut @unit</div>
+                    @*<div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>*@
+                    @if (assignment.Description.StartsWith("PHONE"))
+                    {
+                        <div class="p-2" style="min-width:60px;">
+                            <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Sheet</a>
+                        </div>
+                    }
+                    else
+                    {
+                       <div class="p-2" style="min-width:60px;">
+                            <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">@Localizer["MapButton"]</a>
+                        </div>
+                    }
+                </div>
             }
         </div>
     }

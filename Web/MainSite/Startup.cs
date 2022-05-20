@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -99,7 +100,9 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<ISpreadSheetService>(s => new GoogleSheets(
                 System.IO.File.ReadAllText("./GoogleApi.secrets.json")));
             services.AddScoped<ISheetExtractor, SheetExtractor>();
-            
+            services.AddScoped<IPhoneTerritoryAssignmentService, PhoneTerritoryAssignmentService>();
+            services.AddScoped<ITerritoryUserService, TerritoryUserService>();
+
             services.Configure<WebUIOptions>(Configuration);
 
             var users = (Configuration["Users"] ?? string.Empty)

@@ -34,6 +34,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             ITerritoryAssignmentService assignmentService,
+            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
@@ -41,6 +42,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 authorizationService,
                 albaCredentialService,
                 assignmentService,
+                phoneTerritoryAssignmentService,
                 optionsAccessor)
         {
             _areaService = areaService;

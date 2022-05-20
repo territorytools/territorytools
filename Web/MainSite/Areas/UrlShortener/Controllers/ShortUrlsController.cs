@@ -31,6 +31,7 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
             TerritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             ITerritoryAssignmentService assignmentService,
+            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 database,
                 localizer,
@@ -38,6 +39,7 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
                 authorizationService,
                 albaCredentialService,
                 assignmentService,
+                phoneTerritoryAssignmentService,
                 optionsAccessor)
         {
             this.service = service;
