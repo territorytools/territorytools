@@ -157,7 +157,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             io.File.WriteAllText(path, html);
         }
 
-        protected IEnumerable<AlbaAssignmentValues> GetAllAssignments()
+        protected GetAllAssignmentsResult GetAllAssignments()
         {
             var allAssignments = new List<AlbaAssignmentValues>();
             
@@ -165,17 +165,23 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 User.Identity.Name, 
                 options, 
                 albaCredentialService));
-            allAssignments.AddRange(GetPhoneAssignments(User.Identity.Name));
-            
-            return allAssignments;
+
+            var result = GetAllPhoneAssignments();
+            allAssignments.AddRange(result.Rows);
+
+            return new GetAllAssignmentsResult
+            {
+                PhoneSuccess = result.PhoneSuccess,
+                Rows = allAssignments
+            };
         }
 
-        protected IEnumerable<AlbaAssignmentValues> GetPhoneAssignments(string userName)
+        protected GetAllAssignmentsResult GetAllPhoneAssignments()
         {
             var allAssignments = new List<AlbaAssignmentValues>();
-            var phoneAssignments = _phoneTerritoryAssignmentService.GetAllAssignments();
+            var result = _phoneTerritoryAssignmentService.GetAllAssignments();
 
-            foreach (var phoneAssignment in phoneAssignments)
+            foreach (var phoneAssignment in result.Rows)
             {
                 DateTime.TryParse(phoneAssignment.Date, out DateTime date);
                 var assignment = new AlbaAssignmentValues
@@ -191,7 +197,17 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 allAssignments.Add(assignment);
             }
 
-            return allAssignments;
+            return new GetAllAssignmentsResult
+            {
+                PhoneSuccess = result.Success,
+                Rows = allAssignments
+            };
+        }
+
+        public class GetAllAssignmentsResult
+        {
+            public bool PhoneSuccess { get; set; }
+            public IEnumerable<AlbaAssignmentValues>  Rows { get; set;}
         }
 
         protected IEnumerable<AlbaAssignmentValues> GetAlbaAssignments(

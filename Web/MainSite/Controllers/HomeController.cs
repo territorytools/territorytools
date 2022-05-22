@@ -80,9 +80,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
                      return NotFound(e.Message);
                 }
 
-                var assignments = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
+
+                publisher.PhoneTerritorySuccess = allAssignments.PhoneSuccess;
 
                 publisher.Name = myName;
 
@@ -225,7 +228,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignment = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var assignment = allAssignments.Rows
                     .Where(a => string.Equals(
                         a.Number,
                         number,
@@ -296,8 +300,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-            var assignment = GetAllAssignments()
-                   .FirstOrDefault(a => a.Id == territoryId);
+            var allAssignments = GetAllAssignments();
+            var assignment = allAssignments.Rows
+               .FirstOrDefault(a => a.Id == territoryId);
 
             assignment.SignedOutTo = userName;
 
@@ -307,8 +312,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult UnassignSuccess(int territoryId)
         {
-            var assignment = GetAllAssignments()
-                   .FirstOrDefault(a => a.Id == territoryId);
+            var allAssignments = GetAllAssignments();
+            var assignment = allAssignments.Rows
+               .FirstOrDefault(a => a.Id == territoryId);
 
             return View(assignment);
         }

@@ -79,7 +79,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var groups = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var groups = allAssignments.Rows
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
@@ -115,7 +116,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var allAssignments = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var assignments = allAssignments.Rows
                     .ToList();
 
                 var now = DateTime.Now;
@@ -130,7 +132,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                         new SummaryItem
                         {
                             Name = $"{year}-{year + 1}",
-                            Value = allAssignments
+                            Value = assignments
                                 .Where(a => a.LastCompleted >= new DateTime(year, 9, 1)
                                 && a.LastCompleted < new DateTime(year + 1, 9, 1))
                                 .ToList()
@@ -201,7 +203,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                var completed = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var completed = allAssignments.Rows
                     .Where(ast => ast.LastCompleted != null)
                     .ToList();
 
@@ -307,7 +310,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignments = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var assignments = allAssignments.Rows
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null)
                     .OrderBy(a => a.Description)
@@ -342,7 +346,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignments = GetAllAssignments()
+                var allAssignments = GetAllAssignments();
+                var assignments = allAssignments.Rows
                     .Where(a => string.Equals(
                         a.Status,
                         "Available",
