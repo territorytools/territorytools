@@ -60,6 +60,8 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             try
             {
+                _logger.LogInformation($"Getting all assignments from phone territory spreadsheet documentId: {_documentId} sheetName: {_sheetName}");
+
                 IList<IList<object>> values = _spreadSheetService.Read(_documentId, "Assignments");
                 if (values.Count == 0)
                     throw new Exception($"Empty sheet: Spreadsheet ID {_documentId} Sheet Name {_sheetName}");
@@ -114,6 +116,8 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public AddWriterResult AddWriter(string documentId, string userId)
         {
+            _logger.LogInformation($"Adding writer to phone territory spreadsheet documentId: {documentId} userId: {userId}");
+
             var result = new AddWriterResult();
             if (!Guid.TryParse(userId, out Guid userGuid))
             {

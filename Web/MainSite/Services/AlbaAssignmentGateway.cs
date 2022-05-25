@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -18,17 +19,20 @@ namespace TerritoryTools.Web.MainSite.Services
         readonly IAlbaAuthClientService _albaAuthClientService;
         readonly IAlbaCredentialService _albaCredentialService;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<AlbaAssignmentGateway> _logger;
         readonly WebUIOptions _options;
 
         public AlbaAssignmentGateway(
             IAlbaAuthClientService albaAuthClientService,
             IAlbaCredentialService albaCredentialService,
             IMemoryCache memoryCache,
-            IOptions<WebUIOptions> optionsAccessor)
+            IOptions<WebUIOptions> optionsAccessor,
+            ILogger<AlbaAssignmentGateway> logger)
         {
             _albaAuthClientService = albaAuthClientService;
             _albaCredentialService = albaCredentialService;
             _memoryCache = memoryCache;
+            _logger = logger;
             _options = optionsAccessor.Value;
         }
 
@@ -40,26 +44,26 @@ namespace TerritoryTools.Web.MainSite.Services
                   $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
                   out List<AlbaAssignmentValues> cacheValue))
             {
-                List<AlbaAssignmentValues> assignments = DownloadAssignments(userName);
-
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(15));
-
-                _memoryCache.Set($"AllAlbaTerritoryAssignments:Account_{albaAccountId}", assignments, cacheEntryOptions);
+                List<AlbaAssignmentValues> assignments = DownloadAssignments(userName, albaAccountId);
 
                 return assignments;
             }
+
+            _logger.LogInformation($"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}");
 
             return cacheValue;
         }
 
         public void LoadAlbaAssignments(string userName)
         {
-            DownloadAssignments(userName);
+            Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
+            DownloadAssignments(userName, albaAccountId);
         }
 
-        List<AlbaAssignmentValues> DownloadAssignments(string userName)
+        List<AlbaAssignmentValues> DownloadAssignments(string userName, Guid albaAccountId)
         {
+            _logger.LogInformation($"Downloading assignments from Alba and caching them for userName: {userName} albaAccountID: {albaAccountId}");
+
             var credentials = _albaCredentialService.GetCredentialsFrom(userName);
 
             var client = _albaAuthClientService.AuthClient();
@@ -74,6 +78,13 @@ namespace TerritoryTools.Web.MainSite.Services
             var useCase = new DownloadTerritoryAssignments(_albaAuthClientService.AuthClient());
 
             var assignments = useCase.GetAssignments(assignmentsHtml);
+
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(15));
+
+            _memoryCache.Set($"AllAlbaTerritoryAssignments:Account_{albaAccountId}", assignments, cacheEntryOptions);
+
             return assignments;
         }
     }

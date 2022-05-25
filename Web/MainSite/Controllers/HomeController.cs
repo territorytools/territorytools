@@ -12,6 +12,7 @@ using TerritoryTools.Web.Data;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.MainSite.Services;
 using TerritoryTools.Web.MainSite.Models;
+using Microsoft.Extensions.Logging;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -20,6 +21,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly IUserService _userService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly Services.IQRCodeActivityService qrCodeActivityService;
+        private readonly ILogger<HomeController> _logger;
 
         public HomeController(
             IUserService userService,
@@ -31,7 +33,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
             IAlbaCredentialService albaCredentialService,
-            IOptions<WebUIOptions> optionsAccessor) : base(
+            IOptions<WebUIOptions> optionsAccessor,
+            ILogger<HomeController> logger) : base(
                 userService,
                 authorizationService,
                 optionsAccessor)
@@ -39,6 +42,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
             this.qrCodeActivityService = qrCodeActivityService;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -77,7 +81,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 }
                 catch(Exception e)
                 {
-                     return NotFound(e.Message);
+                    _logger.LogError($"Home.Index: Error: {e.Message}");
+                    return NotFound(e.Message);
                 }
 
                 var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
@@ -224,6 +229,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
+                _logger.LogError($"Home.AssignSingleTerritory: Number: {number} User: {User.Identity.Name}");
+
                 var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
@@ -250,8 +257,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 return View(form);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogError($"Home.AssignSingleTerritory: Error: {e.Message}");
                 throw;
             }
         }

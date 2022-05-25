@@ -18,13 +18,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/assignments")]
     public class AssignmentsController : Controller
     {
-        private readonly IUserService _userService;
-        private readonly ICombinedAssignmentService _combinedAssignmentService;
-        readonly IAlbaCredentialService albaCredentialService;
-        private readonly AreaService _areaService;
-        readonly ITerritoryAssignmentService territoryAssignmentService;
-        readonly ILogger logger;
-        readonly WebUIOptions options;
+        readonly IUserService _userService;
+        readonly ICombinedAssignmentService _combinedAssignmentService;
+        readonly IAlbaCredentialService _albaCredentialService;
+        readonly AreaService _areaService;
+        readonly ITerritoryAssignmentService _territoryAssignmentService;
+        readonly ILogger _logger;
+        readonly WebUIOptions _options;
 
         public AssignmentsController(
             IUserService userService,
@@ -37,17 +37,19 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
-            this.albaCredentialService = albaCredentialService;
+            _albaCredentialService = albaCredentialService;
             _areaService = areaService;
-            this.territoryAssignmentService = territoryAssignmentService;
-            this.logger = logger;
-            options = optionsAccessor.Value;
+            _territoryAssignmentService = territoryAssignmentService;
+            _logger = logger;
+            _options = optionsAccessor.Value;
         }
 
         [HttpGet("[action]")]
         public IActionResult Assign(int territoryId, int userId)
         {
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+            _logger.LogInformation($"Assigning territoryId {territoryId} to userId: {userId} ({User.Identity.Name})");
+
+            var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizedConnection();
             client.Authenticate(credentials);
@@ -80,17 +82,19 @@ namespace TerritoryTools.Web.MainSite.Controllers
             int count = 1,
             string area = "*")
         {
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+            _logger.LogInformation($"Assigning latest territory count: {count} area: {area} to userId: {userId} As: ({User.Identity.Name})...");
+
+            var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizedConnection();
             client.Authenticate(credentials);
 
-            var territories = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
+            var territories = _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
 
             if (territories.Count() == 0)
             {
                 string message = "There are no territories to assign!";
-                logger.LogError(message);
+                _logger.LogError(message);
                 return BadRequest(message);
             }
 
@@ -102,7 +106,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 if (matchedArea == null)
                 {
                     string message = $"There are {territories.Count()} territories, but none in the area you have requested! (1)";
-                    logger.LogError(message);
+                    _logger.LogError(message);
                     return BadRequest(message);
                 }
 
@@ -133,7 +137,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             if (queryInclude.Count() == 0)
             {
                 string message = $"There are {territories.Count()} territories, but none in the area you have requested!";
-                logger.LogError(message);
+                _logger.LogError(message);
                 return BadRequest(message);
             }
 
@@ -149,7 +153,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             if (queryExclude.Count() == 0)
             {
                 string message = $"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!";
-                logger.LogError(message);
+                _logger.LogError(message);
                 return BadRequest(message);
             }
 
@@ -173,7 +177,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 catch (Exception)
                 {
                     string message = $"Cannot assign territory {territory.Id} to user {userId}";
-                    logger.LogError(message);
+                    _logger.LogError(message);
                     return BadRequest(message);
                 }
             }
@@ -193,7 +197,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             catch(Exception)
             {
                 string message = $"Cannot get user name for user id {userId}";
-                logger.LogError(message);
+                _logger.LogError(message);
                 return BadRequest(message);
             }
 
@@ -202,7 +206,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             try
             {
                 // This should refresh the mobile territory link to send to the user
-                var allAssignments = territoryAssignmentService
+                var allAssignments = _territoryAssignmentService
                     .GetAllAssignmentsFresh(User.Identity.Name);
 
                 refreshedTerritories = allAssignments
@@ -212,7 +216,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             catch(Exception)
             {
                 string message = "Cannot refresh mobile territory link";
-                logger.LogError(message);
+                _logger.LogError(message);
                 return BadRequest(message);
             }
 
@@ -223,6 +227,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Description = $"{a.Number} {a.Description}"
                 })
                 .ToList();
+
+            _logger.LogInformation($"Successfully assigned {items.Count} territories to {userName} As: ({User.Identity.Name})");
+            foreach(var item in items)
+            {
+                _logger.LogInformation($"Successfully assigned {item.Description} to {userName} As: ({User.Identity.Name})");
+            }
 
             return Ok(
                 new AssignmentResult
@@ -250,7 +260,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IActionResult Unassign(int territoryId)
         {
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+            _logger.LogInformation($"Unassigning territoryId {territoryId} ({User.Identity.Name})");
+
+            var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizedConnection();
             client.Authenticate(credentials);
@@ -268,7 +280,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
         {
-            return territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
+            return _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
         }
 
         [HttpGet("[action]")]
@@ -276,7 +288,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                return territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
+                return _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null) 
                     .OrderBy(a => a.Description)
@@ -284,7 +296,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch (Exception e)
             {
-                logger.LogError(e.Message);
+                _logger.LogError(e.Message);
 
                 throw;
             }
@@ -301,7 +313,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                var groups = territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
+                var groups = _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name)
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
@@ -322,7 +334,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
             catch (Exception e)
             {
-                logger.LogError(e.Message);
+                _logger.LogError(e.Message);
 
                 throw;
             }
@@ -337,7 +349,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Route("/ClockTick")]
         public void ClockTick()
         {
-            logger.LogError("Loading Territory Assigments...");
+            _logger.LogInformation("ClockTick: Not really loading territory assigments...");
             // TODO: Fix clock tick, need a user or something here
             //Load();
         }
@@ -356,8 +368,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IActionResult DownloadCsvFiles()
         {
-            Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
-            string path = string.Format(options.AlbaAssignmentsHtmlPath, albaAccountId);
+            _logger.LogInformation("Downloading CSV files...");
+
+            Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+            string path = string.Format(_options.AlbaAssignmentsHtmlPath, albaAccountId);
 
             var client = AuthorizedConnection();
 
@@ -386,7 +400,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IActionResult DownloadBorderKmlFiles()
         {
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+            _logger.LogInformation("Downloading border KML files...");
+
+            var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
 
             var client = AuthorizedConnection();
             client.Authenticate(credentials);
@@ -411,7 +427,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         
         AlbaConnection AuthorizedConnection()
         {
-            return AlbaConnection.From(options.AlbaHost);
+            return AlbaConnection.From(_options.AlbaHost);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -21,13 +23,16 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         private readonly IPhoneTerritoryAssignmentGateway _phoneTerritoryAssignmentGateway;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<PhoneTerritoryAssignmentService> _logger;
 
         public PhoneTerritoryAssignmentService(
             IPhoneTerritoryAssignmentGateway phoneTerritoryAssignmentGateway, 
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            ILogger<PhoneTerritoryAssignmentService> logger)
         {
             _phoneTerritoryAssignmentGateway = phoneTerritoryAssignmentGateway;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public GetAllAssignmentsResult GetAllPhoneAssignments()
@@ -41,6 +46,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 return returnResult;
             }
 
+            _logger.LogInformation($"Getting all {cacheValue.Rows.Count()} phone assignments from cache");
+
             return cacheValue;
         }
 
@@ -49,8 +56,10 @@ namespace TerritoryTools.Web.MainSite.Services
             DownloadAssignments();
         }
 
-        private GetAllAssignmentsResult DownloadAssignments()
+        GetAllAssignmentsResult DownloadAssignments()
         {
+            _logger.LogInformation($"Converting phone assignments from Google Sheet values");
+
             var allAssignments = new List<AlbaAssignmentValues>();
             var result = _phoneTerritoryAssignmentGateway.GetAllAssignments();
 
@@ -83,6 +92,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 .SetSlidingExpiration(TimeSpan.FromMinutes(15));
 
             _memoryCache.Set("AllPhoneTerritoryAssignments", returnResult, cacheEntryOptions);
+
+            _logger.LogInformation($"{allAssignments.Count} phone assignments were cached");
 
             return returnResult;
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -19,17 +20,20 @@ namespace TerritoryTools.Web.MainSite.Services
         private readonly IAlbaCredentialService _albaCredentialService;
         private readonly IAlbaAuthClientService _albaAuthClientService;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<AlbaUserGateway> _logger;
 
         public AlbaUserGateway(
             IAlbaCredentialService albaCredentialService,
             IAlbaAuthClientService albaAuthClientService, 
             IMemoryCache memoryCache,
-            IOptions<WebUIOptions> optionsAccessor)
+            IOptions<WebUIOptions> optionsAccessor,
+            ILogger<AlbaUserGateway> logger)
         {
             options = optionsAccessor.Value;
             _albaCredentialService = albaCredentialService;
             _albaAuthClientService = albaAuthClientService;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public List<cuc.User> GetAlbaUsers(string userName)
@@ -44,6 +48,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 return users;
             }
 
+            _logger.LogInformation($"Loaded {cacheValue.Count} users from cache for userName: {userName} albaAccountID: {albaAccountId}");
+
             return cacheValue;
         }
 
@@ -55,6 +61,8 @@ namespace TerritoryTools.Web.MainSite.Services
 
         List<cuc.User> DownloadUsers(string userName, Guid albaAccountId)
         {
+            _logger.LogInformation($"Downloading users from Alba and caching them for userName: {userName} albaAccountID: {albaAccountId}");
+
             var credentials = _albaCredentialService.GetCredentialsFrom(userName);
 
             var client = _albaAuthClientService.AuthClient();
