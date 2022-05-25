@@ -8,6 +8,7 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface IPhoneTerritoryAssignmentService
     {
         GetAllAssignmentsResult GetAllPhoneAssignments();
+        void LoadAssignments();
     }
 
     public class GetAllAssignmentsResult
@@ -35,43 +36,55 @@ namespace TerritoryTools.Web.MainSite.Services
                     "AllPhoneTerritoryAssignments",
                     out GetAllAssignmentsResult cacheValue))
             {
-                var allAssignments = new List<AlbaAssignmentValues>();
-                var result = _phoneTerritoryAssignmentGateway.GetAllAssignments();
-
-                foreach (var phoneAssignment in result.Rows)
-                {
-                    DateTime.TryParse(phoneAssignment.Date, out DateTime date);
-                    var assignment = new AlbaAssignmentValues
-                    {
-                        Number = phoneAssignment.TerritoryNumber,
-                        SignedOutTo = phoneAssignment.Transaction == "Checked Out" ? phoneAssignment.Publisher : null,
-                        SignedOut = phoneAssignment.Transaction == "Checked Out" ? date : null,
-                        LastCompletedBy = phoneAssignment.Transaction == "Checked In" ? phoneAssignment.Publisher : null,
-                        LastCompleted = phoneAssignment.Transaction == "Checked In" ? date : null,
-                        Status = phoneAssignment.Transaction,
-                        Description = "PHONE",
-                        MonthsAgoCompleted = 0,
-                        MobileLink = phoneAssignment.SheetLink
-                    };
-
-                    allAssignments.Add(assignment);
-                }
-
-                var returnResult = new GetAllAssignmentsResult
-                {
-                    PhoneSuccess = result.Success,
-                    Rows = allAssignments
-                };
-
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(15));
-
-                _memoryCache.Set("AllPhoneTerritoryAssignments", returnResult, cacheEntryOptions);
+                GetAllAssignmentsResult returnResult = DownloadAssignments();
 
                 return returnResult;
             }
 
             return cacheValue;
+        }
+
+        public void LoadAssignments()
+        {
+            DownloadAssignments();
+        }
+
+        private GetAllAssignmentsResult DownloadAssignments()
+        {
+            var allAssignments = new List<AlbaAssignmentValues>();
+            var result = _phoneTerritoryAssignmentGateway.GetAllAssignments();
+
+            foreach (var phoneAssignment in result.Rows)
+            {
+                DateTime.TryParse(phoneAssignment.Date, out DateTime date);
+                var assignment = new AlbaAssignmentValues
+                {
+                    Number = phoneAssignment.TerritoryNumber,
+                    SignedOutTo = phoneAssignment.Transaction == "Checked Out" ? phoneAssignment.Publisher : null,
+                    SignedOut = phoneAssignment.Transaction == "Checked Out" ? date : null,
+                    LastCompletedBy = phoneAssignment.Transaction == "Checked In" ? phoneAssignment.Publisher : null,
+                    LastCompleted = phoneAssignment.Transaction == "Checked In" ? date : null,
+                    Status = phoneAssignment.Transaction,
+                    Description = "PHONE",
+                    MonthsAgoCompleted = 0,
+                    MobileLink = phoneAssignment.SheetLink
+                };
+
+                allAssignments.Add(assignment);
+            }
+
+            var returnResult = new GetAllAssignmentsResult
+            {
+                PhoneSuccess = result.Success,
+                Rows = allAssignments
+            };
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(15));
+
+            _memoryCache.Set("AllPhoneTerritoryAssignments", returnResult, cacheEntryOptions);
+
+            return returnResult;
         }
     }
 }

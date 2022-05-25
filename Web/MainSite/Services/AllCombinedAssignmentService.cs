@@ -6,6 +6,7 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface ICombinedAssignmentService
     {
         GetAllAssignmentsResult GetAllAssignments(string userName);
+        void LoadAssignments(string userName);
     }
 
     public class AllCombinedAssignmentService : ICombinedAssignmentService
@@ -35,6 +36,12 @@ namespace TerritoryTools.Web.MainSite.Services
                 PhoneSuccess = phoneTerritories.PhoneSuccess,
                 Rows = allAssignments
             };
+        }
+
+        public void LoadAssignments(string userName)
+        {
+            _albaAssignmentGateway.LoadAlbaAssignments(userName);
+            _phoneTerritoryAssignmentService.LoadAssignments();
         }
     }
 }

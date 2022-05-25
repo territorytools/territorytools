@@ -276,7 +276,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return Forbid();
             }
 
-            //LoadUserData();
+            _userService.LoadUsers(User.Identity.Name);
 
             return LocalRedirect("~/Home/Load");
         }

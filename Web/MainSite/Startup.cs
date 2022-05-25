@@ -106,6 +106,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
             services.AddScoped<IAlbaAssignmentGateway, AlbaAssignmentGateway>();
             services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
+            services.AddScoped<IAlbaManagementUserGateway, AlbaManagementUserGateway>();
             services.AddScoped<IAlbaUserGateway, AlbaUserGateway>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITerritoryUserService, TerritoryUserService>();

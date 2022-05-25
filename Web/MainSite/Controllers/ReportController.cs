@@ -16,14 +16,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
         private readonly IUserService _userService;
-        private readonly IAlbaUserGateway _albaUserGateway;
+        private readonly IAlbaManagementUserGateway _albaUserGateway;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         private readonly IAlbaCredentialService _albaCredentialService;
         private readonly MainDbContext _database;
         IAccountLists accountLists;
         public ReportController(
             IUserService userService,
-            IAlbaUserGateway albaUserGateway,
+            IAlbaManagementUserGateway albaUserGateway,
             ICombinedAssignmentService combinedAssignmentService,
             IAlbaCredentialService albaCredentialService,
             MainDbContext database,
@@ -384,7 +384,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 }
 
                 var userListView = new AlbaUserListView();
-                userListView.Users = _albaUserGateway.GetAlbaUsers(User.Identity.Name)
+                userListView.Users = _albaUserGateway.GetAlbaManagementUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 

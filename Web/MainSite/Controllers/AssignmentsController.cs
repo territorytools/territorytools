@@ -8,9 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
-using TerritoryTools.Entities;
 using TerritoryTools.Web.MainSite.Services;
 using cuc = Controllers.UseCases;
 
@@ -20,6 +18,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/assignments")]
     public class AssignmentsController : Controller
     {
+        private readonly IUserService _userService;
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly IAlbaCredentialService albaCredentialService;
         private readonly AreaService _areaService;
         readonly ITerritoryAssignmentService territoryAssignmentService;
@@ -27,13 +27,16 @@ namespace TerritoryTools.Web.MainSite.Controllers
         readonly WebUIOptions options;
 
         public AssignmentsController(
+            IUserService userService,
+            ICombinedAssignmentService combinedAssignmentService,
             IAlbaCredentialService albaCredentialService,
             AreaService areaService,
             ITerritoryAssignmentService territoryAssignmentService,
-            IAlbaCredentials credentials,
             ILogger<AssignmentsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
+            _userService = userService;
+            _combinedAssignmentService = combinedAssignmentService;
             this.albaCredentialService = albaCredentialService;
             _areaService = areaService;
             this.territoryAssignmentService = territoryAssignmentService;
@@ -55,7 +58,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     userId,
                     DateTime.Now));
 
-            var myUser = GetUsersFor(credentials.AlbaAccountId)
+            var myUser = _userService.GetUsers(User.Identity.Name)
                 .FirstOrDefault(u => u.Id == userId);
             
             string userName = "Somebody";
@@ -179,7 +182,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             try
             {
-                var myUser = GetUsersFor(credentials.AlbaAccountId)
+                cuc.User myUser = _userService.GetUsers(User.Identity.Name)
                     .FirstOrDefault(u => u.Id == userId);
 
                 if (myUser != null)
@@ -342,8 +345,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("[action]")]
         public IActionResult LoadAssignments()
         {
-            LoadForCurrentAccount();
-
+            _combinedAssignmentService.LoadAssignments(User.Identity.Name);
+            ////LoadForCurrentAccount();
+            
             // TODO: Use with React or other UI
             // return new LoadAssignmentsResult() { Successful = true };
             return Redirect("/Home/Load");
@@ -402,116 +406,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         void LoadForCurrentAccount()
         {
-            Guid albaAccountId = albaCredentialService
-                .GetAlbaAccountIdFor(User.Identity.Name);
-
-            Load(albaAccountId);
+            _combinedAssignmentService.LoadAssignments(User.Identity.Name);
         }
         
-        void LoadForCurrentAccountFresh()
-        {
-            Guid albaAccountId = albaCredentialService
-                .GetAlbaAccountIdFor(User.Identity.Name);
-
-            LoadFresh(albaAccountId);
-        }
-
-        void Load(Guid albaAccountId)
-        {
-            string path = string.Format(
-                options.AlbaAssignmentsHtmlPath, 
-                albaAccountId);
-            if (System.IO.File.Exists(path))
-            {
-                DateTime lastWrite = System.IO.File.GetLastWriteTime(path);
-                if(DateTime.Now.Subtract(lastWrite).TotalMinutes < 15)
-                {
-                    return;
-                }
-
-                System.IO.File.Delete(path);
-            }
-
-            var client = AuthorizedConnection();
-
-            var useCase = new DownloadTerritoryAssignments(client);
-
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
-
-            client.Authenticate(credentials);
-
-            var resultString = client.DownloadString(
-                RelativeUrlBuilder.GetTerritoryAssignments());
-
-            string html = TerritoryAssignmentParser.Parse(resultString);
-
-            System.IO.File.WriteAllText(path, html);
-        }
-
-        void LoadFresh(Guid albaAccountId)
-        {
-            string path = string.Format(
-                options.AlbaAssignmentsHtmlPath, 
-                albaAccountId);
-
-            if (System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);
-            }
-
-            var client = AuthorizedConnection();
-
-            var useCase = new DownloadTerritoryAssignments(client);
-
-            var credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
-
-            client.Authenticate(credentials);
-
-            var resultString = client.DownloadString(
-                RelativeUrlBuilder.GetTerritoryAssignments());
-
-            string html = TerritoryAssignmentParser.Parse(resultString);
-
-            System.IO.File.WriteAllText(path, html);
-        }
-
-        IEnumerable<cuc.User> GetUsersFor(Guid albaAccountId)
-        {
-            string path = string.Format(options.AlbaUsersHtmlPath, albaAccountId);
-
-            if (!System.IO.File.Exists(path))
-            {
-                LoadUserData(albaAccountId);
-            }
-
-            string html = System.IO.File.ReadAllText(path);
-
-            return cuc.DownloadUsers.GetUsers(html);
-        }
-
-        void LoadUserData(Guid albaAccountId)
-        {
-            string path = string.Format(options.AlbaUsersHtmlPath, albaAccountId);
-
-            if (System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);
-            }
-
-            // TODO: Get credentials with albaAccountId
-            Credentials credentials = albaCredentialService.GetCredentialsFrom(User.Identity.Name);
-
-            AlbaConnection client = AuthorizedConnection();
-            client.Authenticate(credentials);
-
-            string assignedHtml = client.DownloadString(
-                RelativeUrlBuilder.GetTerritoryAssignmentsPage());
-
-            string usersHtml = cuc.DownloadUsers.GetUsersHtml(assignedHtml);
-
-            System.IO.File.WriteAllText(path, usersHtml);
-        }
-
         AlbaConnection AuthorizedConnection()
         {
             return AlbaConnection.From(options.AlbaHost);

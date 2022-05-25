@@ -1,29 +1,28 @@
-﻿using cuc = Controllers.UseCases;
+﻿using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System;
-using Controllers.UseCases;
-using Microsoft.Extensions.Options;
+using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IUserService
     {
         List<cuc.User> GetUsers(string authenticatedUserName);
+        void LoadUsers(string userName);
     }
 
     public class UserService : IUserService
     {
         readonly WebUIOptions options;
-        readonly IAlbaCredentialService _albaCredentialService;
+        readonly IAlbaUserGateway _albaUserGateway;
         readonly IAuthorizationService _authorizationService;
 
         public UserService(
-            IAlbaCredentialService albaCredentialService,
+            IAlbaUserGateway albaUserGateway,
             IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             options = optionsAccessor.Value;
-            _albaCredentialService = albaCredentialService;
+            _albaUserGateway = albaUserGateway;
             _authorizationService = authorizationService;
         }
 
@@ -34,16 +33,7 @@ namespace TerritoryTools.Web.MainSite.Services
             string currentUser = authenticatedUserName;
             if (!string.IsNullOrWhiteSpace(currentUser))
             {
-                Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(currentUser);
-                string path = string.Format(
-                   options.AlbaUsersHtmlPath,
-                   albaAccountId);
-
-                if (System.IO.File.Exists(path))
-                {
-                    string html = System.IO.File.ReadAllText(path);
-                    users = DownloadUsers.GetUsers(html);
-                }
+                users = _albaUserGateway.GetAlbaUsers(currentUser);
             }
 
             var adminUserNames = _authorizationService.GetAdminUsers();
@@ -71,5 +61,9 @@ namespace TerritoryTools.Web.MainSite.Services
             return users;
         }
 
+        public void LoadUsers(string userName)
+        {
+            _albaUserGateway.LoadAlbaUsers(userName);
+        }
     }
 }

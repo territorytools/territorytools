@@ -10,6 +10,7 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface IAlbaAssignmentGateway
     {
         List<AlbaAssignmentValues> GetAlbaAssignments(string userName);
+        void LoadAlbaAssignments(string userName);
     }
 
     public class AlbaAssignmentGateway : IAlbaAssignmentGateway
@@ -39,21 +40,7 @@ namespace TerritoryTools.Web.MainSite.Services
                   $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
                   out List<AlbaAssignmentValues> cacheValue))
             {
- 
-                var credentials = _albaCredentialService.GetCredentialsFrom(userName);
-
-                var client = _albaAuthClientService.AuthClient();
-                client.Authenticate(credentials);
-
-                var assignmentsJson = client.DownloadString(
-                    RelativeUrlBuilder.GetTerritoryAssignments());
-
-                string assignmentsHtml = TerritoryAssignmentParser.Parse(assignmentsJson);
-
-                // TODO: Probably don't need a dependency on client here
-                var useCase = new DownloadTerritoryAssignments(_albaAuthClientService.AuthClient());
-
-                var assignments = useCase.GetAssignments(assignmentsHtml);
+                List<AlbaAssignmentValues> assignments = DownloadAssignments(userName);
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSlidingExpiration(TimeSpan.FromMinutes(15));
@@ -64,6 +51,30 @@ namespace TerritoryTools.Web.MainSite.Services
             }
 
             return cacheValue;
+        }
+
+        public void LoadAlbaAssignments(string userName)
+        {
+            DownloadAssignments(userName);
+        }
+
+        List<AlbaAssignmentValues> DownloadAssignments(string userName)
+        {
+            var credentials = _albaCredentialService.GetCredentialsFrom(userName);
+
+            var client = _albaAuthClientService.AuthClient();
+            client.Authenticate(credentials);
+
+            var assignmentsJson = client.DownloadString(
+                RelativeUrlBuilder.GetTerritoryAssignments());
+
+            string assignmentsHtml = TerritoryAssignmentParser.Parse(assignmentsJson);
+
+            // TODO: Probably don't need a dependency on client here
+            var useCase = new DownloadTerritoryAssignments(_albaAuthClientService.AuthClient());
+
+            var assignments = useCase.GetAssignments(assignmentsHtml);
+            return assignments;
         }
     }
 }
