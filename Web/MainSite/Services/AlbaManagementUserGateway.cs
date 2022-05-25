@@ -44,7 +44,7 @@ namespace TerritoryTools.Web.MainSite.Services
                    $"AlbaManagementUsers:AccountID_{albaAccountId}",
                    out List<AlbaUserView> cacheValue))
             {
-                List<AlbaUserView> albaUsers = DownloadUsersFor(userName);
+                List<AlbaUserView> albaUsers = DownloadUsersFor(userName, albaAccountId);
 
                 return albaUsers;
             }
@@ -56,10 +56,11 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public void LoadUsers(string userName)
         {
-            DownloadUsersFor(userName);
+            Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
+            DownloadUsersFor(userName, albaAccountId);
         }
 
-        List<AlbaUserView> DownloadUsersFor(string userName)
+        List<AlbaUserView> DownloadUsersFor(string userName, Guid albaAccountId)
         {
             _logger.LogInformation($"Downloading users from Alba and caching them for userName: {userName}");
 
