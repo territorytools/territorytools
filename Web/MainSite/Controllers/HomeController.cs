@@ -17,27 +17,27 @@ namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class HomeController : AuthorizedController
     {
+        private readonly IUserService _userService;
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly Services.IQRCodeActivityService qrCodeActivityService;
 
         public HomeController(
+            IUserService userService,
+            ICombinedAssignmentService combinedAssignmentService,
+            IAlbaAuthClientService albaAuthClientService,
             MainDbContext database,
             IStringLocalizer<AuthorizedController> localizer,
             IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
             IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
-            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
-                phoneTerritoryAssignmentService,
                 optionsAccessor)
         {
+            _userService = userService;
+            _combinedAssignmentService = combinedAssignmentService;
             this.qrCodeActivityService = qrCodeActivityService;
         }
 
@@ -61,7 +61,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 try
                 {
-                    var users = GetUsers(account, user, password);
+                    var users = _userService.GetUsers(User.Identity.Name);
                     var me = users.FirstOrDefault(
                         u => string.Equals(
                             u.Email,
@@ -80,7 +80,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                      return NotFound(e.Message);
                 }
 
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
@@ -224,11 +224,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var assignment = allAssignments.Rows
                     .Where(a => string.Equals(
                         a.Number,
@@ -276,7 +276,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return Forbid();
             }
 
-            LoadUserData();
+            //LoadUserData();
 
             return LocalRedirect("~/Home/Load");
         }
@@ -300,7 +300,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-            var allAssignments = GetAllAssignments();
+            var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
             var assignment = allAssignments.Rows
                .FirstOrDefault(a => a.Id == territoryId);
 
@@ -312,7 +312,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult UnassignSuccess(int territoryId)
         {
-            var allAssignments = GetAllAssignments();
+            var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
             var assignment = allAssignments.Rows
                .FirstOrDefault(a => a.Id == territoryId);
 

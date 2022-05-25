@@ -1,17 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-//using Org.BouncyCastle.Ocsp;
 using System;
 using System.Linq;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Models;
 using TerritoryTools.Web.Data.Services;
+using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 using TerritoryTools.Web.MainSite.Controllers;
 using TerritoryTools.Web.MainSite.Services;
-using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
 
 namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
 {
@@ -20,28 +18,21 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
     [Route("/UrlShortener/[controller]/[action]")]
     public class ShortUrlsController : AuthorizedController
     {
+        private readonly MainDbContext _database;
         private readonly IShortUrlService service;
         private readonly string _hostName;
 
         public ShortUrlsController(
+            IUserService userService,
             MainDbContext database,
             IShortUrlService service, 
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
-            TerritoryTools.Web.MainSite.Services.IAuthorizationService authorizationService,
-            IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
-            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
+            Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
-                phoneTerritoryAssignmentService,
                 optionsAccessor)
         {
+            _database = database;
             this.service = service;
             _hostName = optionsAccessor.Value.UrlShortenerDomain;
         }
@@ -163,7 +154,7 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
             //ViewData["HostName"] = hostName;
             //ViewData["Path"] = path;
 
-            var activity = database
+            var activity = _database
                    .ShortUrlActivity
                    .Where(a => a.ShortUrlId == url.Id)
                    .OrderBy(a => a.TimeStamp);

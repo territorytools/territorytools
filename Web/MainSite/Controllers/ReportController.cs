@@ -1,14 +1,13 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using TerritoryTools.Web.MainSite.Services;
-using TerritoryTools.Web.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -16,27 +15,30 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public class ReportController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
-
+        private readonly IUserService _userService;
+        private readonly IAlbaUserGateway _albaUserGateway;
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
+        private readonly IAlbaCredentialService _albaCredentialService;
+        private readonly MainDbContext _database;
         IAccountLists accountLists;
         public ReportController(
+            IUserService userService,
+            IAlbaUserGateway albaUserGateway,
+            ICombinedAssignmentService combinedAssignmentService,
+            IAlbaCredentialService albaCredentialService,
             MainDbContext database,
             IAccountLists accountLists,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
-            IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
-            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
-                phoneTerritoryAssignmentService,
                 optionsAccessor)
         {
+            _userService = userService;
+            _albaUserGateway = albaUserGateway;
+            _combinedAssignmentService = combinedAssignmentService;
+            _albaCredentialService = albaCredentialService;
+            _database = database;
             this.accountLists = accountLists;
         }
 
@@ -50,7 +52,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
@@ -79,7 +81,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var groups = allAssignments.Rows
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
@@ -116,7 +118,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var assignments = allAssignments.Rows
                     .ToList();
 
@@ -203,7 +205,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var completed = allAssignments.Rows
                     .Where(ast => ast.LastCompleted != null)
                     .ToList();
@@ -306,11 +308,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var publishers = GetUsers(account, user, password)
+                var publishers = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var assignments = allAssignments.Rows
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null)
@@ -342,11 +344,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var allAssignments = GetAllAssignments();
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 var assignments = allAssignments.Rows
                     .Where(a => string.Equals(
                         a.Status,
@@ -381,11 +383,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                Guid albaAccountId = albaCredentialService
-                    .GetAlbaAccountIdFor(User.Identity.Name);
-
                 var userListView = new AlbaUserListView();
-                userListView.Users = GetAlbaUsers(albaAccountId)
+                userListView.Users = _albaUserGateway.GetAlbaUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
@@ -407,7 +406,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var assignments = database
+                var assignments = _database
                     .TerritoryAssignments
                     .ToList();
 

@@ -97,13 +97,20 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ITerritoryAssignmentService, TerritoryAssignmentService>();
             services.AddScoped<AreaService>();
+            services.AddScoped<IPhoneTerritoryAssignmentGateway, PhoneTerritoryAssignmentGateway>();
             services.AddScoped<IPhoneTerritoryCreationService, PhoneTerritoryCreationService>();
             services.AddScoped<IPhoneTerritoryAddWriterService, PhoneTerritoryAddWriterService>();
             services.AddScoped<ISpreadSheetService>(s => new GoogleSheets(
                 System.IO.File.ReadAllText("./GoogleApi.secrets.json")));
             services.AddScoped<ISheetExtractor, SheetExtractor>();
-            services.AddScoped<IPhoneTerritoryAssignmentService, PhoneTerritoryAssignmentService>();
+            services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
+            services.AddScoped<IAlbaAssignmentGateway, AlbaAssignmentGateway>();
+            services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
+            services.AddScoped<IAlbaUserGateway, AlbaUserGateway>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITerritoryUserService, TerritoryUserService>();
+            services.AddScoped<IPhoneTerritoryAssignmentService, PhoneTerritoryAssignmentService>();
+            services.AddScoped<ICombinedAssignmentService, AllCombinedAssignmentService>();
 
             services.Configure<WebUIOptions>(Configuration);
 
