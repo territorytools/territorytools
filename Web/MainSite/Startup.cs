@@ -39,6 +39,7 @@ namespace TerritoryTools.Web.MainSite
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging();
+            services.AddApplicationInsightsTelemetry();
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
