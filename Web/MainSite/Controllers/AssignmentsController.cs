@@ -6,11 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Web.MainSite.Services;
-using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -18,27 +16,27 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/assignments")]
     public class AssignmentsController : Controller
     {
+        private readonly IAssignLatestService _assignmentService;
         readonly IUserService _userService;
         readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly IAlbaCredentialService _albaCredentialService;
-        readonly AreaService _areaService;
         readonly ITerritoryAssignmentService _territoryAssignmentService;
         readonly ILogger _logger;
         readonly WebUIOptions _options;
 
         public AssignmentsController(
+            IAssignLatestService assignmentService,
             IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
             IAlbaCredentialService albaCredentialService,
-            AreaService areaService,
             ITerritoryAssignmentService territoryAssignmentService,
             ILogger<AssignmentsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
+            _assignmentService = assignmentService;
             _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
             _albaCredentialService = albaCredentialService;
-            _areaService = areaService;
             _territoryAssignmentService = territoryAssignmentService;
             _logger = logger;
             _options = optionsAccessor.Value;
@@ -77,177 +75,26 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         [HttpPost("latest")]
         public ActionResult<AssignmentResult> AssignLatest(
+            string userName,
             int userId,
             [Range(1, 99)]
             int count = 1,
             string area = "*")
         {
-            _logger.LogInformation($"Assigning latest territory count: {count} area: {area} to userId: {userId} As: ({User.Identity.Name})...");
-
-            var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
-
-            var client = AuthorizedConnection();
-            client.Authenticate(credentials);
-
-            var territories = _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
-
-            if (territories.Count() == 0)
+            var request = new AssignmentLatestRequest
             {
-                string message = "There are no territories to assign!";
-                _logger.LogError(message);
-                return BadRequest(message);
-            }
+                RealUserName = User.Identity.Name,
+                UserId = userId,
+                Count = count,
+                Area = area
+            };
 
-            var areas = _areaService.All();
-            var includePattern = new Regex("^\\w{3}\\d{3}$");
-            if(area != "*")
-            {
-                var matchedArea = areas.FirstOrDefault(a => a.Code == area);
-                if (matchedArea == null)
-                {
-                    string message = $"There are {territories.Count()} territories, but none in the area you have requested! (1)";
-                    _logger.LogError(message);
-                    return BadRequest(message);
-                }
+            AssignmentResult result = _assignmentService.AssignmentLatest(request);
 
-                if (matchedArea.IsParent)
-                {
-                    string areaPattern = "";
-                    var children = areas.Where(a => a.Parent == matchedArea.Parent).Select(a => a.Code);
-                    if (children.Count() > 0)
-                    {
-                        areaPattern = string.Join('|', children);
-                        includePattern = new Regex("^(" + areaPattern + ")\\d{3}$");
-                    }
-                }
-                else
-                {
-                    includePattern = new Regex("^" + area + "\\d{3}$");
-
-                }
-            }
-
-            var queryInclude =
-                from t in territories
-                where includePattern.IsMatch(t.Description)
-                    && t.Status != null
-                    && t.Status.ToUpper() == "AVAILABLE"
-                select t;
-
-            if (queryInclude.Count() == 0)
-            {
-                string message = $"There are {territories.Count()} territories, but none in the area you have requested!";
-                _logger.LogError(message);
-                return BadRequest(message);
-            }
-
-            // TODO: Remove this magic RegEx string...
-            var excludePattern = new Regex(
-                "(^(MER|BIZ|LETTER|TELEPHONE|NOT).*|.*\\-BUSINESS)");
-
-            var queryExclude =
-                from t in queryInclude
-                where !excludePattern.IsMatch(t.Description)
-                select t;
-
-            if (queryExclude.Count() == 0)
-            {
-                string message = $"There are {territories.Count()} territories, include includes {queryExclude.Count()}, but none match the exclude pattern!";
-                _logger.LogError(message);
-                return BadRequest(message);
-            }
-
-            var latestTerritories = queryExclude
-                .OrderBy(t => t.LastCompleted ?? DateTime.MinValue)
-                .Take(count);
-
-            var latestTerritoryIds = new List<int>();
-            foreach (var territory in latestTerritories)
-            {
-                try
-                {
-                    latestTerritoryIds.Add(territory.Id);
-                    string result = client.DownloadString(
-                        RelativeUrlBuilder.AssignTerritory(
-                            territory.Id,
-                            userId,
-                            DateTime.Now));
-
-                }
-                catch (Exception)
-                {
-                    string message = $"Cannot assign territory {territory.Id} to user {userId}";
-                    _logger.LogError(message);
-                    return BadRequest(message);
-                }
-            }
-
-            string userName = "Somebody";
-
-            try
-            {
-                cuc.User myUser = _userService.GetUsers(User.Identity.Name)
-                    .FirstOrDefault(u => u.Id == userId);
-
-                if (myUser != null)
-                {
-                    userName = myUser.Name;
-                }
-            }
-            catch(Exception)
-            {
-                string message = $"Cannot get user name for user id {userId}";
-                _logger.LogError(message);
-                return BadRequest(message);
-            }
-
-            var refreshedTerritories = new List<AlbaAssignmentValues>();
-
-            try
-            {
-                // This should refresh the mobile territory link to send to the user
-                var allAssignments = _territoryAssignmentService
-                    .GetAllAssignmentsFresh(User.Identity.Name);
-
-                refreshedTerritories = allAssignments
-                    .Where(a => latestTerritoryIds.Contains(a.Id))
-                    .ToList();
-            }
-            catch(Exception)
-            {
-                string message = "Cannot refresh mobile territory link";
-                _logger.LogError(message);
-                return BadRequest(message);
-            }
-
-            var items = refreshedTerritories.Select(a =>
-                new TerritoryResultItem
-                {
-                    Uri = a.MobileLink,
-                    Description = $"{a.Number} {a.Description}"
-                })
-                .ToList();
-
-            _logger.LogInformation($"Successfully assigned {items.Count} territories to {userName} As: ({User.Identity.Name})");
-            foreach(var item in items)
-            {
-                _logger.LogInformation($"Successfully assigned {item.Description} to {userName} As: ({User.Identity.Name})");
-            }
-
-            return Ok(
-                new AssignmentResult
-                {
-                    Success = true,
-                    Message = $"Successfully assigned to {userName}",
-                    Items = items
-                });
-        }
-
-        public class AssignmentResult
-        {
-            public bool Success { get; internal set; }
-            public string Message { get; set; }
-            public List<TerritoryResultItem> Items { get; set; } = new List<TerritoryResultItem>();
+            if(result.Success)
+                return Ok(result);
+            else
+                return BadRequest(result);
         }
 
         public class TerritoryResultItem

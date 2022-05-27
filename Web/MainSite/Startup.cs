@@ -113,6 +113,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<ITerritoryUserService, TerritoryUserService>();
             services.AddScoped<IPhoneTerritoryAssignmentService, PhoneTerritoryAssignmentService>();
             services.AddScoped<ICombinedAssignmentService, AllCombinedAssignmentService>();
+            services.AddScoped<IAssignLatestService, AssignLatestService>();
 
             services.Configure<WebUIOptions>(Configuration);
 
