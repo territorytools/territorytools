@@ -76,7 +76,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                 {
                     new Data { name = "Number", value = territory.Number},
                     new Data { name = "CityArea", value = territory.CityArea},
-                    new Data { name = "AssignUrl", value = $"http://territory.bellevuemandarin.org/t/{territory.Number}"},
+                    new Data { name = "AssignUrl", value = $"http://territorytools.org/t/{territory.Number}"},
                     new Data { name = "SignedOut", value = territory.SignedOut?.ToString()},
                     new Data { name = "SignedOutTo", value = territory.SignedOutTo},
                     new Data { name = "Status", value = territory.Status},
