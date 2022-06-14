@@ -21,7 +21,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAlbaCredentialService albaCredentialService,
             ITerritoryAssignmentService territoryAssignmentService,
             IAlbaCredentials credentials,
-            ILogger<AssignmentsController> logger,
+            ILogger<AssignmentsApiController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
             this.albaCredentialService = albaCredentialService;

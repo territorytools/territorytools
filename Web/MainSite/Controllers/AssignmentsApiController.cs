@@ -14,7 +14,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     [Route("api/assignments")]
-    public class AssignmentsController : Controller
+    public class AssignmentsApiController : Controller
     {
         private readonly IAssignLatestService _assignmentService;
         readonly IUserService _userService;
@@ -24,13 +24,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
         readonly ILogger _logger;
         readonly WebUIOptions _options;
 
-        public AssignmentsController(
+        public AssignmentsApiController(
             IAssignLatestService assignmentService,
             IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
             IAlbaCredentialService albaCredentialService,
             ITerritoryAssignmentService territoryAssignmentService,
-            ILogger<AssignmentsController> logger,
+            ILogger<AssignmentsApiController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
             _assignmentService = assignmentService;
@@ -124,11 +124,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
         }
 
-        [HttpGet("[action]")]
-        public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
-        {
-            return _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
-        }
+        //[HttpGet("[action]")]
+        //public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
+        //{
+        //    return _territoryAssignmentService.GetAllAssignmentsFresh(User.Identity.Name);
+        //}
 
         [HttpGet("[action]")]
         public IEnumerable<AlbaAssignmentValues> NeverCompleted()

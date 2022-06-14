@@ -1,0 +1,37 @@
+@using TerritoryTools.Alba.Controllers.UseCases;
+@using TerritoryTools.Web.MainSite;
+@model SingleTerritoryManagerPage
+
+<h3>Manage Territory @Model.Number</h3>
+<p>Description: @Model.Description</p>
+<p>Signed Out To: <strong>@(Model.SignedOutTo ?? "Name is missing")</strong></p>
+@if (@Model.Description.StartsWith("PHONE"))
+{
+    <div class="p-2" style="min-width:60px;">
+        <a class="btn btn-primary" target="_blank" href="@Model.MobileLink">Sheet</a>
+    </div>
+}
+else
+{
+    <div class="p-2" style="min-width:60px;">
+        <a class="btn btn-primary" target="_blank" href="@Model.MobileLink">Map</a>
+    </div>
+}
+
+<div class="p-1 mr-1 ml-1" style="width:100px;">
+    <form action="/api/Assignments/Unassign" id="unassign-form">
+        <input hidden name="territoryId" value="@Model.Number">
+        <input class="btn btn-primary" type="submit" value="Unassign">
+    </form>
+</div>
+<div class="p-1 mr-1 ml-1" style="width:100px;">
+    <form action="/api/Assignments/Complete" id="complete-form">
+        <input hidden name="territoryId" value="@Model.Number">
+        <input class="btn btn-primary" type="submit" value="Close">
+    </form>
+</div>
+
+
+<a class="btn btn-outline-primary" 
+    asp-controller="ManageTerritories" 
+    asp-action="Index">Manage Territories</a>

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
-using static TerritoryTools.Web.MainSite.Controllers.AssignmentsController;
+using static TerritoryTools.Web.MainSite.Controllers.AssignmentsApiController;
 using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services

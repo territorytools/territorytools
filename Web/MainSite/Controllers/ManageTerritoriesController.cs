@@ -19,6 +19,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
         private readonly IUserService _userService;
         private readonly AreaService _areaService;
         private readonly Services.IAuthorizationService _authorizationService;
@@ -26,6 +27,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly IAlbaAuthClientService _albaAuthClientService;
 
         public ManageTerritoriesController(
+            ICombinedAssignmentService combinedAssignmentService,
             IUserService userService,
             AreaService areaService,
             IAccountLists accountLists,
@@ -37,6 +39,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 authorizationService,
                 optionsAccessor)
         {
+            _combinedAssignmentService = combinedAssignmentService;
             _userService = userService;
             _areaService = areaService;
             _authorizationService = authorizationService;
@@ -65,6 +68,47 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 };
 
                 return View(report);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        public IActionResult Single(string territoryNumber)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(territoryNumber))
+                {
+                    return View(new SingleTerritoryManagerPage());
+                }
+
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
+                var assignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+
+                var territory = assignments.Rows
+                    .Where(t => string.Equals(t.Number, territoryNumber))
+                    .SingleOrDefault();
+
+                if(territory == null)
+                    return View(new SingleTerritoryManagerPage() {  Description = "Not Found"});
+
+                var page = new SingleTerritoryManagerPage()
+                {
+                    Number = territoryNumber,
+                    Description = territory.Description,
+                    MobileLink = territory.MobileLink,
+                    SignedOutTo = territory.SignedOutTo
+
+                };
+
+                return View(page);
             }
             catch (Exception)
             {
