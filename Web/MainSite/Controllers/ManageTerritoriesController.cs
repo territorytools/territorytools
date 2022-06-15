@@ -76,6 +76,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [Authorize]
+        [Route("ManageTerritories/Single/{territoryNumber}")]
         public IActionResult Single(string territoryNumber)
         {
             try
@@ -104,8 +105,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Number = territoryNumber,
                     Description = territory.Description,
                     MobileLink = territory.MobileLink,
-                    SignedOutTo = territory.SignedOutTo
-
+                    SignedOutTo = territory.SignedOutTo,
+                    SignedOut = territory.SignedOut?.ToString("yyyy-MM-dd"),
+                    LastCompletedBy = territory.LastCompletedBy,
+                    LastCompleted = territory.LastCompleted?.ToString("yyyy-MM-dd"),
+                    Kind = territory.Kind,
+                    Addresses = territory.Addresses,
+                    Status = territory.Status
                 };
 
                 return View(page);
