@@ -8,14 +8,20 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface IAlbaAuthClientService
     {
         AlbaConnection AuthClient();
+        string DownloadString(string uri, string userName);
     }
 
     public class AlbaAuthClientService : IAlbaAuthClientService
     {
-        readonly WebUIOptions options;
-        public AlbaAuthClientService(IOptions<WebUIOptions> optionsAccessor)
+        readonly WebUIOptions _options;
+        readonly IAlbaCredentialService _albaCredentialService;
+
+        public AlbaAuthClientService(
+            IAlbaCredentialService albaCredentialService,
+            IOptions<WebUIOptions> optionsAccessor)
         {
-            options = optionsAccessor.Value;
+            _options = optionsAccessor.Value;
+            _albaCredentialService = albaCredentialService;
         }
 
         public AlbaConnection AuthClient()
@@ -23,7 +29,7 @@ namespace TerritoryTools.Web.MainSite.Services
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
                 protocolPrefix: "https://",
-                site: options.AlbaHost,
+                site: _options.AlbaHost,
                 applicationPath: "/alba");
 
             var client = new AlbaConnection(
@@ -31,6 +37,17 @@ namespace TerritoryTools.Web.MainSite.Services
                 basePath: basePath);
 
             return client;
+        }
+
+        public string DownloadString(string uri, string userName)
+        {
+            Credentials credentials = _albaCredentialService.GetCredentialsFrom(userName);
+
+            AlbaConnection client = AuthClient();
+
+            client.Authenticate(credentials);
+
+            return client.DownloadString(uri);
         }
     }
 }

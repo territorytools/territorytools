@@ -184,8 +184,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
-                var assignment = allAssignments.Rows
+                var result = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var assignment = result.Rows
                     .Where(a => string.Equals(
                         a.Number,
                         number,

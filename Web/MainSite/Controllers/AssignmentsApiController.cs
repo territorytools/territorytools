@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,35 +14,26 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public class AssignmentsApiController : Controller
     {
         readonly IAssignLatestService _assignmentService;
-        readonly IUserService _userService;
         readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly KmlFileService _kmlFileService;
         readonly AssignmentsCsvFileService _assignmentsCsvFileService;
-        readonly IAlbaCredentialService _albaCredentialService;
         readonly ITerritoryAssignmentService _territoryAssignmentService;
         readonly ILogger _logger;
-        readonly WebUIOptions _options;
 
         public AssignmentsApiController(
             IAssignLatestService assignmentService,
-            IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
             KmlFileService kmlFileService,
             AssignmentsCsvFileService assignmentsCsvFileService,
-            IAlbaCredentialService albaCredentialService,
             ITerritoryAssignmentService territoryAssignmentService,
-            ILogger<AssignmentsApiController> logger,
-            IOptions<WebUIOptions> optionsAccessor)
+            ILogger<AssignmentsApiController> logger)
         {
             _assignmentService = assignmentService;
-            _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
             _kmlFileService = kmlFileService;
             _assignmentsCsvFileService = assignmentsCsvFileService;
-            _albaCredentialService = albaCredentialService;
             _territoryAssignmentService = territoryAssignmentService;
             _logger = logger;
-            _options = optionsAccessor.Value;
         }
 
         [HttpGet("[action]")]
