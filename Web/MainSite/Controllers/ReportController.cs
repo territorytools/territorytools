@@ -61,7 +61,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Users= users,
                 };
 
-                ViewData["CompletionMapUrl"] = options.CompletionMapUrl;
+                ViewData["CompletionMapUrl"] = _options.CompletionMapUrl;
 
                 return View(report);
             }

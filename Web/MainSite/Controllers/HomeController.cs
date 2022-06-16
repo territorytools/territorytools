@@ -1,18 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Http;
-using TerritoryTools.Web.Data;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.MainSite.Services;
 using TerritoryTools.Web.MainSite.Models;
-using Microsoft.Extensions.Logging;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -26,13 +23,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
         public HomeController(
             IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
-            IAlbaAuthClientService albaAuthClientService,
-            MainDbContext database,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
-            IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor,
             ILogger<HomeController> logger) : base(
                 userService,
@@ -51,7 +43,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             {
                 var publisher = new Publisher()
                 {
-                    Email = User.Identity.Name
+                    Email = User.Identity.Name,
+                    UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
                 };
 
                 if (!IsUser())

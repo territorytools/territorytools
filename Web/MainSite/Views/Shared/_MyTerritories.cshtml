@@ -61,15 +61,15 @@
                     <div class="p-2 flex-grow-1">@assignment.Description</div>
                     <div class="p-2" style="width:150px;text-align:left;">@signedOut @unit</div>
                     @*<div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>*@
-                    @if (assignment.Description.StartsWith("PHONE"))
-                    {
-                    }
                     <div class="p-2" style="min-width:60px;">
                         <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">@Localizer["OpenButton"]</a>
                     </div>
-                    <div class="p-2" style="min-width:60px;">
-                        <a class="btn btn-primary" target="_blank" href="ManageTerritories/Single/@assignment.Number">@Localizer["CompleteButton"]</a>
-                    </div>
+                    @if (Model.UserSelfCompleteFeatureEnabled)
+                    {
+                        <div class="p-2" style="min-width:60px;">
+                            <a class="btn btn-primary" target="_blank" href="ManageTerritories/Single/@assignment.Number">@Localizer["CompleteButton"]</a>
+                        </div>
+                    }
                 </div>
             }
         </div>

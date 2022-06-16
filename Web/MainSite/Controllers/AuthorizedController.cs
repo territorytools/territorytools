@@ -21,10 +21,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             _userService = userService;
             _authorizationService = authorizationService;
-            options = optionsAccessor.Value;
+            _options = optionsAccessor.Value;
         }
 
-        protected readonly WebUIOptions options;
+        protected readonly WebUIOptions _options;
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
