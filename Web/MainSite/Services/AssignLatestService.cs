@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
-using static TerritoryTools.Web.MainSite.Controllers.AssignmentsApiController;
 using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -35,6 +34,7 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         readonly IUserService _userService;
         readonly ITerritoryAssignmentService _territoryAssignmentService;
+        readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly IAlbaCredentialService _albaCredentialService;
         readonly AreaService _areaService;
         readonly ILogger<AssignLatestService> _logger;
@@ -43,6 +43,7 @@ namespace TerritoryTools.Web.MainSite.Services
         public AssignLatestService(
             IUserService userService,
             ITerritoryAssignmentService territoryAssignmentService,
+            ICombinedAssignmentService combinedAssignmentService,
             IAlbaCredentialService albaCredentialService,
             AreaService areaService,
             ILogger<AssignLatestService> logger,
@@ -50,6 +51,7 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             _userService = userService;
             _territoryAssignmentService = territoryAssignmentService;
+            _combinedAssignmentService = combinedAssignmentService;
             _albaCredentialService = albaCredentialService;
             _areaService = areaService;
             _logger = logger;
@@ -70,7 +72,8 @@ namespace TerritoryTools.Web.MainSite.Services
             var client = AlbaConnection.From(_options.AlbaHost);
             client.Authenticate(credentials);
 
-            var territories = _territoryAssignmentService.GetAllAssignmentsFresh(realUserName);
+            var territories = _combinedAssignmentService.GetAllAssignments(realUserName)
+                .Rows;
 
             if (territories.Count() == 0)
             {
@@ -211,10 +214,11 @@ namespace TerritoryTools.Web.MainSite.Services
             try
             {
                 // This should refresh the mobile territory link to send to the user
-                var allAssignments = _territoryAssignmentService
-                    .GetAllAssignmentsFresh(realUserName);
+                _combinedAssignmentService.LoadAssignments(realUserName);
 
-                refreshedTerritories = allAssignments
+                GetAllAssignmentsResult result = _combinedAssignmentService.GetAllAssignments(realUserName);
+
+                refreshedTerritories = result.Rows
                     .Where(a => latestTerritoryIds.Contains(a.Id))
                     .ToList();
             }
@@ -250,5 +254,11 @@ namespace TerritoryTools.Web.MainSite.Services
                 Items = items
             };
         }
+    }
+
+    public class TerritoryResultItem
+    {
+        public string Uri { get; set; }
+        public string Description { get; set; }
     }
 }

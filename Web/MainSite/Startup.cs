@@ -112,6 +112,8 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IPhoneTerritoryAssignmentService, PhoneTerritoryAssignmentService>();
             services.AddScoped<ICombinedAssignmentService, AllCombinedAssignmentService>();
             services.AddScoped<IAssignLatestService, AssignLatestService>();
+            services.AddScoped<KmlFileService>();
+            services.AddScoped<AssignmentsCsvFileService>();
 
             services.Configure<WebUIOptions>(Configuration);
 

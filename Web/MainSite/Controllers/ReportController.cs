@@ -87,10 +87,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
 
-                var publishers = new List<Publisher>();
+                var publishers = new List<Models.Publisher>();
                 foreach (var group in groups.OrderBy(g => g.Key))
                 {
-                    var pub = new Publisher() { Name = group.Key };
+                    var pub = new Models.Publisher() { Name = group.Key };
                     var ordered = group.OrderByDescending(a => a.SignedOut);
                     foreach (var item in ordered)
                     {

@@ -41,7 +41,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                var publisher = new Publisher()
+                var publisher = new Models.Publisher()
                 {
                     Email = User.Identity.Name,
                     UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
@@ -156,57 +156,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Route("/DeleteCookies")]
         public IActionResult DeleteCookies()
         {
-            /*
-            string domain = "territorytools.org";
-            if (HttpContext.Current.Request.Cookies[cookieName] != null)
-            {
-                HttpCookie cookie = HttpContext.Current.Request.Cookies[cookieName];
-        
-                // SameSite.None Cookies won't be accepted by Google Chrome and other modern browsers if they're not secure, which would lead in a "non-deletion" bug.
-                // in this specific scenario, we need to avoid emitting the SameSite attribute to ensure that the cookie will be deleted.
-                if (cookie.SameSite == SameSiteMode.None && !cookie.Secure)
-                    cookie.SameSite = (SameSiteMode)(-1);
-        
-                if (String.IsNullOrEmpty(keyName))
-                {
-                    cookie.Expires = DateTime.UtcNow.AddYears(-1);
-                    if (!String.IsNullOrEmpty(domain)) cookie.Domain = domain;
-                    HttpContext.Current.Response.Cookies.Add(cookie);
-                    //HttpContext.Current.Request.Cookies.Remove(cookieName);
-                }
-                else
-                {
-                    cookie.Values.Remove(keyName);
-                    if (!String.IsNullOrEmpty(domain)) cookie.Domain = domain;
-                    HttpContext.Current.Response.Cookies.Add(cookie);
-                }
-            }*/
-
             foreach (var cookie in HttpContext.Request.Cookies)
             {
                 Console.WriteLine($"Request Cookie");
                 Console.WriteLine($"Key: {cookie.Key}");
                 Console.WriteLine($"Value: {cookie.Value}");
                 Response.Cookies.Delete(cookie.Key);
-                // Console.WriteLine($"Domain: {cookie.Domain}");
-                // Console.WriteLine($"Key: {cookie.Key}");
-                // Console.WriteLine($"Expires: {cookie.Expires.ToString()}");
-                //HttpContext.Current.Request.Cookies.Delete(cookie.Key);
             }
-
-            // foreach (var cookie in HttpContext.Response.Cookies)
-            // {
-            //     Console.WriteLine($"Response Cookie");
-            //     Console.WriteLine($"Domain: {cookie.Domain}");
-            //     Console.WriteLine($"Key: {cookie.Key}");
-            //     Console.WriteLine($"Expires: {cookie.Expires.ToString()}");
-            //     //Response.Cookies.Delete(cookie.Key);
-            // }
-
-            // foreach (var cookie in HttpContext.Response.Cookies)
-            // {
-            //     Response.Cookies.Delete(cookie.Key);
-            // }
 
             return View();
         }
