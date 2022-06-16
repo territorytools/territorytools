@@ -102,6 +102,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 var page = new SingleTerritoryManagerPage()
                 {
+                    Id = territory.Id,
                     Number = territoryNumber,
                     Description = territory.Description,
                     MobileLink = territory.MobileLink,

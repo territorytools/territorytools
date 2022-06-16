@@ -68,6 +68,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 DateTime.TryParse(phoneAssignment.Date, out DateTime date);
                 var assignment = new AlbaAssignmentValues
                 {
+                    // Negative numbers can be for phone territories
+                    Id = -result.Rows.IndexOf(phoneAssignment),
                     Number = phoneAssignment.TerritoryNumber,
                     SignedOutTo = phoneAssignment.Transaction == "Checked Out" ? phoneAssignment.Publisher : null,
                     SignedOut = phoneAssignment.Transaction == "Checked Out" ? date : null,

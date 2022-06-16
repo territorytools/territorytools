@@ -124,6 +124,27 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
         }
 
+        [HttpGet("[action]")]
+        public IActionResult Complete(int territoryId)
+        {
+            _logger.LogInformation($"Marking as complete territoryId {territoryId} ({User.Identity.Name})");
+
+            var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+
+            var client = AuthorizedConnection();
+            client.Authenticate(credentials);
+
+            string date = DateTime.Now.ToString("yyyy-MM-dd");
+
+            string result = client.DownloadString(
+                RelativeUrlBuilder.SetTerritoryCompleted(territoryId, DateTime.Today));
+
+            LoadForCurrentAccount();
+
+            return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
+        }
+
+
         //[HttpGet("[action]")]
         //public IEnumerable<AlbaAssignmentValues> All(string account, string user, string password)
         //{

@@ -3,34 +3,27 @@
 @model SingleTerritoryManagerPage
 
 <h3>Manage Territory @Model.Number</h3>
-<p>Description: @Model.Description</p>
+<p>Description: <strong>@Model.Description</strong></p>
 <p>Status: <strong>@Model.Status</strong></p>
 <p>Signed Out: <strong>@Model.SignedOut</strong> to <strong>@(Model.SignedOutTo ?? "Name is missing")</strong></p>
 <p>Last Completed: <strong>@Model.LastCompleted</strong> by <strong>@Model.LastCompletedBy</strong></p>
 <p>Territory Type: <strong>@Model.Kind</strong></p>
 <p>Address Count: <strong>@Model.Addresses</strong></p>
-@if (@Model.Description.StartsWith("PHONE"))
-{
-    <div class="p-2" style="min-width:60px;">
-        <a class="btn btn-primary" target="_blank" href="@Model.MobileLink">Sheet</a>
-    </div>
-}
-else
-{
-    <div class="p-2" style="min-width:60px;">
-        <a class="btn btn-primary" target="_blank" href="@Model.MobileLink">Map</a>
-    </div>
-}
+<div class="p-2" style="min-width:60px;">
+    <a class="btn btn-primary" target="_blank" href="@Model.MobileLink">
+        Open @(Model.Description.StartsWith("PHONE") ? "Sheet" : "Map")
+    </a>
+</div>
 
 <div class="p-1 mr-1 ml-1" style="width:100px;">
     <form action="/api/Assignments/Unassign" id="unassign-form">
-        <input hidden name="territoryId" value="@Model.Number">
+        <input hidden name="territoryId" value="@Model.Id">
         <input class="btn btn-primary" type="submit" value="Unassign">
     </form>
 </div>
 <div class="p-1 mr-1 ml-1" style="width:100px;">
-    <form action="/api/Assignments/Complete" id="complete-form">
-        <input hidden name="territoryId" value="@Model.Number">
-        <input class="btn btn-primary" type="submit" value="Close">
+    <form action="/api/assignments/complete" id="complete-form">
+        <input hidden name="territoryId" value="@Model.Id">
+        <input class="btn btn-primary" type="submit" value="Complete">
     </form>
 </div>

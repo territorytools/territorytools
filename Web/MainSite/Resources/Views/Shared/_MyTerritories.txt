@@ -3,7 +3,8 @@ YourTerritories=Your Territories
 Description=Description
 Assigned=Assigned
 Addresses=Addr.
-MapButton=Map
+OpenButton=Open
+CompleteButton=Complete
 NoTerritoriesMessage=You do not have any territories checked out.
 NoQRCodesMessage=You have not generated any QR Codes.
 
