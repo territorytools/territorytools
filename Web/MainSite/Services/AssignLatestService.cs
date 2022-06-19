@@ -195,7 +195,8 @@ namespace TerritoryTools.Web.MainSite.Services
 
                 if (myUser != null)
                 {
-                    realUserName = myUser.Name;
+                    //wrong//realUserName = myUser.Name;
+                    currentUserName = myUser.Name;
                 }
             }
             catch (Exception)
