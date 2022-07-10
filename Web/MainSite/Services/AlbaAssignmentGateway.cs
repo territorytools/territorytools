@@ -10,8 +10,14 @@ namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IAlbaAssignmentGateway
     {
-        List<AlbaAssignmentValues> GetAlbaAssignments(string userName);
+        GetAlbaAssignmentsResult GetAlbaAssignments(string userName);
         void LoadAlbaAssignments(string userName);
+    }
+
+    public class GetAlbaAssignmentsResult
+    {
+        public bool Success { get; set; }
+        public List<AlbaAssignmentValues> AssignmentValues { get; set; } = new List<AlbaAssignmentValues>();
     }
 
     public class AlbaAssignmentGateway : IAlbaAssignmentGateway
@@ -36,22 +42,39 @@ namespace TerritoryTools.Web.MainSite.Services
             _options = optionsAccessor.Value;
         }
 
-        public List<AlbaAssignmentValues> GetAlbaAssignments(string userName)
+        public GetAlbaAssignmentsResult GetAlbaAssignments(string userName)
         {
-            Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
-
-            if (!_memoryCache.TryGetValue(
-                  $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
-                  out List<AlbaAssignmentValues> cacheValue))
+            try
             {
-                List<AlbaAssignmentValues> assignments = DownloadAssignments(userName, albaAccountId);
+                Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
 
-                return assignments;
+                if (!_memoryCache.TryGetValue(
+                      $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
+                      out List<AlbaAssignmentValues> cacheValue))
+                {
+                    List<AlbaAssignmentValues> assignments = DownloadAssignments(userName, albaAccountId);
+
+                    return new GetAlbaAssignmentsResult
+                    {
+                        AssignmentValues = assignments
+                    };
+                }
+
+                _logger.LogInformation($"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}");
+
+                return new GetAlbaAssignmentsResult
+                {
+                    AssignmentValues = cacheValue
+                };
             }
-
-            _logger.LogInformation($"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}");
-
-            return cacheValue;
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading assignments for userName: {userName} Error: {ex}");
+                return new GetAlbaAssignmentsResult
+                {
+                    Success = false
+                };
+            }
         }
 
         public void LoadAlbaAssignments(string userName)

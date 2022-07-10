@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Controllers.UseCases;
+using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -26,7 +27,36 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             var allAssignments = new List<AlbaAssignmentValues>();
 
-            allAssignments.AddRange(_albaAssignmentGateway.GetAlbaAssignments(userName));
+            var result = _albaAssignmentGateway.GetAlbaAssignments(userName);
+            if (result.Success)
+            {
+                allAssignments.AddRange(result.AssignmentValues);
+            }
+            else
+            {
+                var backUpValues = LoadCsv<TerritoryTools.Alba.Controllers.AlbaServer.AlbaAssignment>
+                    .LoadFrom("./territories.txt");
+
+                foreach (var backUpValue in backUpValues)
+                {
+                    allAssignments.Add(
+                        new AlbaAssignmentValues
+                        {
+                            Description = backUpValue.Description,
+                            Id = backUpValue.Id,
+                            IdString = backUpValue.Id.ToString(),
+                            SignedOutTo = backUpValue.SignedOutTo,
+                            SignedOut = backUpValue.SignedOut,
+                            MobileLink = backUpValue.MobileLink,
+                            Status = backUpValue.Status,
+                            Number = backUpValue.Number,
+                            Kind = backUpValue.Kind,
+                            LastCompletedBy = backUpValue.LastCompletedBy,
+                            LastCompleted = backUpValue.LastCompleted,
+
+                        });
+                }
+            }
 
             var phoneTerritories = _phoneTerritoryAssignmentService.GetAllPhoneAssignments();
             allAssignments.AddRange(phoneTerritories.Rows);

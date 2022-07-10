@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="users.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="GoogleApi.secrets.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -39,6 +45,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Alba\Controllers\Alba.Controllers.csproj" />
     <ProjectReference Include="..\Data\Web.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="territories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
