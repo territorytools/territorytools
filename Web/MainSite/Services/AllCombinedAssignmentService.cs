@@ -1,5 +1,6 @@
 ﻿using Controllers.UseCases;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.UseCases;
@@ -16,13 +17,19 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         private readonly IAlbaAssignmentGateway _albaAssignmentGateway;
         private readonly IPhoneTerritoryAssignmentService _phoneTerritoryAssignmentService;
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<AllCombinedAssignmentService> _logger;
 
         public AllCombinedAssignmentService(
             IAlbaAssignmentGateway albaAssignmentGateway,
-            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService)
+            IPhoneTerritoryAssignmentService phoneTerritoryAssignmentService,
+            IMemoryCache memoryCache,
+            ILogger<AllCombinedAssignmentService> logger)
         {
             _albaAssignmentGateway = albaAssignmentGateway;
             _phoneTerritoryAssignmentService = phoneTerritoryAssignmentService;
+            _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public GetAllAssignmentsResult GetAllAssignments(string userName)
@@ -59,11 +66,7 @@ namespace TerritoryTools.Web.MainSite.Services
                         });
                 }
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(15));
-
-                _memoryCache.Set($"AllAlbaTerritoryAssignments:Account_{albaAccountId}", assignments, cacheEntryOptions);
-
+                _logger.LogInformation($"Loaded, but not cached, {allAssignments.Count} assignments from back-up file on behalf of userName: {userName}");
             }
 
             var phoneTerritories = _phoneTerritoryAssignmentService.GetAllPhoneAssignments();

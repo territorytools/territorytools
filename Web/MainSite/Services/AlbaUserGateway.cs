@@ -50,7 +50,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 {
                     var htmlUsers = LoadCsv<AlbaHtmlUser>
                         .LoadFrom(@"./users.txt");
-
+                    
+                    result.Users.Clear();
                     foreach (var htmlUser in htmlUsers)
                     {
                         result.Users.Add(
@@ -61,6 +62,8 @@ namespace TerritoryTools.Web.MainSite.Services
                                 Name = htmlUser.Name
                             });
                     }
+
+                    _logger.LogInformation($"Loaded, and caching, {result.Users.Count} users from back-up file for userName: {userName} albaAccountID: {albaAccountId}");
 
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
                         .SetSlidingExpiration(TimeSpan.FromMinutes(15));
