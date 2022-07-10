@@ -15,14 +15,17 @@ using data = Google.Apis.Sheets.v4.Data;
 
 namespace TerritoryTools.Alba.Controllers
 {
-    public interface ISheets
+    public interface ISpreadSheetService
     {
         void Write(string documentId, string range, IList<IList<object>> values);
         IList<IList<object>> Read(string documentId, string range);
         Spreadsheet CreateSheet(string title, List<Sheet> sheets);
+        Spreadsheet GetSpreadsheet(string fromDocumentId);
+        void InsertRows(string fromDocumentId, int? sheetId, int v1, int v2);
+        void ShareFile(string spreadsheetId, string publisherEmail, GoogleSheets.Role writer);
     }
 
-    public class GoogleSheets : ISheets
+    public class GoogleSheets : ISpreadSheetService
     {
         // Some APIs, like Storage, accept a credential in their Create()
         // method.

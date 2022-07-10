@@ -1,0 +1,7 @@
+version: '3.5'
+
+services:  
+  tt-web:
+    container_name: tt-web-prod
+    ports:
+      - "127.0.0.1:${SlotPort}:80"

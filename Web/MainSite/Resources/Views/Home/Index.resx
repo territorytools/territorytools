@@ -132,6 +132,9 @@
   <data name="LoginMissingEmail" xml:space="preserve">
     <value>We do not have a name for your email address!</value>
   </data>
+  <data name="OpenButton" xml:space="preserve">
+    <value>Open#</value>
+  </data>
   <data name="HomeQRCodeButton" xml:space="preserve">
     <value>QR Code Generator</value>
   </data>

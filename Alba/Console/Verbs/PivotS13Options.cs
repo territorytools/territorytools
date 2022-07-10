@@ -10,7 +10,7 @@ using TerritoryTools.Alba.Controllers.UseCases;
 namespace TerritoryTools.Alba.Cli.Verbs
 {
     [Verb("pivot-s-13", HelpText = "Pivot S-13 form")]
-    public class PivotS13Options
+    public class PivotS13Options : IOptionsWithRun
     {
         [Option("input-path", Required = true, HelpText = "Input file path")]
         public string InputPath { get; set; }

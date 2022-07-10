@@ -47,7 +47,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaBackupToS13
                     .Load(values, path);
 
                 var duplicates = changes
-                    // Exclude seeding folder
+                    // Exclude seeding folder from duplicate detection
                     .Where(c => c.TimeStamp != DateTime.Parse("1900-01-01"))
                     .GroupBy(c => c.TerritoryNumber)
                     .Where(g => g.Count() > 1)

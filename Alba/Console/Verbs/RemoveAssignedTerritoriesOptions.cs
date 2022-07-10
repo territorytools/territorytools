@@ -1,9 +1,7 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using System.Collections.Generic;
-using System.Text;
 using System;
-using Controllers.UseCases;
+using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.UseCases;
 
@@ -12,7 +10,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
        "remove-assigned",
        HelpText = "Remove assigned territories")]
-    public class RemoveAssignedTerritoriesOptions
+    public class RemoveAssignedTerritoriesOptions : IOptionsWithRun
     {
         [Option(
            "input",

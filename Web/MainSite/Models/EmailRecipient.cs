@@ -1,4 +1,4 @@
-﻿namespace TerritoryTools.Web.MainSite.Services
+﻿namespace TerritoryTools.Web.MainSite.Models
 {
     public enum EmailRecipient
     {

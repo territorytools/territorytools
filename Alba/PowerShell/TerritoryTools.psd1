@@ -27,7 +27,7 @@ Author = 'Marc Durham'
 CompanyName = 'Territory Tools'
 
 # Copyright statement for this module
-Copyright = '(c) 2021 Marc Durham. All rights reserved.'
+Copyright = '(c) 2022 Marc Durham. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Tools for downloading data from Alba, parsing, normalizing, and manipulating address data'
@@ -96,7 +96,7 @@ CmdletsToExport = 'Add-AlbaAddress',
     'Get-Coordinates',
     'Get-DuplicateAddress',
     'Get-NormalizedAddress',
-    'Get-OriginalAddress'
+    'Get-OriginalAddress',
     'Import-AlbaAddressFile',
     'Invoke-AlbaWebRequest',
     'Normalize-AlbaAddressImport',

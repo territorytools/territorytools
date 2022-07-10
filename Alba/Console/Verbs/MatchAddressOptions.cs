@@ -12,7 +12,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "match-addresses",
         HelpText = "Match addresses from a two Alba TSV files")]
-    public class MatchAddressOptions
+    public class MatchAddressOptions : IOptionsWithRun
     {
         [Option(
             "input-path",

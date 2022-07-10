@@ -9,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
        "upload-addresses",
        HelpText = "Upload addresses one-by-one to Alba with a delay")]
-    public class UploadAddressesOptions
+    public class UploadAddressesOptions : IOptionsWithRun
     {
         [Option(
            "addresses-file",

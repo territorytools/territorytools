@@ -11,7 +11,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
        "filter-addresses",
        HelpText = "Filter addresses out into a Alba CSV file")]
-    public class FilterAddressOptions
+    public class FilterAddressOptions : IOptionsWithRun
     {
         [Option(
            "source-addresses",

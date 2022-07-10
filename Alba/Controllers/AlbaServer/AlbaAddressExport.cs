@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using TerritoryTools.Alba.ListServices;
 
 namespace Controllers.AlbaServer
@@ -32,7 +33,14 @@ namespace Controllers.AlbaServer
 
         public string OneLine()
         {
-            return $"{Address}, {Suite}, {City} {Postal_code}";
+            var parts = new List<string>
+            {
+                Address,
+                Suite,
+                $"{City} {Postal_code}".Trim()
+            };
+
+            return string.Join(", ", parts.Where(p => !string.IsNullOrEmpty(p)).ToList());
         }
 
         public override string ToString()

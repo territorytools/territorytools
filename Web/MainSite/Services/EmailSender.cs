@@ -4,6 +4,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Threading.Tasks;
+using TerritoryTools.Web.MainSite.Models;
 
 namespace TerritoryTools.Web.MainSite.Services
 {

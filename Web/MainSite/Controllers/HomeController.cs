@@ -1,51 +1,50 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Http;
-using TerritoryTools.Web.Data;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.MainSite.Services;
 using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class HomeController : AuthorizedController
     {
+        private readonly IUserService _userService;
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly Services.IQRCodeActivityService qrCodeActivityService;
+        private readonly ILogger<HomeController> _logger;
 
         public HomeController(
-            MainDbContext database,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
+            IUserService userService,
+            ICombinedAssignmentService combinedAssignmentService,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
-            IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
-            IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
+            IOptions<WebUIOptions> optionsAccessor,
+            ILogger<HomeController> logger) : base(
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
                 optionsAccessor)
         {
+            _userService = userService;
+            _combinedAssignmentService = combinedAssignmentService;
             this.qrCodeActivityService = qrCodeActivityService;
+            _logger = logger;
         }
 
         public IActionResult Index()
         {
             try
             {
-                var publisher = new Publisher()
+                var publisher = new Models.Publisher()
                 {
-                    Email = User.Identity.Name
+                    Email = User.Identity.Name,
+                    UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
                 };
 
                 if (!IsUser())
@@ -55,12 +54,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 publisher.IsAdmin = IsAdmin();
 
-
                 string myName = User.Identity.Name;
 
                 try
                 {
-                    var users = GetUsers(account, user, password);
+                    var users = _userService.GetUsers(User.Identity.Name);
                     var me = users.FirstOrDefault(
                         u => string.Equals(
                             u.Email,
@@ -76,12 +74,16 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 }
                 catch(Exception e)
                 {
-                     return NotFound(e.Message);
+                    _logger.LogError($"Home.Index: Error: {e.Message}");
+                    return NotFound(e.Message);
                 }
 
-                var assignments = GetAllAssignments()
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
+
+                publisher.PhoneTerritorySuccess = allAssignments.PhoneSuccess;
 
                 publisher.Name = myName;
 
@@ -154,57 +156,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Route("/DeleteCookies")]
         public IActionResult DeleteCookies()
         {
-            /*
-            string domain = "territorytools.org";
-            if (HttpContext.Current.Request.Cookies[cookieName] != null)
-            {
-                HttpCookie cookie = HttpContext.Current.Request.Cookies[cookieName];
-        
-                // SameSite.None Cookies won't be accepted by Google Chrome and other modern browsers if they're not secure, which would lead in a "non-deletion" bug.
-                // in this specific scenario, we need to avoid emitting the SameSite attribute to ensure that the cookie will be deleted.
-                if (cookie.SameSite == SameSiteMode.None && !cookie.Secure)
-                    cookie.SameSite = (SameSiteMode)(-1);
-        
-                if (String.IsNullOrEmpty(keyName))
-                {
-                    cookie.Expires = DateTime.UtcNow.AddYears(-1);
-                    if (!String.IsNullOrEmpty(domain)) cookie.Domain = domain;
-                    HttpContext.Current.Response.Cookies.Add(cookie);
-                    //HttpContext.Current.Request.Cookies.Remove(cookieName);
-                }
-                else
-                {
-                    cookie.Values.Remove(keyName);
-                    if (!String.IsNullOrEmpty(domain)) cookie.Domain = domain;
-                    HttpContext.Current.Response.Cookies.Add(cookie);
-                }
-            }*/
-
             foreach (var cookie in HttpContext.Request.Cookies)
             {
                 Console.WriteLine($"Request Cookie");
                 Console.WriteLine($"Key: {cookie.Key}");
                 Console.WriteLine($"Value: {cookie.Value}");
                 Response.Cookies.Delete(cookie.Key);
-                // Console.WriteLine($"Domain: {cookie.Domain}");
-                // Console.WriteLine($"Key: {cookie.Key}");
-                // Console.WriteLine($"Expires: {cookie.Expires.ToString()}");
-                //HttpContext.Current.Request.Cookies.Delete(cookie.Key);
             }
-
-            // foreach (var cookie in HttpContext.Response.Cookies)
-            // {
-            //     Console.WriteLine($"Response Cookie");
-            //     Console.WriteLine($"Domain: {cookie.Domain}");
-            //     Console.WriteLine($"Key: {cookie.Key}");
-            //     Console.WriteLine($"Expires: {cookie.Expires.ToString()}");
-            //     //Response.Cookies.Delete(cookie.Key);
-            // }
-
-            // foreach (var cookie in HttpContext.Response.Cookies)
-            // {
-            //     Response.Cookies.Delete(cookie.Key);
-            // }
 
             return View();
         }
@@ -220,11 +178,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                _logger.LogError($"Home.AssignSingleTerritory: Number: {number} User: {User.Identity.Name}");
+
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignment = GetAllAssignments()
+                var result = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var assignment = result.Rows
                     .Where(a => string.Equals(
                         a.Number,
                         number,
@@ -245,8 +206,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 return View(form);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _logger.LogError($"Home.AssignSingleTerritory: Error: {e.Message}");
                 throw;
             }
         }
@@ -271,7 +233,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return Forbid();
             }
 
-            LoadUserData();
+            _userService.LoadUsers(User.Identity.Name);
 
             return LocalRedirect("~/Home/Load");
         }
@@ -295,8 +257,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult AssignSuccess(int territoryId, string userName)
         {
-            var assignment = GetAllAssignments()
-                   .FirstOrDefault(a => a.Id == territoryId);
+            var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+            var assignment = allAssignments.Rows
+               .FirstOrDefault(a => a.Id == territoryId);
 
             assignment.SignedOutTo = userName;
 
@@ -306,8 +269,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Authorize]
         public IActionResult UnassignSuccess(int territoryId)
         {
-            var assignment = GetAllAssignments()
-                   .FirstOrDefault(a => a.Id == territoryId);
+            var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+            var assignment = allAssignments.Rows
+               .FirstOrDefault(a => a.Id == territoryId);
 
             return View(assignment);
         }

@@ -4,6 +4,7 @@ LoginGreeting=Welcome! This site has tools and reports for territories. This is 
 LoginSignIn=Please sign in:
 LoginAccountPassword=Account & Password
 LoginMissingEmail=We do not have a name for your email address!
+OpenButton=Open#
 
 # After loggedin (Home page)
 

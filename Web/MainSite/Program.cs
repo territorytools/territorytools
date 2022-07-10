@@ -1,8 +1,9 @@
 using FluffySpoon.AspNet.LetsEncrypt;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using System;
 using System.Linq;
 
@@ -35,7 +36,12 @@ namespace TerritoryTools.Web.MainSite
                 Startup.NoSsl = true;
             }
 
-            builder.UseStartup<Startup>();
+            builder.UseStartup<Startup>()
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Information);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Error);
+                });
 
             return builder;
 

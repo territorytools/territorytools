@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System;
 using System.IO;
+using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 
 namespace TerritoryTools.Alba.Cli.Verbs
@@ -8,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "assign-sheet", 
         HelpText = "Assign an exsiting territory sheet to a user")]
-    public class AssignSheetOptions
+    public class AssignSheetOptions : IOptionsWithRun
     {
         [Option("document-id", Required = true, HelpText = "Input Google Sheet document ID")]
         [Value(1)]
@@ -32,7 +33,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             string jsonToken = File.ReadAllText(SecurityFile);
 
-            var service = new SheetExtractor();
+            var service = new SheetExtractor(new GoogleSheets(jsonToken));
             var request = new AssignSheetRequest()
             {
                 DocumentId = DocumentId,

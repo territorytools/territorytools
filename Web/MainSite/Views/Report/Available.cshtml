@@ -37,9 +37,17 @@
                         </select>
                         <input hidden name="territoryId" value="@assignment.Id">
                         <input class="btn btn-primary hidden" type="submit" value="Assign">
-                        <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Map</a>
+                        @if (string.IsNullOrWhiteSpace(assignment.MobileLink))
+                        {
+                            <a class="btn btn-secondary" target="_blank" href="@assignment.PrintLink">Preview Printable Map</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Preview Mobile Map</a>
+                        }
                     </div>
                 </div>
+                <p>Assign territory before copying the map link and sending it to anyone.  The link changes after the territory is assigned.</p>
             </div>
         </form>
     }

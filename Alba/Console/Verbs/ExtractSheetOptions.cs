@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System;
 using System.IO;
+using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 
 namespace TerritoryTools.Alba.Cli.Verbs
@@ -8,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "extract-sheet", 
         HelpText = "Extract territory sheet from master Google Sheet")]
-    public class ExtractSheetOptions
+    public class ExtractSheetOptions : IOptionsWithRun
     {
         [Option("territory-number", Required = true, HelpText = "Territory number to exctract")]
         [Value(0)]
@@ -45,7 +46,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             string jsonToken = File.ReadAllText(SecurityFile);
 
-            var service = new SheetExtractor();
+            var service = new SheetExtractor(new GoogleSheets(jsonToken));
             var request = new SheetExtractionRequest()
             {
                 FromDocumentId = DocumentId,
@@ -57,7 +58,8 @@ namespace TerritoryTools.Alba.Cli.Verbs
                 SecurityToken = jsonToken
             };
 
-            string url = service.Extract(request);
+            SheetExtractionResult result = service.Extract(request);
+            string url = $"https://docs.google.com/spreadsheets/d/{result.DocumentId}";
 
             System.Diagnostics.Process.Start("explorer.exe", url);
 

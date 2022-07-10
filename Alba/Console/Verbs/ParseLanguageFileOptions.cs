@@ -9,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "parse-language-file", 
         HelpText = "Parse language file downloaded from Alba")]
-    public class ParseLanguageFileOptions
+    public class ParseLanguageFileOptions : IOptionsWithRun
     {
         [Option("filepath", Required = true, HelpText = "Input file path")]
         [Value(0)]

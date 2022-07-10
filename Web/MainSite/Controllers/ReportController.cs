@@ -1,14 +1,13 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using TerritoryTools.Web.MainSite.Services;
-using TerritoryTools.Web.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TerritoryTools.Entities;
+using TerritoryTools.Web.Data;
 using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -16,25 +15,30 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public class ReportController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
-
+        private readonly IUserService _userService;
+        private readonly IAlbaManagementUserGateway _albaUserGateway;
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
+        private readonly IAlbaCredentialService _albaCredentialService;
+        private readonly MainDbContext _database;
         IAccountLists accountLists;
         public ReportController(
+            IUserService userService,
+            IAlbaManagementUserGateway albaUserGateway,
+            ICombinedAssignmentService combinedAssignmentService,
+            IAlbaCredentialService albaCredentialService,
             MainDbContext database,
             IAccountLists accountLists,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
-            IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
             IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
                 optionsAccessor)
         {
+            _userService = userService;
+            _albaUserGateway = albaUserGateway;
+            _combinedAssignmentService = combinedAssignmentService;
+            _albaCredentialService = albaCredentialService;
+            _database = database;
             this.accountLists = accountLists;
         }
 
@@ -48,7 +52,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
@@ -57,7 +61,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Users= users,
                 };
 
-                ViewData["CompletionMapUrl"] = options.CompletionMapUrl;
+                ViewData["CompletionMapUrl"] = _options.CompletionMapUrl;
 
                 return View(report);
             }
@@ -77,15 +81,16 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var groups = GetAllAssignments()
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var groups = allAssignments.Rows
                     .Where(a => !string.IsNullOrWhiteSpace(a.SignedOutTo))
                     .GroupBy(a => a.SignedOutTo)
                     .ToList();
 
-                var publishers = new List<Publisher>();
+                var publishers = new List<Models.Publisher>();
                 foreach (var group in groups.OrderBy(g => g.Key))
                 {
-                    var pub = new Publisher() { Name = group.Key };
+                    var pub = new Models.Publisher() { Name = group.Key };
                     var ordered = group.OrderByDescending(a => a.SignedOut);
                     foreach (var item in ordered)
                     {
@@ -113,7 +118,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var allAssignments = GetAllAssignments()
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var assignments = allAssignments.Rows
                     .ToList();
 
                 var now = DateTime.Now;
@@ -128,7 +134,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                         new SummaryItem
                         {
                             Name = $"{year}-{year + 1}",
-                            Value = allAssignments
+                            Value = assignments
                                 .Where(a => a.LastCompleted >= new DateTime(year, 9, 1)
                                 && a.LastCompleted < new DateTime(year + 1, 9, 1))
                                 .ToList()
@@ -199,7 +205,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                var completed = GetAllAssignments()
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var completed = allAssignments.Rows
                     .Where(ast => ast.LastCompleted != null)
                     .ToList();
 
@@ -301,11 +308,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var publishers = GetUsers(account, user, password)
+                var publishers = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignments = GetAllAssignments()
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var assignments = allAssignments.Rows
                     // Territories never worked
                     .Where(a => a.LastCompleted == null && a.SignedOut == null)
                     .OrderBy(a => a.Description)
@@ -336,11 +344,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
-                var assignments = GetAllAssignments()
+                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                var assignments = allAssignments.Rows
                     .Where(a => string.Equals(
                         a.Status,
                         "Available",
@@ -374,11 +383,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                Guid albaAccountId = albaCredentialService
-                    .GetAlbaAccountIdFor(User.Identity.Name);
-
                 var userListView = new AlbaUserListView();
-                userListView.Users = GetAlbaUsers(albaAccountId)
+                userListView.Users = _albaUserGateway.GetAlbaManagementUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
@@ -400,13 +406,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var assignments = database
+                var assignments = _database
                     .TerritoryAssignments
                     .ToList();
 
                 var report = new AssignmentHistoryReport();
 
-                foreach(var assignment in assignments)
+                foreach(TerritoryAssignment assignment in assignments)
                 {
                     string territoryNumber = assignment.TerritoryNumber;
                     if(int.TryParse(assignment.TerritoryNumber, out int number))
@@ -421,10 +427,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             Date = assignment.Date,
                             PublisherName = assignment.PublisherName,
                             CheckedIn = assignment.CheckedIn?.Year == 1900
-                                ? ""
+                                ? string.Empty
                                 : assignment.CheckedIn?.ToString(DATE_FORMAT),
                             CheckedOut = assignment.CheckedOut?.Year == 1900
-                                ? ""
+                                ? string.Empty
                                 : assignment.CheckedOut?.ToString(DATE_FORMAT),
                             Note = assignment.Note
                         });

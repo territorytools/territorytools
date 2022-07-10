@@ -12,5 +12,7 @@ namespace TerritoryTools.Web.MainSite.Models
             = new List<AlbaAssignmentValues>();
         public List<QRCodeHit> QRCodeActivity { get; set; }
             = new List<QRCodeHit>();
+        public bool PhoneTerritorySuccess { get; set; }
+        public bool UserSelfCompleteFeatureEnabled { get; set; }
     }
 }

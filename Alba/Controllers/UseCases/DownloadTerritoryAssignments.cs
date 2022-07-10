@@ -132,7 +132,14 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                                             string rel = node.GetAttributeValue("rel", null);
                                             if (!string.IsNullOrWhiteSpace(rel))
                                             {
-                                                assignment.MobileLink = rel;
+                                                if (rel.Contains("/print-mk?"))
+                                                {
+                                                    assignment.PrintLink = rel;
+                                                }
+                                                else
+                                                {
+                                                    assignment.MobileLink = rel;
+                                                }
                                             }
                                         }
                                     }

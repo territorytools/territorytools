@@ -12,7 +12,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
        "remove-address-ids",
        HelpText = "Find missing Address_ID in Alba tab separated export file")]
-    public class RemoveAddressIdsOptions
+    public class RemoveAddressIdsOptions : IOptionsWithRun
     {
         [Option(
            "source-addresses",

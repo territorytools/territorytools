@@ -17,23 +17,22 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Authorize]
     public class TerritoryUserController : AuthorizedController
     {
+        private readonly MainDbContext _database;
+        private readonly IAlbaCredentialService _albaCredentialService;
+
         public TerritoryUserController(
+            IUserService userService,
             MainDbContext database,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
             IOptions<WebUIOptions> optionsAccessor) 
             : base(
-                database,
-                localizer,
-                credentials,
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
                 optionsAccessor)
         {
+            _database = database;
+            _albaCredentialService = albaCredentialService;
         }
 
         public IActionResult Index()
@@ -88,7 +87,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+                Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
 
                 foreach(var invitation in invitations)
                 {
@@ -99,7 +98,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                         continue;
                     }
 
-                    if (database.TerritoryUser.Any(u => BasicStrings.StringsEqual(u.Email, invitation.Email)))
+                    if (_database.TerritoryUser.Any(u => BasicStrings.StringsEqual(u.Email, invitation.Email)))
                     {
                         continue; // Move to the next invite
                     }
@@ -114,8 +113,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                         Role = "Added"
                     };
 
-                    database.TerritoryUser.Add(user);
-                    database
+                    _database.TerritoryUser.Add(user);
+                    _database
                         .TerritoryUserAlbaAccountLink
                         .Add(
                             new TerritoryUserAlbaAccountLink()
@@ -128,7 +127,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             });
                 }
 
-                database.SaveChanges();
+                _database.SaveChanges();
 
                 return Ok();
             }
@@ -152,7 +151,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                if (database.TerritoryUser.Count(u => 
+                if (_database.TerritoryUser.Count(u => 
                        u.Email != null 
                     && invitation.Email != null 
                     && u.Email.ToUpper() == invitation.Email.ToUpper()) > 0)
@@ -173,13 +172,13 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Role = "Invited"
                 };
 
-                database.TerritoryUser.Add(user);
+                _database.TerritoryUser.Add(user);
 
                 if(string.Equals(invitation.AlbaAccount, "this-account"))
                 {
-                    Guid albaAccountId = albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
+                    Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(User.Identity.Name);
 
-                    database
+                    _database
                         .TerritoryUserAlbaAccountLink
                         .Add(
                             new TerritoryUserAlbaAccountLink()
@@ -193,7 +192,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 }
 
-                database.SaveChanges();
+                _database.SaveChanges();
 
                 return Ok();
             }
@@ -251,7 +250,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var now = DateTime.Now;
 
-            var user = database
+            var user = _database
                 .TerritoryUser
                 .FirstOrDefault(u => u.Email != null
                     && link.TerritoryUserEmail != null
@@ -267,11 +266,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Updated = now,
                 };
 
-                database.TerritoryUser.Add(user);
-                database.SaveChanges();
+                _database.TerritoryUser.Add(user);
+                _database.SaveChanges();
             }
 
-            var accountName = database
+            var accountName = _database
                 .AlbaAccounts
                 .FirstOrDefault(a => a.AccountName != null
                     && link.AccountName != null
@@ -294,8 +293,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 LongName = link.AccountName
             };
 
-            database.AlbaAccounts.Add(account);
-            database.SaveChanges();
+            _database.AlbaAccounts.Add(account);
+            _database.SaveChanges();
 
             var credentials = new Credentials(
                 account: link.AccountName,
@@ -305,7 +304,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 AlbaAccountId = account.Id
             };
 
-            albaCredentialService.SaveCredentials(credentials);
+            _albaCredentialService.SaveCredentials(credentials);
 
             var userLink = new TerritoryUserAlbaAccountLink
             {
@@ -315,8 +314,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 Updated = now
             };
 
-            database.TerritoryUserAlbaAccountLink.Add(userLink);
-            database.SaveChanges();
+            _database.TerritoryUserAlbaAccountLink.Add(userLink);
+            _database.SaveChanges();
 
             return Ok();
         }

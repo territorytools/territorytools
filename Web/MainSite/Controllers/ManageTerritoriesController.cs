@@ -3,7 +3,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.Data;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 
@@ -22,29 +19,32 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
+        private readonly ICombinedAssignmentService _combinedAssignmentService;
+        private readonly IUserService _userService;
         private readonly AreaService _areaService;
-        IAccountLists accountLists;
+        private readonly Services.IAuthorizationService _authorizationService;
+        private readonly IAlbaCredentialService _albaCredentialService;
+        private readonly IAlbaAuthClientService _albaAuthClientService;
 
         public ManageTerritoriesController(
-            MainDbContext database,
+            ICombinedAssignmentService combinedAssignmentService,
+            IUserService userService,
             AreaService areaService,
             IAccountLists accountLists,
-            IStringLocalizer<AuthorizedController> localizer,
-            IAlbaCredentials credentials,
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
-            ITerritoryAssignmentService assignmentService,
+            IAlbaAuthClientService albaAuthClientService,
             IOptions<WebUIOptions> optionsAccessor) : base(
-                database,
-                localizer,
-                credentials,
+                userService,
                 authorizationService,
-                albaCredentialService,
-                assignmentService,
                 optionsAccessor)
         {
+            _combinedAssignmentService = combinedAssignmentService;
+            _userService = userService;
             _areaService = areaService;
-            this.accountLists = accountLists;
+            _authorizationService = authorizationService;
+            _albaCredentialService = albaCredentialService;
+            _albaAuthClientService = albaAuthClientService;
         }
 
         [Authorize]
@@ -52,12 +52,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!User.Identity.IsAuthenticated || !authorizationService.IsAdmin(User.Identity.Name))
+                if (!User.Identity.IsAuthenticated || !_authorizationService.IsAdmin(User.Identity.Name))
                 {
                     return Forbid();
                 }
 
-                var users = GetUsers(account, user, password)
+                var users = _userService.GetUsers(User.Identity.Name)
                     .OrderBy(u => u.Name)
                     .ToList();
 
@@ -68,6 +68,54 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 };
 
                 return View(report);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        [Route("ManageTerritories/Single/{territoryNumber}")]
+        public IActionResult Single(string territoryNumber)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(territoryNumber))
+                {
+                    return View(new SingleTerritoryManagerPage());
+                }
+
+                if (!IsUser())
+                {
+                    return Forbid();
+                }
+
+                var assignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+
+                var territory = assignments.Rows
+                    .Where(t => string.Equals(t.Number, territoryNumber))
+                    .SingleOrDefault();
+
+                if(territory == null)
+                    return View(new SingleTerritoryManagerPage() {  Description = "Not Found"});
+
+                var page = new SingleTerritoryManagerPage()
+                {
+                    Id = territory.Id,
+                    Number = territoryNumber,
+                    Description = territory.Description,
+                    MobileLink = territory.MobileLink,
+                    SignedOutTo = territory.SignedOutTo,
+                    SignedOut = territory.SignedOut?.ToString("yyyy-MM-dd"),
+                    LastCompletedBy = territory.LastCompletedBy,
+                    LastCompleted = territory.LastCompleted?.ToString("yyyy-MM-dd"),
+                    Kind = territory.Kind,
+                    Addresses = territory.Addresses,
+                    Status = territory.Status
+                };
+
+                return View(page);
             }
             catch (Exception)
             {
@@ -90,7 +138,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return Forbid();
                 }
 
-                var connection = GetAlbaConnection();
+                var credentials = _albaCredentialService.GetCredentialsFrom(User.Identity.Name);
+                var connection = _albaAuthClientService.AuthClient();
+                connection.Authenticate(credentials);
 
                 List<AddressSearchResult> addresses = new List<AddressSearchResult>();
 

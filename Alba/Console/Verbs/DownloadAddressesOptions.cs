@@ -9,7 +9,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
     [Verb(
         "download-addresses", 
         HelpText = "Download addresses using your account")]
-    public class DownloadAddressesOptions
+    public class DownloadAddressesOptions : IOptionsWithRun
     {
         [Option("filepath", Required = true, HelpText = "Input file path")]
         [Value(0)]

@@ -2,19 +2,26 @@
 MenuHomeButton=Home
 Title=Manage Phone Territory
 
-# Extract Territory
+# Check Out Territory
+CheckOutTitle=Check Out Phone Territory
 SelectUser=Select User
 TerritoryNumber=Territory Number
-Advanced=Advanced
+MoreShowHideButton=Advanced Options...
 ExtractSourceDocumentId=Source Google Sheets Document Id
+ExtractSourceDocumentIdLabel=Google Sheets Source Document Id
 ExtractSourceSheetName=Source Sheet Name
 
-ExtractButton=Extract and Assign Phone Territory
+ExtractButton=Check Out Phone Territory
 ExtractingTerritoryMessage=Extracting a territory...
 
 # Add Writer
+AssignWriterTitle=Add Extra User as Writer to Territory
 AddWriterToSheetHeader=Add Writer to Google Sheets Document
 
+SourceSheetNameLabel=Google Sheets Source Sheet Name
+
 AddWriterDocumentId=Territory Google Document Id
-AddWriterButton=Add Writer to Sheet
+AddWriterButton=Add Writer
 AddingWriterMessage=Adding user as writer...
+SelectUserItemName=Select User
+AddWriterDocumentIdLabel=Google Sheets Document Id

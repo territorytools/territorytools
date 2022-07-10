@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
 using System.Linq;
+using TerritoryTools.Alba.Controllers;
+using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
@@ -35,6 +37,8 @@ namespace TerritoryTools.Web.MainSite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+            
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
@@ -92,7 +96,25 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ITerritoryAssignmentService, TerritoryAssignmentService>();
             services.AddScoped<AreaService>();
-            
+            services.AddScoped<IPhoneTerritoryAssignmentGateway, PhoneTerritoryAssignmentGateway>();
+            services.AddScoped<IPhoneTerritoryCreationService, PhoneTerritoryCreationService>();
+            services.AddScoped<IPhoneTerritoryAddWriterService, PhoneTerritoryAddWriterService>();
+            services.AddScoped<ISpreadSheetService>(s => new GoogleSheets(
+                System.IO.File.ReadAllText("./GoogleApi.secrets.json")));
+            services.AddScoped<ISheetExtractor, SheetExtractor>();
+            services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
+            services.AddScoped<IAlbaAssignmentGateway, AlbaAssignmentGateway>();
+            services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
+            services.AddScoped<IAlbaManagementUserGateway, AlbaManagementUserGateway>();
+            services.AddScoped<IAlbaUserGateway, AlbaUserGateway>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITerritoryUserService, TerritoryUserService>();
+            services.AddScoped<IPhoneTerritoryAssignmentService, PhoneTerritoryAssignmentService>();
+            services.AddScoped<ICombinedAssignmentService, AllCombinedAssignmentService>();
+            services.AddScoped<IAssignLatestService, AssignLatestService>();
+            services.AddScoped<KmlFileService>();
+            services.AddScoped<AssignmentsCsvFileService>();
+
             services.Configure<WebUIOptions>(Configuration);
 
             var users = (Configuration["Users"] ?? string.Empty)

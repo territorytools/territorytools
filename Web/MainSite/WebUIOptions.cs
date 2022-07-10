@@ -20,5 +20,17 @@ namespace TerritoryTools.Web.MainSite
         public string DefaultPhoneTerritorySourceSheetName { get; set; }
         public string SharedPhoneTerritoryEmailAddress { get; set; }
         public string SharedPhoneTerritoryFullName { get; set; }
+        public string SmsApiUserName { get; set; }
+        public string SmsApiPassword { get; set; }
+        public string SmsFromPhoneNumber { get; set; }
+        public string SmsMessageLogDocumentId { get; set; }
+        public string SmsMessageLogSheetName { get; set; }
+        public Features Features { get; set; } = new Features();
     }
+
+    public class Features
+    {
+        public bool UserSelfComplete { get; set; }
+    }
+
 }
