@@ -61,6 +61,11 @@ namespace TerritoryTools.Web.MainSite.Services
                                 Name = htmlUser.Name
                             });
                     }
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(15));
+
+                    _memoryCache.Set($"AlbaUsers:AccountID_{albaAccountId}", result.Users, cacheEntryOptions);
                 }
 
                 return result.Users;

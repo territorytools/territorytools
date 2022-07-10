@@ -1,4 +1,6 @@
 ﻿using Controllers.UseCases;
+using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.UseCases;
 
@@ -56,6 +58,12 @@ namespace TerritoryTools.Web.MainSite.Services
 
                         });
                 }
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(15));
+
+                _memoryCache.Set($"AllAlbaTerritoryAssignments:Account_{albaAccountId}", assignments, cacheEntryOptions);
+
             }
 
             var phoneTerritories = _phoneTerritoryAssignmentService.GetAllPhoneAssignments();
