@@ -63,7 +63,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 var report = new ReportIndexPage()
                 {
-                    Users= users,
+                    Users = users,
                     Areas = _areaService.All()
                 };
 

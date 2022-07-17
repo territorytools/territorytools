@@ -82,7 +82,13 @@ namespace TerritoryTools.Web.MainSite.Services
         public void LoadAlbaUsers(string userName)
         {
             Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
-            DownloadUsers(userName, albaAccountId);
+            var result = DownloadUsers(userName, albaAccountId);
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(15));
+
+            _memoryCache.Set($"AlbaUsers:AccountID_{albaAccountId}", result.Users, cacheEntryOptions);
+
         }
 
         DownloadUsersResult DownloadUsers(string userName, Guid albaAccountId)
@@ -101,11 +107,6 @@ namespace TerritoryTools.Web.MainSite.Services
                     RelativeUrlBuilder.GetTerritoryAssignmentsPage());
 
                 List<cuc.User> users = cuc.DownloadUsers.GetUsers(cuc.DownloadUsers.GetUsersHtml(resultString));
-
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(15));
-
-                _memoryCache.Set($"AlbaUsers:AccountID_{albaAccountId}", result.Users, cacheEntryOptions);
 
                 return new DownloadUsersResult()
                 {
