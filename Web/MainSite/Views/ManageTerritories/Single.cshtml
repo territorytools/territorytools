@@ -27,3 +27,16 @@
         <input class="btn btn-primary" type="submit" value="Complete">
     </form>
 </div>
+<form action="/api/assignments/assign" id="complete-form">
+    <div class="p-1 mr-1 ml-1" style="width:400px;">
+        <input class="btn btn-primary" type="submit" value="Assign to">
+        <input hidden name="territoryId" value="@Model.Id">
+        <select name="userId" form="assign-from-area-form" class="custom-select m-2">
+            <option selected value="0">Select User</option>
+            @foreach (var user in Model.Users.Where(user => user.Id != 0))
+            {
+                <option value=@(user.Id)>@user.Name</option>
+            }
+        </select>
+    </div>
+</form>

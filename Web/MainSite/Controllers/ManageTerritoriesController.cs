@@ -100,6 +100,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 if(territory == null)
                     return View(new SingleTerritoryManagerPage() {  Description = "Not Found"});
 
+
+                var users = _userService.GetUsers(User.Identity.Name)
+                    .OrderBy(u => u.Name)
+                    .ToList();
+
                 var page = new SingleTerritoryManagerPage()
                 {
                     Id = territory.Id,
@@ -112,7 +117,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     LastCompleted = territory.LastCompleted?.ToString("yyyy-MM-dd"),
                     Kind = territory.Kind,
                     Addresses = territory.Addresses,
-                    Status = territory.Status
+                    Status = territory.Status,
+                    Users = users
                 };
 
                 return View(page);
