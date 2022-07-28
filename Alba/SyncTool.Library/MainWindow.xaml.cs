@@ -60,7 +60,7 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
             if (!string.IsNullOrWhiteSpace(path))
             {
-                Process.Start(path);
+                ProcessStart(path);
             }
 
             Cursor = Cursors.Arrow;
@@ -74,7 +74,21 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
             if (!string.IsNullOrWhiteSpace(path))
             {
-                Process.Start(path);
+                ProcessStart(path);
+            }
+
+            Cursor = Cursors.Arrow;
+        }
+
+        private void downloadUserInfo_Click(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+
+            string path = controller.DownloadUserInfo();
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                ProcessStart(path);
             }
 
             Cursor = Cursors.Arrow;
@@ -166,6 +180,11 @@ namespace TerritoryTools.Alba.SyncTool.Library
         public bool DownloadUsersButtonEnabled
         {
             set { downloadUsersButton.IsEnabled = value; }
+        }
+
+        public bool DownloadUserInfoButtonEnabled
+        {
+            set {  downloadUsersInfoButton.IsEnabled = value; }
         }
 
         public string UploadDelayMs
@@ -279,6 +298,27 @@ namespace TerritoryTools.Alba.SyncTool.Library
         private void accountBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
 
+        }
+
+        private void ProcessStart(string path)
+        {
+            try
+            {
+                Process.Start(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+
+            controller.UploadUserInfo();
+
+            Cursor = Cursors.Arrow;
         }
     }
 }

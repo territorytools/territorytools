@@ -30,6 +30,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             view.DownloadTerritoryAssignmentsButtonEnabled = true;
             view.DownloadUsersButtonEnabled = true;
             view.UploadAddressesButtonEnabled = true;
+            view.DownloadUserInfoButtonEnabled = true;
 
             view.AppendResultText(Environment.NewLine + "Logged on successfully." + Environment.NewLine);
         }

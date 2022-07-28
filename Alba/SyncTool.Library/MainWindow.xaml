@@ -18,7 +18,7 @@
         <Label x:Name="label" Content="Upload Delay (ms):" HorizontalAlignment="Left" Margin="10,196,0,0" VerticalAlignment="Top" Height="27"/>
         <Button x:Name="downloadAllAddressesButton"  Content="Download All Addresses" HorizontalAlignment="Left" Margin="231,253,0,0" VerticalAlignment="Top" Width="216" IsEnabled="False" Click="downloadAllAddressesButton_Click"/>
         <Button x:Name="downloadTerritoryAssignmentsButton"  Content="Download Territory Assignments" HorizontalAlignment="Left" Margin="231,277,0,0" VerticalAlignment="Top" Width="216" IsEnabled="False" Click="downloadTerritoryAssignments_Click"/>
-        <Button x:Name="downloadUsersButton"  Content="Download Users" HorizontalAlignment="Left" Margin="231,302,0,0" VerticalAlignment="Top" Width="216" IsEnabled="False" Click="downloadUsers_Click"/>
+        <Button x:Name="downloadUsersButton"  Content="Download Users" HorizontalAlignment="Left" Margin="231,302,0,0" VerticalAlignment="Top" Width="108" IsEnabled="False" Click="downloadUsers_Click"/>
         <Button x:Name="uploadAddressesButton" Content="Upload Addresses" HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Width="207" Click="importAddressesClick" IsEnabled="False"/>
         <Button Content="Geocode Addresses from CSV File" HorizontalAlignment="Left" Margin="271,94,0,0" VerticalAlignment="Top" Width="244" Click="geocodeButtonClicked"/>
         <Label Content="Azure Maps Subscription Key (Geocoding)" HorizontalAlignment="Left" Margin="271,35,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.134,3.615"/>
@@ -29,5 +29,7 @@
         <TextBox x:Name="accountIdBox" HorizontalAlignment="Left" Height="23" Margin="84,66,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="173" KeyUp="credentialsBoxes_KeyUp" TextChanged="accountBox_TextChanged"/>
         <Button x:Name="downloadLanguagesButton"  Content="Download Languages" HorizontalAlignment="Left" Margin="231,327,0,0" VerticalAlignment="Top" Width="216" IsEnabled="False" Click="downloadLanguages_Click"/>
         <Button x:Name="loadLanguagesButton"  Content="Load Languages" HorizontalAlignment="Left" Margin="452,327,0,0" VerticalAlignment="Top" Width="152" IsEnabled="True" Click="loadLanguages_Click"/>
+        <Button x:Name="downloadUsersInfoButton"  Content="Download User Info" HorizontalAlignment="Left" Margin="344,302,0,0" VerticalAlignment="Top" Width="136" IsEnabled="False" Click="downloadUserInfo_Click"/>
+        <Button Content="Upload User Info" HorizontalAlignment="Left" Margin="11,302,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.122,0.308" Width="206" Click="Button_Click"/>
     </Grid>
 </Window>

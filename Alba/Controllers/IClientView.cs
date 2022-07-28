@@ -27,6 +27,7 @@
         bool DownloadUsersButtonEnabled { set; }
         
         bool UploadAddressesButtonEnabled { set; }
+        bool DownloadUserInfoButtonEnabled { set; }
 
         string OpenFileDialog(string fileExt, string title = "");
 

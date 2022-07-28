@@ -105,6 +105,19 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 AppendValuesFrom(territory);
         }
 
+        public static string AddUser(AddUserRequest request)
+        {
+            return $"/ts?mod=users&cmd=userAdd&" +
+                $"user_name={HttpUtility.UrlEncode(request.UserName)}&" +
+                $"user_real_name={HttpUtility.UrlEncode(request.UserFullName)}&" +
+                $"user_email={HttpUtility.UrlEncode(request.UserEmail)}&" +
+                $"user_telephone={HttpUtility.UrlEncode(request.UserTelephone)}&" +
+                $"pw1={HttpUtility.UrlEncode(request.Password)}&" +
+                $"pw2={HttpUtility.UrlEncode(request.Password)}&" +
+                $"user_role={(int)request.UserRole}&" +
+                $"welcome={request.SendWelcomeEmail.ToString().ToLower()}";
+        }
+
         public static string AddTerritoryWithBorder(AlbaTerritoryBorder territory)
         {
             return @"/ts?mod=territories&cmd=add" +
