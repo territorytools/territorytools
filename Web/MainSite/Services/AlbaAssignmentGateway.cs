@@ -56,6 +56,7 @@ namespace TerritoryTools.Web.MainSite.Services
 
                     return new GetAlbaAssignmentsResult
                     {
+                        Success = true,
                         AssignmentValues = assignments
                     };
                 }
@@ -64,6 +65,7 @@ namespace TerritoryTools.Web.MainSite.Services
 
                 return new GetAlbaAssignmentsResult
                 {
+                    Success = true,
                     AssignmentValues = cacheValue
                 };
             }
