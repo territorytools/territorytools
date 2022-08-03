@@ -88,6 +88,8 @@ namespace TerritoryTools.Web.MainSite
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
+            services.AddSingleton<ITelemetryService, TelemetryService>();
+
             services.AddScoped<IAlbaCredentials>(ac => new AlbaCredentials(
                 Configuration["AlbaAccount"],
                 Configuration["AlbaUser"],
