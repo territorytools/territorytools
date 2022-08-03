@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -26,6 +28,7 @@ namespace TerritoryTools.Web.MainSite.Services
         readonly IAlbaCredentialService _albaCredentialService;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<AlbaAssignmentGateway> _logger;
+        private readonly TelemetryClient _telemetryClient;
         readonly WebUIOptions _options;
 
         public AlbaAssignmentGateway(
@@ -33,12 +36,14 @@ namespace TerritoryTools.Web.MainSite.Services
             IAlbaCredentialService albaCredentialService,
             IMemoryCache memoryCache,
             IOptions<WebUIOptions> optionsAccessor,
-            ILogger<AlbaAssignmentGateway> logger)
+            ILogger<AlbaAssignmentGateway> logger,
+            TelemetryClient telemetryClient)
         {
             _albaAuthClientService = albaAuthClientService;
             _albaCredentialService = albaCredentialService;
             _memoryCache = memoryCache;
             _logger = logger;
+            _telemetryClient = telemetryClient;
             _options = optionsAccessor.Value;
         }
 
@@ -61,7 +66,16 @@ namespace TerritoryTools.Web.MainSite.Services
                     };
                 }
 
-                _logger.LogInformation($"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}");
+                //_logger.LogInformation($"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}");
+                _logger.LogInformation("Custom telemetry is active");
+                _telemetryClient.TrackTrace(
+                    message: $"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}",
+                    severityLevel: SeverityLevel.Information,
+                    properties: new Dictionary<string, string>()
+                    {
+                        { "AssignmentCount", $"{cacheValue.Count}" },
+                        { "UserName", $"{userName}" }
+                    });
 
                 return new GetAlbaAssignmentsResult
                 {
@@ -71,7 +85,16 @@ namespace TerritoryTools.Web.MainSite.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error loading assignments for userName: {userName} Error: {ex}");
+                //_logger.LogError($"Error loading assignments for userName: {userName} Error: {ex}");
+                _telemetryClient.TrackException(
+                   ex,
+                   //message: $"Error loading assignments for userName: {userName} Error: {ex}",
+                   //severityLevel: SeverityLevel.Error,
+                   properties: new Dictionary<string, string>()
+                   {
+                        //{ "AssignmentCount", $"{cacheValue.Count}" },
+                        { "UserName", $"{userName}" }
+                   });
                 return new GetAlbaAssignmentsResult
                 {
                     Success = false

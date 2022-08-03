@@ -48,8 +48,8 @@ namespace TerritoryTools.Web.MainSite
                 });
 
             TelemetryConfiguration telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-            //telemetryConfiguration.InstrumentationKey = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_INSTRUMENTATION_KEY");
-            telemetryConfiguration.ConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
+            telemetryConfiguration.InstrumentationKey = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_INSTRUMENTATION_KEY");
+           // telemetryConfiguration.ConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
             TelemetryClient telemetryClient = new TelemetryClient(telemetryConfiguration);
             telemetryClient.TrackTrace("Test Logging", SeverityLevel.Information,
                 new Dictionary<string, string>
