@@ -24,13 +24,8 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
             client.Authenticate(credentials);
 
-            view.LoadTerritoriesButtonEnabled = true;
-            view.UploadKmlFilesButtonEnabled = true;
-            view.DownloadAllAddressesButtonEnabled = true;
-            view.DownloadTerritoryAssignmentsButtonEnabled = true;
-            view.DownloadUsersButtonEnabled = true;
-            view.UploadAddressesButtonEnabled = true;
-            view.DownloadUserInfoButtonEnabled = true;
+            view.DownloadButtonsEnabled = true;
+            view.UploadButtonsEnabled = true;
 
             view.AppendResultText(Environment.NewLine + "Logged on successfully." + Environment.NewLine);
         }

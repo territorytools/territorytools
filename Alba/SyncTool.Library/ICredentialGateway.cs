@@ -3,6 +3,7 @@
     public interface ICredentialGateway
     {
         string AccountName { get; set; }
+        int AccountId { get; set; }
         string UserName { get; set; }
         string AlbaHost { get; set; }
 

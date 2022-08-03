@@ -16,18 +16,8 @@
 
         string UploadDelayMs { get; }
 
-        bool LoadTerritoriesButtonEnabled { set; }
-
-        bool UploadKmlFilesButtonEnabled { set; }
-
-        bool DownloadAllAddressesButtonEnabled { set; }
-
-        bool DownloadTerritoryAssignmentsButtonEnabled { set; }
-
-        bool DownloadUsersButtonEnabled { set; }
-        
-        bool UploadAddressesButtonEnabled { set; }
-        bool DownloadUserInfoButtonEnabled { set; }
+        bool UploadButtonsEnabled { set; }
+        bool DownloadButtonsEnabled { set; }
 
         string OpenFileDialog(string fileExt, string title = "");
 
