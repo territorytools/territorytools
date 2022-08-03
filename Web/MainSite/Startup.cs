@@ -1,8 +1,5 @@
 ﻿using Certes;
 using FluffySpoon.AspNet.LetsEncrypt;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +11,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using TerritoryTools.Alba.Controllers;
@@ -44,30 +39,7 @@ namespace TerritoryTools.Web.MainSite
         {
             //https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#tracktrace
             //https://docs.microsoft.com/en-us/azure/azure-monitor/app/ilogger
-            //services.AddLogging(builder =>
-            //{
-            //    // Only Application Insights is registered as a logger provider
-            //    builder.AddApplicationInsights(
-            //        configureTelemetryConfiguration: (config) => config.ConnectionString = "<YourConnectionString>",
-            //        configureApplicationInsightsLoggerOptions: (options) => { }
-            //    );
-            //});
-
-            services.AddSingleton<TelemetryClient>(s =>
-            {
-                TelemetryConfiguration telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-                telemetryConfiguration.InstrumentationKey = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_INSTRUMENTATION_KEY");
-                //telemetryConfiguration.ConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
-                TelemetryClient telemetryClient = new TelemetryClient(telemetryConfiguration);
-                //telemetryClient.TrackTrace("Test Logging", SeverityLevel.Information,
-                //    new Dictionary<string, string>
-                //    {
-                //        { "UserEmail", "test@territorytols.org" },
-                //        { "UserName", "Test User" },
-                //        { "Message", "Starting" }
-                //    });
-                return telemetryClient;
-            });
+            services.AddApplicationInsightsTelemetry();
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {

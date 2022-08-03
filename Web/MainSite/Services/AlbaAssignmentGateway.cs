@@ -52,7 +52,7 @@ namespace TerritoryTools.Web.MainSite.Services
             try
             {
                 Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
-
+                throw new Exception("Testing");
                 if (!_memoryCache.TryGetValue(
                       $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
                       out List<AlbaAssignmentValues> cacheValue))
@@ -92,7 +92,6 @@ namespace TerritoryTools.Web.MainSite.Services
                    //severityLevel: SeverityLevel.Error,
                    properties: new Dictionary<string, string>()
                    {
-                        //{ "AssignmentCount", $"{cacheValue.Count}" },
                         { "UserName", $"{userName}" }
                    });
                 return new GetAlbaAssignmentsResult

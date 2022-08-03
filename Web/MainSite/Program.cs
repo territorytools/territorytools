@@ -47,17 +47,6 @@ namespace TerritoryTools.Web.MainSite
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Error);
                 });
 
-            TelemetryConfiguration telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-            telemetryConfiguration.InstrumentationKey = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_INSTRUMENTATION_KEY");
-           // telemetryConfiguration.ConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING");
-            TelemetryClient telemetryClient = new TelemetryClient(telemetryConfiguration);
-            telemetryClient.TrackTrace("Test Logging", SeverityLevel.Information,
-                new Dictionary<string, string>
-                {
-                    { "UserEmail", "test@territorytols.org" },
-                    { "UserName", "Test User" }
-                });
-
             return builder;
 
             // Use the ASPNETCORE_URLS environment variable to set URLs
