@@ -167,7 +167,8 @@ namespace TerritoryTools.Web.MainSite.Services
                 try
                 {
                     latestTerritoryIds.Add(territory.Id);
-                    string result = client.DownloadString(
+                    string result = AlbaConnection.DownloadString(
+                        credentials,
                         RelativeUrlBuilder.AssignTerritory(
                             territory.Id,
                             userId,

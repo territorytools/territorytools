@@ -12,16 +12,20 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 {
     public class DownloadTerritoryAssignments
     {
+        private readonly IAlbaAuthClientService _albaAuthClientService;
         private AlbaConnection client;
 
-        public DownloadTerritoryAssignments(AlbaConnection client)
+        public DownloadTerritoryAssignments(
+            IAlbaAuthClientService albaAuthClientService,
+            AlbaConnection client)
         {
+            _albaAuthClientService = albaAuthClientService;
             this.client = client;
         }
 
         public void SaveAs(string fileName)
         {
-            var resultString = client.DownloadString(
+            var resultString = _albaAuthClientService.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignments());
 
             string html = TerritoryAssignmentParser.Parse(resultString);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -92,13 +93,15 @@ namespace TerritoryTools.Web.MainSite.Services
 
         List<AlbaAssignmentValues> DownloadAssignments(string userName, Guid albaAccountId)
         {
+            Credentials credentials = _albaCredentialService.GetCredentialsFrom(userName);
+
             _telemetryService.Trace(
                 $"Downloading assignments from Alba and caching them for userName: {userName} albaAccountID: {albaAccountId}",
-                userName);
+                credentials.User);
 
             var assignmentsJson = _albaAuthClientService.DownloadString(
-                RelativeUrlBuilder.GetTerritoryAssignments(), 
-                userName);
+                RelativeUrlBuilder.GetTerritoryAssignments(),
+                credentials);
 
             string assignmentsHtml = TerritoryAssignmentParser.Parse(assignmentsJson);
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerritoryTools.Alba.Controllers.AlbaServer;
+using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -21,6 +22,7 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly IUserService _userService;
+        readonly IAlbaCredentialService _albaAuthCredentialService;
         readonly IAlbaAuthClientService _albaAuthClientService;
         readonly ILogger<TerritoryAssignmentService> _logger;
         readonly WebUIOptions options;
@@ -28,12 +30,14 @@ namespace TerritoryTools.Web.MainSite.Services
         public TerritoryAssignmentService(
             ICombinedAssignmentService combinedAssignmentService,
             IUserService userService,
+            IAlbaCredentialService albaAuthCredentialService,
             IAlbaAuthClientService albaAuthClientService,
             IOptions<WebUIOptions> optionsAccessor,
             ILogger<TerritoryAssignmentService> logger)
         {
             _combinedAssignmentService = combinedAssignmentService;
             _userService = userService;
+            _albaAuthCredentialService = albaAuthCredentialService;
             _albaAuthClientService = albaAuthClientService;
             _logger = logger;
             options = optionsAccessor.Value;
@@ -92,6 +96,7 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public void Assign(int territoryId, int assigneeUserId, string user)
         {
+            Credentials credentials = _albaAuthCredentialService.GetCredentialsFrom(user);
             _logger.LogInformation($"Assigning territoryId {territoryId} to assigneeUserId: {assigneeUserId} user: ({user})");
 
             string result = _albaAuthClientService.DownloadString(
@@ -99,7 +104,7 @@ namespace TerritoryTools.Web.MainSite.Services
                     territoryId,
                     assigneeUserId,
                     DateTime.Now),
-                user);
+                credentials);
 
             global::Controllers.UseCases.User myUser = _userService
                 .GetUsers(user)
@@ -119,9 +124,11 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             _logger.LogInformation($"Unassigning territoryId {territoryId} ({userName})");
 
+            Credentials credentials = _albaAuthCredentialService.GetCredentialsFrom(userName);
+
             _albaAuthClientService.DownloadString(
                 RelativeUrlBuilder.UnassignTerritory(territoryId),
-                userName);
+                credentials);
 
             _combinedAssignmentService.LoadAssignments(userName);
         }
@@ -130,9 +137,11 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             _logger.LogInformation($"Marking as complete territoryId {territoryId} ({userName})");
 
+            Credentials credentials = _albaAuthCredentialService.GetCredentialsFrom(userName);
+
             _albaAuthClientService.DownloadString(
-                RelativeUrlBuilder.SetTerritoryCompleted(territoryId, DateTime.Today), 
-                userName);
+                RelativeUrlBuilder.SetTerritoryCompleted(territoryId, DateTime.Today),
+                credentials);
 
             _combinedAssignmentService.LoadAssignments(userName);
         }

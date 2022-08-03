@@ -586,7 +586,8 @@ namespace TerritoryTools.Alba.Cli
             return new Credentials(
                 account,
                 user,
-                password);
+                password)
+            { Host = host };
         }
     }
 }

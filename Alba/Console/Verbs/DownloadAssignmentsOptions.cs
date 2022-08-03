@@ -2,6 +2,7 @@
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
+using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
 
 namespace TerritoryTools.Alba.Cli.Verbs
@@ -38,11 +39,12 @@ namespace TerritoryTools.Alba.Cli.Verbs
         {
             Console.WriteLine("Downloading assignments...");
 
-            var client = Program.AlbaClient();
-
-            client.Authenticate(Program.GetCredentials());
-
-            var useCase = new DownloadTerritoryAssignments(client);
+            //var client = Program.AlbaClient();
+            var credentials = Program.GetCredentials();
+            //client.Authenticate(credentials);
+            var authCli = new AlbaAuthClientService(credentials);
+            
+            var useCase = new DownloadTerritoryAssignments(authCli);
 
             useCase.SaveAs(OutputFilePath);
 
