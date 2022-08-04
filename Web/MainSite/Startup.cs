@@ -20,6 +20,8 @@ using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -150,6 +152,26 @@ namespace TerritoryTools.Web.MainSite
             services.AddTransient<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
 
             services.AddHostedService<TimedHostedService>();
+
+            services.AddAuthentication()
+               .AddJwtBearer("Asymmetric", options => {
+                   SecurityKey rsa = services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+
+                   options.IncludeErrorDetails = true; // <- great for debugging
+
+                    // Configure the actual Bearer validation
+                    options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       IssuerSigningKey = rsa,
+                       ValidAudience = "jwt-test",
+                       ValidIssuer = "jwt-test",
+                       RequireSignedTokens = true,
+                       RequireExpirationTime = true, // <- JWTs are required to have "exp" property set
+                       ValidateLifetime = true, // <- the "exp" will be validated
+                       ValidateAudience = true,
+                       ValidateIssuer = true,
+                   };
+               });
 
             if (!NoSsl)
             {

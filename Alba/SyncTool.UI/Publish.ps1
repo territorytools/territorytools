@@ -1,4 +1,5 @@
-﻿Import-Module ..\..\ClickOnceDeploymentScripts\ClickOnce-Module.psm1
+﻿pushd ./
+Import-Module ..\..\ClickOnceDeploymentScripts\ClickOnce-Module.psm1
 
 Write-Host "Building Project..."
 #msbuild.exe AlbaClientWpfUI.csproj /p:Configuration=Release
@@ -17,9 +18,9 @@ $files = `
     "AlbaSyncTool.exe", `
     "AlbaSyncTool.exe.config", `
     "AlbaSyncTool.pdb", `
-    "Controllers.dll", `
-    "Controllers.dll.config", `
-    "Controllers.pdb", `
+    "TerritoryTools.Alba.Controllers.dll", `
+    "TerritoryTools.Alba.Controllers.dll.config", `
+    "TerritoryTools.Alba.Controllers.pdb", `
     "CommandLine.dll", `
     "CsvHelper.dll", `
     "HtmlAgilityPack.dll", `
@@ -28,9 +29,9 @@ $files = `
     "System.Runtime.CompilerServices.Unsafe.dll", `
     "System.Threading.Tasks.Extensions.dll", `
     "System.ValueTuple.dll", `
-    "WpfUILibrary.dll", `
-    "WpfUILibrary.dll.config", `
-    "WpfUILibrary.pdb", `
+    "TerritoryTools.Alba.SyncTool.Library.dll", `
+    "TerritoryTools.Alba.SyncTool.Library.dll.config", `
+    "TerritoryTools.Alba.SyncTool.Library.pdb", `
     "StreetTypes.txt", `
     "UnitTypes.txt", `
     "TerritoryTools.ico"
@@ -45,7 +46,7 @@ try {
         -Publisher "Marc Durham" `
         -OutputFolder "Publish" `
         -BinaryReleaseFolder "bin/Release/net472" `
-        -CertFile "TerritoryTools.pfx" `
+        -CertFile "../../../TerritoryTools.pfx" `
         -DeploymentRootUrl "http://downloads.md9.us" `
         -FileExtension ".csv" `
         -FileExtDescription "Alba Address Import CSV File" `

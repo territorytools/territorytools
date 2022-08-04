@@ -334,7 +334,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
         }
 
-        [Authorize]
+        //[Authorize]
+        [Authorize(AuthenticationSchemes = "Asymmetric")]
         public IActionResult Available()
         {
             try
