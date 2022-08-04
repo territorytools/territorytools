@@ -1,27 +1,20 @@
-﻿using Microsoft.Extensions.Options;
-using TerritoryTools.Alba.Controllers;
-using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.Models;
+﻿using TerritoryTools.Alba.Controllers.Models;
 
-namespace TerritoryTools.Web.MainSite.Services
+namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
     public interface IAlbaAuthClientService
     {
         AlbaConnection AuthClient();
-        string DownloadString(string uri, string userName);
+        string DownloadString(string uri, Credentials credentials);
     }
 
     public class AlbaAuthClientService : IAlbaAuthClientService
     {
-        readonly WebUIOptions _options;
-        readonly IAlbaCredentialService _albaCredentialService;
+        private readonly Credentials _credentials;
 
-        public AlbaAuthClientService(
-            IAlbaCredentialService albaCredentialService,
-            IOptions<WebUIOptions> optionsAccessor)
+        public AlbaAuthClientService(Credentials credentials)
         {
-            _options = optionsAccessor.Value;
-            _albaCredentialService = albaCredentialService;
+            _credentials = credentials;
         }
 
         public AlbaConnection AuthClient()
@@ -29,7 +22,7 @@ namespace TerritoryTools.Web.MainSite.Services
             var webClient = new CookieWebClient();
             var basePath = new ApplicationBasePath(
                 protocolPrefix: "https://",
-                site: _options.AlbaHost,
+                site: _credentials.Host,
                 applicationPath: "/alba");
 
             var client = new AlbaConnection(
@@ -39,10 +32,8 @@ namespace TerritoryTools.Web.MainSite.Services
             return client;
         }
 
-        public string DownloadString(string uri, string userName)
+        public string DownloadString(string uri, Credentials credentials)
         {
-            Credentials credentials = _albaCredentialService.GetCredentialsFrom(userName);
-
             AlbaConnection client = AuthClient();
 
             if (!client.IsAuthenticated)

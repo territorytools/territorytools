@@ -11,6 +11,7 @@ namespace TerritoryTools.Alba.Controllers.Models
             Password = password;
         }
 
+        public string Host { get; set; }
         public string Account;
         public string User;
         public string Password;

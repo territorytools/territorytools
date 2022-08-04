@@ -61,6 +61,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
             credentials.K1MagicString = ExtractAuthK1.ExtractFrom(html);
             credentials.SessionKeyValue = _webClient.GetCookieValue(SessionKeyName);
+            
+            // TODO: Just use this SessionKeyValue (token) with the download client
 
             //_webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
             //_webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
@@ -115,6 +117,21 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             _webClient.AddCookie(SessionKeyName, _credentials.SessionKeyValue, "/", BasePath.Site);
    
             return _webClient.DownloadString(BasePath.BaseUrl + url);
+        }
+
+        public static string DownloadString(Credentials credentials, string url)
+        {
+            var webClient = new CookieWebClient();
+            var basePath = new ApplicationBasePath(
+                protocolPrefix: "https://",
+                site: credentials.Host,
+                applicationPath: "/alba");
+
+            webClient.AddCookie("alba_an", credentials.Account, basePath.ApplicationPath, basePath.Site);
+            webClient.AddCookie("alba_us", credentials.User, basePath.ApplicationPath, basePath.Site);
+            webClient.AddCookie(SessionKeyName, credentials.SessionKeyValue, "/", basePath.Site);
+
+            return webClient.DownloadString(basePath.BaseUrl + url);
         }
     }
 }
