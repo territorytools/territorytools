@@ -60,7 +60,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
         {
             Console.WriteLine("Normalize Addresses");
 
-            throw new Exception("This does not work");
+            //throw new Exception("This does not work");
 
             if(string.IsNullOrWhiteSpace(inputPath) && string.IsNullOrWhiteSpace(inputAddressOnly))
             {

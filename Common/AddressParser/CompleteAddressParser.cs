@@ -30,7 +30,7 @@ namespace TerritoryTools.Entities.AddressParsers
                 }
             }
 
-            this.streetNameAfterTypes = streetNameAfterTypes.ToList();
+            this.streetNameAfterTypes = (streetNameAfterTypes ?? new List<StreetType>()).ToList();
             foreach (var t in this.streetNameAfterTypes)
             {
                 streetNameAfterTypeMap[t.Full.ToUpper()] = t;
@@ -173,7 +173,9 @@ namespace TerritoryTools.Entities.AddressParsers
 
             new AddressNumberFinder(container).Find();
 
-            if(container.ParsedAddress.Number.Index == 0)
+            VerifyThatStreetNumberIsSet();
+
+            if (container.ParsedAddress.Number.Index == 0)
             {
                 if(string.Equals(container.AddressPartResults[1].Value, "HWY", StringComparison.OrdinalIgnoreCase))
                 {
@@ -269,6 +271,12 @@ namespace TerritoryTools.Entities.AddressParsers
         {
             if (container.ParsedAddress.StreetType.IsNotSet())
                 throw new MissingStreetTypeException(addressToParse);
+        }
+
+        private void VerifyThatStreetNumberIsSet()
+        {
+            if (container.ParsedAddress.Number.IsNotSet())
+                throw new MissingStreetNumberException(addressToParse);
         }
 
         private void CopyParsedAddressResultsToAddress()

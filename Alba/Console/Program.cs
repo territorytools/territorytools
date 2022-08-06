@@ -38,7 +38,7 @@ namespace TerritoryTools.Alba.Cli
                 var errors = new List<Error>();
 
                 Parser.Default.ParseArguments(args, types)
-                   .WithParsed(Run)
+                    .WithParsed(Run)
                     .WithNotParsed(x => errors = x.ToList());
                 
                 if (errors.Any())
