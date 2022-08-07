@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace TerritoryTools.Entities.AddressParsers
+﻿namespace TerritoryTools.Entities.AddressParsers
 {
     public class MissingStreetTypeException : AddressParsingException
     {
@@ -15,7 +10,7 @@ namespace TerritoryTools.Entities.AddressParsers
         {
             get
             {
-                return "Missing Street Type: " + this.AddressToParse;
+                return $"Missing Street Type: {AddressToParse}";
             }
         }
     }

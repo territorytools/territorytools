@@ -47,6 +47,18 @@ namespace TerritoryTools.Entities.AddressParsers
             string state = null,
             string postalCode = null)
         {
+            try
+            {
+                return NormalizeTry(text, city, state, postalCode);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private Address NormalizeTry(string text, string city, string state, string postalCode)
+        {
             var parsed = Parse(text, city, state, postalCode);
 
             string poBoxExpression = @"P\.?\s*O\.?\s*B(ox)?\s+(\d+)";
@@ -78,7 +90,13 @@ namespace TerritoryTools.Entities.AddressParsers
 
             if (!string.IsNullOrEmpty(parsed.StreetType))
             {
-                string abbreviation = streetTypeMap[parsed.StreetType.ToUpper()].Abbreviation;
+                string normalizedStreetType = parsed.StreetType.ToUpper();
+                if (!streetTypeMap.ContainsKey(normalizedStreetType))
+                {
+                    throw new InvalidStreetTypeException(normalizedStreetType, text);
+                }
+
+                string abbreviation = streetTypeMap[normalizedStreetType].Abbreviation;
                 if (!string.IsNullOrWhiteSpace(abbreviation))
                 {
                     parsed.StreetType = TitleCase(abbreviation);
@@ -88,7 +106,7 @@ namespace TerritoryTools.Entities.AddressParsers
                     parsed.StreetType = TitleCase(parsed.StreetType);
                 }
             }
-            
+
             parsed.UnitType = TitleCase(parsed.UnitType);
             parsed.UnitNumber = parsed.UnitNumber.Replace("-", string.Empty).ToUpper();
             parsed.City = TitleCase(parsed.City);
@@ -120,7 +138,7 @@ namespace TerritoryTools.Entities.AddressParsers
             string postalCode = null)
         {
             if (string.IsNullOrWhiteSpace(addressToParse))
-                throw new AddressParsingException($"{nameof(addressToParse)} is blank.");
+                throw new AddressParsingException($"Blank Address: '{nameof(addressToParse)}'");
 
             this.addressToParse = addressToParse;
 
