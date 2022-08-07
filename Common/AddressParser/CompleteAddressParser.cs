@@ -177,6 +177,40 @@ namespace TerritoryTools.Entities.AddressParsers
                 container.Address.IsNotPhysical = true; // it is physical, just weird
                 container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
                 container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
+
+                // If there is a non directionaly after the street name, but it's not a street type
+                if(broadway.Groups.Count > 3)
+                {
+                    if(container.ParsedAddress.DirectionalSuffix.IsNotSet()
+                        && Common.AddressParser.Smart.Parser.IsDirectional(broadway.Groups[3].Value))
+                    {
+                        container.ParsedAddress.DirectionalSuffix.Value = broadway.Groups[3].Value.ToUpper();
+                    }
+                    else if(container.ParsedAddress.UnitNumber.IsNotSet())
+                    {
+                        container.ParsedAddress.UnitNumber.Value = broadway.Groups[3].Value.ToUpper();
+                    }
+                }
+            }
+
+            string noStreetTypeWithUnit = @"^(\d+)\s+([a-zA-Z-]+)\s+#?([0-9a-zA-Z-]+)$";
+            var broadwayWithUnit = Regex.Match(container.CompleteAddressToParse, noStreetTypeWithUnit);
+            if (broadwayWithUnit.Success)
+            {
+                container.Address.IsNotPhysical = true; // it is physical, just weird
+                container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
+                container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
+
+                // If there is a non directionaly after the street name, but it's not a street type        
+                if (container.ParsedAddress.DirectionalSuffix.IsNotSet()
+                    && Common.AddressParser.Smart.Parser.IsDirectional(broadway.Groups[3].Value))
+                {
+                    container.ParsedAddress.DirectionalSuffix.Value = broadway.Groups[3].Value.ToUpper();
+                }
+                else if (container.ParsedAddress.UnitNumber.IsNotSet())
+                {
+                    container.ParsedAddress.UnitNumber.Value = broadway.Groups[3].Value.ToUpper();
+                }
             }
 
             // Find Required Things

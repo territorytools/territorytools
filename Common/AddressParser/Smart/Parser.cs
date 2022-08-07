@@ -533,7 +533,7 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 .Replace("WEST", "W");
         }
 
-        bool IsDirectional(string word)
+        public static bool IsDirectional(string word)
         {
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|East|West)?$";
             return Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase);
