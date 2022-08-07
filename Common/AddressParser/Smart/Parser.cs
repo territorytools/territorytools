@@ -45,10 +45,13 @@ namespace TerritoryTools.Common.AddressParser.Smart
             }
 
             text = text
-                .Replace(',', ' ')
+                .Replace(',', ' ') // TODO: Maybe leave commas in?
                 .Replace('.', ' ')
                 .Trim();
 
+            text = Regex.Replace(text, @"#+", "#");
+
+            // TODO: Make commas work
             if(text.Contains(","))
             {
                 var columns = text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);

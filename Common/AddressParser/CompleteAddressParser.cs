@@ -74,7 +74,7 @@ namespace TerritoryTools.Entities.AddressParsers
             var broadway = Regex.Match(text, noStreetType);
             if (broadway.Success)
             {
-                parsed.IsNotPhysical = true; // it is physical, just weird
+                parsed.IsNotPhysical = true; // it is physical, just weird, like '1234 Broadway'
                 parsed.Number = broadway.Groups[1].Value;
                 parsed.StreetName = broadway.Groups[2].Value;
             }

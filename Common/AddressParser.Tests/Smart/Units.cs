@@ -61,11 +61,26 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             AssertUnitTypeNumber(text, unitType, unitNumber);
         }
 
+        [TestCase("123 Main St NE, A, Lynnwood WA 98087", "", "A")]
+        public void Unit_WithComma_AfterDirectional(string text, string unitType, string unitNumber)
+        {
+            AssertUnitTypeNumber(text, unitType, unitNumber);
+        }
+
         [Test]
         public void StreetType_StreetAndUnitOnly()
         {
             string text = "123 Main St Unit # 5-A";
             Assert.AreEqual("Unit", Test(text).Unit.Type);
+            Assert.AreEqual("5-A", Test(text).Unit.Number);
+            Assert.AreEqual("St", Test(text).Street.Name.StreetType);
+        }
+
+        [Test]
+        public void StreetType_DoubleUnitType()
+        {
+            string text = "123 Main St ##5-A";
+            Assert.AreEqual("#", Test(text).Unit.Type);
             Assert.AreEqual("5-A", Test(text).Unit.Number);
             Assert.AreEqual("St", Test(text).Street.Name.StreetType);
         }
