@@ -130,26 +130,21 @@ namespace MinistryEntities.Tests.Parsers
             Assert.AreEqual(2, container.AddressParts.Count);
             Assert.AreEqual("1111", container.AddressParts[0]);
             Assert.AreEqual("2222", container.AddressParts[1]);
-            
         }
 
         [Test]
-        public void ReplaceWhiteSpace_NonBreakingSpace_ReplacedWithSpace()
+        public void ReplaceWhiteSpace_NonBreakingSpaceAndTab_ReplacedWithSpace()
         {
             // Arrange
-            var container = new AddressParseContainer("\u00a0");
+            var container = new AddressParseContainer("1234\u00a0Main\tSt");
             var splitter = new AddressSplitter(container);
 
-            Assert.AreEqual(1, container.CompleteAddressToParse.Length);
-            Assert.IsTrue(container.CompleteAddressToParse.Contains("\u00a0"));
+            Assert.AreEqual("1234\u00a0Main\tSt", container.CompleteAddressToParse);
 
-            splitter.ReplaceWhiteSpaceWithSpace();
+            splitter.SplitAndClean();
 
             // Assert
-            Assert.IsFalse(container.CompleteAddressToParse.Contains("\u00a0"));
-            Assert.AreEqual(1, container.CompleteAddressToParse.Length);
-            Assert.AreEqual(" ", container.CompleteAddressToParse);
-            Assert.AreEqual("\u0020", container.CompleteAddressToParse);
+            Assert.AreEqual("1234\u0020Main\u0020St", container.CompleteAddressToParse);
         }
     }
 }
