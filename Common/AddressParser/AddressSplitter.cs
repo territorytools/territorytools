@@ -34,11 +34,28 @@ namespace TerritoryTools.Entities.AddressParsers
 
         void SplitAddressAtSpacesAndCommas()
         {
-            var separators = new char[] { ' ', ','};
+            var groups = container.CompleteAddressToParse.Split(new char[] { ',' }, System.StringSplitOptions.None).ToList();
+            for(int g = 0; g < groups.Count; g++)
+            {
+                string group = groups[g];
+                container.AddressGroups.Add(group);
 
-            container.AddressParts = container.CompleteAddressToParse
-                .Split(separators)
-                .ToList();
+                var newGroup = new List<string>();
+                var parts = group
+                    .Split(new char[] {' '}, System.StringSplitOptions.RemoveEmptyEntries)
+                    .ToList();
+
+                for(int p = 0; p < parts.Count; p++)
+                {
+                    string part = parts[p]; 
+                    container.AddressParts.Add(part);
+                    container.AddressPartsGroupIndex.Add(g);
+                    container.AddressPartsPartIndex.Add(p);
+                    newGroup.Add(part);
+                }
+
+                container.AddressPartsGrouped.Add(newGroup);
+            }
         }
 
         //public void RemoveBlanks()

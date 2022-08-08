@@ -6,11 +6,11 @@ namespace TerritoryTools.Entities.AddressParsers
     {
         public AddressParseContainer(string completeAddressToParse)
         {
-            this.CompleteAddressToParse = completeAddressToParse;
-            this.AddressParts = new List<string>();
-            this.AddressPartResults = new List<AddressPartResult>();
-            this.Address = new Address();
-            this.ParsedAddress = new ParsedAddress();
+            CompleteAddressToParse = completeAddressToParse;
+            AddressParts = new List<string>();
+            AddressPartResults = new List<AddressPartResult>();
+            Address = new Address();
+            ParsedAddress = new ParsedAddress();
         }
 
         public Address Address { get; set; }
@@ -18,6 +18,11 @@ namespace TerritoryTools.Entities.AddressParsers
         public string CompleteAddressToParse { get; set; }
 
         public List<string> AddressParts { get; set; }
+        public List<int> AddressPartsGroupIndex { get; set; } = new List<int>();
+        public List<int> AddressPartsPartIndex { get; set; } = new List<int>();
+
+        public List<List<string>> AddressPartsGrouped { get; set; } = new List<List<string>>();
+        public List<string> AddressGroups { get; set; } = new List<string>();
 
         public List<AddressPartResult> AddressPartResults { get; set; }
 

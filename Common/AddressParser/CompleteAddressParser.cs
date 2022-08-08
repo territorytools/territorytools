@@ -171,8 +171,9 @@ namespace TerritoryTools.Entities.AddressParsers
             }
 
             string noStreetType = @"^(\d+)\s+([a-zA-Z-]+)$";
-            var broadway = Regex.Match(container.CompleteAddressToParse, noStreetType);
-            if (broadway.Success)
+            string firstGroup = container.AddressGroups.FirstOrDefault();
+            var broadway = Regex.Match(firstGroup, noStreetType);
+            if (Regex.IsMatch(firstGroup, noStreetType)) //broadway.Success)
             {
                 container.Address.IsNotPhysical = true; // it is physical, just weird
                 container.ParsedAddress.Number.Value = broadway.Groups[1].Value;

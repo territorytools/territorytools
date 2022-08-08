@@ -811,7 +811,7 @@ namespace MinistryEntities.Tests
         [Test]
         public void Parse_123_Broadway_withCommaThenUnit_NoStreetType()
         {
-            var door = Parse("125 Broadway 2A"); // Not a directional or a street type
+            var door = Parse("125 Broadway, 2A"); // Not a directional or a street type
 
             Assert.AreEqual("125", door.Number, "StreetNumber");
             Assert.AreEqual("", door.DirectionalPrefix, "StreetDirectionalPrefix");

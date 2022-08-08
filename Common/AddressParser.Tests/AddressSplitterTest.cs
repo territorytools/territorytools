@@ -146,5 +146,25 @@ namespace MinistryEntities.Tests.Parsers
             // Assert
             Assert.AreEqual("1234\u0020Main\u0020St", container.CompleteAddressToParse);
         }
+
+        [Test]
+        public void SplitCommasIntoGroups()
+        {
+            // Arrange
+            var container = new AddressParseContainer("1234 Main St, Unit B1, Seattle, WA 98111");
+            var splitter = new AddressSplitter(container);
+
+            splitter.SplitAndClean();
+
+            // Assert
+            Assert.AreEqual("1234", container.AddressPartsGrouped[0][0]);
+            Assert.AreEqual("Main", container.AddressPartsGrouped[0][1]);
+            Assert.AreEqual("St", container.AddressPartsGrouped[0][2]);
+            Assert.AreEqual("Unit", container.AddressPartsGrouped[1][0]);
+            Assert.AreEqual("B1", container.AddressPartsGrouped[1][1]);
+            Assert.AreEqual("Seattle", container.AddressPartsGrouped[2][0]);
+            Assert.AreEqual("WA", container.AddressPartsGrouped[3][0]);
+            Assert.AreEqual("98111", container.AddressPartsGrouped[3][1]);
+        }
     }
 }
