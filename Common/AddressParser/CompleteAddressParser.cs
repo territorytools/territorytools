@@ -170,15 +170,15 @@ namespace TerritoryTools.Entities.AddressParsers
                 container.ParsedAddress.StreetName.Value = "PO Box";
             }
 
-            string noStreetType = @"^(\d+)\s+([a-zA-Z-]+)$";
-            string firstGroup = container.AddressGroups.FirstOrDefault();
-            var broadway = Regex.Match(firstGroup, noStreetType);
-            if (Regex.IsMatch(firstGroup, noStreetType)) //broadway.Success)
-            {
-                container.Address.IsNotPhysical = true; // it is physical, just weird
-                container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
-                container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
-            }
+            //string noStreetType = @"^(\d+)\s+([a-zA-Z-]+)$";
+            //string firstGroup = container.AddressGroups.FirstOrDefault();
+            //var broadway = Regex.Match(firstGroup, noStreetType);
+            //if (Regex.IsMatch(firstGroup, noStreetType)) //broadway.Success)
+            //{
+            //    container.Address.IsNotPhysical = true; // it is physical, just weird
+            //    container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
+            //    container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
+            //}
 
             // Find Required Things
             if (!container.Address.IsNotPhysical)
