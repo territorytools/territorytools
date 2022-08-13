@@ -10,7 +10,7 @@ namespace Controllers.UseCases
 {
     public class LoadTsvAlbaAddresses
     {
-        public static IEnumerable<AlbaAddressExport> LoadFrom(string path)
+        public static IEnumerable<AlbaAddressExport> LoadFrom(string path, string deliminator = "\t")
         {
             var list = new List<AlbaAddressExport>();
             if (string.IsNullOrWhiteSpace(path))
@@ -20,7 +20,7 @@ namespace Controllers.UseCases
 
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                Delimiter = "\t",
+                Delimiter = deliminator,
                 BadDataFound = null,
                 HeaderValidated = null,
                 MissingFieldFound = null,

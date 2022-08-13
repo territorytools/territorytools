@@ -12,8 +12,15 @@ namespace TerritoryTools.Common.AddressParser.Smart
         public override string ToString()
         {
             parts.Clear();
-            parts.Add(Type);
-            parts.Add(Number);
+            if (Type == "#")
+            {
+                parts.Add($"{Type}{Number}");
+            }
+            else
+            {
+                parts.Add(Type);
+                parts.Add(Number);
+            }
 
             var notEmptyParts = new List<string>();
             foreach (var part in parts)

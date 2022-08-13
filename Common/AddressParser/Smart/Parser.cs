@@ -584,18 +584,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 if(Normalize)
                 {
                     word = $"{word}".Trim().ToUpper();
-                    string normalized = word;
                     if (mapStreetTypes.TryGetValue(word, out string shorter))
                     {
-                        normalized = shorter;
+                        return shorter;
                     }
-
-                    if (normalized.Length < 2)
-                    {
-                        return normalized;
-                    }
-
-                    return normalized.Substring(0, 1).ToUpper() + normalized.Substring(1).ToLower();
                 }
 
                 return word;

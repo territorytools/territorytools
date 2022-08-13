@@ -92,7 +92,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             Console.WriteLine($"Input Address Only Text File Path: {inputAddressOnly}");
             Console.WriteLine($"Output File Path: {outputPath}");
 
-            var addresses = LoadTsvAlbaAddresses.LoadFrom(inputPath);
+            var addresses = LoadTsvAlbaAddresses.LoadFrom(inputPath, "\t");
 
             Console.WriteLine("Cities:");
             var cities = addresses
