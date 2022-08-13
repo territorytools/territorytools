@@ -36,5 +36,61 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
             return streetTypes;
         }
+
+        public static bool SamePrefix(string first, string second)
+        {
+            return Same(first, second, PrefixDefaults);
+        }
+
+        public static bool SameSuffix(string first, string second)
+        { 
+            return Same(first, second, Defaults);
+        }
+
+        public static bool Same(string first, string second, string defaults)
+        {
+            string a = $"{first}".Trim().ToUpper();
+            string b = $"{second}".Trim().ToUpper();
+            if (string.IsNullOrWhiteSpace(a) && string.IsNullOrWhiteSpace(b))
+            {
+                return true;
+            }
+
+            if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            var map = Map(defaults);
+            if (map.TryGetValue(a, out string sta) && string.Equals(sta, b, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (map.TryGetValue(b, out string stb) && string.Equals(stb, a, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static string Normalize(string streetType)
+        {
+            string key = $"{streetType}".Trim().ToUpper();
+            string normalized = key;
+            var map = Map(Defaults);
+            if (map.TryGetValue(key, out string shorter))
+            {
+                normalized = shorter;
+            }
+
+            if(normalized.Length < 2)
+            {
+                return normalized;
+            }
+
+            return normalized.Substring(0, 1).ToUpper() + normalized.Substring(1).ToLower();
+        }
     }
 }

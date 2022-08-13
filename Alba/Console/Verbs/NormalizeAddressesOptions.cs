@@ -49,7 +49,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
         [Option(
             "use-old-parser",
-            Required = true,
+            Required = false,
             HelpText = "Use old parser engine")]
         public bool UseOldParser { get; set; }
 
@@ -112,6 +112,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             var mapStreetTypes = smart.StreetType.Map(smart.StreetType.Defaults);
             var prefixStreetTypes = smart.StreetType.Split(smart.StreetType.PrefixDefaults);
             var parser = new smart.Parser(validRegions, cities, streetTypes, mapStreetTypes, prefixStreetTypes);
+            parser.Normalize = true;
 
             //var streetTypes = StreetType.Parse(StreetTypes);
             //var parser = new CompleteAddressParser(streetTypes);
@@ -128,12 +129,21 @@ namespace TerritoryTools.Alba.Cli.Verbs
                     {
                         //var address = parser.Parse(null, a.Address, a.Suite, a.City, a.Province, a.Postal_code);
                         var address = parser.Parse($"{a.Address}, {a.Suite}, {a.City}, {a.Province} {a.Postal_code}");
-                        a.Address = address.Street.ToString().Trim();
-                        a.Suite = address.Unit.ToString();
-                        a.City = address.City.ToString();
-                        a.Province = address.Region.ToString();
-                        a.Postal_code = address.Postal.Code?.ToString();
-                        normalized.Add(a);
+
+                        if (string.IsNullOrWhiteSpace(address.Street.ToString())
+                            && !string.IsNullOrWhiteSpace(a.Address))
+                        {
+                            normalized.Add(a);
+                        }
+                        else
+                        {
+                            a.Address = address.Street.ToString().Trim();
+                            a.Suite = address.Unit.ToString();
+                            a.City = address.City.ToString();
+                            a.Province = address.Region.ToString();
+                            a.Postal_code = address.Postal.Code?.ToString();
+                            normalized.Add(a);
+                        }
                     }
                     catch (Exception e)
                     {

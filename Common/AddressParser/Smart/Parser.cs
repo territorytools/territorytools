@@ -535,8 +535,9 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
         public static bool IsDirectional(string word)
         {
+            string cleanedWord = $"{word}".Replace(".", ""); // N.E. becomes NE
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|East|West)?$";
-            return Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase);
+            return Regex.IsMatch(cleanedWord, pattern, RegexOptions.IgnoreCase);
         }
 
         string FindPrefixStreetType()
@@ -582,11 +583,19 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
                 if(Normalize)
                 {
-                    word = word.ToUpper();
-                    if(mapStreetTypes.ContainsKey(word))
+                    word = $"{word}".Trim().ToUpper();
+                    string normalized = word;
+                    if (mapStreetTypes.TryGetValue(word, out string shorter))
                     {
-                        return mapStreetTypes[word];
+                        normalized = shorter;
                     }
+
+                    if (normalized.Length < 2)
+                    {
+                        return normalized;
+                    }
+
+                    return normalized.Substring(0, 1).ToUpper() + normalized.Substring(1).ToLower();
                 }
 
                 return word;
