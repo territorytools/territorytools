@@ -133,6 +133,9 @@ namespace TerritoryTools.Alba.Cli.Verbs
                         if (string.IsNullOrWhiteSpace(address.Street.ToString())
                             && !string.IsNullOrWhiteSpace(a.Address))
                         {
+                            errors.Add(a);
+                            errorLogBuilder.AppendLine($"{a.Address}, {a.Suite}, {a.City}, {a.Postal_code}");
+                            Console.WriteLine($"ERROR: {a.Address}, {a.Suite}, {a.City}, {a.Postal_code}");
                             normalized.Add(a);
                         }
                         else
