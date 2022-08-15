@@ -111,6 +111,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     Number = territoryNumber,
                     Description = territory.Description,
                     MobileLink = territory.MobileLink,
+                    PrintLink = territory.PrintLink,
                     SignedOutTo = territory.SignedOutTo,
                     SignedOut = territory.SignedOut?.ToString("yyyy-MM-dd"),
                     LastCompletedBy = territory.LastCompletedBy,

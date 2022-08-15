@@ -57,6 +57,7 @@ namespace TerritoryTools.Web.MainSite.Services
                             SignedOutTo = backUpValue.SignedOutTo,
                             SignedOut = backUpValue.SignedOut,
                             MobileLink = backUpValue.MobileLink,
+                            PrintLink = backUpValue.PrintLink,
                             Status = backUpValue.Status,
                             Number = backUpValue.Number,
                             Kind = backUpValue.Kind,
