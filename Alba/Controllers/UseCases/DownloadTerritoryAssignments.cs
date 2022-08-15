@@ -322,7 +322,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 {
                     string[] entries = text.Split(
                         new string[] { "<br>" },
-                        StringSplitOptions.RemoveEmptyEntries);
+                        StringSplitOptions.None);
                     if (entries.Length == 2)
                     {
                         assignment.Number = entries[0].Replace("<b>", "").Replace("</b>", "").Trim();
