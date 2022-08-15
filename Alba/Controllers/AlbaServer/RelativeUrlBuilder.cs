@@ -258,8 +258,12 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         {
             var coordinates = new List<string>();
 
-            if (territory.Border.Vertices.Count > 50)
-                throw new UserException($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+            //if (territory.Border.Vertices.Count > 50)
+            {
+                System.Diagnostics.Debug.WriteLine($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+                //Console.WriteLine($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+                //throw new UserException($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+            }
 
             foreach (Vertex v in territory.Border.Vertices)
                 coordinates.Add($"{v.Latitude} {v.Longitude}");
