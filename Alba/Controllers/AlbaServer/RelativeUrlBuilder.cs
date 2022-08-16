@@ -228,7 +228,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         static string AppendValuesFrom(AlbaTerritoryBorder territory)
         {
-            return $"&kind=0" +
+            return $"&kind={(int)territory.Kind}" +
                 $"&number={HttpUtility.UrlEncode(territory.Number)}" +
                 $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
                 $"&description={HttpUtility.UrlEncode(territory.Description)}" +
@@ -239,7 +239,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         {
             return $"&lat={address.Latitude}" +
                $"&lng={address.Longitude}" +
-               $"&territory_id={address.Territory_ID ?? 0}" +
+               $"&territory_id={address.Territory_ID ?? 0}" + // This is used for borderless territories
                $"&status={address.StatusId}" +
                $"&language_id={address.LanguageId}" +
                $"&full_name={HttpUtility.UrlEncode(address.Name)}" +
