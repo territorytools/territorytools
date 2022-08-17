@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 
@@ -78,8 +80,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return NotFound(e.Message);
                 }
 
-                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
-                var assignments = allAssignments.Rows
+                GetAllAssignmentsResult allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                List<AlbaAssignmentValues> assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
