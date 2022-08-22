@@ -87,7 +87,7 @@ namespace TerritoryTools.Web.MainSite.Services
             }
 
             var areas = _areaService.All();
-            var includePattern = new Regex("^\\w{3}\\d{3}$");
+            var includePattern = new Regex("^\\w{3}\\d{3}$|\\s+\\w{3}$");
             if (area != "*")
             {
                 var matchedArea = areas.FirstOrDefault(a => a.Code == area);
@@ -121,7 +121,7 @@ namespace TerritoryTools.Web.MainSite.Services
 
             var queryInclude =
                 from t in territories
-                where includePattern.IsMatch(t.Description)
+                where includePattern.IsMatch(t.Description ?? string.Empty)
                     && t.Status != null
                     && t.Status.ToUpper() == "AVAILABLE"
                 select t;
