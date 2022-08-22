@@ -1,5 +1,6 @@
 ﻿using Certes;
 using FluffySpoon.AspNet.LetsEncrypt;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +39,8 @@ namespace TerritoryTools.Web.MainSite
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationInsightsTelemetry();
-            
+            services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
+
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
