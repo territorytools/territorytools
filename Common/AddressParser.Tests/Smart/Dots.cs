@@ -4,10 +4,10 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
 {
     public class Dots : ParserTestBase
     {
-        [TestCase("123 Main Street Ste. 234 Seattle WA", "ST")]
-        [TestCase("123 Main St. Seattle WA", "ST")]
-        [TestCase("123 Main St. Ste. 234 Seattle WA", "ST")]
-        [TestCase("123 N. Main St. Ste. 234 Seattle WA", "ST")]
+        [TestCase("123 Main Street Ste. 234 Seattle WA", "St")]
+        [TestCase("123 Main St. Seattle WA", "St")]
+        [TestCase("123 Main St. Ste. 234 Seattle WA", "St")]
+        [TestCase("123 N. Main St. Ste. 234 Seattle WA", "St")]
         public void StreetType(string text, string type)
         {
             var address = Normalize(text);

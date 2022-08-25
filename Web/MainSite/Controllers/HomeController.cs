@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 
@@ -18,6 +21,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly IUserService _userService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly Services.IQRCodeActivityService qrCodeActivityService;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
@@ -25,6 +29,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             ICombinedAssignmentService combinedAssignmentService,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
+            IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor,
             ILogger<HomeController> logger) : base(
                 userService,
@@ -34,6 +39,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
             this.qrCodeActivityService = qrCodeActivityService;
+            _configuration = configuration;
             _logger = logger;
         }
 
@@ -78,8 +84,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return NotFound(e.Message);
                 }
 
-                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
-                var assignments = allAssignments.Rows
+                GetAllAssignmentsResult allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                List<AlbaAssignmentValues> assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
@@ -89,6 +95,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 foreach (var item in assignments.OrderByDescending(a => a.SignedOut))
                 {
+                    string oldServer = _configuration.GetValue<string>("OldMobileServerFqdn");
+                    string newServer = _configuration.GetValue<string>("NewMobileServerFqdn");
+                    item.MobileLink = item.MobileLink.Replace($"{oldServer}", $"{newServer}");
                     publisher.Territories.Add(item);
                 }
 

@@ -1,6 +1,5 @@
 ﻿using Certes;
 using FluffySpoon.AspNet.LetsEncrypt;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +20,8 @@ using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -38,8 +39,9 @@ namespace TerritoryTools.Web.MainSite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //https://docs.microsoft.com/en-us/azure/azure-monitor/app/api-custom-events-metrics#tracktrace
+            //https://docs.microsoft.com/en-us/azure/azure-monitor/app/ilogger
             services.AddApplicationInsightsTelemetry();
-            services.AddSingleton<ITelemetryInitializer, CustomTelemetryInitializer>();
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -87,6 +89,8 @@ namespace TerritoryTools.Web.MainSite
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
+
+            services.AddSingleton<ITelemetryService, TelemetryService>();
 
             services.AddScoped<IAlbaCredentials>(ac => new AlbaCredentials(
                 Configuration["AlbaAccount"],
@@ -148,6 +152,26 @@ namespace TerritoryTools.Web.MainSite
             services.AddTransient<IAlbaCredentialService, AlbaCredentialAzureVaultService>();
 
             services.AddHostedService<TimedHostedService>();
+
+            services.AddAuthentication()
+               .AddJwtBearer("Asymmetric", options => {
+                   SecurityKey rsa = services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+
+                   options.IncludeErrorDetails = true; // <- great for debugging
+
+                    // Configure the actual Bearer validation
+                    options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       IssuerSigningKey = rsa,
+                       ValidAudience = "jwt-test",
+                       ValidIssuer = "jwt-test",
+                       RequireSignedTokens = true,
+                       RequireExpirationTime = true, // <- JWTs are required to have "exp" property set
+                       ValidateLifetime = true, // <- the "exp" will be validated
+                       ValidateAudience = true,
+                       ValidateIssuer = true,
+                   };
+               });
 
             if (!NoSsl)
             {

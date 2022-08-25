@@ -30,7 +30,7 @@ namespace TerritoryTools.Entities.AddressParsers
                 }
             }
 
-            this.streetNameAfterTypes = streetNameAfterTypes.ToList();
+            this.streetNameAfterTypes = (streetNameAfterTypes ?? new List<StreetType>()).ToList();
             foreach (var t in this.streetNameAfterTypes)
             {
                 streetNameAfterTypeMap[t.Full.ToUpper()] = t;
@@ -47,6 +47,18 @@ namespace TerritoryTools.Entities.AddressParsers
             string state = null,
             string postalCode = null)
         {
+            try
+            {
+                return NormalizeTry(text, city, state, postalCode);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private Address NormalizeTry(string text, string city, string state, string postalCode)
+        {
             var parsed = Parse(text, city, state, postalCode);
 
             string poBoxExpression = @"P\.?\s*O\.?\s*B(ox)?\s+(\d+)";
@@ -62,7 +74,7 @@ namespace TerritoryTools.Entities.AddressParsers
             var broadway = Regex.Match(text, noStreetType);
             if (broadway.Success)
             {
-                parsed.IsNotPhysical = true; // it is physical, just weird
+                parsed.IsNotPhysical = true; // it is physical, just weird, like '1234 Broadway'
                 parsed.Number = broadway.Groups[1].Value;
                 parsed.StreetName = broadway.Groups[2].Value;
             }
@@ -78,7 +90,13 @@ namespace TerritoryTools.Entities.AddressParsers
 
             if (!string.IsNullOrEmpty(parsed.StreetType))
             {
-                string abbreviation = streetTypeMap[parsed.StreetType.ToUpper()].Abbreviation;
+                string normalizedStreetType = parsed.StreetType.ToUpper();
+                if (!streetTypeMap.ContainsKey(normalizedStreetType))
+                {
+                    throw new InvalidStreetTypeException(normalizedStreetType, text);
+                }
+
+                string abbreviation = streetTypeMap[normalizedStreetType].Abbreviation;
                 if (!string.IsNullOrWhiteSpace(abbreviation))
                 {
                     parsed.StreetType = TitleCase(abbreviation);
@@ -88,7 +106,7 @@ namespace TerritoryTools.Entities.AddressParsers
                     parsed.StreetType = TitleCase(parsed.StreetType);
                 }
             }
-            
+
             parsed.UnitType = TitleCase(parsed.UnitType);
             parsed.UnitNumber = parsed.UnitNumber.Replace("-", string.Empty).ToUpper();
             parsed.City = TitleCase(parsed.City);
@@ -120,7 +138,7 @@ namespace TerritoryTools.Entities.AddressParsers
             string postalCode = null)
         {
             if (string.IsNullOrWhiteSpace(addressToParse))
-                throw new AddressParsingException($"{nameof(addressToParse)} is blank.");
+                throw new AddressParsingException($"Blank Address: '{nameof(addressToParse)}'");
 
             this.addressToParse = addressToParse;
 
@@ -152,14 +170,15 @@ namespace TerritoryTools.Entities.AddressParsers
                 container.ParsedAddress.StreetName.Value = "PO Box";
             }
 
-            string noStreetType = @"^(\d+)\s+([a-zA-Z-]+)$";
-            var broadway = Regex.Match(container.CompleteAddressToParse, noStreetType);
-            if (broadway.Success)
-            {
-                container.Address.IsNotPhysical = true; // it is physical, just weird
-                container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
-                container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
-            }
+            //string noStreetType = @"^(\d+)\s+([a-zA-Z-]+)$";
+            //string firstGroup = container.AddressGroups.FirstOrDefault();
+            //var broadway = Regex.Match(firstGroup, noStreetType);
+            //if (Regex.IsMatch(firstGroup, noStreetType)) //broadway.Success)
+            //{
+            //    container.Address.IsNotPhysical = true; // it is physical, just weird
+            //    container.ParsedAddress.Number.Value = broadway.Groups[1].Value;
+            //    container.ParsedAddress.StreetName.Value = broadway.Groups[2].Value;
+            //}
 
             // Find Required Things
             if (!container.Address.IsNotPhysical)
@@ -173,7 +192,9 @@ namespace TerritoryTools.Entities.AddressParsers
 
             new AddressNumberFinder(container).Find();
 
-            if(container.ParsedAddress.Number.Index == 0)
+            VerifyThatStreetNumberIsSet();
+
+            if (container.ParsedAddress.Number.Index == 0)
             {
                 if(string.Equals(container.AddressPartResults[1].Value, "HWY", StringComparison.OrdinalIgnoreCase))
                 {
@@ -269,6 +290,12 @@ namespace TerritoryTools.Entities.AddressParsers
         {
             if (container.ParsedAddress.StreetType.IsNotSet())
                 throw new MissingStreetTypeException(addressToParse);
+        }
+
+        private void VerifyThatStreetNumberIsSet()
+        {
+            if (container.ParsedAddress.Number.IsNotSet())
+                throw new MissingStreetNumberException(addressToParse);
         }
 
         private void CopyParsedAddressResultsToAddress()

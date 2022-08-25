@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace TerritoryTools.Entities.AddressParsers
 {
@@ -20,44 +17,62 @@ namespace TerritoryTools.Entities.AddressParsers
         {
             ReplaceWhiteSpaceWithSpace();
             SplitAddressAtSpacesAndCommas();
-            RemoveBlanks();
+            //RemoveBlanks();
             SplitAtPoundSigns();
             ConvertPartsToResults();
         }
 
-        public void ReplaceWhiteSpaceWithSpace()
+        void ReplaceWhiteSpaceWithSpace()
         {
             container.CompleteAddressToParse = NormalizeWhiteSpaceWithSpace(container.CompleteAddressToParse);
         }
 
-        public static string NormalizeWhiteSpaceWithSpace(string input)
+        static string NormalizeWhiteSpaceWithSpace(string input)
         {
             return Regex.Replace(input, @"[^-0-9A-Z,#\/]", " ", RegexOptions.IgnoreCase);
         }
 
-        public void SplitAddressAtSpacesAndCommas()
+        void SplitAddressAtSpacesAndCommas()
         {
-            var separators = new char[] { ' ', ','};
-
-            container.AddressParts = container.CompleteAddressToParse
-                .Split(separators)
-                .ToList();
-        }
-
-        public void RemoveBlanks()
-        {
-            var newList = new List<string>();
-            foreach (var part in container.AddressParts)
+            var groups = container.CompleteAddressToParse.Split(new char[] { ',' }, System.StringSplitOptions.None).ToList();
+            for(int g = 0; g < groups.Count; g++)
             {
-                if (!string.IsNullOrWhiteSpace(part))
-                {
-                    newList.Add(part);
-                }
-            }
+                string group = groups[g];
+                container.AddressGroups.Add(group);
 
-            container.AddressParts = newList;
+                var newGroup = new List<string>();
+                var parts = group
+                    .Split(new char[] {' '}, System.StringSplitOptions.RemoveEmptyEntries)
+                    .ToList();
+
+                for(int p = 0; p < parts.Count; p++)
+                {
+                    string part = parts[p]; 
+                    container.AddressParts.Add(part);
+                    container.AddressPartsGroupIndex.Add(g);
+                    container.AddressPartsPartIndex.Add(p);
+                    newGroup.Add(part);
+                }
+
+                container.AddressPartsGrouped.Add(newGroup);
+            }
         }
 
+        //public void RemoveBlanks()
+        //{
+        //    var newList = new List<string>();
+        //    foreach (var part in container.AddressParts)
+        //    {
+        //        if (!string.IsNullOrWhiteSpace(part))
+        //        {
+        //            newList.Add(part);
+        //        }
+        //    }
+
+        //    container.AddressParts = newList;
+        //}
+
+        // Only public for tests
         public void SplitAtPoundSigns()
         {
             var newList = new List<string>();
@@ -77,6 +92,7 @@ namespace TerritoryTools.Entities.AddressParsers
             container.AddressParts = newList;
         }
 
+        // Only public for tests
         public void SplitAtHyphens()
         {
             var newList = new List<string>();
@@ -102,7 +118,7 @@ namespace TerritoryTools.Entities.AddressParsers
             container.AddressParts = newList;
         }
 
-        private void ConvertPartsToResults()
+        void ConvertPartsToResults()
         {
             var parts = container.AddressParts;
             var index = 0;
@@ -120,7 +136,7 @@ namespace TerritoryTools.Entities.AddressParsers
             }
         }
 
-        public bool IsAlphaNumericHyphenAlphaNumeric(string value)
+        bool IsAlphaNumericHyphenAlphaNumeric(string value)
         {
             return Regex.IsMatch(
                 value,
@@ -128,7 +144,7 @@ namespace TerritoryTools.Entities.AddressParsers
                 RegexOptions.IgnoreCase);
         }
 
-        public bool IsPoundSignThenAlphaNumeric(string value)
+        bool IsPoundSignThenAlphaNumeric(string value)
         {
             return Regex.IsMatch(
                 value,

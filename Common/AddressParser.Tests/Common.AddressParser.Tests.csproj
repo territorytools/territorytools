@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net471</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <AssemblyName>TerritoryTools.Common.AddressParser.Tests</AssemblyName>
     <RootNamespace>TerritoryTools.Common.AddressParser.Tests</RootNamespace>
   </PropertyGroup>

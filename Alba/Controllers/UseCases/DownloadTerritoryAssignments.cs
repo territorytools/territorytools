@@ -142,6 +142,17 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                                                 }
                                             }
                                         }
+                                        else if (string.Equals(className.Trim(), "cmd-print"))
+                                        {
+                                            string rel = node.GetAttributeValue("rel", null);
+                                            if (!string.IsNullOrWhiteSpace(rel))
+                                            {
+                                                if (rel.Contains("/print-mk?"))
+                                                {
+                                                    assignment.PrintLink = rel;
+                                                }
+                                            }
+                                        }
                                     }
                                     break;
                                 case 5:
@@ -311,7 +322,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 {
                     string[] entries = text.Split(
                         new string[] { "<br>" },
-                        StringSplitOptions.RemoveEmptyEntries);
+                        StringSplitOptions.None);
                     if (entries.Length == 2)
                     {
                         assignment.Number = entries[0].Replace("<b>", "").Replace("</b>", "").Trim();

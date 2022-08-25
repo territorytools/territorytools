@@ -394,15 +394,6 @@ namespace MinistryEntities.Tests
         }
 
         [Test]
-        [Ignore("Not working yet")]
-        public void Parse_BadlyFormed_5555_Sycamore()
-        {
-            Assert.Throws<MissingStreetTypeException>(
-              code: () => Parse("5555 Sycamore"),
-              message: "Missing Street Type: 5555 Sycamore");
-        }
-
-        [Test]
         public void Parse_AddressReal1()
         {
             var door = Parse("1347 15th Ave S #1");
@@ -814,6 +805,21 @@ namespace MinistryEntities.Tests
             Assert.AreEqual("", door.DirectionalSuffix, "StreetDirectionSuffix");
             Assert.AreEqual("", door.UnitType, "UnitType");
             Assert.AreEqual("", door.UnitNumber, "UnitNumber");
+        }
+
+
+        [Test]
+        public void Parse_123_Broadway_withCommaThenUnit_NoStreetType()
+        {
+            var door = Parse("125 Broadway, 2A"); // Not a directional or a street type
+
+            Assert.AreEqual("125", door.Number, "StreetNumber");
+            Assert.AreEqual("", door.DirectionalPrefix, "StreetDirectionalPrefix");
+            Assert.AreEqual("Broadway", door.StreetName, "StreetName");
+            Assert.AreEqual("", door.StreetType, "StreetType");
+            Assert.AreEqual("", door.DirectionalSuffix, "StreetDirectionSuffix");
+            Assert.AreEqual("", door.UnitType, "UnitType");
+            Assert.AreEqual("2A", door.UnitNumber, "UnitNumber");
         }
 
         [Test]

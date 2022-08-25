@@ -108,7 +108,8 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = "\t",
-                PrepareHeaderForMatch = args => args.Header.ToLower()
+                PrepareHeaderForMatch = args => args.Header.ToLower(),
+                BadDataFound = null,
             };
 
             using (var reader = new StreamReader(path))

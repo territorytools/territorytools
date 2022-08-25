@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using st = TerritoryTools.Common.AddressParser.Smart.StreetType;
 
 namespace TerritoryTools.Common.AddressParser.Smart
 {

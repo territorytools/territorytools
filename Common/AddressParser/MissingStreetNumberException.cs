@@ -1,8 +1,8 @@
 ﻿namespace TerritoryTools.Entities.AddressParsers
 {
-    public class MissingStreetTypeException : AddressParsingException
+    public class MissingStreetNumberException : AddressParsingException
     {
-        public MissingStreetTypeException(string addressToParse)
+        public MissingStreetNumberException(string addressToParse)
             : base(addressToParse)
         {
         }
@@ -10,7 +10,7 @@
         {
             get
             {
-                return $"Missing Street Type: {AddressToParse}";
+                return "Missing Street Number: " + AddressToParse;
             }
         }
     }

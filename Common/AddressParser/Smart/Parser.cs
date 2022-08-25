@@ -45,10 +45,13 @@ namespace TerritoryTools.Common.AddressParser.Smart
             }
 
             text = text
-                .Replace(',', ' ')
+                .Replace(',', ' ') // TODO: Maybe leave commas in?
                 .Replace('.', ' ')
                 .Trim();
 
+            text = Regex.Replace(text, @"#+", "#");
+
+            // TODO: Make commas work
             if(text.Contains(","))
             {
                 var columns = text.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -530,10 +533,11 @@ namespace TerritoryTools.Common.AddressParser.Smart
                 .Replace("WEST", "W");
         }
 
-        bool IsDirectional(string word)
+        public static bool IsDirectional(string word)
         {
+            string cleanedWord = $"{word}".Replace(".", ""); // N.E. becomes NE
             string pattern = @"^(N|S|E|W|North|South|East|West)(E|W|East|West)?$";
-            return Regex.IsMatch(word, pattern, RegexOptions.IgnoreCase);
+            return Regex.IsMatch(cleanedWord, pattern, RegexOptions.IgnoreCase);
         }
 
         string FindPrefixStreetType()
@@ -579,10 +583,10 @@ namespace TerritoryTools.Common.AddressParser.Smart
 
                 if(Normalize)
                 {
-                    word = word.ToUpper();
-                    if(mapStreetTypes.ContainsKey(word))
+                    word = $"{word}".Trim().ToUpper();
+                    if (mapStreetTypes.TryGetValue(word, out string shorter))
                     {
-                        return mapStreetTypes[word];
+                        return shorter;
                     }
                 }
 

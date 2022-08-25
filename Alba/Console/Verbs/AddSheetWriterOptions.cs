@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System;
 using System.IO;
+using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 
 namespace TerritoryTools.Alba.Cli.Verbs
@@ -28,7 +29,9 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             string jsonToken = File.ReadAllText(SecurityFile);
 
-            var service = new SheetExtractor();
+            var sheets = new GoogleSheets("JSON is missing here");
+            Console.WriteLine("Missing JSON !");
+            var service = new SheetExtractor(sheets);
             var request = new AddSheetWriterRequest()
             {
                 DocumentId = DocumentId,
@@ -40,7 +43,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             System.Diagnostics.Process.Start("explorer.exe", url);
 
-            return 0;
+            return 1; // TODO: Fix this, see JSON above
         }
     }
 }

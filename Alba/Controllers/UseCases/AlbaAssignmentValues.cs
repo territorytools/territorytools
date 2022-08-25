@@ -63,6 +63,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
                 SignedOut = SignedOut,
                 SignedOutTo = SignedOutTo,
                 MobileLink = MobileLink,
+                PrintLink = PrintLink
             };
         }
     }

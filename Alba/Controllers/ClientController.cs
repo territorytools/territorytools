@@ -182,8 +182,18 @@ namespace TerritoryTools.Alba.Controllers
 
                 if (int.TryParse(accountId, out int id))
                 {
-                    new DownloadAddressExport(AuthenticatedClient())
-                        .SaveAs(fileName, id);
+                    var connection = AuthenticatedClient();
+                    var resultString = connection.DownloadString(
+                    RelativeUrlBuilder.ExportAddresses(
+                        accountId: connection.AccountId,
+                        territoryId: 0,
+                        searchText: ""));
+
+                    string text = AddressExportParser.Parse(resultString);
+                    File.WriteAllText(fileName, text);
+
+                    //new DownloadAddressExport(AuthenticatedClient())
+                    //    .SaveAs(fileName, id);
 
                     view.AppendResultText($"Saved to: {fileName}");
                 }

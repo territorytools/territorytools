@@ -209,8 +209,13 @@ function Publish-ClickOnce {
     Write-Host "Saving changes to release deployment manifest..."
     $releaseDeployManifestXml.Save($releaseDeployManifestPath)
 
+    Write-Host (pwd).Path
+
     Write-Host "Signing root deployment manifest..." -ForegroundColor Green
     mage -Sign $rootDeployManifestPath -CertFile $CertFile | Out-Host
+
+    Write-Host "Current Folder:"
+    Write-Host (pwd).Path
 
     Write-Host "Signing release deployment manifest..." -ForegroundColor Green
     mage -Sign $releaseDeployManifestPath -CertFile $CertFile | Out-Host
