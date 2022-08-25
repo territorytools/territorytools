@@ -68,6 +68,31 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return BadRequest(result);
         }
 
+
+        [HttpPost("latest_v2")]
+        public ActionResult<AssignmentResult> AssignLatestV2(
+            string userName,
+            int userId,
+            [Range(1, 99)]
+            int count = 1,
+            string area = "*")
+        {
+            var request = new AssignmentLatestRequest
+            {
+                RealUserName = User.Identity.Name,
+                UserId = userId,
+                Count = count,
+                Area = area
+            };
+
+            AssignmentResult result = _assignmentService.AssignmentLatest(request);
+
+            if (result.Success)
+                return Ok(result);
+            else
+                return BadRequest(result);
+        }
+
         [HttpGet("[action]")]
         public IActionResult Unassign(int territoryId)
         {

@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
@@ -13,6 +15,7 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface IAssignLatestService
     {
         AssignmentResult AssignmentLatest(AssignmentLatestRequest request);
+        AssignmentResult AssignmentLatestV2(AssignmentLatestRequest request);
     }
 
     public class AssignmentLatestRequest
@@ -38,6 +41,7 @@ namespace TerritoryTools.Web.MainSite.Services
         readonly IAlbaCredentialService _albaCredentialService;
         readonly AreaService _areaService;
         readonly ILogger<AssignLatestService> _logger;
+        private readonly IConfiguration _configuration;
         readonly WebUIOptions _options;
 
         public AssignLatestService(
@@ -47,7 +51,8 @@ namespace TerritoryTools.Web.MainSite.Services
             IAlbaCredentialService albaCredentialService,
             AreaService areaService,
             ILogger<AssignLatestService> logger,
-            IOptions<WebUIOptions> optionsAccessor)
+            IOptions<WebUIOptions> optionsAccessor,
+            IConfiguration configuration)
         {
             _userService = userService;
             _territoryAssignmentService = territoryAssignmentService;
@@ -55,6 +60,7 @@ namespace TerritoryTools.Web.MainSite.Services
             _albaCredentialService = albaCredentialService;
             _areaService = areaService;
             _logger = logger;
+            _configuration = configuration;
             _options = optionsAccessor.Value;
         }
 
@@ -254,6 +260,40 @@ namespace TerritoryTools.Web.MainSite.Services
                 Message = $"Successfully assigned to {currentUserName}",
                 Items = items
             };
+        }
+
+        public AssignmentResult AssignmentLatestV2(AssignmentLatestRequest request)
+        {
+            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
+            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            {
+                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+            }
+
+            HttpClient client = new();
+            HttpResponseMessage? result = client.GetAsync(
+                $"http://{territoryApiHostAndPort}/ use something else here to get the latest/Territory?AlbaTerritoryKey={territoryKey}")
+                .Result;
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
+                _logger.LogError(message);
+                return new MobileTerritoryResponse { Success = false, ErrorMessage = message };
+            }
+
+            string json = result.Content.ReadAsStringAsync().Result;
+            JsonSerializerOptions jsonOptions = new()
+            {
+                AllowTrailingCommas = true,
+                MaxDepth = 5,
+                PropertyNameCaseInsensitive = true,
+
+            };
+
+            return JsonSerializer
+                 .Deserialize<MobileTerritoryResponse>(json, jsonOptions)
+                 ?? new MobileTerritoryResponse { Success = false, ErrorMessage = "Deserialization error" };
         }
     }
 
