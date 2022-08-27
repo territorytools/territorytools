@@ -67,6 +67,7 @@ services:
       - Features:UserSelfComplete=$Features_UserSelfComplete
       - OldMobileServerFqdn=$OldMobileServerFqdn
       - NewMobileServerFqdn=$NewMobileServerFqdn      
+      - TerritoryApiHostAndPort=$TerritoryApiHostAndPort
 
 networks:
   main:
