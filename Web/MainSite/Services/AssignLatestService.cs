@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Web.MainSite.Models;
 using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -15,13 +17,13 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface IAssignLatestService
     {
         AssignmentResult AssignmentLatest(AssignmentLatestRequest request);
-        AssignmentResult AssignmentLatestV2(AssignmentLatestRequest request);
+        TerritoryLinkContract AssignmentLatestV2(AssignmentLatestRequest request);
     }
 
     public class AssignmentLatestRequest
     {
         public string RealUserName { get; set; }
-        public int UserId { get; set; }
+        public int AlbaUserId { get; set; }
         public int Count { get; set; } = 1;
         public string Area { get; set; } = "*";
     }
@@ -67,7 +69,7 @@ namespace TerritoryTools.Web.MainSite.Services
         public AssignmentResult AssignmentLatest(AssignmentLatestRequest request)
         {
             string realUserName = request.RealUserName;
-            int userId = request.UserId;
+            int userId = request.AlbaUserId;
             int count = request.Count;
             string area = request.Area;
 
@@ -262,7 +264,7 @@ namespace TerritoryTools.Web.MainSite.Services
             };
         }
 
-        public AssignmentResult AssignmentLatestV2(AssignmentLatestRequest request)
+        public TerritoryLinkContract AssignmentLatestV2(AssignmentLatestRequest request)
         {
             string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
             if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
@@ -271,15 +273,15 @@ namespace TerritoryTools.Web.MainSite.Services
             }
 
             HttpClient client = new();
-            HttpResponseMessage? result = client.GetAsync(
-                $"http://{territoryApiHostAndPort}/ use something else here to get the latest/Territory?AlbaTerritoryKey={territoryKey}")
+            HttpResponseMessage? result = client.PostAsync(
+                $"http://{territoryApiHostAndPort}/territory-assignment/assignments/oldest/alba?area={request.Area}&albaUserId={request.AlbaUserId}", null)
                 .Result;
 
             if (!result.IsSuccessStatusCode)
             {
                 string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
                 _logger.LogError(message);
-                return new MobileTerritoryResponse { Success = false, ErrorMessage = message };
+                return new TerritoryLinkContract();
             }
 
             string json = result.Content.ReadAsStringAsync().Result;
@@ -292,8 +294,8 @@ namespace TerritoryTools.Web.MainSite.Services
             };
 
             return JsonSerializer
-                 .Deserialize<MobileTerritoryResponse>(json, jsonOptions)
-                 ?? new MobileTerritoryResponse { Success = false, ErrorMessage = "Deserialization error" };
+                 .Deserialize<TerritoryLinkContract>(json, jsonOptions)
+                 ?? new TerritoryLinkContract();
         }
     }
 

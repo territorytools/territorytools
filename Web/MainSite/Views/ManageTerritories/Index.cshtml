@@ -12,7 +12,7 @@
         <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
             <i class="fas fa-arrow-left text-body"></i>@Localizer["MenuHomeButton"]
         </a>
-        <h4>Assign Territory</h4>
+       @* <h4>Assign Territory</h4>
         <form action="/api/assignments/latest" method="post" id="assign-from-area-form">
             <div class="d-flex mb-0">
                 <div class="p-2">
@@ -53,19 +53,19 @@
                     </div>
                 </div>
             </div>
-        </form>
-        <h4>Assign Territory (v2)</h4>
-        <form action="/api/assignments/latest_v2" method="post" id="assign-from-area-form-v2">
+        </form>*@
+        <h4>Assign Territories</h4>
+        <form action="/api/assignments/oldest" method="post" id="assign-from-area-form-v2">
             <div class="d-flex mb-0">
                 <div class="p-2">
-                    <select name="userId" form="assign-from-area-form" class="custom-select m-2">
+                    <select name="userId" form="assign-from-area-form-v2" class="custom-select m-2">
                         <option selected value="0">Select User</option>
                         @foreach (var user in Model.Users.Where(user => user.Id != 0))
                         {
                             <option value=@(user.Id)>@user.Name</option>
                         }
                     </select>
-                    <select name="area" form="assign-from-area-form" class="custom-select m-2">
+                    <select name="area" form="assign-from-area-form-v2" class="custom-select m-2">
                         <option selected value="*">Any Area</option>
                         @foreach (var area in Model.Areas)
                         {
@@ -79,9 +79,9 @@
                             }
                         }
                     </select>
-                    <label for="count">Count:</label>
-                    <input type="number" id="count-v2" name="count" min="1" max="99" value="1" />
-                    <input type="button" class="btn btn-primary" value="Assign Territories from Area"  onclick="submitFromAreaFormV2($('#assign-from-area-form'))" />
+                    <input type="button" class="btn btn-primary" value="Assign Oldest Territory from Area"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
+                    <label  style="visibility:hidden;" for="count">Count:</label>
+                    <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
                     <div id="assign-from-area-form-loading-v2" style="color:blue;display:none;">
                         <i class='fa fa-spinner fa-spin'></i>
                         Assigning territories from area...
@@ -122,7 +122,7 @@
             $('#assign-from-area-territories-container')
                 .html('');
 
-            var form_data = new FormData(form[0]);
+            var form_data = new FormData($("#assign-from-area-form"));
             $.ajax({
                 type: 'POST',
                 url: form.attr('action'),
@@ -169,10 +169,11 @@
             $('#assign-from-area-territories-container-v2')
                 .html('');
 
-            var form_data = new FormData(form[0]);
+             var frm = $("#assign-from-area-form-v2");
+             var form_data = new FormData(form);
             $.ajax({
                 type: 'POST',
-                url: form.attr('action'),
+                url: frm.attr('action'),
                 dataType: 'json',
                 data: form_data,
                 processData: false,
@@ -191,16 +192,21 @@
                         .text(data.territoryDescription);
                     $('#assign-from-area-form-message-v2')
                         .css('color', 'green')
-                        .text(data.message);
+                        .text('Territory Link:');
                     $('#assign-from-area-form-territory-uri-v2')
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
 
-                    data.items.forEach(function(item) {
-                       var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
+                    
+                       var html = "<strong>" + data.territoryDescription + "</strong>&nbsp;<a href='" + data.territoryUri + "'>" + data.territoryUri + "</a><br/>";
                        $('#assign-from-area-territories-container-v2')
                             .append(html);
-                    });
+                    
+                    //data.items.forEach(function(item) {
+                    //   var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
+                    //   $('#assign-from-area-territories-container-v2')
+                    //        .append(html);
+                    //});
 
                         
                 }
