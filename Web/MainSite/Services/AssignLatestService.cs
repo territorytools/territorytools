@@ -1,11 +1,15 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.AlbaServer;
 using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Web.MainSite.Models;
 using cuc = Controllers.UseCases;
 
 namespace TerritoryTools.Web.MainSite.Services
@@ -13,12 +17,13 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface IAssignLatestService
     {
         AssignmentResult AssignmentLatest(AssignmentLatestRequest request);
+        TerritoryLinkContract AssignmentLatestV2(AssignmentLatestRequest request);
     }
 
     public class AssignmentLatestRequest
     {
         public string RealUserName { get; set; }
-        public int UserId { get; set; }
+        public int AlbaUserId { get; set; }
         public int Count { get; set; } = 1;
         public string Area { get; set; } = "*";
     }
@@ -38,6 +43,7 @@ namespace TerritoryTools.Web.MainSite.Services
         readonly IAlbaCredentialService _albaCredentialService;
         readonly AreaService _areaService;
         readonly ILogger<AssignLatestService> _logger;
+        private readonly IConfiguration _configuration;
         readonly WebUIOptions _options;
 
         public AssignLatestService(
@@ -47,7 +53,8 @@ namespace TerritoryTools.Web.MainSite.Services
             IAlbaCredentialService albaCredentialService,
             AreaService areaService,
             ILogger<AssignLatestService> logger,
-            IOptions<WebUIOptions> optionsAccessor)
+            IOptions<WebUIOptions> optionsAccessor,
+            IConfiguration configuration)
         {
             _userService = userService;
             _territoryAssignmentService = territoryAssignmentService;
@@ -55,13 +62,14 @@ namespace TerritoryTools.Web.MainSite.Services
             _albaCredentialService = albaCredentialService;
             _areaService = areaService;
             _logger = logger;
+            _configuration = configuration;
             _options = optionsAccessor.Value;
         }
 
         public AssignmentResult AssignmentLatest(AssignmentLatestRequest request)
         {
             string realUserName = request.RealUserName;
-            int userId = request.UserId;
+            int userId = request.AlbaUserId;
             int count = request.Count;
             string area = request.Area;
 
@@ -254,6 +262,40 @@ namespace TerritoryTools.Web.MainSite.Services
                 Message = $"Successfully assigned to {currentUserName}",
                 Items = items
             };
+        }
+
+        public TerritoryLinkContract AssignmentLatestV2(AssignmentLatestRequest request)
+        {
+            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
+            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            {
+                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+            }
+
+            HttpClient client = new();
+            HttpResponseMessage? result = client.PostAsync(
+                $"http://{territoryApiHostAndPort}/territory-assignment/assignments/oldest/alba?area={request.Area}&albaUserId={request.AlbaUserId}", null)
+                .Result;
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
+                _logger.LogError(message);
+                return new TerritoryLinkContract();
+            }
+
+            string json = result.Content.ReadAsStringAsync().Result;
+            JsonSerializerOptions jsonOptions = new()
+            {
+                AllowTrailingCommas = true,
+                MaxDepth = 5,
+                PropertyNameCaseInsensitive = true,
+
+            };
+
+            return JsonSerializer
+                 .Deserialize<TerritoryLinkContract>(json, jsonOptions)
+                 ?? new TerritoryLinkContract();
         }
     }
 

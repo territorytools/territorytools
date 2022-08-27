@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TerritoryTools.Alba.Controllers.UseCases;
+using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
@@ -55,7 +56,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var request = new AssignmentLatestRequest
             {
                 RealUserName = User.Identity.Name,
-                UserId = userId,
+                AlbaUserId = userId,
                 Count = count,
                 Area = area
             };
@@ -63,6 +64,31 @@ namespace TerritoryTools.Web.MainSite.Controllers
             AssignmentResult result = _assignmentService.AssignmentLatest(request);
 
             if(result.Success)
+                return Ok(result);
+            else
+                return BadRequest(result);
+        }
+
+
+        [HttpPost("oldest")]
+        public ActionResult<TerritoryLinkContract> AssignOldest(
+            string userName,
+            int userId,
+            [Range(1, 99)]
+            int count = 1,
+            string area = "*")
+        {
+            var request = new AssignmentLatestRequest
+            {
+                RealUserName = User.Identity.Name,
+                AlbaUserId = userId,
+                Count = count,
+                Area = area
+            };
+
+            TerritoryLinkContract result = _assignmentService.AssignmentLatestV2(request);
+
+            if (!string.IsNullOrWhiteSpace(result.AlbaMobileTerritoryKey))
                 return Ok(result);
             else
                 return BadRequest(result);
@@ -91,7 +117,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<Publisher> ByPublisher()
+        public IEnumerable<Services.Publisher> ByPublisher()
         {
             return _territoryAssignmentService.ByPublisher(User.Identity.Name);
         }
