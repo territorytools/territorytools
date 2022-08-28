@@ -169,6 +169,9 @@
         function peopleFilter() {
           var input, filter, table, tr, td, i, txtValue;
           input = document.getElementById("people-filter");
+          if(input && input.length < 3) {
+              return;
+          }
           filter = input.value.toUpperCase();
           table = document.getElementById("territory-list-table");
           tr = table.getElementsByTagName("tr");
