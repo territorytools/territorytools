@@ -67,8 +67,9 @@
 <partial name="_MyTerritories">
 
 @section scripts {
-    
     <script type="text/javascript">
+        var userFullName = "@(Model.Name)";
+
         document.addEventListener('DOMContentLoaded', (event) => {
             getCheckedOutTerritories();
         });
@@ -77,7 +78,7 @@
         {
             $.ajax({
                 type: 'GET',
-                url: `/api/assignments/checked-out-to?userFullName=Marc%20Durham`,
+                url: `/api/assignments/checked-out-to?userFullName=${userFullName}`,
                 dataType: 'json',
                 processData: false,
                 contentType: false,
@@ -87,6 +88,8 @@
                         .text(xhr.status + ' '+ status + ' ' + xhr.responseText);
                 },
                 success: function (data) {
+                    $('#checked-out-to-section')
+                            .text('');
                     data.forEach(function(item) {
                       var html = //`<strong>${item.number}</strong>&nbsp;${item.description}&nbsp;<a href='${item.assigneeMobileLink}'>link</a><br/>`;
                         `<div class="d-flex mb-0" style="border-top: 1px solid #aaa;"> 
