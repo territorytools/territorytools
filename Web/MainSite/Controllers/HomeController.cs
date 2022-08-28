@@ -84,15 +84,18 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return NotFound(e.Message);
                 }
 
+                /*
                 GetAllAssignmentsResult allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
                 List<AlbaAssignmentValues> assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
                 publisher.PhoneTerritorySuccess = allAssignments.PhoneSuccess;
+                */
 
                 publisher.Name = myName;
 
+                /*
                 foreach (var item in assignments.OrderByDescending(a => a.SignedOut))
                 {
                     string oldServer = _configuration.GetValue<string>("OldMobileServerFqdn");
@@ -102,7 +105,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     item.MobileLink = item.MobileLink.Replace($"{oldServer}", $"{newServer}");
                     publisher.Territories.Add(item);
                 }
+                */
 
+                /*
                 var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
                     publisher.Email);
 
@@ -122,6 +127,101 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             Note = hit.Note
                         });
                 }
+                */
+
+                return View(publisher);
+            }
+            catch (Exception e)
+            {
+                return Redirect($"~/Home/LoginError?message={WebUtility.UrlEncode(e.Message)}");
+            }
+        }
+
+        public IActionResult MyPhoneTerritories()
+        {
+            try
+            {
+                var publisher = new Models.Publisher()
+                {
+                    Email = User.Identity.Name,
+                    UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
+                };
+
+                if (!IsUser())
+                {
+                    return View(publisher);
+                }
+
+                publisher.IsAdmin = IsAdmin();
+
+                string myName = User.Identity.Name;
+
+                try
+                {
+                    var users = _userService.GetUsers(User.Identity.Name);
+                    var me = users.FirstOrDefault(
+                        u => string.Equals(
+                            u.Email,
+                            User.Identity.Name,
+                            StringComparison.OrdinalIgnoreCase));
+
+                    if (me == null)
+                    {
+                        throw new Exception($"Email not found in users table that matches {User.Identity.Name}");
+                    }
+
+                    myName = me.Name;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"Home.Index: Error: {e.Message}");
+                    return NotFound(e.Message);
+                }
+
+                /*
+                GetAllAssignmentsResult allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                List<AlbaAssignmentValues> assignments = allAssignments.Rows
+                    .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                publisher.PhoneTerritorySuccess = allAssignments.PhoneSuccess;
+                */
+
+                publisher.Name = myName;
+
+                /*
+                foreach (var item in assignments.OrderByDescending(a => a.SignedOut))
+                {
+                    string oldServer = _configuration.GetValue<string>("OldMobileServerFqdn");
+                    string newServer = _configuration.GetValue<string>("NewMobileServerFqdn");
+                    // TODO: Get newest, unexpired, link that matches item.Number && item.SignedOutTo == User.Identity.Name (var me)
+                    // TODO: ...or get territories from somewhere else with links
+                    item.MobileLink = item.MobileLink.Replace($"{oldServer}", $"{newServer}");
+                    publisher.Territories.Add(item);
+                }
+                */
+
+                /*
+                var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
+                    publisher.Email);
+
+                foreach (var hit in qrCodeHits)
+                {
+                    publisher.QRCodeActivity.Add(
+                        new Models.QRCodeHit
+                        {
+                            Id = hit.Id,
+                            ShortUrl = hit.ShortUrl,
+                            OriginalUrl = hit.OriginalUrl,
+                            Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
+                            HitCount = hit.HitCount.ToString(),
+                            LastIPAddress = hit.LastIPAddress,
+                            LastTimeStamp = hit.LastTimeStamp?.ToString("yyyy-MM-dd HH:mm:ss"),
+                            Subject = hit.Subject,
+                            Note = hit.Note
+                        });
+                }
+                */
 
                 return View(publisher);
             }

@@ -14,6 +14,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/assignments")]
     public class AssignmentsApiController : Controller
     {
+        private readonly ITerritoriesForUserService _territoriesForUserService;
         readonly IAssignLatestService _assignmentService;
         readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly KmlFileService _kmlFileService;
@@ -22,6 +23,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         readonly ILogger _logger;
 
         public AssignmentsApiController(
+            ITerritoriesForUserService territoriesForUserService,
             IAssignLatestService assignmentService,
             ICombinedAssignmentService combinedAssignmentService,
             KmlFileService kmlFileService,
@@ -29,6 +31,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             ITerritoryAssignmentService territoryAssignmentService,
             ILogger<AssignmentsApiController> logger)
         {
+            _territoriesForUserService = territoriesForUserService;
             _assignmentService = assignmentService;
             _combinedAssignmentService = combinedAssignmentService;
             _kmlFileService = kmlFileService;
@@ -97,7 +100,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("checked-out-to")]
         public ActionResult<List<TerritoryContract>> CheckedOutTo(string userFullName)
         {
-            return _assignmentService.CheckedOutTo(userFullName);
+            return _territoriesForUserService.CheckedOutTo(userFullName);
         }
 
         [HttpGet("[action]")]
