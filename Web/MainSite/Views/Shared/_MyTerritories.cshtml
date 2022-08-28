@@ -28,6 +28,7 @@
                 <p class="bg-warning p-1">Error: Unable to connect to phone territory system</p>
             </div>
         }
+       
         <div class="container mt-3" style="max-width:700px;">
             <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
                 <div class="pr-2 pl-2" style="min-width:60px;"></div>
@@ -39,7 +40,7 @@
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
             </div>
-
+            <div id="checked-out-to-section" onload="getCheckedOutTerritories()">Loading...</div>
             @foreach (var assignment in Model.Territories)
             {
                 string signedOut = "";
@@ -125,3 +126,6 @@ else
 {
 
 }
+
+
+
