@@ -16,6 +16,7 @@ namespace TerritoryTools.Web.MainSite.Services
     public interface ITerritoriesForUserService
     {
         List<TerritoryContract> CheckedOutTo(string userFullName);
+        List<TerritoryContract> All();
     }
 
     public class TerritoriesForUserService : ITerritoriesForUserService
@@ -66,6 +67,53 @@ namespace TerritoryTools.Web.MainSite.Services
             HttpClient client = new();
             HttpResponseMessage? result = client.GetAsync(
                 $"http://{territoryApiHostAndPort}/territories/checked-out?userFullName={userFullName}")
+                .Result;
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
+                _logger.LogError(message);
+                return new List<TerritoryContract>();
+            }
+
+            string json = result.Content.ReadAsStringAsync().Result;
+            JsonSerializerOptions jsonOptions = new()
+            {
+                AllowTrailingCommas = true,
+                MaxDepth = 5,
+                PropertyNameCaseInsensitive = true,
+
+            };
+
+            List<TerritoryContract> contracts = JsonSerializer
+                 .Deserialize<List<TerritoryContract>>(json, jsonOptions)
+                 ?? new List<TerritoryContract>();
+
+            foreach (var contract in contracts)
+            {
+                contract.AssigneeMobileLink = $"{mobileBaseUrl}/mtk/{contract.AssigneeLinkKey}";
+            }
+
+            return contracts;
+        }
+
+        public List<TerritoryContract> All()
+        {
+            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
+            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            {
+                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+            }
+
+            string mobileBaseUrl = _configuration.GetValue<string>("MobileBaseUrl");
+            if (string.IsNullOrWhiteSpace(mobileBaseUrl))
+            {
+                throw new ArgumentNullException(nameof(mobileBaseUrl));
+            }
+
+            HttpClient client = new();
+            HttpResponseMessage? result = client.GetAsync(
+                $"http://{territoryApiHostAndPort}/territories/all-v2")
                 .Result;
 
             if (!result.IsSuccessStatusCode)

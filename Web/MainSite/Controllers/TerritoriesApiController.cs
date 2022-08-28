@@ -29,5 +29,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _logger.LogInformation($"Getting territories for user full name '{userFullName}'");
             return _territoriesForUserService.CheckedOutTo(userFullName);
         }
+
+        [HttpGet("all")]
+        public ActionResult<List<TerritoryContract>> All(string userFullName)
+        {
+            _logger.LogInformation($"Getting territories for user full name '{userFullName}'");
+            return _territoriesForUserService.All();
+        }
     }
 }

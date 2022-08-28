@@ -12,16 +12,17 @@
         <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
             <i class="fas fa-arrow-left text-body"></i>Home
         </a>
-     
     </div>
+    <input type="text" id="area-filter" onkeyup="areaFilter()" placeholder="Search for areas" title="Type in a 3 letter area">
+    <input type="text" id="people-filter" onkeyup="peopleFilter()" placeholder="Search for people" title="Type in a person's name'">
     <table id="territory-list-table"  class="table table-striped table-sm">
       <thead>
         <tr>
-          <th scope="col" onclick="sortTable(0)" style="cursor:pointer;">#</th>
-          <th scope="col" onclick="sortTable(1)" style="cursor:pointer;">Area</th>
-          <th scope="col" onclick="sortTable(2)" style="cursor:pointer;">Description</th>
-          <th scope="col" onclick="sortTable(3)" style="cursor:pointer;">Signed-out To</th>
-          <th scope="col" onclick="sortTable(4)" style="cursor:pointer;">Signed-out Date</th>
+          <th scope="col" x-onclick="xxxsortTable(0)" style="cursor:pointer;">#</th>
+          <th scope="col" x-onclick="xxxsortTable(1)" style="cursor:pointer;">Area</th>
+          <th scope="col" x-onclick="xxxsortTable(2)" style="cursor:pointer;">Description</th>
+          <th scope="col" x-onclick="xxxsortTable(3)" style="cursor:pointer;">Signed-out To</th>
+          <th scope="col" x-onclick="xxxsortTable(4)" style="cursor:pointer;">Signed-out Date</th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -29,7 +30,7 @@
        
       </tbody>
     </table>
-    <div id="checked-out-to-section-OLD" onload="">Loading...</div>
+    <div id="status-message" onload="">Loading...</div>
     
 </div>
 
@@ -43,9 +44,11 @@
 
         function getCheckedOutTerritories()
         {
+            $('#status-message')
+                .text('Loading...');
             $.ajax({
                 type: 'GET',
-                url: `/api/territories/checked-out-to?userFullName=*`,
+                url: '/api/territories/all',
                 dataType: 'json',
                 processData: false,
                 contentType: false,
@@ -62,14 +65,18 @@
                       const year = signedOut.getFullYear();
                       const month = signedOut.getMonth().toString().padStart(2,"0");
                       const day = signedOut.getDate().toString().padStart(2,"0");
-                      const signedOutString = `${year}-${month}-${day}`;
+                      var signedOutString = `${year}-${month}-${day}`;
+                      if(signedOut.getFullYear() == 1969) {
+                          signedOutString = "";
+                      }
+
                       var html = 
                         `
                         <tr>
                           <td scope="row">${item.number}</td>
                           <td>${item.areaCode}</td>
                           <td>${item.areaDescription}</td>
-                          <td>${item.signedOutTo}</td>
+                          <td>${item.signedOutTo ?? ""}</td>
                           <td>${signedOutString}</td>
                           <td><a target="_blank" href="${item.assigneeMobileLink}">open</a></td>
                         </tr>
@@ -78,6 +85,8 @@
 
                        $('#checked-out-to-section')
                             .append(html);
+                       $('#status-message')
+                            .text('');
                     });
                 }
             });
@@ -135,6 +144,44 @@
                 switching = true;
               }
             }
+          }
+        }
+
+        function areaFilter() {
+          var input, filter, table, tr, td, i, txtValue;
+          input = document.getElementById("area-filter");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("territory-list-table");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1]; // 1: Area
+            if (td) {
+              txtValue = td.textContent || td.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }       
+          }
+        }
+
+        function peopleFilter() {
+          var input, filter, table, tr, td, i, txtValue;
+          input = document.getElementById("people-filter");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("territory-list-table");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[3]; // 3: Signed out to
+            if (td) {
+              txtValue = td.textContent || td.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }       
           }
         }
     </script>

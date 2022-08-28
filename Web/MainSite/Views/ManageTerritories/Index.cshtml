@@ -97,9 +97,11 @@
             </div>
         </form>
         @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>*@
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="All">All</a>
+
+@*        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>*@
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="All">Territory List</a>
+
         @*<a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">@Localizer["LoadDataFromAlba"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AlbaUsers">@Localizer["AlbaUsers"]</a>
         <a href="/api/Assignments/DownloadCsvFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateAssignmentCSVFiles"]</a>
