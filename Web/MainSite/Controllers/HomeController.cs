@@ -6,11 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 
@@ -18,6 +16,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class HomeController : AuthorizedController
     {
+        private readonly IUserFromApiService _userFromApiService;
         private readonly IUserService _userService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly Services.IQRCodeActivityService qrCodeActivityService;
@@ -25,6 +24,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
+            IUserFromApiService userFromApiService,
             IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
             Services.IAuthorizationService authorizationService,
@@ -36,6 +36,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 authorizationService,
                 optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
             this.qrCodeActivityService = qrCodeActivityService;
@@ -53,30 +54,32 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
                 };
 
-                if (!IsUser())
+                var user = _userFromApiService.ByEmail(publisher.Email);
+                if (!(user.IsActive ?? false)) //!IsUser())
                 {
                     return View(publisher);
                 }
 
-                publisher.IsAdmin = IsAdmin();
+                publisher.IsAdmin = user.CanAssignTerritories;
 
                 string myName = User.Identity.Name;
 
                 try
                 {
-                    var users = _userService.GetUsers(User.Identity.Name);
-                    var me = users.FirstOrDefault(
-                        u => string.Equals(
-                            u.Email,
-                            User.Identity.Name,
-                            StringComparison.OrdinalIgnoreCase));
+                    //var users = _userService.GetUsers(User.Identity.Name);
+                    //var me = users.FirstOrDefault(
+                    //    u => string.Equals(
+                    //        u.Email,
+                    //        User.Identity.Name,
+                    //        StringComparison.OrdinalIgnoreCase));
 
-                    if(me == null)
-                    {
-                        throw new Exception($"Email not found in users table that matches {User.Identity.Name}");
-                    }
+                    //if(me == null)
+                    //{
+                    //    throw new Exception($"Email not found in users table that matches {User.Identity.Name}");
+                    //}
 
-                    myName = me.Name;
+                    //myName = me.Name;
+                    myName = user.AlbaFullName;
                 }
                 catch(Exception e)
                 {

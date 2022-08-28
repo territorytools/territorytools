@@ -119,6 +119,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<ICombinedAssignmentService, AllCombinedAssignmentService>();
             services.AddScoped<IAssignLatestService, AssignLatestService>();
             services.AddScoped<ITerritoriesForUserService, TerritoriesForUserService>();
+            services.AddScoped<IUserFromApiService, UserFromApiService>();
             services.AddScoped<KmlFileService>();
             services.AddScoped<AssignmentsCsvFileService>();
 
