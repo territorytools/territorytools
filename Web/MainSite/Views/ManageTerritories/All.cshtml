@@ -1,0 +1,78 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@model ManageTerritoriesAllPage;
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Title"].Value;
+}
+
+<h3 class="display-4 text-center">Manage Territories</h3>
+
+<div class="container" style="max-width:500px;">
+    <div class="d-flex flex-column">
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
+            <i class="fas fa-arrow-left text-body"></i>Home
+        </a>
+     
+    </div>
+     <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+        <div class="pr-2 pl-2" style="min-width:60px;"></div>
+        <div class="pr-2 pl-2" style="min-width:60px;">#</div>
+        <div class="pr-2 pl-2" style="min-width:120px;">Description</div>
+        <div class="pr-2 pl-2 flex-grow-1"></div>
+        <div class="pr-2 pl-2" style="width:150px;">Description</div>
+        <div class="pr-1 pl-1" style="min-width:60px;"></div>
+        <div class="pr-1 pl-1" style="min-width:60px;"></div>
+    </div>
+    <div id="checked-out-to-section" onload="getCheckedOutTerritories()">Loading...</div>
+    
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        //var userFullName = "Model.Name";
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            getCheckedOutTerritories();
+        });
+
+        function getCheckedOutTerritories()
+        {
+            $.ajax({
+                type: 'GET',
+                url: `/api/territories/checked-out-to?userFullName=*`,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#checked-out-to-section')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading your territories.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#checked-out-to-section')
+                            .text('');
+                    data.forEach(function(item) {
+                      var html = 
+                        `<div class="d-flex mb-0" style="border-top: 1px solid #aaa;"> 
+                            <div class="p-2" style="min-width:60px;">
+                                <i class="fas fa-map-location-dot pl-4" style="color:black;"></i>
+                            </div>
+                            <div class="p-2" style="min-width:60px;">
+                                <strong class="p-1" style="font-weight:bold;">${item.number}</strong>
+                            </div>
+                            <div class="p-2 flex-grow-1" style="min-width:120px;">${item.description}</div>
+                            <div class="p-2" style="width:150px;text-align:left;">${item.monthsSignedOut ?? 0} months</div>
+                            <div class="p-2" style="min-width:60px;">
+                                <a class="btn btn-primary" target="_blank" href="${item.assigneeMobileLink}">Open</a>
+                            </div>
+                        </div>`
+
+                       $('#checked-out-to-section')
+                            .append(html);
+                    });
+                }
+            });
+        }
+
+    </script>
+}

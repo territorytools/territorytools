@@ -19,6 +19,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
+        private readonly IUserFromApiService _userFromApiService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         private readonly IUserService _userService;
         private readonly AreaService _areaService;
@@ -27,6 +28,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly IAlbaAuthClientService _albaAuthClientService;
 
         public ManageTerritoriesController(
+            IUserFromApiService userFromApiService,
             ICombinedAssignmentService combinedAssignmentService,
             IUserService userService,
             AreaService areaService,
@@ -39,6 +41,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 authorizationService,
                 optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _combinedAssignmentService = combinedAssignmentService;
             _userService = userService;
             _areaService = areaService;
@@ -68,6 +71,34 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 };
 
                 return View(report);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        public IActionResult All()
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    return Forbid();
+                }
+
+                var user = _userFromApiService.ByEmail(User.Identity.Name);
+                if (!(user.IsActive ?? false) && user.CanAssignTerritories) 
+                {
+                    return Forbid();
+                }
+
+                var page = new ManageTerritoriesAllPage()
+                {
+                };
+
+                return View(page);
             }
             catch (Exception)
             {
