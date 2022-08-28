@@ -96,6 +96,11 @@ namespace TerritoryTools.Web.MainSite.Services
                 $"Downloading assignments from Alba and caching them for userName: {userName} albaAccountID: {albaAccountId}",
                 userName);
 
+            // TODO: Start here, get assignments from tt-api, all territories from Alba, then add latest link
+            // TODO: Get all territories, filter to user, check for TLinks in TLink table
+            // TODO: Need a link in TLink table, convenient if TLlink was in Assignments table....
+            // TODO: Is the assignments/territory table updated on each check-out?
+
             var assignmentsJson = _albaAuthClientService.DownloadString(
                 RelativeUrlBuilder.GetTerritoryAssignments(), 
                 userName);

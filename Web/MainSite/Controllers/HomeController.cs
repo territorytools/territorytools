@@ -97,6 +97,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 {
                     string oldServer = _configuration.GetValue<string>("OldMobileServerFqdn");
                     string newServer = _configuration.GetValue<string>("NewMobileServerFqdn");
+                    // TODO: Get newest, unexpired, link that matches item.Number && item.SignedOutTo == User.Identity.Name (var me)
+                    // TODO: ...or get territories from somewhere else with links
                     item.MobileLink = item.MobileLink.Replace($"{oldServer}", $"{newServer}");
                     publisher.Territories.Add(item);
                 }

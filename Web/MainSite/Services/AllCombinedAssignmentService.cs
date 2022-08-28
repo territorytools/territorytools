@@ -36,6 +36,7 @@ namespace TerritoryTools.Web.MainSite.Services
         {
             var allAssignments = new List<AlbaAssignmentValues>();
 
+            // TODO: Get these from tt-api instead
             var result = _albaAssignmentGateway.GetAlbaAssignments(userName);
             if (result.Success)
             {
