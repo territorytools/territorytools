@@ -39,9 +39,10 @@
         //var userFullName = "Model.Name";
 
         document.addEventListener('DOMContentLoaded', (event) => {
+            //loadAreas();
             getCheckedOutTerritories();
         });
-
+        
         function getCheckedOutTerritories()
         {
             $('#status-message')
@@ -63,7 +64,7 @@
                     data.forEach(function(item) {
                       const signedOut = new Date(item.signedOut);
                       const year = signedOut.getFullYear();
-                      const month = signedOut.getMonth().toString().padStart(2,"0");
+                      const month = (signedOut.getMonth() + 1).toString().padStart(2,"0");
                       const day = signedOut.getDate().toString().padStart(2,"0");
                       var signedOutString = `${year}-${month}-${day}`;
                       if(signedOut.getFullYear() == 1969) {
@@ -169,9 +170,6 @@
         function peopleFilter() {
           var input, filter, table, tr, td, i, txtValue;
           input = document.getElementById("people-filter");
-          if(input && input.length < 3) {
-              return;
-          }
           filter = input.value.toUpperCase();
           table = document.getElementById("territory-list-table");
           tr = table.getElementsByTagName("tr");

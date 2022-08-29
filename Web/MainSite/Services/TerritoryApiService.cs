@@ -1,56 +1,35 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using TerritoryTools.Alba.Controllers.AlbaServer;
-using TerritoryTools.Alba.Controllers.UseCases;
 using TerritoryTools.Web.MainSite.Models;
 
 namespace TerritoryTools.Web.MainSite.Services
 {
-    public interface ITerritoriesForUserService
+    public interface ITerritoryApiService
     {
-        List<TerritoryContract> CheckedOutTo(string userFullName);
-        List<TerritoryContract> All();
+        List<TerritoryContract> TerritoriesCheckedOutTo(string userFullName);
+        List<TerritoryContract> AllTerritories();
+        List<AreaContract> AllAreas();
+        T ApiCall<T>(string relativePath, string queryString);
     }
 
-    public class TerritoriesForUserService : ITerritoriesForUserService
+    public class TerritoryApiService : ITerritoryApiService
     {
-        readonly IUserService _userService;
-        readonly ITerritoryAssignmentService _territoryAssignmentService;
-        readonly ICombinedAssignmentService _combinedAssignmentService;
-        readonly IAlbaCredentialService _albaCredentialService;
-        readonly AreaService _areaService;
         readonly ILogger<AssignLatestService> _logger;
         private readonly IConfiguration _configuration;
-        readonly WebUIOptions _options;
 
-        public TerritoriesForUserService(
-            IUserService userService,
-            ITerritoryAssignmentService territoryAssignmentService,
-            ICombinedAssignmentService combinedAssignmentService,
-            IAlbaCredentialService albaCredentialService,
-            AreaService areaService,
+        public TerritoryApiService(
             ILogger<AssignLatestService> logger,
-            IOptions<WebUIOptions> optionsAccessor,
             IConfiguration configuration)
         {
-            _userService = userService;
-            _territoryAssignmentService = territoryAssignmentService;
-            _combinedAssignmentService = combinedAssignmentService;
-            _albaCredentialService = albaCredentialService;
-            _areaService = areaService;
             _logger = logger;
             _configuration = configuration;
-            _options = optionsAccessor.Value;
         }
 
-        public List<TerritoryContract> CheckedOutTo(string userFullName)
+        public List<TerritoryContract> TerritoriesCheckedOutTo(string userFullName)
         {
             string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
             if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
@@ -97,7 +76,7 @@ namespace TerritoryTools.Web.MainSite.Services
             return contracts;
         }
 
-        public List<TerritoryContract> All()
+        public List<TerritoryContract> AllTerritories()
         {
             string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
             if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
@@ -140,6 +119,53 @@ namespace TerritoryTools.Web.MainSite.Services
             {
                 contract.AssigneeMobileLink = $"{mobileBaseUrl}/mtk/{contract.AssigneeLinkKey}";
             }
+
+            return contracts;
+        }
+
+        public List<AreaContract> AllAreas()
+        {
+            return ApiCall<List<AreaContract>>("areas","");
+        }
+
+        public T ApiCall<T>(string relativePath, string queryString)
+        {
+            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
+            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            {
+                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+            }
+
+            string mobileBaseUrl = _configuration.GetValue<string>("MobileBaseUrl");
+            if (string.IsNullOrWhiteSpace(mobileBaseUrl))
+            {
+                throw new ArgumentNullException(nameof(mobileBaseUrl));
+            }
+
+            HttpClient client = new();
+            HttpResponseMessage? result = client.GetAsync(
+                $"http://{territoryApiHostAndPort}/{relativePath}{queryString}")
+                .Result;
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
+                _logger.LogError(message);
+                return default(T);
+            }
+
+            string json = result.Content.ReadAsStringAsync().Result;
+            JsonSerializerOptions jsonOptions = new()
+            {
+                AllowTrailingCommas = true,
+                MaxDepth = 5,
+                PropertyNameCaseInsensitive = true,
+
+            };
+
+            T contracts = JsonSerializer
+                 .Deserialize<T>(json, jsonOptions)
+                 ?? default(T);
 
             return contracts;
         }

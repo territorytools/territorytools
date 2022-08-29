@@ -12,14 +12,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/territories")]
     public class TerritoriesApiController : Controller
     {
-        private readonly ITerritoriesForUserService _territoriesForUserService;
+        private readonly ITerritoryApiService _territoryApiService;
         readonly ILogger _logger;
 
         public TerritoriesApiController(
-            ITerritoriesForUserService territoriesForUserService,
+            ITerritoryApiService territoriesForUserService,
             ILogger<AssignmentsApiController> logger)
         {
-            _territoriesForUserService = territoriesForUserService;
+            _territoryApiService = territoriesForUserService;
             _logger = logger;
         }
 
@@ -27,14 +27,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
         public ActionResult<List<TerritoryContract>> CheckedOutTo(string userFullName)
         {
             _logger.LogInformation($"Getting territories for user full name '{userFullName}'");
-            return _territoriesForUserService.CheckedOutTo(userFullName);
+            return _territoryApiService.TerritoriesCheckedOutTo(userFullName);
         }
 
         [HttpGet("all")]
         public ActionResult<List<TerritoryContract>> All(string userFullName)
         {
             _logger.LogInformation($"Getting territories for user full name '{userFullName}'");
-            return _territoriesForUserService.All();
+            return _territoryApiService.AllTerritories();
         }
     }
 }

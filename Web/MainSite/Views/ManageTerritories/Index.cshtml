@@ -58,27 +58,13 @@
         <form action="/api/assignments/oldest" method="post" id="assign-from-area-form-v2">
             <div class="d-flex mb-0">
                 <div class="p-2">
-                    <select name="userId" form="assign-from-area-form-v2" class="custom-select m-2">
+                    <select id="user-menu" name="userId" form="assign-from-area-form-v2" class="custom-select m-2">
                         <option selected value="0">Select User</option>
-                        @foreach (var user in Model.Users.Where(user => user.Id != 0))
-                        {
-                            <option value=@(user.Id)>@user.Name</option>
-                        }
                     </select>
-                    <select name="area" form="assign-from-area-form-v2" class="custom-select m-2">
+                    <select id="area-menu" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
+                        <option selected value="*">Loading...</option>
                         <option selected value="*">Any Area</option>
-                        @foreach (var area in Model.Areas)
-                        {
-                            if(area.IsParent)
-                            {
-                                <option value="@(area.Code)" style="color:blue;font-weight:bold;">@area.Parent</option>
-                            }
-                            else 
-                            {
-                                <option value="@(area.Code)">@area.Name</option>
-                            }
-                        }
-                    </select>
+                     </select>
                     <input type="button" class="btn btn-primary" value="Assign Oldest Territory from Area"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
                     <label  style="visibility:hidden;" for="count">Count:</label>
                     <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
@@ -96,9 +82,8 @@
                 </div>
             </div>
         </form>
-        @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>*@
-
-@*        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
+        @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>
+        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>*@
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="All">Territory List</a>
 
@@ -115,50 +100,59 @@
 
 @section scripts {
     <script type="text/javascript">
+ 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadUsers();
+            loadAreas();
+        });
 
-        function submitFromAreaForm(form)
+        function loadUsers()
         {
-            $('#assign-from-area-form-loading')
-                .show();
-            $('#assign-from-area-form-message')
-                .text('');
-            $('#assign-from-area-territories-container')
-                .html('');
-
-            var form_data = new FormData($("#assign-from-area-form"));
+            $('#user-menu').html('<option value="0">Loading...</option>');
             $.ajax({
-                type: 'POST',
-                url: form.attr('action'),
+                type: 'GET',
+                url: '/api/users?active=true',
                 dataType: 'json',
-                data: form_data,
                 processData: false,
                 contentType: false,
                 error: function (xhr, status) {
-                    $('#assign-from-area-form-loading')
-                        .hide();
-                    $('#assign-from-area-form-message')
+                    $('#user-menu')
                         .css('color', 'red')
-                        .text(xhr.status + ' '+ status + ' ' + xhr.responseText);
+                        .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
                 },
                 success: function (data) {
-                    $('#assign-from-area-form-loading')
-                        .hide();
-                    $('#assign-from-area-form-territory-description')
-                        .text(data.territoryDescription);
-                    $('#assign-from-area-form-message')
-                        .css('color', 'green')
-                        .text(data.message);
-                    $('#assign-from-area-form-territory-uri')
-                        .attr('href', data.territoryUri)
-                        .text(data.territoryUri);
+                    $('#user-menu').html('<option value="0">Select a user</option>');
+                    data.forEach(function(item) {
+                      const html = `<option value="${item.albaUserId}">${item.albaFullName}</option>`;
 
-                    data.items.forEach(function(item) {
-                       var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
-                       $('#assign-from-area-territories-container')
-                            .append(html);
+                       $('#user-menu').append(html);
                     });
+                }
+            });
+        }
 
-                        
+        function loadAreas()
+        {
+           $('#area-menu').html('<option value="*">Loading...</option>');
+            $.ajax({
+                type: 'GET',
+                url: '/api/areas',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#area-menu')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading your territories.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#area-menu').html('<option value="*">Select an Area</option>');
+                    data.forEach(function(item) {
+                       const areaGroup = '<option value="area.Code" style="color:blue;font-weight:bold;">area.Parent</option>';
+                       const html = `<option value="${item.code}">${item.code} ${item.description}</option>`;
+
+                       $('#area-menu').append(html);
+                    });
                 }
             });
         }

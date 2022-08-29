@@ -55,19 +55,18 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!User.Identity.IsAuthenticated || !_authorizationService.IsAdmin(User.Identity.Name))
+                if (!User.Identity.IsAuthenticated) // || !_authorizationService.IsAdmin(User.Identity.Name))
+                {
+                    return Forbid();
+                }
+                var user = _userFromApiService.ByEmail(User.Identity.Name);
+                if(!user.CanAssignTerritories)
                 {
                     return Forbid();
                 }
 
-                var users = _userService.GetUsers(User.Identity.Name)
-                    .OrderBy(u => u.Name)
-                    .ToList();
-
                 var report = new ReportIndexPage()
                 {
-                    Users = users,
-                    Areas = _areaService.All()
                 };
 
                 return View(report);
