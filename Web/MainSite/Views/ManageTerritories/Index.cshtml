@@ -61,10 +61,24 @@
                     <select id="user-menu" name="userId" form="assign-from-area-form-v2" class="custom-select m-2">
                         <option selected value="0">Select User</option>
                     </select>
-                    <select id="area-menu" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
+@*                    <select id="area-menu" style="visibility:hidden;" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
                         <option selected value="*">Loading...</option>
                         <option selected value="*">Any Area</option>
-                     </select>
+                     </select>*@
+                    <select id="area-menu-old" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
+                        <option selected value="*">Any Area</option>
+                        @foreach (var area in Model.Areas)
+                        {
+                            if(area.IsParent)
+                            {
+                                <option value="@(area.Code)" style="color:blue;font-weight:bold;">@area.Parent</option>
+                            }
+                            else 
+                            {
+                                <option value="@(area.Code)">@area.Name</option>
+                            }
+                        }
+                    </select>
                     <input type="button" class="btn btn-primary" value="Assign Oldest Territory from Area"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
                     <label  style="visibility:hidden;" for="count">Count:</label>
                     <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
@@ -103,7 +117,8 @@
  
         document.addEventListener('DOMContentLoaded', (event) => {
             loadUsers();
-            loadAreas();
+            //TODO: Not Ready Yet, add area groups
+            //loadAreas();
         });
 
         function loadUsers()

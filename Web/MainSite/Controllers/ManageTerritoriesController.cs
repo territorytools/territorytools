@@ -67,6 +67,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 var report = new ReportIndexPage()
                 {
+                    Areas = _areaService.All()
                 };
 
                 return View(report);
