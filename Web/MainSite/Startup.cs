@@ -54,11 +54,22 @@ namespace TerritoryTools.Web.MainSite
                 options.KnownProxies.Clear();
             });
 
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //});
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
+                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                options.OnAppendCookie = cookieContext =>
+                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+                options.OnDeleteCookie = cookieContext =>
+                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
             });
 
             string connectionString = Configuration.GetConnectionString("MainDbContextConnection");
@@ -242,6 +253,7 @@ namespace TerritoryTools.Web.MainSite
 
             UpdateDatabase(app);
 
+            app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
             app.UseAuthentication();
 
             app.UseMvc(routes =>
@@ -307,5 +319,25 @@ namespace TerritoryTools.Web.MainSite
             // LetsEncrypt will call.
             //services.AddFluffySpoonLetsEncryptMemoryChallengePersistence();
         }
+
+        private void CheckSameSite(HttpContext httpContext, CookieOptions options)
+        {
+            // Error Message: An error was encountered while handling the remote login. Correlation failed.
+            // Error here: https://portal.azure.com/#blade/AppInsightsExtension/DetailsV2Blade/DataModel/%7B%22eventId%22:%227160fcae-281b-11ed-97dd-000d3a3f8942%22,%22timestamp%22:%222022-08-30T04:22:33.945Z%22%7D/ComponentId/%7B%22Name%22:%22territorytools%22,%22ResourceGroup%22:%22Experiments%22,%22SubscriptionId%22:%22410c5468-58aa-403b-b82b-a2ed191fdfb3%22%7D
+            // This is a fix for old browsers:
+            // From: https://github.com/dotnet/aspnetcore/issues/14996
+            if (options.SameSite == SameSiteMode.None)
+            {
+                var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+                // TODO: Use your User Agent library of choice here. 
+                    /* UserAgent doesn’t support new behavior */
+                //I have no idea what user agent to use, or what a "user agent library" is
+                if (userAgent == "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.97 Mobile Safari/537.36")
+                {
+                    options.SameSite = SameSiteMode.Unspecified;
+                }
+            }
+        }
+
     }
 }
