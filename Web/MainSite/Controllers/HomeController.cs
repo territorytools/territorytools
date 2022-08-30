@@ -55,7 +55,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 };
 
                 var user = _userFromApiService.ByEmail(publisher.Email);
-                if (!(user.IsActive ?? false)) //!IsUser())
+                if (user == null || !(user.IsActive ?? false)) //!IsUser())
                 {
                     return View(publisher);
                 }

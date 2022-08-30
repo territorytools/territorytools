@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TerritoryTools.Alba.Controllers.Models;
 using TerritoryTools.Web.Data;
+using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
@@ -22,18 +23,21 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IUserFromApiService _userFromApiService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly MainDbContext _database;
 
         public RegisterModel(
+            IUserFromApiService userFromApiService,
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
             MainDbContext database)
         {
+            _userFromApiService = userFromApiService;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
@@ -84,12 +88,8 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
                     return Page();
                 }
 
-                var territoryUser = _database.TerritoryUser
-                    .FirstOrDefault(u => u.Email != null 
-                        && normalizedEmail != null
-                        && string.Equals(u.Email, normalizedEmail));
-
-                if (territoryUser == null)
+                UserContract userFromApi = _userFromApiService.ByEmail(normalizedEmail);
+                if (userFromApi == null || !(userFromApi.IsActive ?? false))
                 {
                     ModelState.AddModelError(string.Empty, "That email is not in our system.  You must be invited.");
                     return Page();
@@ -97,10 +97,6 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
 
                 var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
-
-                territoryUser.AspNetUserId = user.Id;
-                _database.Update(territoryUser);
-                _database.SaveChanges();
 
                 if (result.Succeeded)
                 {

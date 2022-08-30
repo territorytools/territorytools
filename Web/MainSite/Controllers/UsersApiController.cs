@@ -12,14 +12,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/users")]
     public class UsersApiController : Controller
     {
-        private readonly ITerritoryApiService _territoryApiService;
+        private readonly IApiService _apiService;
         readonly ILogger _logger;
 
         public UsersApiController(
-            ITerritoryApiService territoryApiService,
+            IApiService apiService,
             ILogger<AssignmentsApiController> logger)
         {
-            _territoryApiService = territoryApiService;
+            _apiService = apiService;
             _logger = logger;
         }
 
@@ -32,7 +32,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             if (active.HasValue)
                 queryString = $"?active={active}";
 
-            return _territoryApiService
+            return _apiService
                 .ApiCall<List<UserContract>>("users", queryString);
         }
     }

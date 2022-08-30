@@ -64,6 +64,7 @@ namespace TerritoryTools.Web.MainSite
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
+
                 // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
                 options.OnAppendCookie = cookieContext =>
@@ -131,6 +132,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IAssignLatestService, AssignLatestService>();
             services.AddScoped<ITerritoryApiService, TerritoryApiService>();
             services.AddScoped<IUserFromApiService, UserFromApiService>();
+            services.AddScoped<IApiService, ApiService>();
             services.AddScoped<KmlFileService>();
             services.AddScoped<AssignmentsCsvFileService>();
 
