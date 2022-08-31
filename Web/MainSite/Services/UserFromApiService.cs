@@ -33,12 +33,12 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public UserContract ByFullName(string userFullName)
         {
-            return _apiService.ApiCall<UserContract>("users", $"?userFullName={userFullName}");
+            return _apiService.Get<UserContract>("users", $"?userFullName={userFullName}");
         }
 
         public UserContract ByEmail(string userEmail)
         {
-            return _apiService.ApiCall<UserContract>("users/single", $"?email={userEmail}");
+            return _apiService.Get<UserContract>("users/single", $"?email={userEmail}");
         }
 
         public int Add(UserContract user)

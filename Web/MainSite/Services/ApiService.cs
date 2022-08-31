@@ -9,7 +9,7 @@ namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IApiService
     {
-        T ApiCall<T>(string relativePath, string queryString);
+        T Get<T>(string relativePath, string queryString);
         T Post<T, B>(string relativePath, string queryString, B body);
     }
 
@@ -67,7 +67,7 @@ namespace TerritoryTools.Web.MainSite.Services
             return contracts;
         }
 
-        public T ApiCall<T>(string relativePath, string queryString)
+        public T Get<T>(string relativePath, string queryString)
         {
             if (!string.IsNullOrWhiteSpace(queryString) && !queryString.StartsWith("?"))
                 throw new ArgumentException($"Query string must start with a question mark ?");

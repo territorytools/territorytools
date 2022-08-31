@@ -33,7 +33,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 queryString = $"?active={active}";
 
             return _apiService
-                .ApiCall<List<UserContract>>("users", queryString);
+                .Get<List<UserContract>>("users", queryString);
         }
     }
 }

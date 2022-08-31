@@ -37,8 +37,11 @@ namespace TerritoryTools.Web.MainSite.Services
                 throw new ArgumentNullException(nameof(mobileBaseUrl));
             }
 
-            List<TerritoryContract> contracts = _apiService.ApiCall<List<TerritoryContract>>(
+            List<TerritoryContract> contracts = _apiService.Get<List<TerritoryContract>>(
                 "territories/checked-out", $"?userFullName={userFullName}");
+
+            if(contracts == null)
+                return new List<TerritoryContract>();
 
             foreach (var contract in contracts)
             {
@@ -56,8 +59,11 @@ namespace TerritoryTools.Web.MainSite.Services
                 throw new ArgumentNullException(nameof(mobileBaseUrl));
             }
 
-            List<TerritoryContract> contracts = _apiService.ApiCall<List<TerritoryContract>>("territories/all-v2", "");
-          
+            List<TerritoryContract> contracts = _apiService.Get<List<TerritoryContract>>("territories/all-v2", "");
+
+            if (contracts == null)
+                return new List<TerritoryContract>();
+
             foreach (var contract in contracts)
             {
                 contract.AssigneeMobileLink = $"{mobileBaseUrl}/mtk/{contract.AssigneeLinkKey}";
@@ -68,7 +74,7 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public List<AreaContract> AllAreas()
         {
-            return _apiService.ApiCall<List<AreaContract>>("areas","");
+            return _apiService.Get<List<AreaContract>>("areas","");
         }
     }
 }
