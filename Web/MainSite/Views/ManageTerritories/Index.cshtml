@@ -12,6 +12,11 @@
         <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
             <i class="fas fa-arrow-left text-body"></i>@Localizer["MenuHomeButton"]
         </a>
+           
+                <div class="d-flex flex-column">
+                    <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManagePhoneTerritory" asp-action="Index">Phone Territories</a>
+                </div>
+           
        @* <h4>Assign Territory</h4>
         <form action="/api/assignments/latest" method="post" id="assign-from-area-form">
             <div class="d-flex mb-0">
@@ -79,7 +84,7 @@
                             }
                         }
                     </select>
-                    <input type="button" class="btn btn-primary" value="Assign Oldest Territory from Area"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
+                    <input type="button" class="btn btn-primary" value="Assign Oldest Territory from Area to User"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
                     <label  style="visibility:hidden;" for="count">Count:</label>
                     <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
                     <div id="assign-from-area-form-loading-v2" style="color:blue;display:none;">

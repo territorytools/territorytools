@@ -25,12 +25,15 @@
                 <div class="d-flex flex-column">
                     @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Index">@Localizer["ReportsButton"]</a>*@
                     <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="Index">@Localizer["ManageTerritoriesButton"]</a>
-                    <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManagePhoneTerritory" asp-action="Index">@Localizer["ManagePhoneTerritoryButton"]</a>
+                    @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManagePhoneTerritory" asp-action="Index">@Localizer["ManagePhoneTerritoryButton"]</a>*@
                 </div>
             </div>
         }
 
         <div class="container" style="max-width:500px;">
+            <div class="d-flex flex-column">
+                <a class="p-2 m-2 btn btn-outline-primary" href="@Model.SharedPhoneTerritoryLink"><i class="fas fa-phone pl-4"></i>&nbsp;Shared Phone Territory</a>
+            </div>
             <div class="d-flex flex-column">
                 <form action="/ManageTerritories/AddressSearch" id="search-form" class="form-inline m-1">
                     <div class="form-group mx-3">
