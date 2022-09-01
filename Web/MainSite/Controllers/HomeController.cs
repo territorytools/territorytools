@@ -44,7 +44,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? impersonate = null)
         {
             try
             {
@@ -65,6 +65,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 string myName = User.Identity.Name;
 
+                
+
                 try
                 {
                     //var users = _userService.GetUsers(User.Identity.Name);
@@ -80,7 +82,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     //}
 
                     //myName = me.Name;
-                    myName = user.AlbaFullName;
+                    if (publisher.IsAdmin && !string.IsNullOrWhiteSpace(impersonate))
+                    {
+                        myName = impersonate;
+                    }
+                    else
+                    {
+                        myName = user.AlbaFullName;
+                    }
                 }
                 catch(Exception e)
                 {
