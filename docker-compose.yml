@@ -1,7 +1,7 @@
 version: '3.5'
 
 services:  
-  tt-web:
+  tt-web-a:
     container_name: tt-web-a
     restart: unless-stopped
     image: territorytools/web-main-site
@@ -68,6 +68,7 @@ services:
       - OldMobileServerFqdn=$OldMobileServerFqdn
       - NewMobileServerFqdn=$NewMobileServerFqdn      
       - TerritoryApiHostAndPort=$TerritoryApiHostAndPort
+      - MobileBaseUrl=https://mobile.territorytools.org
       - SharedPhoneTerritoryLink=$SharedPhoneTerritoryLink
 
 networks:
