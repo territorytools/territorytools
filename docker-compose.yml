@@ -68,6 +68,7 @@ services:
       - OldMobileServerFqdn=$OldMobileServerFqdn
       - NewMobileServerFqdn=$NewMobileServerFqdn      
       - TerritoryApiHostAndPort=$TerritoryApiHostAndPort
+      - SharedPhoneTerritoryLink=$SharedPhoneTerritoryLink
 
 networks:
   main:
