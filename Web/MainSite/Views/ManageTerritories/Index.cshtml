@@ -60,7 +60,7 @@
             </div>
         </form>*@
         <h4>Assign Territories</h4>
-        <form action="/api/assignments/oldest" method="post" id="assign-from-area-form-v2">
+        <form action="/api/assignments/oldest/alba" method="post" id="assign-from-area-form-v2">
             <div class="d-flex mb-0">
                 <div class="p-2">
                     <select id="user-menu" name="userId" form="assign-from-area-form-v2" class="custom-select m-2">
@@ -213,11 +213,10 @@
                     $('#assign-from-area-form-territory-uri-v2')
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
-
                     
-                       var html = "<strong>" + data.territoryDescription + "</strong>&nbsp;<a href='" + data.territoryUri + "'>" + data.territoryUri + "</a><br/>";
-                       $('#assign-from-area-territories-container-v2')
-                            .append(html);
+                    var html = `<strong>${data.territoryDescription}</strong>&nbsp;${data.territoryNumber}&nbsp;<a href='${data.territoryUri}'>${data.territoryUri}</a><br/>`;
+                    $('#assign-from-area-territories-container-v2')
+                        .append(html);
                     
                     //data.items.forEach(function(item) {
                     //   var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";

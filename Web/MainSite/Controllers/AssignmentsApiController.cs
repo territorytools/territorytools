@@ -48,6 +48,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={User.Identity.Name}");
         }
 
+        // TODO Remove this It shouldn't be used
         [HttpPost("latest")]
         public ActionResult<AssignmentResult> AssignLatest(
             string userName,
@@ -73,7 +74,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
 
-        [HttpPost("oldest")]
+        [HttpPost("oldest/alba")]
         public ActionResult<TerritoryLinkContract> AssignOldest(
             string userName,
             int userId,
