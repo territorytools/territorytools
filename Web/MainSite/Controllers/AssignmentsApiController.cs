@@ -40,39 +40,56 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _logger = logger;
         }
 
-        [HttpGet("[action]")]
-        public IActionResult Assign(int territoryId, int userId)
-        {
-            _territoryAssignmentService.Assign(territoryId, userId, User.Identity.Name);
+        //[HttpGet("[action]")]
+        //public IActionResult Assign(int territoryId, int userId)
+        //{
+        //    _territoryAssignmentService.Assign(territoryId, userId, User.Identity.Name);
 
-            return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={User.Identity.Name}");
-        }
+        //    return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={User.Identity.Name}");
+        //}
 
-        // TODO Remove this It shouldn't be used
-        [HttpPost("latest")]
-        public ActionResult<AssignmentResult> AssignLatest(
+        //// TODO Remove this It shouldn't be used
+        //[HttpPost("latest")]
+        //public ActionResult<AssignmentResult> AssignLatest(
+        //    string userName,
+        //    int userId,
+        //    [Range(1, 99)]
+        //    int count = 1,
+        //    string area = "*")
+        //{
+        //    var request = new AssignmentLatestRequest
+        //    {
+        //        RealUserName = User.Identity.Name,
+        //        AlbaUserId = userId,
+        //        Count = count,
+        //        Area = area
+        //    };
+
+        //    AssignmentResult result = _assignmentService.AssignmentLatest(request);
+
+        //    if(result.Success)
+        //        return Ok(result);
+        //    else
+        //        return BadRequest(result);
+        //}
+
+
+        [HttpPost("[action]")]
+        public ActionResult<TerritoryLinkContract> Assign([FromForm]
+            string territoryNumber,
             string userName,
-            int userId,
+            int albaUserId,
             [Range(1, 99)]
             int count = 1,
             string area = "*")
         {
-            var request = new AssignmentLatestRequest
-            {
-                RealUserName = User.Identity.Name,
-                AlbaUserId = userId,
-                Count = count,
-                Area = area
-            };
+            TerritoryLinkContract result = _assignmentService.Assign(territoryNumber, userName, albaUserId, User.Identity.Name);
 
-            AssignmentResult result = _assignmentService.AssignmentLatest(request);
-
-            if(result.Success)
+            if (!string.IsNullOrWhiteSpace(result.AlbaMobileTerritoryKey))
                 return Ok(result);
             else
                 return BadRequest(result);
         }
-
 
         [HttpPost("oldest/alba")]
         public ActionResult<TerritoryLinkContract> AssignOldest(

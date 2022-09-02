@@ -26,19 +26,103 @@
             <div class="form-inline">
                 <div class="d-flex mb-0">
                     <div class="p-2">
-                        <select name="userId" form="assign-form-@(assignment.Id)" class="custom-select m-2">
-                            <option selected value="0">Select Publisher</option>
-                            @foreach(var user in Model.Users)
-                            {
-                                <option value=@(user.Id)>@user.Name</option>
-                            }
+                        <select id="user-menu" name="userId" form="assign-form-@(assignment.Id)" class="custom-select m-2">
+                            <option value="0">Loading....</option>
                         </select>
                         <input hidden name="territoryId" value="@assignment.Id">
-                        <input class="btn btn-primary hidden" type="submit" value="Assign">
-                        <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Map</a>
+                        <input class="btn btn-primary hidden" type="submit" value="Assign"  onclick="submitForm(document.getElementById('assign-form'))>
+                        @*<a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">Map</a>*@
                     </div>
+                </div>
+                <div id="assign-form-loading" style="color:blue;display:none;">
+                    <i class='fa fa-spinner fa-spin'></i>
+                        Assigning territory...
+                </div>
+                <div style="padding:5px;">
+                    <div id="assign-form-message"></div>
+                    <div id="assign-form-error" style="color:red;"></div>
+                    <div id="assign-territories-container"></div>
                 </div>
             </div>
         </form>
     }
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+ 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadUsers();
+        });
+
+        function loadUsers()
+        {
+            $('#user-menu').html('<option value="0">Loading...</option>');
+            $.ajax({
+                type: 'GET',
+                url: '/api/users?active=true',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#user-menu')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#user-menu').html('<option value="0">Select a user</option>');
+                    data.forEach(function(item) {
+                      const html = `<option value="${item.albaUserId}">${item.albaFullName}</option>`;
+
+                       $('#user-menu').append(html);
+                    });
+                }
+            });
+        }
+
+        function submitForm(form)
+        {
+            $('#assign-form-loading')
+                .show();
+            $('#assign-form-message')
+                .text('');
+            $('#assign-territories-container')
+                .html('');
+
+             var frm = $("#assign-form");
+             var form_data = new FormData(form);
+            $.ajax({
+                type: 'POST',
+                url: frm.attr('action'),
+                dataType: 'json',
+                data: form_data,
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#assign-form-loading')
+                        .hide();
+                    $('#assign-form-message')
+                        .css('color', 'red')
+                        .text(xhr.status + ' '+ status + ' ' + xhr.responseText);
+                },
+                success: function (data) {
+                    $('#assign-form-loading')
+                        .hide();
+                    $('#assign-form-territory-description')
+                        .text(data.territoryDescription);
+                    $('#assign-form-message-')
+                        .css('color', 'green')
+                        .text('Territory Link:');
+                    $('#assign-form-territory-uri')
+                        .attr('href', data.territoryUri)
+                        .text(data.territoryUri);
+                    
+                    var html = `<strong>${data.territoryDescription}</strong>&nbsp;${data.territoryNumber}&nbsp;<a href='${data.territoryUri}'>${data.territoryUri}</a><br/>`;
+                    $('#assign-territories-container')
+                        .append(html);
+                }
+            });
+        }
+
+    </script>
+}

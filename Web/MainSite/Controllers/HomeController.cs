@@ -292,7 +292,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [Authorize]
-        [Route("t/{number}")]
+        [Route("assign/t/{number}")]
         public IActionResult AssignSingleTerritory(string number)
         {
             try

@@ -107,7 +107,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [Authorize]
-        [Route("ManageTerritories/Single/{territoryNumber}")]
+        [Route("/t/{territoryNumber}")]
         public IActionResult Single(string territoryNumber)
         {
             try

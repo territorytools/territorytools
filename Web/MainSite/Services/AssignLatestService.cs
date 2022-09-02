@@ -18,6 +18,7 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         AssignmentResult AssignmentLatest(AssignmentLatestRequest request);
         TerritoryLinkContract AssignmentLatestV2(AssignmentLatestRequest request);
+        TerritoryLinkContract Assign(string territoryNumber, string userName, int? albaUserId, string assigner);
     }
 
     public class AssignmentLatestRequest
@@ -275,6 +276,48 @@ namespace TerritoryTools.Web.MainSite.Services
             HttpClient client = new();
             HttpResponseMessage? result = client.PostAsync(
                 $"http://{territoryApiHostAndPort}/territory-assignment/assignments/oldest/alba?area={request.Area}&albaUserId={request.AlbaUserId}", null)
+                .Result;
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
+                _logger.LogError(message);
+                return new TerritoryLinkContract();
+            }
+
+            string json = result.Content.ReadAsStringAsync().Result;
+            JsonSerializerOptions jsonOptions = new()
+            {
+                AllowTrailingCommas = true,
+                MaxDepth = 5,
+                PropertyNameCaseInsensitive = true,
+
+            };
+
+            return JsonSerializer
+                 .Deserialize<TerritoryLinkContract>(json, jsonOptions)
+                 ?? new TerritoryLinkContract();
+        }
+
+        public TerritoryLinkContract Assign(
+            string territoryNumber, 
+            string assigneeEmail, 
+            int? assigneeAlbaUserId,
+            string assigner)
+        {
+            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
+            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            {
+                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+            }
+
+            HttpClient client = new();
+            HttpResponseMessage? result = client.PostAsync(
+                $"http://{territoryApiHostAndPort}/territory-assignment/assignments" +
+                $"?territoryNumber={territoryNumber}" + 
+                $"&albaUserId={assigneeAlbaUserId}" +
+                $"&assignee={assigneeEmail}" +
+                $"&assigner={assigner}", null)
                 .Result;
 
             if (!result.IsSuccessStatusCode)
