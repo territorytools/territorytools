@@ -70,6 +70,7 @@ services:
       - TerritoryApiHostAndPort=$TerritoryApiHostAndPort
       - MobileBaseUrl=https://mobile.territorytools.org
       - SharedPhoneTerritoryLink=$SharedPhoneTerritoryLink
+      - GoogleMyMapLink=$GoogleMyMapLink
 
 networks:
   main:

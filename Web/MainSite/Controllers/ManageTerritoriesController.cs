@@ -3,6 +3,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly Services.IAuthorizationService _authorizationService;
         private readonly IAlbaCredentialService _albaCredentialService;
         private readonly IAlbaAuthClientService _albaAuthClientService;
+        private readonly IConfiguration _configuration;
 
         public ManageTerritoriesController(
             IUserFromApiService userFromApiService,
@@ -36,6 +38,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IAlbaAuthClientService albaAuthClientService,
+            IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 userService,
                 authorizationService,
@@ -48,6 +51,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _authorizationService = authorizationService;
             _albaCredentialService = albaCredentialService;
             _albaAuthClientService = albaAuthClientService;
+            _configuration = configuration;
         }
 
         [Authorize]
@@ -67,6 +71,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
                 var report = new ReportIndexPage()
                 {
+                    GoogleMyMapLink = _configuration.GetValue<string>("GoogleMyMapLink"),
                     Areas = _areaService.All()
                 };
 
