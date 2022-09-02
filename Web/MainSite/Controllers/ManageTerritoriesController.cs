@@ -122,7 +122,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return View(new SingleTerritoryManagerPage());
                 }
 
-                if (!IsUser())
+                if (!IsAdmin())
                 {
                     return Forbid();
                 }
