@@ -32,6 +32,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor,
             ILogger<HomeController> logger) : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)

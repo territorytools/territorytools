@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -17,20 +16,24 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Authorize]
     public class TerritoryUserController : AuthorizedController
     {
+        private readonly IUserFromApiService _userFromApiService;
         private readonly MainDbContext _database;
         private readonly IAlbaCredentialService _albaCredentialService;
 
         public TerritoryUserController(
+            IUserFromApiService userFromApiService,
             IUserService userService,
             MainDbContext database,
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) 
             : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _database = database;
             _albaCredentialService = albaCredentialService;
         }

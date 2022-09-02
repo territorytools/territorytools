@@ -40,6 +40,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAlbaAuthClientService albaAuthClientService,
             IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)

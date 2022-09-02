@@ -22,6 +22,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly MainDbContext _database;
         IAccountLists accountLists;
         public ReportController(
+            IUserFromApiService userFromApiService,
             IUserService userService,
             IAlbaManagementUserGateway albaUserGateway,
             ICombinedAssignmentService combinedAssignmentService,
@@ -30,6 +31,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAccountLists accountLists,
             Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)
