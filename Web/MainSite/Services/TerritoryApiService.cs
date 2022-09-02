@@ -11,6 +11,7 @@ namespace TerritoryTools.Web.MainSite.Services
         List<TerritoryContract> TerritoriesCheckedOutTo(string userFullName);
         List<TerritoryContract> AllTerritories();
         List<AreaContract> AllAreas();
+        TerritoryContract TerritoryByNumber(string territoryNumber);
     }
 
     public class TerritoryApiService : ITerritoryApiService
@@ -70,6 +71,26 @@ namespace TerritoryTools.Web.MainSite.Services
             }
 
             return contracts;
+        }
+
+        public TerritoryContract TerritoryByNumber(string territoryNumber)
+        {
+            if (string.IsNullOrWhiteSpace(territoryNumber))
+                throw new ArgumentNullException(nameof(territoryNumber));
+
+            string mobileBaseUrl = _configuration.GetValue<string>("MobileBaseUrl");
+            if (string.IsNullOrWhiteSpace(mobileBaseUrl))
+                throw new ArgumentNullException(nameof(mobileBaseUrl));
+
+            TerritoryContract contract = _apiService
+                .Get<TerritoryContract>($"territories/contract/{territoryNumber}", "?includeBorder=false");
+
+            if (contract == null)
+                return new TerritoryContract();
+
+            contract.AssigneeMobileLink = $"{mobileBaseUrl}/mtk/{contract.AssigneeLinkKey}";
+
+            return contract;
         }
 
         public List<AreaContract> AllAreas()

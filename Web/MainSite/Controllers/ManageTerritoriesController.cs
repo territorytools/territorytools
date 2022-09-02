@@ -20,6 +20,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
+        private readonly ITerritoryApiService _territoryApiService;
         private readonly IUserFromApiService _userFromApiService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         private readonly IUserService _userService;
@@ -30,6 +31,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly IConfiguration _configuration;
 
         public ManageTerritoriesController(
+            ITerritoryApiService territoryApiService,
             IUserFromApiService userFromApiService,
             ICombinedAssignmentService combinedAssignmentService,
             IUserService userService,
@@ -45,6 +47,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 authorizationService,
                 optionsAccessor)
         {
+            _territoryApiService = territoryApiService;
             _userFromApiService = userFromApiService;
             _combinedAssignmentService = combinedAssignmentService;
             _userService = userService;
@@ -60,12 +63,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!User.Identity.IsAuthenticated) // || !_authorizationService.IsAdmin(User.Identity.Name))
-                {
-                    return Forbid();
-                }
-                var user = _userFromApiService.ByEmail(User.Identity.Name);
-                if(!user.CanAssignTerritories)
+                if (!IsAdmin())
                 {
                     return Forbid();
                 }
@@ -89,19 +87,61 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!User.Identity.IsAuthenticated)
-                {
-                    return Forbid();
-                }
-
-                var user = _userFromApiService.ByEmail(User.Identity.Name);
-                if (!(user.IsActive ?? false) && user.CanAssignTerritories) 
+                if (!IsAdmin())
                 {
                     return Forbid();
                 }
 
                 var page = new ManageTerritoriesAllPage()
                 {
+                };
+
+                return View(page);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        [Route("/t2/{territoryNumber}")]
+        public IActionResult SingleV2(string territoryNumber)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(territoryNumber))
+                {
+                    return View(new SingleTerritoryManagerPageV2());
+                }
+
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                TerritoryContract territory = _territoryApiService.TerritoryByNumber(territoryNumber);
+
+                if(territory == null)
+                    return View(new SingleTerritoryManagerPage() {  Description = "Not Found"});
+
+                ///var users = _userFromApiService
+
+                var page = new SingleTerritoryManagerPageV2()
+                {
+                    Id = territory.Id,
+                    Number = territoryNumber,
+                    Description = territory.Description,
+                    MobileLink = $"/mtk/{territory.ActiveLinkKey}",
+                    PrintLink = "",
+                    SignedOutTo = territory.SignedOutTo,
+                    SignedOut = territory.SignedOut?.ToString("yyyy-MM-dd"),
+                    LastCompletedBy = territory.LastCompletedBy,
+                    LastCompleted = territory.LastCompleted?.ToString("yyyy-MM-dd"),
+                    Kind = territory.AlbaKind?.ToString(),
+                    Addresses = territory.AlbaKind ?? 0,
+                    Status = territory.Status,
+                    ///Users = users
                 };
 
                 return View(page);
