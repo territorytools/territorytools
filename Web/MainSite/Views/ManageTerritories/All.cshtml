@@ -23,8 +23,8 @@
           <th scope="col" x-onclick="sortTable(1)" style="cursor:pointer;">Area</th>
           <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;">Description</th>
           <th scope="col" x-onclick="sortTable(3)" style="cursor:pointer;">Signed-out To</th>
-          <th scope="col" x-onclick="sortTable(4)" style="cursor:pointer;">Signed-out Date</th>
-          <th scope="col"></th>
+@*          <th scope="col" x-onclick="sortTable(4)" style="cursor:pointer;">Signed-out Date</th>
+          <th scope="col"></th>*@
         </tr>
       </thead>
       <tbody id="checked-out-to-section" onload="getCheckedOutTerritories()">
@@ -32,15 +32,112 @@
       </tbody>
     </table>
     <div id="status-message" onload="">Loading...</div>
+
+
     
 </div>
+
+  <!-- The Modal -->
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h6 class="modal-title">Territory 
+              <span id="modal-header-number"></span> 
+              <span id="modal-header-area-description"></span>
+              <span id="modal-header-area-code"></span>
+          </h6>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          
+               <button type="submit" class="btn btn-primary">Unassign</button>
+              <select id="user-menu" name="albaUserId" class="custom-select m-2"></select>
+              <button type="submit" class="btn btn-primary">Assign</button>
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <!-- Button to Open the Edit Modal -->
+          <button type="button" class="btn btn-primary openEditTerritory" 
+            data-number="${item.number}" 
+            data-area-code="${item.areaCode}"
+            data-area-description="${item.areaDescription}"
+            data-signed-out-to="${item.signedOutTo}"
+            data-signed-out="${item.signedOutString}"
+            data-toggle="modal" data-target="#editModal">
+            Edit
+          </button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h6 class="modal-title">Territory 
+              <span id="edit-modal-header-number"></span> 
+              <span id="edit-modal-header-area-description"></span>
+              <span id="edit-modal-header-area-code"></span>
+          </h6>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <form action="/action_page.php">
+              <div class="form-group">
+                <label for="modal-number">Number:</label>
+                <input name="number" type="text" class="form-control" placeholder="Territory number" id="modal-number" value="1">
+              </div>
+              <div class="form-group">
+                <label for="modal-area-code">Area:</label>
+                <input name="areaCode" type="text" class="form-control" placeholder="Enter 3-character area" id="modal-area-code">
+              </div>
+              <div class="form-group">
+                <label for="pwd">Description:</label>
+                <input name="areaDescription" type="text" class="form-control" placeholder="Enter description" id="modal-area-description">
+              </div>
+              <div class="form-group form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox"> Remember me
+                </label>
+              </div>
+
+            </form>
+
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
 
 @section scripts {
     <script type="text/javascript">
         //var userFullName = "Model.Name";
 
         document.addEventListener('DOMContentLoaded', (event) => {
-            //loadAreas();
+            loadUsers();
             getCheckedOutTerritories();
         });
         
@@ -75,12 +172,23 @@
                       var html = 
                         `
                         <tr>
-                          <td scope="row"><a href="/t/${item.number}">${item.number}</a></td>
+                          <td scope="row">
+                            <!-- Button to Open the Modal -->
+                            <button type="button" class="btn btn-primary openSingleTerritoryManage" 
+                            data-number="${item.number}" 
+                            data-area-code="${item.areaCode}"
+                            data-area-description="${item.areaDescription}"
+                            data-signed-out-to="${item.signedOutTo}"
+                            data-signed-out="${item.signedOutString}"
+                            data-toggle="modal" data-target="#myModal">
+                            ${item.number}
+                            </button>
+                          </td>
                           <td>${item.areaCode}</td>
                           <td>${item.areaDescription}</td>
                           <td>${item.signedOutTo ?? ""}</td>
-                          <td>${signedOutString}</td>
-                          <td><a target="_blank" href="${item.assigneeMobileLink}">open</a></td>
+                          <!-- td>${signedOutString}</td -->
+                          <!-- td><a target="_blank" href="${item.assigneeMobileLink}">open</a></td -->
                         </tr>
                        `
                           //<a class="btn btn-primary" target="_blank" href="${item.assigneeMobileLink}">Open</a></td>
@@ -93,6 +201,35 @@
                 }
             });
         }
+
+        $(document).on("click", ".openSingleTerritoryManage", function () {
+            console.log("open single territory manage clicked");
+            var territoryId = $(this).data('id');
+            console.log("  id clicked" + territoryId);
+             $("#modal-header-number").text( $(this).data('number') );
+             $("#modal-header-area-code").text( $(this).data('area-code') );
+             $("#modal-header-area-description").text( $(this).data('area-description') );
+             $("#modal-number").val( $(this).data('number') );
+             $("#modal-area-code").val( $(this).data('area-code') );
+             $("#modal-area-description").val($(this).data('area-description'));
+             // As pointed out in comments, 
+             // it is unnecessary to have to manually call the modal.
+             // $('#addBookDialog').modal('show');
+        });
+
+        $(document).on("click", ".openEditTerritory", function () {
+            console.log("edit single territory manage clicked");
+             $("#edit-modal-header-number").text( $("#modal-header-number").val() );
+             $("#edit-modal-header-area-code").text(  $("#modal-header-area-code").val() );
+             $("#edit-modal-header-area-description").text( $(this).data('area-description') );
+             //$("#modal-number").val( $(this).data('number') );
+             //$("#modal-area-code").val( $(this).data('area-code') );
+             //$("#modal-area-description").val($(this).data('area-description'));
+             // As pointed out in comments, 
+             // it is unnecessary to have to manually call the modal.
+             // $('#addBookDialog').modal('show');
+        });
+
 
         function sortTable(n) {
           var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
@@ -186,5 +323,31 @@
             }       
           }
         }
+        
+        function loadUsers()
+        {
+            $('#user-menu').html('<option value="0">Loading...</option>');
+            $.ajax({
+                type: 'GET',
+                url: '/api/users?active=true',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#user-menu')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#user-menu').html('<option value="0">Select a user</option>');
+                    data.forEach(function(item) {
+                      const html = `<option value="${item.albaUserId}">${item.albaFullName}</option>`;
+
+                       $('#user-menu').append(html);
+                    });
+                }
+            });
+        }
+        
     </script>
 }
