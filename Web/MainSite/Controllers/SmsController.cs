@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
@@ -12,15 +14,18 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/sms")]
     public class SmsController : Controller
     {
+        private readonly IUserFromApiService _userFromApiService;
         readonly ISheetExtractor _sheetExtractor;
         readonly ILogger _logger;
         readonly WebUIOptions _options;
 
         public SmsController(
+            IUserFromApiService userFromApiService,
             ISheetExtractor spreadSheetService,
             ILogger<SmsController> logger,
             IOptions<WebUIOptions> optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _sheetExtractor = spreadSheetService;
             _logger = logger;
             _options = optionsAccessor.Value;
@@ -58,6 +63,37 @@ namespace TerritoryTools.Web.MainSite.Controllers
             }
 
             return Ok("ok");
+        }
+        
+        [Authorize]
+        [HttpPost]
+        public ActionResult<PhoneTerritoryCreateResult> Send(string from, string to, string message)
+        {
+            _logger.LogInformation($"Sending SMS: to: {to}, from: {from}, message: {message}");
+            UserContract user = _userFromApiService.ByEmail(User.Identity.Name);
+            if(!user.IsActive ?? false)
+            {
+                _logger.LogError("Cancel sending SMS user is not authorized");
+                return Unauthorized();
+            }
+
+            if(!Regex.IsMatch(to, @"\d\d\d\d\d\d\d\d\d\d"))
+            {
+                return BadRequest($"Bad phone number {to}");
+            }
+
+            HttpClient client = new HttpClient();
+            string uri = $"https://voip.ms/api/v1/rest.php?api_username={_options.SmsApiUserName}" +
+                $"&api_password={_options.SmsApiPassword}" +
+                $"&method=sendSMS" + 
+                $"&did={_options.SmsFromPhoneNumber}" +
+                $"&dst={to}" +
+                $"&message={message}";
+
+            var response = client.GetAsync(uri).Result;
+            _logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
+
+            return Ok();
         }
     }
 }

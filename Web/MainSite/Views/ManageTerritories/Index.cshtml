@@ -5,18 +5,13 @@
     ViewData["Title"] = Localizer["Title"].Value;
 }
 
-<h3 class="display-4 text-center">Manage Territories</h3>
+<h4 class="text-center">Manage Territories</h4>
 
 <div class="container" style="max-width:500px;">
     <div class="d-flex flex-column">
         <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
-            <i class="fas fa-arrow-left text-body"></i>@Localizer["MenuHomeButton"]
+            <i class="fas fa-arrow-left text-body"></i>&nbsp;@Localizer["MenuHomeButton"]
         </a>
-           
-                <div class="d-flex flex-column">
-                    <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManagePhoneTerritory" asp-action="Index">Phone Territories</a>
-                </div>
-           
        @* <h4>Assign Territory</h4>
         <form action="/api/assignments/latest" method="post" id="assign-from-area-form">
             <div class="d-flex mb-0">
@@ -59,55 +54,11 @@
                 </div>
             </div>
         </form>*@
-        <h4>Assign Territories</h4>
-        <form action="/api/assignments/oldest/alba" method="post" id="assign-from-area-form-v2">
-            <div class="d-flex mb-0">
-                <div class="p-2">
-                    <select id="user-menu" name="userId" form="assign-from-area-form-v2" class="custom-select m-2">
-                        <option selected value="0">Select User</option>
-                    </select>
-@*                    <select id="area-menu" style="visibility:hidden;" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
-                        <option selected value="*">Loading...</option>
-                        <option selected value="*">Any Area</option>
-                     </select>*@
-                    <select id="area-menu-old" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
-                        <option selected value="*">Any Area</option>
-                        @foreach (var area in Model.Areas)
-                        {
-                            if(area.IsParent)
-                            {
-                                <option value="@(area.Code)" style="color:blue;font-weight:bold;">@area.Parent</option>
-                            }
-                            else 
-                            {
-                                <option value="@(area.Code)">@area.Name</option>
-                            }
-                        }
-                    </select>
-                    <input type="button" class="btn btn-primary" value="Assign Oldest Territory from Area to User"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
-                    <label  style="visibility:hidden;" for="count">Count:</label>
-                    <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
-                    <div id="assign-from-area-form-loading-v2" style="color:blue;display:none;">
-                        <i class='fa fa-spinner fa-spin'></i>
-                        Assigning territories from area...
-                    </div>
-                    <div style="padding:5px;">
-                        <div id="assign-from-area-form-message-v2"></div>
-                        <div id="assign-from-area-form-error-v2" style="color:red;"></div>
-                        <div id="assign-from-area-territories-container-v2">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
+        
         @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="NeverCompleted">@Localizer["TerritoriesNeverCompleted"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Available">@Localizer["AvailableTerritories"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="ByPublisher">@Localizer["CheckedOutByPublishers"]</a>*@
-        <a class="p-2 m-2 btn btn-outline-primary" href="@Model.GoogleMyMapLink">All Territory Map</a>
-        <p>In the 'All Territory Map' click a territory the click the "AssignUrl" to assign the territory to someone.</p>
-        <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="All">Territory List</a>
-        <p>In the 'Territory List' click a territory number to assign the territory to someone.</p>
+        
         @*<a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Load">@Localizer["LoadDataFromAlba"]</a>
         <a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="AlbaUsers">@Localizer["AlbaUsers"]</a>
         <a href="/api/Assignments/DownloadCsvFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateAssignmentCSVFiles"]</a>
@@ -116,6 +67,70 @@
         <a href="/api/Assignments/DownloadBorderKmlFiles" class="p-2 m-2 btn btn-outline-secondary">@Localizer["UpdateBorderKMLFiles"]</a>
         <a href="/borders.kml" class="p-2 m-2 btn btn-outline-primary">@Localizer["DownloadBordersKML"]</a>
         <a href="@ViewData["CompletionMapUrl"]" class="p-2 m-2 btn btn-outline-primary" target="_blank">@Localizer["CompletionMapUrl"]</a>*@
+    </div>
+    <div class="d-flex flex-column">
+        <a class="m-2 btn btn-outline-primary" asp-controller="ManagePhoneTerritory" asp-action="Index">
+            <i class="fas fa-phone pl-4"></i>&nbsp;Manage Phone Territories
+        </a>
+    </div>
+    <div class="d-flex flex-column">
+        <a class="m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="All">
+            <i class="fa-solid fa-door-open"></i>&nbsp;Door-to-door Territories List
+        </a>
+        <p class="m-2">In the 'Door-to-door Territories (list)' click a territory to assign the territory to someone.</p>
+    </div>
+    <div class="d-flex flex-column">
+        <a class="m-2 btn btn-outline-primary" href="@Model.GoogleMyMapLink">
+            <i class="fas fa-map-location-dot pl-4"></i>&nbsp;All Territory Map
+        </a>
+        @*<p>In the 'All Territory Map' click a territory the click the "AssignUrl" to assign the territory to someone.</p>*@
+    </div>
+    <h4 class="m-2">Assign Territories</h4>
+    <form action="/api/assignments/oldest/alba" method="post" id="assign-from-area-form-v2">
+        <div class="d-flex flex-column">
+            <p class="m-2">Assign the next territory from an area, or all areas, to a publisher</p>
+            @*<select id="area-menu" style="visibility:hidden;" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
+                <option selected value="*">Loading...</option>
+                <option selected value="*">Any Area</option>
+                </select>*@
+            
+             <div class="m-2">
+                <select class="custom-select" id="area-menu-old" name="area" form="assign-from-area-form-v2">
+                    <option selected value="*">All areas</option>
+                    @foreach (var area in Model.Areas)
+                    {
+                        if(area.IsParent)
+                        {
+                            <option value="@(area.Code)" style="color:blue;font-weight:bold;">@area.Parent</option>
+                        }
+                        else 
+                        {
+                            <option value="@(area.Code)">@area.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+         </div>
+         <div class="m-2 input-group-append">
+            <select id="user-menu" name="userId" form="assign-from-area-form-v2" class="custom-select">
+                <option selected value="0">Loading publishers...</option>
+            </select>
+            <input type="button" class="btn btn-primary" value="Assign"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
+        </div>
+            <label  style="visibility:hidden;" for="count">Count:</label>
+            <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
+            <div id="assign-from-area-form-loading-v2" style="color:blue;display:none;">
+                <i class='fa fa-spinner fa-spin'></i>
+                Assigning territories from area...
+            </div>
+            <div style="padding:5px;">
+                <div id="assign-from-area-form-message-v2"></div>
+                <div id="assign-from-area-form-error-v2" style="color:red;"></div>
+                <div id="assign-from-area-territories-container-v2">
+
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -143,7 +158,7 @@
                         .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
                 },
                 success: function (data) {
-                    $('#user-menu').html('<option value="0">Select a user</option>');
+                    $('#user-menu').html('<option value="0">Select a publisher</option>');
                     data.forEach(function(item) {
                       const html = `<option value="${item.albaUserId}">${item.albaFullName}</option>`;
 
@@ -216,7 +231,7 @@
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
                     
-                    var html = `<strong>${data.territoryDescription}</strong>&nbsp;${data.territoryNumber}&nbsp;<a href='${data.territoryUri}'>${data.territoryUri}</a><br/>`;
+                    var html = `<strong>${data.territoryNumber}</strong>&nbsp;${data.territoryDescription}&nbsp;<a href='${data.territoryUri}'>${data.territoryUri}</a><br/>`;
                     $('#assign-from-area-territories-container-v2')
                         .append(html);
                     
