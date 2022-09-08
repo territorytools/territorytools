@@ -14,15 +14,16 @@
     <h5 class="text-center">Search Territory</h5>
     <div class="input-group-append m-2">
         <input type="text" id="text-filter" onkeyup="getCheckedOutTerritories()" placeholder="Type number or text">
-        <button class="btn btn-primary"><i class="fa-solid fa-delete-left" onclick="clearFilter()" style="cursor:pointer;"></i></button>
+        @*<button class="btn btn-primary">*@
+            <i class="fa-solid fa-delete-left m-2" onclick="clearFilter()" style="cursor:pointer;"></i>
+        @*</button>*@
     </div>
-    @*<input type="text" id="people-filter" onkeyup="peopleFilter()" placeholder="Search for people" title="Type in a person's name'">*@
     <table id="territory-list-table"  class="table table-striped table-sm">
       <thead>
         <tr>
           <th scope="col" x-onclick="sortTable(0)" style="cursor:pointer;">#</th>
-          <th scope="col" x-onclick="sortTable(1)" style="cursor:pointer;">Area</th>
-          <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;">Description</th>
+          <th scope="col" x-onclick="sortTable(1)" style="cursor:pointer;">Description</th>
+          <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;">Area</th>
           <th scope="col" x-onclick="sortTable(3)" style="cursor:pointer;">Signed-out To</th>
         </tr>
       </thead>
@@ -31,9 +32,6 @@
       </tbody>
     </table>
     <div id="status-message" onload="">Loading...</div>
-
-
-    
 </div>
 
   <!-- The Modal -->
@@ -55,6 +53,31 @@
         <!-- Modal body -->
         <div class="modal-body">
 
+            <!-- Assignment Page -->
+            <div id="assignment-buttons">
+              <form>
+                  <div class="form-group">
+                    <label for="modal-number">Current Assignee:</label>
+                    <input name="territoryNumber" type="hidden" class="form-control" id="modal-territory-number" readonly>
+                    <div class="input-group-append">
+                        <input name="assignee" type="text" class="form-control" placeholder="Nobody assigned" id="modal-current-assignee" readonly>
+                        <button id="unassign-button" type="button" class="btn btn-primary">Unassign</button>
+                    </div>
+                  </div>
+                  <div id="unassign-status"></div>
+                </form>
+                <form>
+                  <div class="form-group">
+                    <label for="user-menu">New Assignee:</label>
+                    <div class="input-group-append">
+                        <select id="user-menu" name="albaUserId" class="custom-select"></select>
+                        <button id="assign-button" type="button" class="btn btn-primary">Assign</button>
+                    </div>
+                  </div>
+              </form>
+            </div>
+
+            <!-- Edit Page -->
             <div id="edit-form" style="display:none;">
             <form action="/action_page.php">
               <div class="form-group">
@@ -69,47 +92,23 @@
                 <label for="pwd">Description:</label>
                 <input name="areaDescription" type="text" class="form-control" placeholder="Enter description" id="modal-area-description">
               </div>
-             
               <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
             </form>
-            </div>
-
-            <div id="assignment-buttons">
-              <form action="/action_page.php">
-                  <div class="form-group">
-                    <label for="modal-number">Current Assignee:</label>
-                    <div class="input-group-append">
-                    <input name="assignee" type="text" class="form-control" placeholder="Nobody assigned" id="modal-current-assignee" readonly>
-                    <button id="unassign-button" type="submit" class="btn btn-primary">Unassign</button>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="user-menu">New Assignee:</label>
-                    <div class="input-group-append">
-                        <select id="user-menu" name="albaUserId" class="custom-select"></select>
-                        <button type="submit" class="btn btn-primary">Assign</button>
-                    </div>
-                  </div>
-              </form>
             </div>
           
         </div>
         
         <!-- Modal footer -->
         <div class="modal-footer">
-          <button id="view-territory-button" type="button" class="btn btn-primary">View</button>
-          <button id="edit-territory-button" type="button" class="btn btn-primary">Edit</button>
-          <button id="territory-assignment-button" type="button" class="btn btn-outline-primary">Assignment</button>
+          @*<button id="view-territory-button" type="button" class="btn btn-primary">View</button>*@
+          @*<button id="edit-territory-button" type="button" class="btn btn-outline-primary">Edit</button>*@
+          @*<button id="territory-assignment-button" type="button" class="btn btn-outline-primary">Assign</button>*@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           
         </div>
-        
       </div>
     </div>
   </div>
-
-  
-
 
 @section scripts {
     <script type="text/javascript">
@@ -147,8 +146,8 @@
                     data.forEach(function(item) {
                       const signedOut = new Date(item.signedOut);
                       const year = signedOut.getFullYear();
-                      const month = (signedOut.getMonth() + 1).toString().padStart(2,"0");
-                      const day = signedOut.getDate().toString().padStart(2,"0");
+                      const month = (signedOut.getMonth() + 1).toString().padStart(2,'0');
+                      const day = signedOut.getDate().toString().padStart(2,'0');
                       var signedOutString = `${year}-${month}-${day}`;
                       if(signedOut.getFullYear() == 1969) {
                           signedOutString = "";
@@ -167,8 +166,8 @@
                           <td scope="row">
                             ${item.number}
                           </td>
-                          <td>${item.areaCode}</td>
                           <td>${item.areaDescription}</td>
+                          <td>${item.areaCode}</td>
                           <td>${item.signedOutTo ?? ""}</td>
                         </tr>
                        `
@@ -182,11 +181,67 @@
             });
         }
 
+        $(document).on("click", "#unassign-button", function () {
+            var territoryNumber = $('#modal-header-number').text();
+             $.ajax({
+                type: 'DELETE',
+                url: `/api/assignments/v2?territoryNumber=${territoryNumber}`,
+                //dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#unassign-status')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error unassigning.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#unassign-status')
+                        .css('color', 'blue')
+                        .text(`Successfully unassigned territory ${territoryNumber}.`);
+                     $('#modal-current-assignee').val('Nobody assigned');
+                     $("#unassign-button").attr('disabled','');
+                }
+            });
+        });
+
+        $(document).on("click", "#assign-button", function () {
+            var territoryNumber = $('#modal-header-number').text();
+            var albaUserId = $('#user-menu').val();
+            var userName = $('#user-menu .selected').text();
+             $.ajax({
+                type: 'POST',
+                url: `/api/assignments?territoryNumber=${territoryNumber}&albaUserId=${albaUserId}`,
+                //dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#unassign-status')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error assigning.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    // TODO: parse the data here and show something better than albaUserId
+                    $('#unassign-status')
+                        .css('color', 'blue')
+                        .text(`Successfully assigned territory ${territoryNumber} to '${data.assigneeName}' (user id ${albaUserId}).`);
+                   $('#modal-current-assignee').val(data.assigneeName);
+                   $("#user-menu").val(0);
+                   $("#unassign-button").removeAttr('disabled');
+                }
+            });
+        });
+
         $(document).on("click", ".openSingleTerritoryManage", function () {
-            console.log("open single territory manage clicked");
-            var territoryId = $(this).data('id');
-            console.log("  id clicked" + territoryId);
+             // Reset fields that are normally blank
+             $("#user-menu").val('0');
+             $('#unassign-status')
+                .css('color', 'black')
+                .text('');
+             setTerritoryAssignmentTabAsCurrent();
+
+             // Load fields
              $("#modal-header-number").text( $(this).data('number') );
+             $("#modal-territory-number").val( $(this).data('number'));
              $("#modal-header-area-code").text( $(this).data('area-code') );
              $("#modal-header-area-description").text( $(this).data('area-description') );
              $("#modal-number").val( $(this).data('number') );
@@ -202,12 +257,10 @@
         });
 
         $(document).on("click", ".openEditTerritory", function () {
-            console.log("edit single territory manage clicked");
              $("#edit-modal-header-number").text( $("#modal-header-number").val() );
              $("#edit-modal-header-area-code").text(  $("#modal-header-area-code").val() );
              $("#edit-modal-header-area-description").text( $(this).data('area-description') );
         });
-
         
         $(document).on("click", "#edit-territory-button", function () {
             $("#modal-header-big").text("Edit");
@@ -218,138 +271,17 @@
             ef.style.display = "block";
         });
 
-         $(document).on("click", "#territory-assignment-button", function () {
-            $("#modal-header-big").text("Assignment");
+        $(document).on("click", "#territory-assignment-button", function () {
+            setTerritoryAssignmentTabAsCurrent();
+        });
+
+        function setTerritoryAssignmentTabAsCurrent() {
+            $("#modal-header-big").text("Assign");
             var ef = document.getElementById("edit-form");
             var ab = document.getElementById("assignment-buttons");
              
             ab.style.display = "block";
             ef.style.display = "none";
-
-        });
-
-        function sortTable(n) {
-          var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-          table = document.getElementById("territory-list-table");
-          switching = true;
-          //Set the sorting direction to ascending:
-          dir = "asc"; 
-          /*Make a loop that will continue until
-          no switching has been done:*/
-          while (switching) {
-            //start by saying: no switching is done:
-            switching = false;
-            rows = table.rows;
-            /*Loop through all table rows (except the
-            first, which contains table headers):*/
-            for (i = 1; i < (rows.length - 1); i++) {
-              //start by saying there should be no switching:
-              shouldSwitch = false;
-              /*Get the two elements you want to compare,
-              one from current row and one from the next:*/
-              x = rows[i].getElementsByTagName("TD")[n];
-              y = rows[i + 1].getElementsByTagName("TD")[n];
-              /*check if the two rows should switch place,
-              based on the direction, asc or desc:*/
-              if (dir == "asc") {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                  //if so, mark as a switch and break the loop:
-                  shouldSwitch= true;
-                  break;
-                }
-              } else if (dir == "desc") {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                  //if so, mark as a switch and break the loop:
-                  shouldSwitch = true;
-                  break;
-                }
-              }
-            }
-            if (shouldSwitch) {
-              /*If a switch has been marked, make the switch
-              and mark that a switch has been done:*/
-              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-              switching = true;
-              //Each time a switch is done, increase this count by 1:
-              switchcount ++;      
-            } else {
-              /*If no switching has been done AND the direction is "asc",
-              set the direction to "desc" and run the while loop again.*/
-              if (switchcount == 0 && dir == "asc") {
-                dir = "desc";
-                switching = true;
-              }
-            }
-          }
-        }
-
-        function areaFilter() {
-          var input, filter, table, tr, td, i, txtValue;
-          input = document.getElementById("area-filter");
-          filter = input.value.toUpperCase();
-          table = document.getElementById("territory-list-table");
-          tr = table.getElementsByTagName("tr");
-          for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[1]; // 1: Area
-            if (td) {
-              txtValue = td.textContent || td.innerText;
-              if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-              } else {
-                tr[i].style.display = "none";
-              }
-            }       
-          }
-        }
-
-        function peopleFilter() {
-          var input, filter, table, tr, td, i, txtValue;
-          input = document.getElementById("people-filter");
-          filter = input.value.toUpperCase();
-          table = document.getElementById("territory-list-table");
-          tr = table.getElementsByTagName("tr");
-          for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[3]; // 3: Signed out to
-            if (td) {
-              txtValue = td.textContent || td.innerText;
-              if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-              } else {
-                tr[i].style.display = "none";
-              }
-            }       
-          }
-        }
-        
-        
-        function anyFilter() {
-          var input, filter, table, tr, td, i, txtValue;
-          input = document.getElementById("area-filter");
-          //if(input.value.length < 3) {
-          //    return;
-          //}
-          filter = input.value.toUpperCase();
-          table = document.getElementById("territory-list-table");
-          tr = table.getElementsByTagName("tr");
-          for (i = 0; i < tr.length; i++) {
-            // td = tr[i].innerText;
-            //td0 = tr[i].getElementsByTagName("td")[0]; // 
-            //td1 = tr[i].getElementsByTagName("td")[1]; // 
-            //td2 = tr[i].getElementsByTagName("td")[2]; // 
-            //td3 = tr[i].getElementsByTagName("td")[3]; // 3: Signed out to
-          
-            if (tr[i]) {
-              //txtValue = td.textContent || td.innerText;
-              //txtValue = td
-                txtValue = tr[i].innerText;
-                //console.log("txtValue: " + txtValue);
-              if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-              } else {
-                tr[i].style.display = "none";
-              }
-            }       
-          }
         }
 
         function loadUsers()
@@ -370,8 +302,7 @@
                     $('#user-menu').html('<option value="0">Select a user</option>');
                     data.forEach(function(item) {
                       const html = `<option value="${item.albaUserId}">${item.albaFullName}</option>`;
-
-                       $('#user-menu').append(html);
+                      $('#user-menu').append(html);
                     });
                 }
             });

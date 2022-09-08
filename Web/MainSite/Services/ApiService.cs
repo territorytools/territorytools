@@ -11,6 +11,7 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         T Get<T>(string relativePath, string queryString);
         T Post<T, B>(string relativePath, string queryString, B body);
+        void Delete(string relativePath, string queryString);
     }
 
     public class ApiService : IApiService
@@ -104,6 +105,30 @@ namespace TerritoryTools.Web.MainSite.Services
                  ?? default(T);
 
             return contracts;
+        }
+
+        public void Delete(string relativePath, string queryString)
+        {
+            if (!string.IsNullOrWhiteSpace(queryString) && !queryString.StartsWith("?"))
+                throw new ArgumentException($"Query string must start with a question mark ?");
+
+            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
+            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            {
+                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+            }
+
+            HttpClient client = new();
+            HttpResponseMessage? result = client.DeleteAsync(
+                $"http://{territoryApiHostAndPort}/{relativePath}{queryString}")
+                .Result;
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string message = $"Error from Territory.Api StatusCode: {result.StatusCode}";
+                _logger.LogError(message);
+                throw new Exception(message);
+            }
         }
     }
 }

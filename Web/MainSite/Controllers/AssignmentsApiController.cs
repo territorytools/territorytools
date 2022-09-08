@@ -14,7 +14,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
     [Route("api/assignments")]
     public class AssignmentsApiController : Controller
     {
-        private readonly ITerritoryApiService _territoriesForUserService;
+        private readonly ITerritoryApiService _territoryApiService;
         readonly IAssignLatestService _assignmentService;
         readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly KmlFileService _kmlFileService;
@@ -31,7 +31,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             ITerritoryAssignmentService territoryAssignmentService,
             ILogger<AssignmentsApiController> logger)
         {
-            _territoriesForUserService = territoriesForUserService;
+            _territoryApiService = territoriesForUserService;
             _assignmentService = assignmentService;
             _combinedAssignmentService = combinedAssignmentService;
             _kmlFileService = kmlFileService;
@@ -73,6 +73,23 @@ namespace TerritoryTools.Web.MainSite.Controllers
         //        return BadRequest(result);
         //}
 
+
+        [HttpPost]
+        public ActionResult<TerritoryLinkContract> PostAssignment(
+            string territoryNumber,
+            string userName, // ignored
+            int albaUserId)
+        {
+            if(!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            TerritoryLinkContract result = _assignmentService.Assign(territoryNumber, userName, albaUserId, User.Identity.Name);
+
+            if (!string.IsNullOrWhiteSpace(result.AlbaMobileTerritoryKey))
+                return Ok(result);
+            else
+                return BadRequest(result);
+        }
 
         [HttpPost("[action]")]
         public ActionResult<TerritoryLinkContract> Assign([FromForm]
@@ -118,7 +135,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [HttpGet("checked-out-to")]
         public ActionResult<List<TerritoryContract>> CheckedOutTo(string userFullName)
         {
-            return _territoriesForUserService.TerritoriesCheckedOutTo(userFullName);
+            return _territoryApiService.TerritoriesCheckedOutTo(userFullName);
         }
 
         [HttpGet("[action]")]
@@ -127,6 +144,16 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _territoryAssignmentService.Unassign(territoryId, User.Identity.Name);
 
             return Redirect($"/Home/UnassignSuccess?territoryId={territoryId}");
+        }
+
+        [HttpDelete("v2")]
+        public IActionResult UnassignV2(string territoryNumber)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return Unauthorized();
+
+            _territoryApiService.Unassign(territoryNumber, User.Identity.Name);
+            return Ok();
         }
 
         [HttpGet("[action]")]

@@ -12,6 +12,7 @@ namespace TerritoryTools.Web.MainSite.Services
         List<TerritoryContract> AllTerritories();
         List<AreaContract> AllAreas();
         TerritoryContract TerritoryByNumber(string territoryNumber);
+        void Unassign(string territoryNumber, string assignerEmail);
     }
 
     public class TerritoryApiService : ITerritoryApiService
@@ -96,6 +97,11 @@ namespace TerritoryTools.Web.MainSite.Services
         public List<AreaContract> AllAreas()
         {
             return _apiService.Get<List<AreaContract>>("areas","");
+        }
+
+        public void Unassign(string territoryNumber, string assignerEmail)
+        {
+            _apiService.Delete("territory-assignment/assignments", $"?territoryNumber={territoryNumber}&assignerEmail={assignerEmail}");
         }
     }
 }
