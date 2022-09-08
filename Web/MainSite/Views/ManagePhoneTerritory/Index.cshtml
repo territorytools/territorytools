@@ -6,12 +6,12 @@
     ViewData["Title"] = Localizer["Title"].Value;
 }
 
-<h3 class="display-4 text-center">@Localizer["Title"]</h3>
+<h4 class="text-center">@Localizer["Title"]</h4>
 
 <div class="container" style="max-width:500px;">
     <div class="d-flex flex-column">
-        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
-            <i class="fas fa-arrow-left text-body"></i>@Localizer["MenuHomeButton"]
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="ManageTerritories" asp-action="Index">
+            <i class="fas fa-arrow-left text-body"></i>&nbsp;Manage Territories
         </a>
         <h4>@Localizer["CheckOutTitle"]</h4>
         <form action="/api/phoneterritory/create" method="post" id="assign-from-area-form">
