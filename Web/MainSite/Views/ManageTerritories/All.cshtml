@@ -141,7 +141,7 @@
                 .text('Loading...');
             $.ajax({
                 type: 'GET',
-                url: '/api/v2/territories/all?filter=' + $('#text-filter').val(),
+                url: '/api/territories/all?includeBorders=false&filter=' + $('#text-filter').val(),
                 dataType: 'json',
                 processData: false,
                 contentType: false,

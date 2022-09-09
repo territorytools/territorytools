@@ -68,6 +68,7 @@ services:
       - OldMobileServerFqdn=$OldMobileServerFqdn
       - NewMobileServerFqdn=$NewMobileServerFqdn      
       - TerritoryApiHostAndPort=$TerritoryApiHostAndPort
+      - TerritoryApiBaseUrl=$TerritoryApiBaseUrl
       - MobileBaseUrl=https://mobile.territorytools.org
       - SharedPhoneTerritoryLink=$SharedPhoneTerritoryLink
       - GoogleMyMapLink=$GoogleMyMapLink

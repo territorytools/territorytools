@@ -1,20 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Net.Http;
 
 namespace TerritoryTools.Web.MainSite.Controllers
 {
     [ApiController]
-    [Route("/api/v2")]
+    [Route("/api")]
     public class ApiProxyController : ControllerBase
     {
+        readonly WebUIOptions _options;
         readonly ILogger _logger;
 
         public ApiProxyController(
+            IOptions<WebUIOptions> optionsAccessor,
             ILogger<AssignmentsApiController> logger)
         {
             _logger = logger;
+            _options = optionsAccessor.Value;
         }
 
         [Route("{a?}/{b?}/{c?}/{d?}/{e?}/{f?}")]
@@ -22,22 +27,31 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             if(!User.Identity.IsAuthenticated)
             {
+                //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
+                //HttpContext isn't thread safe
                 ControllerContext.HttpContext.Response.StatusCode = 401;
                 return;
             }
 
+            string baseUrl = _options.TerritoryApiBaseUrl;
+            if (string.IsNullOrWhiteSpace(baseUrl))
+                throw new ArgumentNullException(nameof(baseUrl));
+
             string path = ControllerContext.HttpContext.Request.Path.Value;
             string queryString = ControllerContext.HttpContext.Request.QueryString.Value;
 
-            if (path.StartsWith("/api/v2/"))
+            string pathPrefix = "/api/"; // Same as controler Route attribute but with a trailing slash
+            if (path.StartsWith(pathPrefix))
             {
-                path = $"{path.Substring(8)}";
+                path = $"{path.Substring(pathPrefix.Length)}";
             }
 
             HttpClient client = new();
             HttpRequestMessage requestMessage = new HttpRequestMessage(
                 HttpMethod.Get,
-                $"http://localhost:5123/{path}{queryString}");
+                $"{baseUrl}/{path}{queryString}");
+
+            requestMessage.Headers.Add("x-territory-tools-user", User.Identity.Name);
 
             var context = ControllerContext.HttpContext;
             using (var responseMessage = client.SendAsync(
