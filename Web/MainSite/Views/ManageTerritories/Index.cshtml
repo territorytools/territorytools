@@ -287,6 +287,32 @@
                 }
             });
         }
-
+        
+        $(document).on("click", "#send-sms-button", function () {
+            var territoryNumber = $('#modal-header-number').text();
+            var area = $("#modal-header-area-code").text();
+            var description = $("#modal-header-area-description").text();
+            var phoneNumber = $('#phone-number').val();
+            var link = $('#assigned-link').attr('href');
+             $.ajax({
+                type: 'POST',
+                url: `/api/sms?to=${phoneNumber}&message=Territory ${territoryNumber} ${description} ${area} ${link}`,
+                //dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#send-sms-status')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error sending SMS message.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    // TODO: parse the data here and show something better than albaUserId
+                    $('#send-sms-status')
+                        .css('color', 'blue')
+                        .text(`Successfully sent SMS message to ${phoneNumber}`);
+                }
+                
+            });
+        });
     </script>
 }
