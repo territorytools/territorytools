@@ -86,7 +86,7 @@
         @*<p>In the 'All Territory Map' click a territory the click the "AssignUrl" to assign the territory to someone.</p>*@
     </div>
     <h4 class="m-2">Assign Territories</h4>
-    <form action="/api/assignments/oldest/alba" method="post" id="assign-from-area-form-v2">
+    <form id="assign-from-area-form-v2">
         <div class="d-flex flex-column">
             <p class="m-2">Assign the next territory from an area, or all areas, to a publisher</p>
             @*<select id="area-menu" style="visibility:hidden;" name="area" form="assign-from-area-form-v2" class="custom-select m-2">
@@ -128,20 +128,46 @@
             <div id="assign-from-area-form-error-v2" style="color:red;"></div>
             <div id="assign-from-area-territories-container-v2"></div>
 
-            <div>
+            <div id="assigned-map-link-section" style="display:none;">
+                <h5>Territory Assigned</h5>
                 <strong id="assigned-number"></strong>
                 <span id="assigned-description"></span>
+                <div class="form-group">
+                    <div class="input-group-append">
+                        <input id="assigned-map-link" name="territoryUri" type="text" class="form-control" readonly>
+                        &nbsp;
+                        <button id="copy-map-link-button" class="btn btn-secondary"><i class="fa-solid fa-copy"></i></button>
+                    </div>
                 </div>
-            <div><a id="assigned-link" href='#'></a></div>
-            <div id="assigned-to"></div>
+                <br/>
+                <div><a id="assigned-map-link-open" href="#">open link</a></div> 
+                <div class="form-group">
+                    <label for="assigneeName">Assigned to:</label>
+                    <input id="assigned-to" name="assigneeName" type="text" class="form-control" readonly>
+                </div>
+            </div>
         </div>
-        <div id="phone-number-section" class="form-group" style="display:none;">
+@*        <div id="phone-number-section" class="form-group" style="display:none;">
             <label for="phone-number">SMS Phone Number:</label>
             <div class="input-group-append">
-                <input id="phone-number" name="phoneNumber" type="text" class="form-control">
+                <input id="phone-number" name="phoneNumber" type="text" class="form-control" readonly>
                 <button id="send-sms-button" type="button" class="btn btn-primary">Send</button>
             </div>
             <div id="send-sms-status"></div>
+        </div>*@
+        <div id="sms-section" class="form-group" style="display:none;">
+            <label for="sms-number">Send as text message:</label>
+            <div class="input-group-append">
+                <input id="sms-number" name="phoneNumber" type="text" class="form-control" readonly>
+                <a class="btn btn-primary" id="sms-link" href="#">Send</a>
+            </div>
+        </div>
+        <div id="email-section" class="form-group" style="display:none;">
+            <label for="assignee-email-address">Send as email:</label>
+            <div class="input-group-append">
+                <input id="assignee-email-address" name="emailAddress" type="text" class="form-control" readonly>
+                <a class="btn btn-primary" id="email-link" href="#">Send</a>
+            </div>
         </div>
     </form>
 </div>
@@ -156,6 +182,23 @@
             //TODO: Not Ready Yet, add area groups
             //loadAreas();
         });
+
+        $(document).on("click", "#copy-map-link-button", function () {
+          event.preventDefault();
+          copyMapLink();
+        });
+
+        function copyMapLink() {
+          // Get the text field
+          var copyText = document.getElementById("assigned-map-link");
+
+          // Select the text field
+          copyText.select();
+          copyText.setSelectionRange(0, 99999); // For mobile devices
+
+          // Copy the text inside the text field
+          navigator.clipboard.writeText(copyText.value);
+        }
 
         function loadUsers() {
             $('#user-menu').html('<option value="0">Loading...</option>');
@@ -207,12 +250,16 @@
         }
 
         function resetForm() {
-            document.getElementById("phone-number-section").style.display = 'none';
-            $('#assigned-link').attr('href', '').text('');
+            //document.getElementById("phone-number-section").style.display = 'none';
+            document.getElementById("assigned-map-link-section").style.display = 'none';
+            document.getElementById("sms-section").style.display = 'none';
+            document.getElementById("email-section").style.display = 'none';
+            $('#assigned-map-link').val('');
+            $('#assigned-map-link-open').attr('href', '').text('');
             $('#assigned-number').text('');
             $('#assigned-description').text('');
-            $('#assigned-to').text('');
-            $('#phone-number').val('');
+            $('#assigned-to').val('');
+            //$('#phone-number').val('');
         }
 
         function submitFromAreaFormV2(form)
@@ -228,7 +275,7 @@
              var form_data = new FormData(form);
             $.ajax({
                 type: 'POST',
-                url: frm.attr('action'),
+                url: '/api/assignments/oldest/alba',
                 dataType: 'json',
                 data: form_data,
                 processData: false,
@@ -247,7 +294,7 @@
                         .text(data.territoryDescription);
                     $('#assign-from-area-form-message-v2')
                         .css('color', 'green')
-                        .text('Assigned to:');
+                        .text('');
                     $('#assign-from-area-form-territory-uri-v2')
                         .attr('href', data.territoryUri)
                         .text(data.territoryUri);
@@ -266,16 +313,39 @@
                      $('#assigned-to')
                         .text(data.assigneeName);
 
-                    $('#assigned-link')
-                        .attr('href', data.territoryUri)
-                        .text(data.territoryUri);
+                    $('#assigned-map-link')
+                        .val(data.territoryUri);
+
+                    $('#assigned-map-link-open')
+                        .attr('href', data.territoryUri);
+
+                    document.getElementById('assigned-map-link-section').style.display = 'block';
+                    $('#assigned-to').val(data.assigneeName);
 
                     if(data.assigneePhone) {
-                        document.getElementById("phone-number-section").style.display = 'block';
-                        $('#phone-number').val(data.assigneePhone);
+                        //document.getElementById("phone-number-section").style.display = 'block';
+                        //$('#phone-number').val(data.assigneePhone);
+
+                        document.getElementById("sms-section").style.display = 'block';
+                        $('#sms-number').val(data.assigneePhone);
+                        $('#sms-link').attr('href', `sms://${data.assigneePhone}?body=Territory%20${data.territoryNumber}%20${data.territoryUri}`);
                     } else {
-                        document.getElementById("phone-number-section").style.display = 'none';
-                        $('#phone-number').val('');
+                        //document.getElementById("phone-number-section").style.display = 'none';
+                        //$('#phone-number').val('');
+
+                        document.getElementById("sms-section").style.display = 'none';
+                        $('#sms-number').val('');
+                        $('#sms-link').attr('href','');
+                    }
+                    
+                    if(data.assigneeEmail) {
+                        document.getElementById("email-section").style.display = 'block';
+                        $('#assignee-email-address').val(data.assigneeEmail);
+                        $('#email-link').attr('href', `mailto://${data.assigneeEmail}?body=Territory%20${data.territoryNumber}%20${data.territoryUri}`);
+                    } else {
+                        document.getElementById("email-section").style.display = 'none';
+                        $('#assignee-email-address').val('');
+                        $('#email-link').attr('href','');
                     }
                     //data.items.forEach(function(item) {
                     //   var html = "<strong>" + item.description + "</strong>&nbsp;<a href='" + item.uri + "'>" + item.uri + "</a><br/>";
@@ -293,7 +363,7 @@
             var area = $("#modal-header-area-code").text();
             var description = $("#modal-header-area-description").text();
             var phoneNumber = $('#phone-number').val();
-            var link = $('#assigned-link').attr('href');
+            var link = $('#assigned-map-link').attr('href');
              $.ajax({
                 type: 'POST',
                 url: `/api/sms?to=${phoneNumber}&message=Territory ${territoryNumber} ${description} ${area} ${link}`,
