@@ -18,21 +18,11 @@
             <div class="d-flex mb-0">
                 <div class="p-2">
                     <div class="form-group mx-3">
-                        <select name="userId" form="assign-from-area-form" class="custom-select">
-                            <option selected value="0">@Localizer["SelectUserItemName"]</option>
-                            @foreach (var user in Model.Users)
-                            {
-                                if(@user.FullName == "Shared")
-                                {
-                                    <option value=@(user.Id) style="font-weight:bold;color:blue;">@user.FullName</option>
-                                }
-                                else
-                                {
-                                    <option value=@(user.Id)>@user.FullName</option>
-                                }
-                            }
+                        <select id="extract-territory-assignee" name="assigneeEmail" form="assign-from-area-form" class="custom-select">
+                            <option value="SHARED" style="font-weight:bold;color:blue;">Shared</option>
                         </select>
                     </div>
+                    <input id="assignee-full-name" type="hidden" name="assigneeFullName" value=""/>
                      <div class="form-group mx-3">
                         <button onclick="hideAdvancedExtractFields()" class="btn btn-outline-secondary">
                             @Localizer["MoreShowHideButton"]
@@ -79,7 +69,7 @@
                 <div class="p-2">
                     <div class="form-group mx-3">
                         <select name="userId" form="add-writer-form" class="custom-select">
-                            <option selected value="0">@Localizer["SelectUserItemName"]</option>
+                            <option selected value="0">@Localizer["SelectUserItemName"]</option>                            
                             @foreach (var user in Model.Users)
                             {
                                 <option value=@(user.Id)>@user.FullName</option>
@@ -111,6 +101,36 @@
 @section scripts {
     <script type="text/javascript">
 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadUsers();
+        });
+
+        function loadUsers() {
+            $('#extract-territory-assignee').html('<option value="0">Loading...</option>');
+            $.ajax({
+                type: 'GET',
+                url: '/api/users?active=true',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#extract-territory-assignee')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#extract-territory-assignee').html(
+                        '<option value="0">Select a publisher</option><option style="color:blue;" value="SHARED"><strong>Shared</strong></option>');
+
+                    data.forEach(function(item) {
+                      const html = `<option value="${item.normalizedEmail}">${item.albaFullName}</option>`;
+
+                       $('#extract-territory-assignee').append(html);
+                    });
+                }
+            });
+        }
+
         function hideAdvancedExtractFields() {
           event.preventDefault();
           var x = document.getElementById("create-territory-advanced");
@@ -129,6 +149,9 @@
                 .text('');
             $('#assign-from-area-territories-container')
                 .html('');
+
+            var assigneeFullName = $('#extract-territory-assignee option:selected').text();
+            $('#assignee-full-name').val(assigneeFullName);
 
             var form_data = new FormData(form[0]);
             $.ajax({

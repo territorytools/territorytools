@@ -13,7 +13,10 @@ namespace TerritoryTools.Web.MainSite.Services
            string sourceDocumentId,
            string sourceSheetName,
            string territoryNumber,
-           string userId);
+           string userId,
+           string assignerEmail,
+           string assigneeEmail,
+            string assigneeFullName);
     }
 
     public class PhoneTerritoryCreationService : IPhoneTerritoryCreationService
@@ -36,7 +39,10 @@ namespace TerritoryTools.Web.MainSite.Services
             string sourceDocumentId,
             string sourceSheetName,
             string territoryNumber,
-            string userId)
+            string userId,
+            string assignerEmail,
+            string assigneeEmail,
+            string assigneeFullName)
         {
             var result = new PhoneTerritoryCreateResult();
 
@@ -45,17 +51,22 @@ namespace TerritoryTools.Web.MainSite.Services
 
             bool userIdIsGuid = Guid.TryParse(userId, out Guid userGuid);
 
-            if (userId != "SHARED" && !userIdIsGuid)
-            {
-                result.Message = $"Badly formatted userID {userId}.  Select a valid user.";
-                return result;
-            }
-            else if (userId == "SHARED")
+            if (userId == "SHARED" || assigneeEmail == "SHARED")
             {
                 userEmail = _options.SharedPhoneTerritoryEmailAddress;
                 userFullName = _options.SharedPhoneTerritoryFullName;
             }
-            else
+            else if(string.IsNullOrEmpty(assigneeEmail) && !userIdIsGuid)
+            {
+                result.Message = $"Assignee Email is missing";
+                return result;
+            }
+            else if (string.IsNullOrEmpty(assigneeEmail) && userIdIsGuid)
+            {
+                result.Message = $"Bad userId, not a GUID";
+                return result;
+            }
+            else if(userIdIsGuid)
             {
                 Entities.TerritoryUser? user = _mainDbContext.TerritoryUser.FirstOrDefault(u => u.Id == userGuid);
                 if (user == null)
@@ -68,6 +79,11 @@ namespace TerritoryTools.Web.MainSite.Services
                     userEmail = user.Email;
                     userFullName = $"{user.GivenName} {user.Surname}".Trim();
                 }
+            }
+            else
+            {
+                userEmail = assigneeEmail;
+                userFullName = assigneeFullName;
             }
 
             var request = new SheetExtractionRequest()
@@ -85,7 +101,7 @@ namespace TerritoryTools.Web.MainSite.Services
             string uri = $"https://docs.google.com/spreadsheets/d/{extractionResult.DocumentId}";
 
             result.Success = true;
-            result.Message = $"Successfully created and assigned to {userEmail}";
+            result.Message = $"Successfully created and assigned to {userEmail.ToLower()}";
             result.Item = new PhoneTerritoryCreateItem
                 {
                     Description = $"Territory {extractionResult.TerritoryNumber}",

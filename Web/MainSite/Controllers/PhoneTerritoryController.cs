@@ -29,14 +29,19 @@ namespace TerritoryTools.Web.MainSite.Controllers
             string sourceDocumentId, 
             string sourceSheetName,
             string territoryNumber, 
-            string userId)
+            string userId,
+            string assigneeEmail,
+            string assigneeFullName)
         {
             PhoneTerritoryCreateResult result = _phoneTerritoryService
                 .CreateTerritory(
                     sourceDocumentId, 
                     sourceSheetName, 
                     territoryNumber, 
-                    userId);
+                    userId,
+                    User.Identity.Name,
+                    assigneeEmail,
+                    assigneeFullName);
 
             if(result.Success)
                 return Ok(result);
