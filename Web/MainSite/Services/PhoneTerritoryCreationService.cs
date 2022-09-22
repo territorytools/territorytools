@@ -100,6 +100,13 @@ namespace TerritoryTools.Web.MainSite.Services
             SheetExtractionResult extractionResult = _sheetExtractor.Extract(request);
             string uri = $"https://docs.google.com/spreadsheets/d/{extractionResult.DocumentId}";
 
+            _sheetExtractor.AddSheetReader(new AddSheetWriterRequest
+            {
+                DocumentId = sourceDocumentId,
+                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json"),
+                UserEmail = assignerEmail,
+            });
+
             result.Success = true;
             result.Message = $"Successfully created and assigned to {userEmail.ToLower()}";
             result.Item = new PhoneTerritoryCreateItem

@@ -9,6 +9,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
     {
         SheetExtractionResult Extract(SheetExtractionRequest request);
         string AddSheetWriter(AddSheetWriterRequest request);
+        string AddSheetReader(AddSheetWriterRequest request);
         void LogMessage(SmsMessage message);
     }
 
@@ -155,6 +156,15 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
             return $"https://docs.google.com/spreadsheets/d/{request.DocumentId}";
         }
 
+        public string AddSheetReader(AddSheetWriterRequest request)
+        {
+            //_spreadSheetService = new GoogleSheets(request.SecurityToken);
+
+            _spreadSheetService.ShareFile(request.DocumentId, request.UserEmail, GoogleSheets.Role.Reader);
+
+            return $"https://docs.google.com/spreadsheets/d/{request.DocumentId}";
+        }
+
 
         public void LogMessage(SmsMessage message)
         {
@@ -207,7 +217,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
         private static Sheet PhoneNumberSheet(List<PhoneRow> phoneRows)
         {
             var columnHeadings = new List<string>() {
-                "Order",
+                //"Order",
                 "Publisher",
                 "Category",
                 "Phone",
@@ -215,8 +225,8 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                 "Phone 2 Results",
                 "Notes",
                 "Date",
-                "Territory",
-                "Added"
+                //"Territory",
+                //"Added"
             };
 
             Sheet phoneNumberSheet = new Sheet
@@ -261,7 +271,7 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                     {
                         Values = new List<CellData>()
                         {
-                            StringCellData(phoneRow.Order),
+                            //StringCellData(phoneRow.Order),
                             StringCellData(phoneRow.Publisher),
                             StringCellData(phoneRow.Category),
                             StringCellData(phoneRow.PhoneNumber),
@@ -269,8 +279,8 @@ namespace TerritoryTools.Alba.Controllers.PhoneTerritorySheets
                             ResultsDropDownCellData(phoneRow.PhoneResults2),
                             StringCellData(phoneRow.Notes),
                             StringCellData(phoneRow.Date),
-                            StringCellData(phoneRow.TerritoryNumber),
-                            StringCellData(phoneRow.Added)
+                            //StringCellData(phoneRow.TerritoryNumber),
+                            //StringCellData(phoneRow.Added)
                         }
                     }
                 );

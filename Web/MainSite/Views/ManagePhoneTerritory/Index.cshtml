@@ -18,9 +18,13 @@
             <div class="d-flex mb-0">
                 <div class="p-2">
                     <div class="form-group mx-3">
+                        <div class="input-group-append">
                         <select id="extract-territory-assignee" name="assigneeEmail" form="assign-from-area-form" class="custom-select">
                             <option value="SHARED" style="font-weight:bold;color:blue;">Shared</option>
                         </select>
+                         <input type="button" class="btn btn-primary" value="Assign" 
+                            onclick="submitFromAreaForm($('#assign-from-area-form'))" />
+                        </div>
                     </div>
                     <input id="assignee-full-name" type="hidden" name="assigneeFullName" value=""/>
                      <div class="form-group mx-3">
@@ -47,10 +51,10 @@
                                 value="@Model.DefaultSourceSheetName" placeholder="@Localizer["SourceSheetName"]">
                         </div>
                     </div>
-                    <div class="form-group mx-3">
+ @*                   <div class="form-group mx-3">
                         <input type="button" class="btn btn-primary" value="@Localizer["ExtractButton"]" 
                             onclick="submitFromAreaForm($('#assign-from-area-form'))" />
-                    </div>
+                    </div>*@
                     <div id="assign-from-area-form-loading" style="color:blue;display:none;">
                         <i class='fa fa-spinner fa-spin'></i>
                         @Localizer["ExtractingTerritoryMessage"]
