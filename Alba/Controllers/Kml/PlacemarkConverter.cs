@@ -76,7 +76,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                 {
                     new Data { name = "Number", value = territory.Number},
                     new Data { name = "CityArea", value = territory.CityArea},
-                    new Data { name = "AssignUrl", value = $"http://territorytools.org/t/{territory.Number}"},
+                    new Data { name = "AssignUrl", value = $"https://territorytools.org/t/{territory.Number}"},
                     new Data { name = "SignedOut", value = territory.SignedOut?.ToString()},
                     new Data { name = "SignedOutTo", value = territory.SignedOutTo},
                     new Data { name = "Status", value = territory.Status},
@@ -88,7 +88,7 @@ namespace TerritoryTools.Alba.Controllers.Kml
                     new Data { name = "MonthsAgoCompleted", value = territory.MonthsAgoCompleted?.ToString()},
                     new Data { name = "YearsAgoCompleted", value = territory.YearsAgoCompleted.ToString()},
                     new Data { name = "NeverCompleted", value = territory.NeverCompleted.ToString()},
-                    new Data { name = "MobileLink", value = territory.MobileLink},
+                    new Data { name = "MobileLink", value = ""},
                     new Data { name = "Notes", value = territory.Notes},
                     new Data { name = "CityCode", value = territory.CityCode},
                     new Data { name = "ZipCodeSuffix", value = territory.ZipCodeSuffix},

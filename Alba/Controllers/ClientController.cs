@@ -5,6 +5,11 @@ using TerritoryTools.Alba.Controllers.Models;
 using Controllers.UseCases;
 using System;
 using System.Threading;
+using CsvHelper;
+using System.IO;
+using System.Globalization;
+using System.Linq;
+using CsvHelper.Configuration;
 
 namespace TerritoryTools.Alba.Controllers
 {
@@ -177,8 +182,18 @@ namespace TerritoryTools.Alba.Controllers
 
                 if (int.TryParse(accountId, out int id))
                 {
-                    new DownloadAddressExport(AuthenticatedClient())
-                        .SaveAs(fileName, id);
+                    var connection = AuthenticatedClient();
+                    var resultString = connection.DownloadString(
+                    RelativeUrlBuilder.ExportAddresses(
+                        accountId: connection.AccountId,
+                        territoryId: 0,
+                        searchText: ""));
+
+                    string text = AddressExportParser.Parse(resultString);
+                    File.WriteAllText(fileName, text);
+
+                    //new DownloadAddressExport(AuthenticatedClient())
+                    //    .SaveAs(fileName, id);
 
                     view.AppendResultText($"Saved to: {fileName}");
                 }
@@ -244,6 +259,111 @@ namespace TerritoryTools.Alba.Controllers
                 view.AppendResultText($"Saved to: {fileName}");
 
                 return fileName;
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+
+                return null;
+            }
+        }
+
+        public string DownloadUserInfo()
+        {
+            try
+            {
+                view.AppendResultText("Download User Info Result:" + Environment.NewLine + Environment.NewLine);
+
+                string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
+                string fileName = view.GetFileNameToSaveAs($"UserInfo.{timeStamp}", "csv");
+
+                string url = RelativeUrlBuilder.GetUserManagementPage();
+                var json = AuthenticatedClient().DownloadString(url);
+                string html = AlbaJsonResultParser.ParseDataHtml(json, "users");
+                var users = DownloadUserManagementData.GetUsers(html);
+
+
+                using (var writer = new StreamWriter(fileName))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+
+                {
+                    csv.WriteRecords(users);
+                }
+
+                view.AppendResultText($"Saved to: {fileName}");
+
+                return fileName;
+            }
+            catch (Exception e)
+            {
+                view.ShowMessageBox(e.Message);
+
+                return null;
+            }
+        }
+
+        public string UploadUserInfo()
+        {
+            try
+            {
+                view.AppendResultText("Upload User Info Result:" + Environment.NewLine + Environment.NewLine);
+
+                string timeStamp = DateTime.Now.ToString("yyyy-MM-dd.HHmm");
+                //string fileName = view.GetFileNameToSaveAs($"UserInfo.{timeStamp}", "csv");
+                string fileName = view.OpenFileDialog("*.csv;*.txt", "Open UserInfo CSV File");
+                var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    //Delimiter = "\t",
+                    BadDataFound = null,
+                    //PrepareHeaderForMatch = args => args.Header.ToLower()
+                };
+
+                string combinedResult = string.Empty;
+
+                using (var reader = new StreamReader(fileName))
+                using (var csv = new CsvReader(reader, configuration))
+                {
+                    var users = csv.GetRecords<AlbaHtmlUser>().ToList();
+                    foreach (AlbaHtmlUser user in users)
+                    {
+                        UserRoles role = UserRoles.None;
+                        switch(user.Role)
+                        {
+                            case "Search":
+                                role = UserRoles.Search;
+                                break;
+                            case "User":
+                                role = UserRoles.User;
+                                break;
+                            case "Assistant":
+                                role = UserRoles.Assistant;
+                                break;
+                            case "Account owner":
+                                role = UserRoles.AccountOwner;
+                                break;
+                        }
+
+                        var request = new AddUserRequest
+                        {
+                            UserName = user.UserName,
+                            //Password = // Probably not to upload
+                            SendWelcomeEmail = false,
+                            UserEmail = user.Email,
+                            UserFullName = user.Name,
+                            UserRole = role,
+                            UserTelephone = user.Telephone,
+                        };
+
+                        string url = RelativeUrlBuilder.AddUser(request);
+                        combinedResult += AuthenticatedClient().DownloadString(url);
+                    }
+                    
+                }
+
+                view.AppendResultText($"Saved to: {fileName}");
+                view.AppendResultText($"Results: {combinedResult}");
+
+                return combinedResult;
             }
             catch (Exception e)
             {

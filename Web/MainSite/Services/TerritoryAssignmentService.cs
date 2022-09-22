@@ -90,21 +90,22 @@ namespace TerritoryTools.Web.MainSite.Services
             }
         }
 
-        public void Assign(int territoryId, int userId, string user)
+        public void Assign(int territoryId, int assigneeUserId, string user)
         {
-            _logger.LogInformation($"Assigning territoryId {territoryId} to userId: {userId} ({user})");
+            _logger.LogInformation($"Assigning territoryId {territoryId} to assigneeUserId: {assigneeUserId} user: ({user})");
 
             string result = _albaAuthClientService.DownloadString(
                 RelativeUrlBuilder.AssignTerritory(
                     territoryId,
-                    userId,
+                    assigneeUserId,
                     DateTime.Now),
                 user);
 
-            global::Controllers.UseCases.User myUser = _userService.GetUsers(user)
-                .FirstOrDefault(u => u.Id == userId);
+            global::Controllers.UseCases.User myUser = _userService
+                .GetUsers(user)
+                .FirstOrDefault(u => u.Id == assigneeUserId);
 
-            string userName = "Somebody";
+            string userName = "Empty";
             if (myUser != null)
             {
                 userName = myUser.Name;

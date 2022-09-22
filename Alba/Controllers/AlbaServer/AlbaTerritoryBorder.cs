@@ -10,6 +10,7 @@ namespace TerritoryTools.Alba.Controllers.Models
         public string Notes { get; set; }
         public Border Border { get; set; } = new Border();
         public int CountOfAddresses { get; set; }
+        public AlbaTerritoryKind Kind { get; set; }
 
         public override string ToString()
         {
@@ -21,5 +22,12 @@ namespace TerritoryTools.Alba.Controllers.Models
 
             return builder.ToString();
         }
+    }
+
+    public enum AlbaTerritoryKind
+    {
+        Normal = 0,
+        Borderless = 1,
+        Other =2
     }
 }

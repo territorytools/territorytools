@@ -12,7 +12,7 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <h4 style="text-align:center;">@ViewData["Title"]</h4>
-    if (Model == null || Model.Territories.Count == 0)
+    if (Model == null) // || Model.Territories.Count == 0)
     {
         <div class="container mt-3" style="max-width:600px;">
             <div class="d-flex mb-2" style="border-top: 1px solid #aaa;">
@@ -22,24 +22,26 @@
     }
     else
     {
-        if(!Model.PhoneTerritorySuccess)
+       @* if(!Model.PhoneTerritorySuccess)
         {
             <div class="container mt-3" style="max-width:600px;">
                 <p class="bg-warning p-1">Error: Unable to connect to phone territory system</p>
             </div>
-        }
-        <div class="container mt-3" style="max-width:600px;">
+        }*@
+       
+        <div class="container mt-3" style="max-width:700px;">
             <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
+                <div class="pr-2 pl-2" style="min-width:60px;"></div>
                 <div class="pr-2 pl-2" style="min-width:60px;">#</div>
-                <div class="pr-2 pl-2 flex-grow-1">@Localizer["Description"]</div>
+                <div class="pr-2 pl-2" style="min-width:120px;">@Localizer["Description"]</div>
                 <div class="pr-2 pl-2 flex-grow-1"></div>
                 <div class="pr-2 pl-2" style="width:150px;">@Localizer["Assigned"]</div>
 @*                <div class="pr-2 pl-2" style="width:50px;">@Localizer["Addresses"]</div>*@
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
                 <div class="pr-1 pl-1" style="min-width:60px;"></div>
             </div>
-
-            @foreach (var assignment in Model.Territories)
+            <div id="checked-out-to-section" onload="getCheckedOutTerritories()">Loading...</div>
+           @* @foreach (var assignment in Model.Territories)
             {
                 string signedOut = "";
                 var unit = Localizer["UnitDays"];
@@ -57,10 +59,22 @@
                 }
 
                 <div class="d-flex mb-0" style="border-top: 1px solid #aaa;">
-                    <div class="p-2" style="min-width:60px;"><strong style="font-family:courier;">@assignment.Number</strong></div>
-                    <div class="p-2 flex-grow-1">@assignment.Description</div>
+                    <div class="p-2" style="min-width:60px;">
+                        @if (string.Equals(assignment.Description, "PHONE"))
+                        {
+                            <i class="fas fa-phone pl-4" style="color:black;"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-map-location-dot pl-4" style="color:black;"></i>
+                        }
+                    </div>
+                    <div class="p-2" style="min-width:60px;">
+                        <strong class="p-1" style="font-weight:bold;">@assignment.Number</strong>
+                    </div>
+                    <div class="p-2 flex-grow-1" style="min-width:120px;">@(assignment.Description)</div>
                     <div class="p-2" style="width:150px;text-align:left;">@signedOut @unit</div>
-                    @*<div class="p-2" style="width:50px;text-align: center;">@assignment.Addresses</div>*@
+                    
                     <div class="p-2" style="min-width:60px;">
                         <a class="btn btn-primary" target="_blank" href="@assignment.MobileLink">@Localizer["OpenButton"]</a>
                     </div>
@@ -71,10 +85,11 @@
                         </div>
                     }
                 </div>
-            }
+            }*@
         </div>
     }
 
+    @*
     if (Model != null && Model.QRCodeActivity.Count > 0)
     {
         <h4 style="text-align:center;">Your QR Codes (@Model.QRCodeActivity.Count)</h4>
@@ -105,8 +120,12 @@
             }
         </div>
     }
+    *@
 }
 else
 {
 
 }
+
+
+

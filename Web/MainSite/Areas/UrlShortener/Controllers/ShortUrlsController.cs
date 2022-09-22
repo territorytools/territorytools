@@ -18,20 +18,24 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
     [Route("/UrlShortener/[controller]/[action]")]
     public class ShortUrlsController : AuthorizedController
     {
+        private readonly IUserFromApiService _userFromApiService;
         private readonly MainDbContext _database;
         private readonly IShortUrlService service;
         private readonly string _hostName;
 
         public ShortUrlsController(
+            IUserFromApiService userFromApiService,
             IUserService userService,
             MainDbContext database,
             IShortUrlService service, 
             Services.IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _database = database;
             this.service = service;
             _hostName = optionsAccessor.Value.UrlShortenerDomain;

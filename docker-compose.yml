@@ -1,8 +1,8 @@
 version: '3.5'
 
 services:  
-  tt-web:
-    container_name: tt-web
+  tt-web-a:
+    container_name: tt-web-a
     restart: unless-stopped
     image: territorytools/web-main-site
     build:
@@ -65,6 +65,13 @@ services:
       - SmsFromPhoneNumber=$SmsFromPhoneNumber
       - SlotPort=$SlotPort
       - Features:UserSelfComplete=$Features_UserSelfComplete
+      - OldMobileServerFqdn=$OldMobileServerFqdn
+      - NewMobileServerFqdn=$NewMobileServerFqdn      
+      - TerritoryApiHostAndPort=$TerritoryApiHostAndPort
+      - TerritoryApiBaseUrl=$TerritoryApiBaseUrl
+      - MobileBaseUrl=https://mobile.territorytools.org
+      - SharedPhoneTerritoryLink=$SharedPhoneTerritoryLink
+      - GoogleMyMapLink=$GoogleMyMapLink
 
 networks:
   main:

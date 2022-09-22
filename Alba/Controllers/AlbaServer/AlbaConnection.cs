@@ -9,7 +9,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
     {
         private const string SessionKeyName = "Alba3";
 
-        private IWebClient webClient;
+        IWebClient _webClient;
+        Credentials _credentials;
 
         /// <summary>
         /// Connects to Alba and authorizes a user.
@@ -19,7 +20,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         /// <param name="applicationPath">Example: "/alba"</param>
         public AlbaConnection(IWebClient webClient, ApplicationBasePath basePath)
         {
-            this.webClient = webClient;
+            _webClient = webClient;
             BasePath = basePath;
         }
 
@@ -34,6 +35,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         public string PostalCode { get; private set; }
         public double? Latitude { get; private set; }
         public double? Longitude { get; private set; }
+        public bool IsAuthenticated { get; set; }
 
         public static AlbaConnection From(string site)
         {
@@ -52,17 +54,19 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public void Authenticate(Credentials credentials)
         {
+            _credentials = credentials;
+
             // We need to load the logon page first to get the session key
             string html = GetLogonPage();
 
             credentials.K1MagicString = ExtractAuthK1.ExtractFrom(html);
-            credentials.SessionKeyValue = webClient.GetCookieValue(SessionKeyName);
+            credentials.SessionKeyValue = _webClient.GetCookieValue(SessionKeyName);
 
-            webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
-            webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
-            webClient.AddCookie(SessionKeyName, credentials.SessionKeyValue, "/", BasePath.Site);
+            //_webClient.AddCookie("alba_an", credentials.Account, BasePath.ApplicationPath, BasePath.Site);
+            //_webClient.AddCookie("alba_us", credentials.User, BasePath.ApplicationPath, BasePath.Site);
+            //_webClient.AddCookie(SessionKeyName, credentials.SessionKeyValue, "/", BasePath.Site);
 
-            SubmitCredentials(credentials);
+            SubmitCredentials(_credentials);
         }
 
         private string GetLogonPage()
@@ -81,6 +85,8 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             {
                 return;
             }
+
+            IsAuthenticated = true;
 
             var user = logonResult.user;
 
@@ -104,7 +110,11 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         public string DownloadString(string url)
         {
-            return webClient.DownloadString(BasePath.BaseUrl + url);
+            _webClient.AddCookie("alba_an", _credentials.Account, BasePath.ApplicationPath, BasePath.Site);
+            _webClient.AddCookie("alba_us", _credentials.User, BasePath.ApplicationPath, BasePath.Site);
+            _webClient.AddCookie(SessionKeyName, _credentials.SessionKeyValue, "/", BasePath.Site);
+   
+            return _webClient.DownloadString(BasePath.BaseUrl + url);
         }
     }
 }

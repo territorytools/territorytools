@@ -33,6 +33,51 @@ namespace TerritoryTools.Common.AddressParser.Tests.Smart
             Assert.IsTrue(first.SameAs(second));
 
         }
+        [Test]
+        public void SameAs_LongStreetType()
+        {
+            var first = new Address();
+            first.Street.Number = "123";
+            first.Street.Name.Name = "Main";
+            first.Street.Name.StreetType = "St";
+            first.City.Name = "Bellevue";
+            first.Region.Code = "WA";
+            first.Postal.Code = "98001";
+
+            var second = new Address();
+            second.Street.Number = "123";
+            second.Street.Name.Name = "Main";
+            second.Street.Name.StreetType = "Street";
+            second.City.Name = "Bellevue";
+            second.Region.Code = "WA";
+            second.Postal.Code = "98001";
+
+            Assert.IsTrue(first.SameAs(second));
+
+        }
+
+        [Test]
+        public void NotSameAs_DifferentStreetType()
+        {
+            var first = new Address();
+            first.Street.Number = "123";
+            first.Street.Name.Name = "Main";
+            first.Street.Name.StreetType = "St";
+            first.City.Name = "Bellevue";
+            first.Region.Code = "WA";
+            first.Postal.Code = "98001";
+
+            var second = new Address();
+            second.Street.Number = "123";
+            second.Street.Name.Name = "Main";
+            second.Street.Name.StreetType = "Road";
+            second.City.Name = "Bellevue";
+            second.Region.Code = "WA";
+            second.Postal.Code = "98001";
+
+            Assert.IsFalse(first.SameAs(second));
+
+        }
 
         [Test]
         public void SameAs_NoStreetType()

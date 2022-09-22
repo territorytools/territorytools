@@ -1,0 +1,363 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@model ManageTerritoriesAllPage;
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = "Territory List";
+}
+
+<div class="container" style="max-width:800px;">
+    <div class="d-flex flex-column">
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="ManageTerritories" asp-action="Index">
+            <i class="fas fa-arrow-left text-body"></i>&nbsp;Manage Territories
+        </a>
+    </div>
+    <h5 class="text-center">Search Territory</h5>
+    <div class="input-group-append m-2">
+        <input type="text" id="text-filter" onkeyup="getCheckedOutTerritories()" placeholder="Search">
+        @*<button class="btn btn-primary">*@
+            <i class="fa-solid fa-delete-left m-2" onclick="clearFilter()" style="cursor:pointer;"></i>
+        @*</button>*@
+    </div>
+    <table id="territory-list-table"  class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th scope="col" x-onclick="sortTable(0)" style="cursor:pointer;max-width:50px;">#</th>
+          <th scope="col" x-onclick="sortTable(1)" style="cursor:pointer;max-width:50px;">Description</th>
+          <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;max-width:50px;">Area</th>
+          <th scope="col" x-onclick="sortTable(3)" style="cursor:pointer;max-width:100px;">Signed-out To</th>
+        </tr>
+      </thead>
+      <tbody id="checked-out-to-section" onload="getCheckedOutTerritories()">
+       
+      </tbody>
+    </table>
+    <div id="status-message" onload="">Loading...</div>
+</div>
+
+  <!-- The Modal -->
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h5 class="modal-title">Territory 
+              <span id="modal-header-number"></span> 
+              <span id="modal-header-area-description"></span>
+              <span id="modal-header-area-code"></span>
+          </h5>
+          
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="m-3"><h4 id="modal-header-big">Assignment</h4></div>
+        <!-- Modal body -->
+        <div class="modal-body">
+
+            <!-- Assignment Page -->
+            <div id="assignment-buttons">
+              <form>
+                  <div class="form-group">
+                    <label for="modal-number">Current Assignee:</label>
+                    <input name="territoryNumber" type="hidden" class="form-control" id="modal-territory-number" readonly>
+                    <div class="input-group-append">
+                        <input name="assignee" type="text" class="form-control" placeholder="Nobody assigned" id="modal-current-assignee" readonly>
+                        <button id="unassign-button" type="button" class="btn btn-primary">Unassign</button>
+                    </div>
+                  </div>
+                  <div id="unassign-status"></div>
+                </form>
+                <form>
+                  <div class="form-group">
+                    <label for="user-menu">New Assignee:</label>
+                    <div class="input-group-append">
+                        <select id="user-menu" name="albaUserId" class="custom-select"></select>
+                        <button id="assign-button" type="button" class="btn btn-primary">Assign</button>
+                    </div>
+                  </div>
+                  <div id="assign-status"></div>
+                  <div><a id="assigned-link" href="#"></a></div>
+                  <div id="phone-number-section" class="form-group" style="display:none;">
+                    <label for="phone-number">SMS Phone Number:</label>
+                    <div class="input-group-append">
+                        <input id="phone-number" name="phoneNumber" type="text" class="form-control">
+                        <button id="send-sms-button" type="button" class="btn btn-primary">Send</button>
+                    </div>
+                     <div id="send-sms-status"></div>
+                  </div>
+              </form>
+            </div>
+
+            <!-- Edit Page -->
+            <div id="edit-form" style="display:none;">
+            <form action="/action_page.php">
+              <div class="form-group">
+                <label for="modal-number">Number:</label>
+                <input name="number" type="text" class="form-control" placeholder="Territory number" id="modal-number" value="1">
+              </div>
+              <div class="form-group">
+                <label for="modal-area-code">Area:</label>
+                <input name="areaCode" type="text" class="form-control" placeholder="Enter 3-character area" id="modal-area-code">
+              </div>
+              <div class="form-group">
+                <label for="pwd">Description:</label>
+                <input name="areaDescription" type="text" class="form-control" placeholder="Enter description" id="modal-area-description">
+              </div>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+            </form>
+            </div>
+          
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          @*<button id="view-territory-button" type="button" class="btn btn-primary">View</button>*@
+          @*<button id="edit-territory-button" type="button" class="btn btn-outline-primary">Edit</button>*@
+          @*<button id="territory-assignment-button" type="button" class="btn btn-outline-primary">Assign</button>*@
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+@section scripts {
+    <script type="text/javascript">
+        //var userFullName = "Model.Name";
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadUsers();
+            getCheckedOutTerritories();
+        });
+        
+        function clearFilter()
+        {
+            $('#text-filter').val('');
+            getCheckedOutTerritories();
+        }
+
+        function getCheckedOutTerritories()
+        {
+            $('#status-message')
+                .text('Loading...');
+            $.ajax({
+                type: 'GET',
+                url: '/api/territories/all?includeBorders=false&filter=' + $('#text-filter').val(),
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#checked-out-to-section')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading your territories.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#checked-out-to-section')
+                            .text('');
+                    data.forEach(function(item) {
+                      const signedOut = new Date(item.signedOut);
+                      const year = signedOut.getFullYear();
+                      const month = (signedOut.getMonth() + 1).toString().padStart(2,'0');
+                      const day = signedOut.getDate().toString().padStart(2,'0');
+                      var signedOutString = `${year}-${month}-${day}`;
+                      if(signedOut.getFullYear() == 1969) {
+                          signedOutString = "";
+                      }
+
+                      var html = 
+                        `
+                        <tr class="openSingleTerritoryManage"
+                            style="cursor:pointer;"
+                            data-number="${item.number}" 
+                            data-area-code="${item.areaCode}"
+                            data-area-description="${item.areaDescription}"
+                            data-signed-out-to="${item.signedOutTo}"
+                            data-signed-out="${item.signedOutString}"
+                            data-toggle="modal" data-target="#myModal">
+                          <td scope="row">
+                            ${item.number}
+                          </td>
+                          <td>${item.areaDescription}</td>
+                          <td>${item.areaCode}</td>
+                          <td>${item.signedOutTo ?? ""}</td>
+                        </tr>
+                       `
+
+                       $('#checked-out-to-section')
+                            .append(html);
+                       $('#status-message')
+                            .text('');
+                    });
+                }
+            });
+        }
+
+        $(document).on("click", "#unassign-button", function () {
+            var territoryNumber = $('#modal-header-number').text();
+             $.ajax({
+                type: 'DELETE',
+                url: `/api/assignments/v2?territoryNumber=${territoryNumber}`,
+                //dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#unassign-status')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error unassigning.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#unassign-status')
+                        .css('color', 'blue')
+                        .text(`Successfully unassigned territory ${territoryNumber}.`);
+                     $('#modal-current-assignee').val('Nobody assigned');
+                     $("#unassign-button").attr('disabled','');
+                }
+            });
+        });
+
+        $(document).on("click", "#assign-button", function () {
+            var territoryNumber = $('#modal-header-number').text();
+            var albaUserId = $('#user-menu').val();
+            var userName = $('#user-menu .selected').text();
+             $.ajax({
+                type: 'POST',
+                url: `/api/assignments?territoryNumber=${territoryNumber}&albaUserId=${albaUserId}`,
+                //dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#assign-status')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error assigning.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    // TODO: parse the data here and show something better than albaUserId
+                    $('#assign-status')
+                        .css('color', 'blue')
+                        .text(`Successfully assigned territory ${territoryNumber} to '${data.assigneeName}' (user id ${albaUserId}).`);
+                   $('#modal-current-assignee').val(data.assigneeName);
+                   $("#user-menu").val(0);
+                   $("#unassign-button").removeAttr('disabled');
+                   if(data.assigneePhone) {
+                     //$('#phone-number-section').style.display = 'block';
+                     document.getElementById("phone-number-section").style.display = 'block';
+                     $("#phone-number").val(data.assigneePhone);
+                     $('#assigned-link')
+                        .text(data.territoryUri)
+                        .attr('href', data.territoryUri);
+                   }
+                }               
+            });
+        });
+
+        $(document).on("click", "#send-sms-button", function () {
+            var territoryNumber = $('#modal-header-number').text();
+            var area = $("#modal-header-area-code").text();
+            var description = $("#modal-header-area-description").text();
+            var phoneNumber = $('#phone-number').val();
+            var link = $('#assigned-link').attr('href');
+             $.ajax({
+                type: 'POST',
+                url: `/api/sms?to=${phoneNumber}&message=Territory ${territoryNumber} ${description} ${area} ${link}`,
+                //dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#send-sms-status')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error sending SMS message.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    // TODO: parse the data here and show something better than albaUserId
+                    $('#send-sms-status')
+                        .css('color', 'blue')
+                        .text(`Successfully sent SMS message`);
+                }
+                
+            });
+        });
+
+        $(document).on("click", ".openSingleTerritoryManage", function () {
+             // Reset fields that are normally blank
+             $("#user-menu").val('0');
+             $('#unassign-status')
+                .css('color', 'black')
+                .text('');
+             $('#assign-status')
+                .css('color', 'black')
+                .text('');
+             document.getElementById("phone-number-section").style.display = 'none';
+             $('#assigned-link').attr('href', '').text('');
+
+             setTerritoryAssignmentTabAsCurrent();
+
+             // Load fields
+             $("#modal-header-number").text( $(this).data('number') );
+             $("#modal-territory-number").val( $(this).data('number'));
+             $("#modal-header-area-code").text( $(this).data('area-code') );
+             $("#modal-header-area-description").text( $(this).data('area-description') );
+             $("#modal-number").val( $(this).data('number') );
+             $("#modal-area-code").val( $(this).data('area-code') );
+             $("#modal-area-description").val($(this).data('area-description'));
+             $("#modal-current-assignee").val($(this).data('signed-out-to'));
+
+             if(!$(this).data('signed-out-to')) {
+                 $("#unassign-button").attr('disabled','');
+             } else {
+                 $("#unassign-button").removeAttr('disabled');
+             }
+        });
+
+        $(document).on("click", ".openEditTerritory", function () {
+             $("#edit-modal-header-number").text( $("#modal-header-number").val() );
+             $("#edit-modal-header-area-code").text(  $("#modal-header-area-code").val() );
+             $("#edit-modal-header-area-description").text( $(this).data('area-description') );
+        });
+        
+        $(document).on("click", "#edit-territory-button", function () {
+            $("#modal-header-big").text("Edit");
+            var ef = document.getElementById("edit-form");
+            var ab = document.getElementById("assignment-buttons");
+             
+            ab.style.display = "none";
+            ef.style.display = "block";
+        });
+
+        $(document).on("click", "#territory-assignment-button", function () {
+            setTerritoryAssignmentTabAsCurrent();
+        });
+
+        function setTerritoryAssignmentTabAsCurrent() {
+            $("#modal-header-big").text("Assign");
+            var ef = document.getElementById("edit-form");
+            var ab = document.getElementById("assignment-buttons");
+             
+            ab.style.display = "block";
+            ef.style.display = "none";
+        }
+
+        function loadUsers()
+        {
+            $('#user-menu').html('<option value="0">Loading...</option>');
+            $.ajax({
+                type: 'GET',
+                url: '/api/users?active=true',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#user-menu')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#user-menu').html('<option value="0">Select a user</option>');
+                    data.forEach(function(item) {
+                      const html = `<option value="${item.albaUserId}">${item.albaFullName}</option>`;
+                      $('#user-menu').append(html);
+                    });
+                }
+            });
+        }
+        
+    </script>
+}

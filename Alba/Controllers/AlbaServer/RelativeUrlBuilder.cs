@@ -105,6 +105,19 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 AppendValuesFrom(territory);
         }
 
+        public static string AddUser(AddUserRequest request)
+        {
+            return $"/ts?mod=users&cmd=userAdd&" +
+                $"user_name={HttpUtility.UrlEncode(request.UserName)}&" +
+                $"user_real_name={HttpUtility.UrlEncode(request.UserFullName)}&" +
+                $"user_email={HttpUtility.UrlEncode(request.UserEmail)}&" +
+                $"user_telephone={HttpUtility.UrlEncode(request.UserTelephone)}&" +
+                $"pw1={HttpUtility.UrlEncode(request.Password)}&" +
+                $"pw2={HttpUtility.UrlEncode(request.Password)}&" +
+                $"user_role={(int)request.UserRole}&" +
+                $"welcome={request.SendWelcomeEmail.ToString().ToLower()}";
+        }
+
         public static string AddTerritoryWithBorder(AlbaTerritoryBorder territory)
         {
             return @"/ts?mod=territories&cmd=add" +
@@ -215,7 +228,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         static string AppendValuesFrom(AlbaTerritoryBorder territory)
         {
-            return $"&kind=0" +
+            return $"&kind={(int)territory.Kind}" +
                 $"&number={HttpUtility.UrlEncode(territory.Number)}" +
                 $"&notes={HttpUtility.UrlEncode(territory.Notes)}" +
                 $"&description={HttpUtility.UrlEncode(territory.Description)}" +
@@ -226,7 +239,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         {
             return $"&lat={address.Latitude}" +
                $"&lng={address.Longitude}" +
-               $"&territory_id={address.Territory_ID ?? 0}" +
+               $"&territory_id={address.Territory_ID ?? 0}" + // This is used for borderless territories
                $"&status={address.StatusId}" +
                $"&language_id={address.LanguageId}" +
                $"&full_name={HttpUtility.UrlEncode(address.Name)}" +
@@ -244,6 +257,13 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         static string CoordinatesFrom(AlbaTerritoryBorder territory)
         {
             var coordinates = new List<string>();
+
+            //if (territory.Border.Vertices.Count > 50)
+            {
+                System.Diagnostics.Debug.WriteLine($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+                //Console.WriteLine($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+                //throw new UserException($"This border ({territory.Number}) has 50 or more vertices Alba cannot handle more than that.");
+            }
 
             foreach (Vertex v in territory.Border.Vertices)
                 coordinates.Add($"{v.Latitude} {v.Longitude}");

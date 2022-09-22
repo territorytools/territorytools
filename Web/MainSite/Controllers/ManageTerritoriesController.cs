@@ -3,6 +3,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,19 @@ namespace TerritoryTools.Web.MainSite.Controllers
     public partial class ManageTerritoriesController : AuthorizedController
     {
         public const string DATE_FORMAT = "yyyy-MM-dd";
+        private readonly ITerritoryApiService _territoryApiService;
+        private readonly IUserFromApiService _userFromApiService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         private readonly IUserService _userService;
         private readonly AreaService _areaService;
         private readonly Services.IAuthorizationService _authorizationService;
         private readonly IAlbaCredentialService _albaCredentialService;
         private readonly IAlbaAuthClientService _albaAuthClientService;
+        private readonly IConfiguration _configuration;
 
         public ManageTerritoriesController(
+            ITerritoryApiService territoryApiService,
+            IUserFromApiService userFromApiService,
             ICombinedAssignmentService combinedAssignmentService,
             IUserService userService,
             AreaService areaService,
@@ -34,17 +40,22 @@ namespace TerritoryTools.Web.MainSite.Controllers
             Services.IAuthorizationService authorizationService,
             IAlbaCredentialService albaCredentialService,
             IAlbaAuthClientService albaAuthClientService,
+            IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor) : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)
         {
+            _territoryApiService = territoryApiService;
+            _userFromApiService = userFromApiService;
             _combinedAssignmentService = combinedAssignmentService;
             _userService = userService;
             _areaService = areaService;
             _authorizationService = authorizationService;
             _albaCredentialService = albaCredentialService;
             _albaAuthClientService = albaAuthClientService;
+            _configuration = configuration;
         }
 
         [Authorize]
@@ -52,18 +63,14 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!User.Identity.IsAuthenticated || !_authorizationService.IsAdmin(User.Identity.Name))
+                if (!IsAdmin())
                 {
                     return Forbid();
                 }
 
-                var users = _userService.GetUsers(User.Identity.Name)
-                    .OrderBy(u => u.Name)
-                    .ToList();
-
                 var report = new ReportIndexPage()
                 {
-                    Users= users,
+                    GoogleMyMapLink = _configuration.GetValue<string>("GoogleMyMapLink"),
                     Areas = _areaService.All()
                 };
 
@@ -76,7 +83,77 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [Authorize]
-        [Route("ManageTerritories/Single/{territoryNumber}")]
+        public IActionResult All()
+        {
+            try
+            {
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                var page = new ManageTerritoriesAllPage()
+                {
+                };
+
+                return View(page);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        [Route("/t2/{territoryNumber}")]
+        public IActionResult SingleV2(string territoryNumber)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(territoryNumber))
+                {
+                    return View(new SingleTerritoryManagerPageV2());
+                }
+
+                if (!IsAdmin())
+                {
+                    return Forbid();
+                }
+
+                TerritoryContract territory = _territoryApiService.TerritoryByNumber(territoryNumber);
+
+                if(territory == null)
+                    return View(new SingleTerritoryManagerPage() {  Description = "Not Found"});
+
+                ///var users = _userFromApiService
+
+                var page = new SingleTerritoryManagerPageV2()
+                {
+                    Id = territory.Id,
+                    Number = territoryNumber,
+                    Description = territory.Description,
+                    MobileLink = $"/mtk/{territory.ActiveLinkKey}",
+                    PrintLink = "",
+                    SignedOutTo = territory.SignedOutTo,
+                    SignedOut = territory.SignedOut?.ToString("yyyy-MM-dd"),
+                    LastCompletedBy = territory.LastCompletedBy,
+                    LastCompleted = territory.LastCompleted?.ToString("yyyy-MM-dd"),
+                    Kind = territory.AlbaKind?.ToString(),
+                    Addresses = territory.AlbaKind ?? 0,
+                    Status = territory.Status,
+                    ///Users = users
+                };
+
+                return View(page);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [Authorize]
+        [Route("/t/{territoryNumber}")]
         public IActionResult Single(string territoryNumber)
         {
             try
@@ -86,7 +163,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     return View(new SingleTerritoryManagerPage());
                 }
 
-                if (!IsUser())
+                if (!IsAdmin())
                 {
                     return Forbid();
                 }
@@ -100,19 +177,26 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 if(territory == null)
                     return View(new SingleTerritoryManagerPage() {  Description = "Not Found"});
 
+
+                var users = _userService.GetUsers(User.Identity.Name)
+                    .OrderBy(u => u.Name)
+                    .ToList();
+
                 var page = new SingleTerritoryManagerPage()
                 {
                     Id = territory.Id,
                     Number = territoryNumber,
                     Description = territory.Description,
                     MobileLink = territory.MobileLink,
+                    PrintLink = territory.PrintLink,
                     SignedOutTo = territory.SignedOutTo,
                     SignedOut = territory.SignedOut?.ToString("yyyy-MM-dd"),
                     LastCompletedBy = territory.LastCompletedBy,
                     LastCompleted = territory.LastCompleted?.ToString("yyyy-MM-dd"),
                     Kind = territory.Kind,
                     Addresses = territory.Addresses,
-                    Status = territory.Status
+                    Status = territory.Status,
+                    Users = users
                 };
 
                 return View(page);

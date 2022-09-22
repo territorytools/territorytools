@@ -6,33 +6,27 @@
     ViewData["Title"] = Localizer["Title"].Value;
 }
 
-<h3 class="display-4 text-center">@Localizer["Title"]</h3>
+<h4 class="text-center">@Localizer["Title"]</h4>
 
 <div class="container" style="max-width:500px;">
     <div class="d-flex flex-column">
-        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
-            <i class="fas fa-arrow-left text-body"></i>@Localizer["MenuHomeButton"]
+        <a class="p-2 m-2 btn btn-outline-secondary" asp-controller="ManageTerritories" asp-action="Index">
+            <i class="fas fa-arrow-left text-body"></i>&nbsp;Manage Territories
         </a>
         <h4>@Localizer["CheckOutTitle"]</h4>
         <form action="/api/phoneterritory/create" method="post" id="assign-from-area-form">
             <div class="d-flex mb-0">
                 <div class="p-2">
                     <div class="form-group mx-3">
-                        <select name="userId" form="assign-from-area-form" class="custom-select">
-                            <option selected value="0">@Localizer["SelectUserItemName"]</option>
-                            @foreach (var user in Model.Users)
-                            {
-                                if(@user.FullName == "Shared")
-                                {
-                                    <option value=@(user.Id) style="font-weight:bold;color:blue;">@user.FullName</option>
-                                }
-                                else
-                                {
-                                    <option value=@(user.Id)>@user.FullName</option>
-                                }
-                            }
+                        <div class="input-group-append">
+                        <select id="extract-territory-assignee" name="assigneeEmail" form="assign-from-area-form" class="custom-select">
+                            <option value="SHARED" style="font-weight:bold;color:blue;">Shared</option>
                         </select>
+                         <input type="button" class="btn btn-primary" value="Assign" 
+                            onclick="submitFromAreaForm($('#assign-from-area-form'))" />
+                        </div>
                     </div>
+                    <input id="assignee-full-name" type="hidden" name="assigneeFullName" value=""/>
                      <div class="form-group mx-3">
                         <button onclick="hideAdvancedExtractFields()" class="btn btn-outline-secondary">
                             @Localizer["MoreShowHideButton"]
@@ -57,10 +51,10 @@
                                 value="@Model.DefaultSourceSheetName" placeholder="@Localizer["SourceSheetName"]">
                         </div>
                     </div>
-                    <div class="form-group mx-3">
+ @*                   <div class="form-group mx-3">
                         <input type="button" class="btn btn-primary" value="@Localizer["ExtractButton"]" 
                             onclick="submitFromAreaForm($('#assign-from-area-form'))" />
-                    </div>
+                    </div>*@
                     <div id="assign-from-area-form-loading" style="color:blue;display:none;">
                         <i class='fa fa-spinner fa-spin'></i>
                         @Localizer["ExtractingTerritoryMessage"]
@@ -79,7 +73,7 @@
                 <div class="p-2">
                     <div class="form-group mx-3">
                         <select name="userId" form="add-writer-form" class="custom-select">
-                            <option selected value="0">@Localizer["SelectUserItemName"]</option>
+                            <option selected value="0">@Localizer["SelectUserItemName"]</option>                            
                             @foreach (var user in Model.Users)
                             {
                                 <option value=@(user.Id)>@user.FullName</option>
@@ -111,6 +105,36 @@
 @section scripts {
     <script type="text/javascript">
 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadUsers();
+        });
+
+        function loadUsers() {
+            $('#extract-territory-assignee').html('<option value="0">Loading...</option>');
+            $.ajax({
+                type: 'GET',
+                url: '/api/users?active=true',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                error: function (xhr, status) {
+                    $('#extract-territory-assignee')
+                        .css('color', 'red')
+                        .text(`Sorry there was an error loading users.  (${xhr.status} ${status} ${xhr.responseText})`);
+                },
+                success: function (data) {
+                    $('#extract-territory-assignee').html(
+                        '<option value="0">Select a publisher</option><option style="color:blue;" value="SHARED"><strong>Shared</strong></option>');
+
+                    data.forEach(function(item) {
+                      const html = `<option value="${item.normalizedEmail}">${item.albaFullName}</option>`;
+
+                       $('#extract-territory-assignee').append(html);
+                    });
+                }
+            });
+        }
+
         function hideAdvancedExtractFields() {
           event.preventDefault();
           var x = document.getElementById("create-territory-advanced");
@@ -129,6 +153,9 @@
                 .text('');
             $('#assign-from-area-territories-container')
                 .html('');
+
+            var assigneeFullName = $('#extract-territory-assignee option:selected').text();
+            $('#assignee-full-name').val(assigneeFullName);
 
             var form_data = new FormData(form[0]);
             $.ajax({

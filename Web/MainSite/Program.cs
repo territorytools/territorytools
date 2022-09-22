@@ -1,10 +1,14 @@
 using FluffySpoon.AspNet.LetsEncrypt;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TerritoryTools.Web.MainSite

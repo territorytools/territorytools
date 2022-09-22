@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -15,29 +16,142 @@ namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class HomeController : AuthorizedController
     {
+        private readonly IUserFromApiService _userFromApiService;
         private readonly IUserService _userService;
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         readonly Services.IQRCodeActivityService qrCodeActivityService;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(
+            IUserFromApiService userFromApiService,
             IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
             Services.IAuthorizationService authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
+            IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor,
             ILogger<HomeController> logger) : base(
+                userFromApiService,
                 userService,
                 authorizationService,
                 optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _userService = userService;
             _combinedAssignmentService = combinedAssignmentService;
             this.qrCodeActivityService = qrCodeActivityService;
+            _configuration = configuration;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? impersonate = null)
+        {
+            try
+            {
+                var publisher = new Models.Publisher()
+                {
+                    SharedPhoneTerritoryLink = _configuration.GetValue<string>("SharedPhoneTerritoryLink"),
+                    Email = User.Identity.Name,
+                    UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
+                };
+
+                var user = _userFromApiService.ByEmail(publisher.Email);
+                if (user == null || !(user.IsActive ?? false)) //!IsUser())
+                {
+                    return View(publisher);
+                }
+
+                publisher.IsAdmin = user.CanAssignTerritories;
+
+                string myName = User.Identity.Name;
+
+                
+
+                try
+                {
+                    //var users = _userService.GetUsers(User.Identity.Name);
+                    //var me = users.FirstOrDefault(
+                    //    u => string.Equals(
+                    //        u.Email,
+                    //        User.Identity.Name,
+                    //        StringComparison.OrdinalIgnoreCase));
+
+                    //if(me == null)
+                    //{
+                    //    throw new Exception($"Email not found in users table that matches {User.Identity.Name}");
+                    //}
+
+                    //myName = me.Name;
+                    if (publisher.IsAdmin && !string.IsNullOrWhiteSpace(impersonate))
+                    {
+                        myName = impersonate;
+                    }
+                    else
+                    {
+                        myName = user.AlbaFullName;
+                    }
+                }
+                catch(Exception e)
+                {
+                    _logger.LogError($"Home.Index: Error: {e.Message}");
+                    return NotFound(e.Message);
+                }
+
+                /*
+                GetAllAssignmentsResult allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                List<AlbaAssignmentValues> assignments = allAssignments.Rows
+                    .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                publisher.PhoneTerritorySuccess = allAssignments.PhoneSuccess;
+                */
+
+                publisher.Name = myName;
+
+                /*
+                foreach (var item in assignments.OrderByDescending(a => a.SignedOut))
+                {
+                    string oldServer = _configuration.GetValue<string>("OldMobileServerFqdn");
+                    string newServer = _configuration.GetValue<string>("NewMobileServerFqdn");
+                    // TODO: Get newest, unexpired, link that matches item.Number && item.SignedOutTo == User.Identity.Name (var me)
+                    // TODO: ...or get territories from somewhere else with links
+                    item.MobileLink = item.MobileLink.Replace($"{oldServer}", $"{newServer}");
+                    publisher.Territories.Add(item);
+                }
+                */
+
+                /*
+                var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
+                    publisher.Email);
+
+                foreach (var hit in qrCodeHits)
+                {
+                    publisher.QRCodeActivity.Add(
+                        new Models.QRCodeHit
+                        {
+                            Id = hit.Id,
+                            ShortUrl = hit.ShortUrl,
+                            OriginalUrl = hit.OriginalUrl,
+                            Created = hit.Created.ToString("yyyy-MM-dd HH:mm:ss"),
+                            HitCount = hit.HitCount.ToString(),
+                            LastIPAddress = hit.LastIPAddress,
+                            LastTimeStamp = hit.LastTimeStamp?.ToString("yyyy-MM-dd HH:mm:ss"),
+                            Subject = hit.Subject,
+                            Note = hit.Note
+                        });
+                }
+                */
+
+                return View(publisher);
+            }
+            catch (Exception e)
+            {
+                return Redirect($"~/Home/LoginError?message={WebUtility.UrlEncode(e.Message)}");
+            }
+        }
+
+        public IActionResult MyPhoneTerritories()
         {
             try
             {
@@ -65,33 +179,43 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             User.Identity.Name,
                             StringComparison.OrdinalIgnoreCase));
 
-                    if(me == null)
+                    if (me == null)
                     {
                         throw new Exception($"Email not found in users table that matches {User.Identity.Name}");
                     }
 
                     myName = me.Name;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     _logger.LogError($"Home.Index: Error: {e.Message}");
                     return NotFound(e.Message);
                 }
 
-                var allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
-                var assignments = allAssignments.Rows
+                /*
+                GetAllAssignmentsResult allAssignments = _combinedAssignmentService.GetAllAssignments(User.Identity.Name);
+                List<AlbaAssignmentValues> assignments = allAssignments.Rows
                     .Where(a => string.Equals(a.SignedOutTo, myName, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
                 publisher.PhoneTerritorySuccess = allAssignments.PhoneSuccess;
+                */
 
                 publisher.Name = myName;
 
+                /*
                 foreach (var item in assignments.OrderByDescending(a => a.SignedOut))
                 {
+                    string oldServer = _configuration.GetValue<string>("OldMobileServerFqdn");
+                    string newServer = _configuration.GetValue<string>("NewMobileServerFqdn");
+                    // TODO: Get newest, unexpired, link that matches item.Number && item.SignedOutTo == User.Identity.Name (var me)
+                    // TODO: ...or get territories from somewhere else with links
+                    item.MobileLink = item.MobileLink.Replace($"{oldServer}", $"{newServer}");
                     publisher.Territories.Add(item);
                 }
+                */
 
+                /*
                 var qrCodeHits = qrCodeActivityService.QRCodeHitsForUser(
                     publisher.Email);
 
@@ -111,6 +235,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                             Note = hit.Note
                         });
                 }
+                */
 
                 return View(publisher);
             }
@@ -168,7 +293,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         }
 
         [Authorize]
-        [Route("t/{number}")]
+        [Route("assign/t/{number}")]
         public IActionResult AssignSingleTerritory(string number)
         {
             try

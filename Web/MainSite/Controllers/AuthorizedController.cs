@@ -11,14 +11,17 @@ namespace TerritoryTools.Web.MainSite.Controllers
 {
     public class AuthorizedController : Controller
     {
+        private readonly IUserFromApiService _userFromApiService;
         readonly IUserService _userService;
         readonly IAuthorizationService _authorizationService;
 
         public AuthorizedController(
+            IUserFromApiService userFromApiService,
             IUserService userService,
             IAuthorizationService authorizationService,
             IOptions<WebUIOptions> optionsAccessor)
         {
+            _userFromApiService = userFromApiService;
             _userService = userService;
             _authorizationService = authorizationService;
             _options = optionsAccessor.Value;
@@ -36,7 +39,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return _authorizationService.IsAdmin(User.Identity.Name);
+                var user = _userFromApiService.ByEmail(User.Identity.Name);
+                if (user != null && (user.IsActive ?? false)) 
+                {
+                    return true;
+                }
             }
 
             return false;

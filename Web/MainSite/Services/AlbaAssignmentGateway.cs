@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -10,8 +12,14 @@ namespace TerritoryTools.Web.MainSite.Services
 {
     public interface IAlbaAssignmentGateway
     {
-        List<AlbaAssignmentValues> GetAlbaAssignments(string userName);
+        GetAlbaAssignmentsResult GetAlbaAssignments(string userName);
         void LoadAlbaAssignments(string userName);
+    }
+
+    public class GetAlbaAssignmentsResult
+    {
+        public bool Success { get; set; }
+        public List<AlbaAssignmentValues> AssignmentValues { get; set; } = new List<AlbaAssignmentValues>();
     }
 
     public class AlbaAssignmentGateway : IAlbaAssignmentGateway
@@ -19,7 +27,7 @@ namespace TerritoryTools.Web.MainSite.Services
         readonly IAlbaAuthClientService _albaAuthClientService;
         readonly IAlbaCredentialService _albaCredentialService;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger<AlbaAssignmentGateway> _logger;
+        private readonly ITelemetryService _telemetryService;
         readonly WebUIOptions _options;
 
         public AlbaAssignmentGateway(
@@ -27,31 +35,53 @@ namespace TerritoryTools.Web.MainSite.Services
             IAlbaCredentialService albaCredentialService,
             IMemoryCache memoryCache,
             IOptions<WebUIOptions> optionsAccessor,
-            ILogger<AlbaAssignmentGateway> logger)
+            ITelemetryService telemetryService)
         {
             _albaAuthClientService = albaAuthClientService;
             _albaCredentialService = albaCredentialService;
             _memoryCache = memoryCache;
-            _logger = logger;
+            _telemetryService = telemetryService;
             _options = optionsAccessor.Value;
         }
 
-        public List<AlbaAssignmentValues> GetAlbaAssignments(string userName)
+        public GetAlbaAssignmentsResult GetAlbaAssignments(string userName)
         {
-            Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
-
-            if (!_memoryCache.TryGetValue(
-                  $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
-                  out List<AlbaAssignmentValues> cacheValue))
+            try
             {
-                List<AlbaAssignmentValues> assignments = DownloadAssignments(userName, albaAccountId);
+                Guid albaAccountId = _albaCredentialService.GetAlbaAccountIdFor(userName);
+              
+                if (!_memoryCache.TryGetValue(
+                      $"AllAlbaTerritoryAssignments:Account_{albaAccountId}",
+                      out List<AlbaAssignmentValues> cacheValue))
+                {
+                    List<AlbaAssignmentValues> assignments = DownloadAssignments(userName, albaAccountId);
 
-                return assignments;
+                    return new GetAlbaAssignmentsResult
+                    {
+                        Success = true,
+                        AssignmentValues = assignments
+                    };
+                }
+
+                _telemetryService.Trace(
+                    message: $"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}",
+                    userName);
+
+                return new GetAlbaAssignmentsResult
+                {
+                    Success = true,
+                    AssignmentValues = cacheValue
+                };
             }
+            catch (Exception ex)
+            {
+                _telemetryService.Exception(ex, userName);
 
-            _logger.LogInformation($"Loaded {cacheValue.Count} assignments from memory cache for userName: {userName} albaAccountID: {albaAccountId}");
-
-            return cacheValue;
+                return new GetAlbaAssignmentsResult
+                {
+                    Success = false
+                };
+            }
         }
 
         public void LoadAlbaAssignments(string userName)
@@ -62,15 +92,18 @@ namespace TerritoryTools.Web.MainSite.Services
 
         List<AlbaAssignmentValues> DownloadAssignments(string userName, Guid albaAccountId)
         {
-            _logger.LogInformation($"Downloading assignments from Alba and caching them for userName: {userName} albaAccountID: {albaAccountId}");
+            _telemetryService.Trace(
+                $"Downloading assignments from Alba and caching them for userName: {userName} albaAccountID: {albaAccountId}",
+                userName);
 
-            var credentials = _albaCredentialService.GetCredentialsFrom(userName);
+            // TODO: Start here, get assignments from tt-api, all territories from Alba, then add latest link
+            // TODO: Get all territories, filter to user, check for TLinks in TLink table
+            // TODO: Need a link in TLink table, convenient if TLlink was in Assignments table....
+            // TODO: Is the assignments/territory table updated on each check-out?
 
-            var client = _albaAuthClientService.AuthClient();
-            client.Authenticate(credentials);
-
-            var assignmentsJson = client.DownloadString(
-                RelativeUrlBuilder.GetTerritoryAssignments());
+            var assignmentsJson = _albaAuthClientService.DownloadString(
+                RelativeUrlBuilder.GetTerritoryAssignments(), 
+                userName);
 
             string assignmentsHtml = TerritoryAssignmentParser.Parse(assignmentsJson);
 

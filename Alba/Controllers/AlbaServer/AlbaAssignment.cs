@@ -14,5 +14,6 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         public DateTime? SignedOut { get; set; }
         public string SignedOutTo { get; set; }
         public string MobileLink { get; set; }
+        public string PrintLink { get; internal set; }
     }
 }

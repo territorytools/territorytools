@@ -28,3 +28,6 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+territories.txt
+users.txt

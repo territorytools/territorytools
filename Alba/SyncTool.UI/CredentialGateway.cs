@@ -17,6 +17,18 @@ namespace TerritoryTools.Alba.SyncTool.UI
             }
         }
 
+        public int AccountId
+        {
+            get
+            {
+                return Settings.Default.AccountId;
+            }
+            set
+            {
+                Settings.Default.AccountId = value;
+            }
+        }
+
         public string UserName
         {
             get

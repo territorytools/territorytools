@@ -45,7 +45,10 @@ namespace TerritoryTools.Web.MainSite.Services
 
             AlbaConnection client = AuthClient();
 
-            client.Authenticate(credentials);
+            if (!client.IsAuthenticated)
+            {
+                client.Authenticate(credentials);
+            }
 
             return client.DownloadString(uri);
         }

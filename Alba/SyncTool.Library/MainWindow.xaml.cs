@@ -17,6 +17,7 @@ namespace TerritoryTools.Alba.SyncTool.Library
             controller = new ClientController(this);
             albaHostBox.Text = credentialGateway.AlbaHost;
             accountBox.Text = credentialGateway.AccountName;
+            accountIdBox.Text = $"{credentialGateway.AccountId}";
             userBox.Text = credentialGateway.UserName;
             CredentialGateway = credentialGateway;
             azureMapsKey.Password = credentialGateway.GetKeyValue("AzureMapsSubscriptionKey");
@@ -28,6 +29,15 @@ namespace TerritoryTools.Alba.SyncTool.Library
         {
             CredentialGateway.AlbaHost = albaHostBox.Text;
             CredentialGateway.AccountName = accountBox.Text;
+            if (int.TryParse(accountIdBox.Text, out int accountId))
+            {
+                CredentialGateway.AccountId = accountId;
+            }
+            else
+            {
+                ShowMessageBox($"Account ID must be an integer.  You entered {accountIdBox.Text}");
+            }
+
             CredentialGateway.UserName = userBox.Text;
             CredentialGateway.Save();
             controller.LogonButtonClick();
@@ -60,7 +70,7 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
             if (!string.IsNullOrWhiteSpace(path))
             {
-                Process.Start(path);
+                ProcessStart(path);
             }
 
             Cursor = Cursors.Arrow;
@@ -74,7 +84,21 @@ namespace TerritoryTools.Alba.SyncTool.Library
 
             if (!string.IsNullOrWhiteSpace(path))
             {
-                Process.Start(path);
+                ProcessStart(path);
+            }
+
+            Cursor = Cursors.Arrow;
+        }
+
+        private void downloadUserInfo_Click(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+
+            string path = controller.DownloadUserInfo();
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                ProcessStart(path);
             }
 
             Cursor = Cursors.Arrow;
@@ -101,7 +125,6 @@ namespace TerritoryTools.Alba.SyncTool.Library
         private void clearButton_Click(object sender, RoutedEventArgs e)
         {
             statusBox.Text = string.Empty;
-            LoadTerritoriesButtonEnabled = true;
         }
 
         public void AppendResultText(string text)
@@ -134,38 +157,28 @@ namespace TerritoryTools.Alba.SyncTool.Library
             get { return passwordBox.Password; }
         }
 
-        public bool LoadTerritoriesButtonEnabled
+        public bool UploadButtonsEnabled
         {
             set 
             { 
-                downloadTerritoriesButton.IsEnabled = value;
-                downloadLanguagesButton.IsEnabled = value;
+                uploadAddressesButton.IsEnabled = value;
+                uploadKmlFileButton.IsEnabled = value;
+                uploadUsersInfoButton.IsEnabled = value;
             }
         }
-
-        public bool UploadKmlFilesButtonEnabled
+  
+        public bool DownloadButtonsEnabled
         {
-            set { uploadKmlFileButton.IsEnabled = value; }
-        }
-
-        public bool UploadAddressesButtonEnabled
-        {
-            set { uploadAddressesButton.IsEnabled = value; }
-        }
-
-        public bool DownloadAllAddressesButtonEnabled
-        {
-            set { downloadAllAddressesButton.IsEnabled = value; }
-        }
-
-        public bool DownloadTerritoryAssignmentsButtonEnabled
-        {
-            set { downloadTerritoryAssignmentsButton.IsEnabled = value; }
-        }
-
-        public bool DownloadUsersButtonEnabled
-        {
-            set { downloadUsersButton.IsEnabled = value; }
+            set 
+            {
+                loadLanguagesButton.IsEnabled = value;
+                downloadTerritoriesButton.IsEnabled = value;
+                downloadLanguagesButton.IsEnabled = value;
+                downloadAllAddressesButton.IsEnabled = value; 
+                downloadTerritoryAssignmentsButton.IsEnabled = value; 
+                downloadUsersInfoButton.IsEnabled = value;
+                downloadUsersButton.IsEnabled = value;
+            }
         }
 
         public string UploadDelayMs
@@ -279,6 +292,27 @@ namespace TerritoryTools.Alba.SyncTool.Library
         private void accountBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
 
+        }
+
+        private void ProcessStart(string path)
+        {
+            try
+            {
+                Process.Start(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Cursor = Cursors.Wait;
+
+            controller.UploadUserInfo();
+
+            Cursor = Cursors.Arrow;
         }
     }
 }

@@ -37,8 +37,13 @@ namespace TerritoryTools.Web.MainSite.Services
             }
 
             var adminUserNames = _authorizationService.GetAdminUsers();
-            foreach (var name in adminUserNames)
+            foreach (string name in adminUserNames)
             {
+                if (users.Exists(u => string.Equals(u.Email, name)))
+                {
+                    continue;
+                }
+
                 users.Add(
                     new cuc.User
                     {
@@ -48,8 +53,13 @@ namespace TerritoryTools.Web.MainSite.Services
             }
 
             var userNames = _authorizationService.GetUsers();
-            foreach (var name in userNames)
+            foreach (string name in userNames)
             {
+                if (users.Exists(u => string.Equals(u.Email, name)))
+                {
+                    continue;
+                }
+
                 users.Add(
                     new cuc.User
                     {
