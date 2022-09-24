@@ -45,8 +45,9 @@ namespace TerritoryTools.Web.MainSite
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
-                    ForwardedHeaders.XForwardedProto;
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                    ForwardedHeaders.XForwardedProto |
+                    ForwardedHeaders.XForwardedHost;
                 // Only loopback proxies are allowed by default.
                 // Clear that restriction because forwarders are enabled by explicit 
                 // configuration.
@@ -200,6 +201,10 @@ namespace TerritoryTools.Web.MainSite
         {
             app.Use(async (ctx, next) =>
             {
+                //ctx.Request.Scheme = "https";
+                //ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
+
+                System.Diagnostics.Trace.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}");
                 ctx.Request.Scheme = "https";
                 ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
 
