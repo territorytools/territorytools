@@ -205,8 +205,7 @@ namespace TerritoryTools.Web.MainSite
                 //ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
 
                 System.Diagnostics.Trace.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}");
-                ctx.Request.Scheme = "https";
-                ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
+                Console.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}");
 
                 await next();
             });
