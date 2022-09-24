@@ -22,6 +22,7 @@ using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Primitives;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -201,11 +202,16 @@ namespace TerritoryTools.Web.MainSite
         {
             app.Use(async (ctx, next) =>
             {
-                //ctx.Request.Scheme = "https";
+                ctx.Request.Scheme = "https";
                 //ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
+                string host = "<empty>";
+                if (ctx.Request.Headers.TryGetValue("X-Forwarded-Host", out StringValues fwdHost))
+                {
+                    host = fwdHost.FirstOrDefault();
+                }
 
-                System.Diagnostics.Trace.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}");
-                Console.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}");
+                System.Diagnostics.Trace.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}, X-Forwaded-Host: {host}");
+                Console.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}, X-Forwaded-Host: {host}");
 
                 await next();
             });
