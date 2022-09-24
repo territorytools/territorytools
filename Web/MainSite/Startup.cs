@@ -206,9 +206,6 @@ namespace TerritoryTools.Web.MainSite
                 // Microsoft document about X-Forwarded headers
                 // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-6.0
 
-                // Microsoft document about X-Forwarded headers
-                // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-6.0
-
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-For", out StringValues fwdIpAddress))
                 {
                     ctx.Connection.RemoteIpAddress = IPAddress.Parse(fwdIpAddress.First());
@@ -219,8 +216,6 @@ namespace TerritoryTools.Web.MainSite
                     ctx.Request.Scheme = fwdScheme.First();
                 }
 
-                //ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
-                //string host = "empty";
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-Host", out StringValues fwdHost))
                 {
                     ctx.Request.Host = new HostString(fwdHost.First());
