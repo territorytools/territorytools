@@ -12,8 +12,8 @@ services:
       - "${DataVolume}:/data"
     networks:
       - main  
-    #ports:
-    #  - "127.0.0.1:${SlotPort}:80"
+    ports:
+      - "127.0.0.1:${SlotPort}:80"
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
