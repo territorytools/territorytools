@@ -204,14 +204,11 @@ namespace TerritoryTools.Web.MainSite
             {
                 ctx.Request.Scheme = "https";
                 //ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
-                string host = "<empty>";
+                //string host = "empty";
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-Host", out StringValues fwdHost))
                 {
-                    host = fwdHost.FirstOrDefault();
+                    ctx.Request.Host = new HostString(fwdHost.FirstOrDefault());
                 }
-
-                System.Diagnostics.Trace.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}, X-Forwaded-Host: {host}");
-                Console.WriteLine($"Scheme: {ctx.Request.Scheme}, Host: {ctx.Request.Host}, X-Forwaded-Host: {host}");
 
                 await next();
             });
