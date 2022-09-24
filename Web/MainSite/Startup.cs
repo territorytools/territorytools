@@ -23,6 +23,7 @@ using TerritoryTools.Web.MainSite.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Primitives;
+using System.Net;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -205,6 +206,14 @@ namespace TerritoryTools.Web.MainSite
                 // Microsoft document about X-Forwarded headers
                 // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-6.0
 
+                // Microsoft document about X-Forwarded headers
+                // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-6.0
+
+                if (ctx.Request.Headers.TryGetValue("X-Forwarded-For", out StringValues fwdIpAddress))
+                {
+                    ctx.Connection.RemoteIpAddress = IPAddress.Parse(fwdIpAddress.First());
+                }
+
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues fwdScheme))
                 {
                     ctx.Request.Scheme = fwdScheme.First();
@@ -269,7 +278,7 @@ namespace TerritoryTools.Web.MainSite
 
             UpdateDatabase(app);
 
-            app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
+            //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
             app.UseAuthentication();
 
             app.UseMvc(routes =>
