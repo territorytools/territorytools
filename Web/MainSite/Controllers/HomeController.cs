@@ -53,8 +53,9 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 {
                     SharedPhoneTerritoryLink = _configuration.GetValue<string>("SharedPhoneTerritoryLink"),
                     Email = User.Identity.Name,
-                    UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete
-                };
+                    UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete,
+                    RemoteIpAddress = ControllerContext.HttpContext.Connection.RemoteIpAddress.ToString(),
+            };
 
                 var user = _userFromApiService.ByEmail(publisher.Email);
                 if (user == null || !(user.IsActive ?? false)) //!IsUser())
@@ -65,8 +66,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 publisher.IsAdmin = user.CanAssignTerritories;
 
                 string myName = User.Identity.Name;
-
-                
 
                 try
                 {

@@ -202,12 +202,19 @@ namespace TerritoryTools.Web.MainSite
         {
             app.Use(async (ctx, next) =>
             {
-                ctx.Request.Scheme = "https";
+                // Microsoft document about X-Forwarded headers
+                // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-6.0
+
+                if (ctx.Request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues fwdScheme))
+                {
+                    ctx.Request.Scheme = fwdScheme.First();
+                }
+
                 //ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
                 //string host = "empty";
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-Host", out StringValues fwdHost))
                 {
-                    ctx.Request.Host = new HostString(fwdHost.FirstOrDefault());
+                    ctx.Request.Host = new HostString(fwdHost.First());
                 }
 
                 await next();
