@@ -1,7 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Configuration
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject IConfiguration Configuration;
 @inject IViewLocalizer Localizer
 
 <!DOCTYPE html>
@@ -73,7 +75,7 @@
         <div class="container">
             <div class="d-flex">
                 <div class="col-sm-6">
-                    &copy; 2022 - Territory Tools - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    &copy; 2022 - Territory Tools - IP: @Context.Connection.RemoteIpAddress - Commit: @Configuration["GitCommit"]</a>
                 </div>
             </div>
         </div>

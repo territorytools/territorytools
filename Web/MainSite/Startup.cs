@@ -11,19 +11,17 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Primitives;
-using System.Net;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -141,6 +139,11 @@ namespace TerritoryTools.Web.MainSite
 
             services.Configure<WebUIOptions>(Configuration);
 
+            string commitPath = "Web/MainSite/wwwroot/commit.txt";
+            Configuration["GitCommit"] = System.IO.File.Exists(commitPath)
+                ? System.IO.File.ReadAllText(commitPath).TrimEnd()
+                : "commit-missing";
+
             var users = (Configuration["Users"] ?? string.Empty)
                .Split(';')
                .ToList();
@@ -235,7 +238,7 @@ namespace TerritoryTools.Web.MainSite
                 // The default HSTS value is 30 days. You may want to change 
                 // this for production scenarios,
                 // see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //////app.UseHsts();
             }
 
             if (!NoSsl)
