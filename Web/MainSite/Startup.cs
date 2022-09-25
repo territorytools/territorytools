@@ -141,8 +141,8 @@ namespace TerritoryTools.Web.MainSite
 
             string commitPath = "wwwroot/commit.txt";
             Configuration["GitCommit"] = System.IO.File.Exists(commitPath)
-                ? System.IO.File.ReadAllText(commitPath).TrimEnd()
-                : "commit-missing";
+                ? System.IO.File.ReadAllText(commitPath).TrimEnd()[..8]
+                : "dev";
 
             var users = (Configuration["Users"] ?? string.Empty)
                .Split(';')
