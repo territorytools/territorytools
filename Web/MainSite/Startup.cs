@@ -139,7 +139,7 @@ namespace TerritoryTools.Web.MainSite
 
             services.Configure<WebUIOptions>(Configuration);
 
-            string commitPath = "Web/MainSite/wwwroot/commit.txt";
+            string commitPath = "wwwroot/commit.txt";
             Configuration["GitCommit"] = System.IO.File.Exists(commitPath)
                 ? System.IO.File.ReadAllText(commitPath).TrimEnd()
                 : "commit-missing";
