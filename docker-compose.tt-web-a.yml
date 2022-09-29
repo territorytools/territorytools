@@ -63,6 +63,7 @@ services:
       - SmsApiUserName=$SmsApiUserName
       - SmsApiPassword=$SmsApiPassword
       - SmsFromPhoneNumber=$SmsFromPhoneNumber
+      - SmsAdminRecipient=$SmsAdminRecipient
       - SlotPort=$SlotPort
       - Features:UserSelfComplete=$Features_UserSelfComplete
       - OldMobileServerFqdn=$OldMobileServerFqdn

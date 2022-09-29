@@ -60,6 +60,15 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 _logger.LogInformation($"URI: {uri}");
                 var response = client.GetAsync(uri).Result;
                 _logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
+
+                string adminMessage = $"from sms:{from} message: {message}";
+                if(string.IsNullOrWhiteSpace(_options.SmsAdminRecipient))
+                {
+                    _logger.LogWarning("No SmsAdminRecipient is set");
+                    return Ok("ok");
+                }
+
+                SendMessage(_options.SmsAdminRecipient, adminMessage);
             }
 
             return Ok("ok");
@@ -71,21 +80,28 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             _logger.LogInformation($"Sending SMS: to: {to}, from: {from}, message: {message}");
             UserContract user = _userFromApiService.ByEmail(User.Identity.Name);
-            if(!user.IsActive ?? false)
+            if (!user.IsActive ?? false)
             {
                 _logger.LogError("Cancel sending SMS user is not authorized");
                 return Unauthorized();
             }
 
-            if(!Regex.IsMatch(to, @"\d\d\d\d\d\d\d\d\d\d"))
+            if (!Regex.IsMatch(to, @"\d\d\d\d\d\d\d\d\d\d"))
             {
                 return BadRequest($"Bad phone number {to}");
             }
 
+            SendMessage(to, message);
+
+            return Ok();
+        }
+
+        private void SendMessage(string to, string message)
+        {
             HttpClient client = new HttpClient();
             string uri = $"https://voip.ms/api/v1/rest.php?api_username={_options.SmsApiUserName}" +
                 $"&api_password={_options.SmsApiPassword}" +
-                $"&method=sendSMS" + 
+                $"&method=sendSMS" +
                 $"&did={_options.SmsFromPhoneNumber}" +
                 $"&dst={to}" +
                 $"&message={message}";
@@ -93,7 +109,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             var response = client.GetAsync(uri).Result;
             _logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
 
-            return Ok();
+            return response;
         }
     }
 }
