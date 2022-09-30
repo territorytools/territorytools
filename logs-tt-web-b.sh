@@ -1,0 +1,1 @@
+docker-compose -f docker-compose.tt-web-b.yml logs --timestamps --tail="999" --follow tt-web-b

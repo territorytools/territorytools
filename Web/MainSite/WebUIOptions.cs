@@ -25,6 +25,7 @@ namespace TerritoryTools.Web.MainSite
         public string SmsFromPhoneNumber { get; set; }
         public string SmsMessageLogDocumentId { get; set; }
         public string SmsMessageLogSheetName { get; set; }
+        public string SmsAdminRecipient { get; set; }
         public string TerritoryApiBaseUrl { get; set; }
         public Features Features { get; set; } = new Features();
     }
