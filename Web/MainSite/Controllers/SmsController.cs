@@ -108,8 +108,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             var response = client.GetAsync(uri).Result;
             _logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
-
-            return response;
         }
     }
 }
