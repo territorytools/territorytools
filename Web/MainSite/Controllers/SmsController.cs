@@ -36,6 +36,17 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             _logger.LogInformation($"Received SMS: id: {id}, timestamp: {timestamp}, to: {to}, from: {from}, message: {message}");
 
+            string adminMessage = $"from sms:{from} message: {message}";
+            if (!string.IsNullOrWhiteSpace(_options.SmsAdminRecipient)
+                && Regex.IsMatch(_options.SmsAdminRecipient, @"^\d{8}$"))
+            {
+                SendMessage(_options.SmsAdminRecipient, adminMessage);
+            }
+            else
+            {
+                _logger.LogWarning("No SmsAdminRecipient is set, or it is not 10 digits.");
+            }
+
             var sms = new SmsMessage()
             {
                 LogDocumentId = _options.SmsMessageLogDocumentId,
@@ -60,15 +71,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 _logger.LogInformation($"URI: {uri}");
                 var response = client.GetAsync(uri).Result;
                 _logger.LogInformation($"Response: {response.StatusCode} Message: {response.Content}");
-
-                string adminMessage = $"from sms:{from} message: {message}";
-                if(string.IsNullOrWhiteSpace(_options.SmsAdminRecipient))
-                {
-                    _logger.LogWarning("No SmsAdminRecipient is set");
-                    return Ok("ok");
-                }
-
-                SendMessage(_options.SmsAdminRecipient, adminMessage);
             }
 
             return Ok("ok");
