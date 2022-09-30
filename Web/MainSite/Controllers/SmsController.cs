@@ -38,7 +38,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             string adminMessage = $"from sms:{from} message: {message}";
             if (!string.IsNullOrWhiteSpace(_options.SmsAdminRecipient)
-                && Regex.IsMatch(_options.SmsAdminRecipient, @"^\d{8}$"))
+                && Regex.IsMatch(_options.SmsAdminRecipient, @"^\d{10}$"))
             {
                 SendMessage(_options.SmsAdminRecipient, adminMessage);
             }
