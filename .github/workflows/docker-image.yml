@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Login to Docker Hub
-      run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
     - name: Build the Docker image for Territory Tools Web
       run: docker build . --file Web/MainSite/Dockerfile --tag territorytools:$(date +%s)
     - name: Push Docker Image to Docker hub
