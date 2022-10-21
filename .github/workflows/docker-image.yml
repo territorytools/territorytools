@@ -14,11 +14,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set Up Docker Image Tag
+      run: echo "image_tag=$(date +%s)" >> $GITHUB_ENV
     - name: Login to Docker Hub
       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
     - name: Build the Docker image for Territory Tools Web
-      run: docker build . --file Web/MainSite/Dockerfile --tag territorytools:$(date +%s)
+      run: docker build . --file Web/MainSite/Dockerfile --tag territorytools:${{ env.image_tag }}
     - name: Push Docker Image to Docker hub
-      run: docker push territorytools:$(date +%s)
+      run: docker push territorytools:${{ env.image_tag }}
       
    
