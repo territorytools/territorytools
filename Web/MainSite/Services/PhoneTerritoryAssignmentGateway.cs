@@ -137,7 +137,7 @@ namespace TerritoryTools.Web.MainSite.Services
             {
                 DocumentId = documentId,
                 UserEmail = user.Email,
-                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
+                SecurityToken = System.IO.File.ReadAllText("./secrets/GoogleApi.secrets.json")
             };
 
             string uri = _sheetExtractor.AddSheetWriter(request);

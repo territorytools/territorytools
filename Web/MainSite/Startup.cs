@@ -119,7 +119,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IPhoneTerritoryCreationService, PhoneTerritoryCreationService>();
             services.AddScoped<IPhoneTerritoryAddWriterService, PhoneTerritoryAddWriterService>();
             services.AddScoped<ISpreadSheetService>(s => new GoogleSheets(
-                System.IO.File.ReadAllText("./GoogleApi.secrets.json")));
+                System.IO.File.ReadAllText("./secrets/GoogleApi.secrets.json")));
             services.AddScoped<ISheetExtractor, SheetExtractor>();
             services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
             services.AddScoped<IAlbaAssignmentGateway, AlbaAssignmentGateway>();

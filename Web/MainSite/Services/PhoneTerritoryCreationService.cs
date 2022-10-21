@@ -94,7 +94,7 @@ namespace TerritoryTools.Web.MainSite.Services
                 OwnerEmail = userEmail,
                 PublisherName = userFullName,
                 TerritoryNumber = territoryNumber,
-                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
+                SecurityToken = System.IO.File.ReadAllText("./secrets/GoogleApi.secrets.json")
             };
 
             SheetExtractionResult extractionResult = _sheetExtractor.Extract(request);
@@ -103,7 +103,7 @@ namespace TerritoryTools.Web.MainSite.Services
             _sheetExtractor.AddSheetReader(new AddSheetWriterRequest
             {
                 DocumentId = sourceDocumentId,
-                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json"),
+                SecurityToken = System.IO.File.ReadAllText("./secrets/GoogleApi.secrets.json"),
                 UserEmail = assignerEmail,
             });
 

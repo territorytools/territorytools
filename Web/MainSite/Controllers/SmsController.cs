@@ -65,7 +65,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 From = from,
                 Timestamp = timestamp,
                 Message = message,
-                SecurityToken = System.IO.File.ReadAllText("./GoogleApi.secrets.json")
+                SecurityToken = System.IO.File.ReadAllText("./secrets/GoogleApi.secrets.json")
             };
 
             _sheetExtractor.LogMessage(sms);

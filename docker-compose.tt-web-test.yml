@@ -10,6 +10,7 @@ services:
       dockerfile: ./Web/MainSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
+      - "${DataVolume}/secrets:/app/secrets"
     networks:
       - main  
     ports:
