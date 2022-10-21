@@ -19,6 +19,6 @@ jobs:
     - name: Build the Docker image for Territory Tools Web
       run: docker build . --file Web/MainSite/Dockerfile --tag territorytools:$(date +%s)
     - name: Push Docker Image to Docker hub
-      run: docker push
+      run: docker push territorytools:$(date +%s)
       
    
