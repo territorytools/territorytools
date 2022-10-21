@@ -23,4 +23,10 @@ jobs:
     - name: Push Docker Image to Docker hub
       run: docker push marcdurham/territorytools:${{ env.image_tag }}
       
+      
    
+#- name: Set up gcloud Cloud SDK environment
+  # You may pin to the exact commit or the version.
+  # uses: google-github-actions/setup-gcloud@877d4953d2c70a0ba7ef3290ae968eb24af233bb
+ # uses: google-github-actions/setup-gcloud@v0.6.0
+ 
