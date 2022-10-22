@@ -3,9 +3,9 @@ name: Territory Tools Web Docker Image CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
 
