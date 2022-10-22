@@ -39,5 +39,5 @@ jobs:
         run: |
           ssh staging '
           cd /apps/infra &&
-          sudo docker-compose up -d'
+          sudo docker-compose up -d --pull always'
     
