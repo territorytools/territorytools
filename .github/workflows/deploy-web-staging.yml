@@ -30,12 +30,16 @@ jobs:
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
       - name: Create a file or something
+        env:
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}      
         run: |
           ssh devops@$SSH_HOST '
           cd /apps &&
           echo "" > test_file'
 
       - name: Create a bigger file
+        env:
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}      
         run: |
           ssh devops@$SSH_HOST '
           cd /apps &&
