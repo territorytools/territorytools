@@ -31,24 +31,26 @@ jobs:
 
       - name: Create a file or something
         env:
-          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}      
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }} 
+          SSH_USER: ${{ secrets.STAGING_SSH_USER }}
         run: |
-          ssh devops@$SSH_HOST '
+          ssh $SSH_USER@$SSH_HOST '
           cd /apps &&
           echo "" > test_file'
 
       - name: Create a bigger file
         env:
-          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}      
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}    
+          SSH_USER: ${{ secrets.STAGING_SSH_USER }}
         run: |
-          ssh devops@$SSH_HOST '
+          ssh $SSH_USER@$SSH_HOST '
           cd /apps &&
-          mkdir -p ~/.docker &&
-          cat > ~/.docker/config.json <<- EOM
+          mkdir -p ~/somefolder &&
+          cat > ~/somefolder/somefile.json <<- EOM
           {
             "auths": {
-              "${DOCKER_REGISTRY}": {
-                "auth": "${DOCKER_REGISTRY_AUTH}"
+              "sometest": {
+                "auth": "somevalue}"
               }
             }
           }
