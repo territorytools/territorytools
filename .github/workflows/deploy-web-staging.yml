@@ -1,0 +1,46 @@
+name: Deploy to Staging
+
+on:
+  push:
+    tags:
+      - staging/v-0.**
+jobs:
+  deploy:
+    name: "Deploy Territory Tools Web to staging"
+    runs-on: ubuntu-latest
+    #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    # needs: test
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host staging
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+
+      - name: Create a file or something
+        run: echo '' > test_file
+
+      - name: Create a bigger file
+        run: |
+          mkdir -p ~/.docker
+          cat > ~/.docker/config.json <<- EOM
+          {
+            "auths": {
+              "${DOCKER_REGISTRY}": {
+                "auth": "${DOCKER_REGISTRY_AUTH}"
+              }
+            }
+          }
+          EOM
+    
