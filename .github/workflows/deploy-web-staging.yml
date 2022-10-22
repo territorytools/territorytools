@@ -34,7 +34,7 @@ jobs:
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }} 
           SSH_USER: ${{ secrets.STAGING_SSH_USER }}
         run: |
-          ssh ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }} '
+          ssh staging '
           cd /apps &&
           echo "" > test_file'
 
@@ -43,7 +43,7 @@ jobs:
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}    
           SSH_USER: ${{ secrets.STAGING_SSH_USER }}
         run: |
-          ssh ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }} '
+          ssh staging '
           cd /apps &&
           mkdir -p ~/somefolder &&
           cat > ~/somefolder/somefile.json <<- EOM
