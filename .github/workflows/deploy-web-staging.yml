@@ -29,10 +29,13 @@ jobs:
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
       - name: Create a file or something
-        run: echo '' > test_file
+        run: |
+          cd /app
+          echo '' > test_file
 
       - name: Create a bigger file
         run: |
+          cd /app
           mkdir -p ~/.docker
           cat > ~/.docker/config.json <<- EOM
           {
