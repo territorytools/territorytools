@@ -1,8 +1,8 @@
 version: '3.5'
 
 services:  
-  tt-web-test:
-    container_name: tt-web-test
+  tt-web-b:
+    container_name: tt-web-b
     restart: unless-stopped
     image: territorytools/web-main-site
     build:

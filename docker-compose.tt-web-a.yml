@@ -10,10 +10,11 @@ services:
       dockerfile: ./Web/MainSite/Dockerfile
     volumes:
       - "${DataVolume}:/data"
+      - "${DataVolume}/secrets:/app/secrets"
     networks:
       - main  
-    #ports:
-    #  - "127.0.0.1:${SlotPort}:80"
+    ports:
+      - "127.0.0.1:${SlotPort}:80"
     environment:
       - ASPNETCORE_URLS=$ASPNETCORE_URLS
       - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
@@ -63,6 +64,7 @@ services:
       - SmsApiUserName=$SmsApiUserName
       - SmsApiPassword=$SmsApiPassword
       - SmsFromPhoneNumber=$SmsFromPhoneNumber
+      - SmsAdminRecipient=$SmsAdminRecipient
       - SlotPort=$SlotPort
       - Features:UserSelfComplete=$Features_UserSelfComplete
       - OldMobileServerFqdn=$OldMobileServerFqdn

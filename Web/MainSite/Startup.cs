@@ -11,17 +11,17 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using TerritoryTools.Alba.Controllers;
 using TerritoryTools.Alba.Controllers.PhoneTerritorySheets;
 using TerritoryTools.Entities;
 using TerritoryTools.Web.Data;
 using TerritoryTools.Web.Data.Services;
 using TerritoryTools.Web.MainSite.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
 
 namespace TerritoryTools.Web.MainSite
 {
@@ -45,8 +45,9 @@ namespace TerritoryTools.Web.MainSite
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
-                    ForwardedHeaders.XForwardedProto;
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                    ForwardedHeaders.XForwardedProto |
+                    ForwardedHeaders.XForwardedHost;
                 // Only loopback proxies are allowed by default.
                 // Clear that restriction because forwarders are enabled by explicit 
                 // configuration.
@@ -118,7 +119,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IPhoneTerritoryCreationService, PhoneTerritoryCreationService>();
             services.AddScoped<IPhoneTerritoryAddWriterService, PhoneTerritoryAddWriterService>();
             services.AddScoped<ISpreadSheetService>(s => new GoogleSheets(
-                System.IO.File.ReadAllText("./GoogleApi.secrets.json")));
+                System.IO.File.ReadAllText("./secrets/GoogleApi.secrets.json")));
             services.AddScoped<ISheetExtractor, SheetExtractor>();
             services.AddScoped<IAlbaAuthClientService, AlbaAuthClientService>();
             services.AddScoped<IAlbaAssignmentGateway, AlbaAssignmentGateway>();
@@ -137,6 +138,11 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<AssignmentsCsvFileService>();
 
             services.Configure<WebUIOptions>(Configuration);
+
+            string commitPath = "wwwroot/commit.txt";
+            Configuration["GitCommit"] = System.IO.File.Exists(commitPath)
+                ? System.IO.File.ReadAllText(commitPath).TrimEnd()[..8]
+                : "dev";
 
             var users = (Configuration["Users"] ?? string.Empty)
                .Split(';')
@@ -200,8 +206,23 @@ namespace TerritoryTools.Web.MainSite
         {
             app.Use(async (ctx, next) =>
             {
-                ctx.Request.Scheme = "https";
-                ctx.Request.Host = new HostString(Configuration.GetValue<string>("HOST_NAME"));
+                // Microsoft document about X-Forwarded headers
+                // https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-6.0
+
+                if (ctx.Request.Headers.TryGetValue("X-Forwarded-For", out StringValues fwdIpAddress))
+                {
+                    ctx.Connection.RemoteIpAddress = IPAddress.Parse(fwdIpAddress.First());
+                }
+
+                if (ctx.Request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues fwdScheme))
+                {
+                    ctx.Request.Scheme = fwdScheme.First();
+                }
+
+                if (ctx.Request.Headers.TryGetValue("X-Forwarded-Host", out StringValues fwdHost))
+                {
+                    ctx.Request.Host = new HostString(fwdHost.First());
+                }
 
                 await next();
             });
@@ -217,7 +238,7 @@ namespace TerritoryTools.Web.MainSite
                 // The default HSTS value is 30 days. You may want to change 
                 // this for production scenarios,
                 // see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                //////app.UseHsts();
             }
 
             if (!NoSsl)
@@ -255,7 +276,7 @@ namespace TerritoryTools.Web.MainSite
 
             UpdateDatabase(app);
 
-            app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
+            //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
             app.UseAuthentication();
 
             app.UseMvc(routes =>
