@@ -30,12 +30,12 @@ jobs:
 
       - name: Create a file or something
         run: |
-          cd /app
+          cd /apps
           echo '' > test_file
 
       - name: Create a bigger file
         run: |
-          cd /app
+          cd /apps
           mkdir -p ~/.docker
           cat > ~/.docker/config.json <<- EOM
           {
