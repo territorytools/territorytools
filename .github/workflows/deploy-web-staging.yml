@@ -30,13 +30,15 @@ jobs:
 
       - name: Create a file or something
         run: |
-          cd /apps
-          echo '' > test_file
+          ssh devops@$SSH_HOST '
+          cd /apps &&
+          echo "" > test_file'
 
       - name: Create a bigger file
         run: |
-          cd /apps
-          mkdir -p ~/.docker
+          ssh devops@$SSH_HOST '
+          cd /apps &&
+          mkdir -p ~/.docker &&
           cat > ~/.docker/config.json <<- EOM
           {
             "auths": {
@@ -45,5 +47,5 @@ jobs:
               }
             }
           }
-          EOM
+          EOM'
     
