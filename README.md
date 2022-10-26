@@ -3,8 +3,12 @@ Territory Tools currently has the following
 - **Territory Web** [![Territory Tools Web Docker Image CI](https://github.com/territorytools/territorytools/actions/workflows/docker-image.yml/badge.svg)](https://github.com/territorytools/territorytools/actions/workflows/docker-image.yml) is a web site that suppliments the Alba territory system with a few reports and a territory check-out page.
 - **Alba Sync Tool** Windows app that downloads borders, addresses, and assignments so that they can be manipulated in csv or spreadsheet files.
 - **Alba Console** Console version of **Alba Sync Tool** that can run in Windows, Linux, and macOS terminals and shells.
-- **PowerShell Module** ![.NET Core Desktop](https://github.com/territorytools/territory-tools/workflows/.NET%20Core%20Desktop/badge.svg) Mostly the same tools as the Alba Sync Tool but including address parsing and normalizing tools.
-# Fav Icon Generator
+
+# Territory Web
+This is the main app in this repository.
+
+## Parts of Territory Web
+### Fav Icon Generator
 
 Use an SVG file and upload it to 
 https://realfavicongenerator.net/
@@ -45,3 +49,6 @@ Reference: https://github.com/microsoft/vscode-docker/issues/1793
 After running this command (Ctrl+Shift+P):: "Docker: Add Docker Files to Worksapce"
 
 Run this command (Ctrl+Shift+P): ".NET: Generate Assets for Build and Debug"
+
+### Deprecated
+- **PowerShell Module** Mostly the same tools as the Alba Sync Tool but including address parsing and normalizing tools.
