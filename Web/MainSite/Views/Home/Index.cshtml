@@ -33,15 +33,19 @@
                 <a class="p-2 m-2 btn btn-outline-primary" href="@Model.SharedPhoneTerritoryLink"><i class="fas fa-phone pl-4"></i>&nbsp;Shared Phone Territory</a>
             </div>
             <div class="d-flex flex-column">
-                <form action="/ManageTerritories/AddressSearch" id="search-form" class="form-inline m-1">
-                    <div class="form-group mx-3">
-                        <input type="text" class="form-control" style="width:250px;" name="searchText" placeholder="Enter part of the address">
+                <div class="form-group mx-3">
+                    <div class="input-group-append">
+                        <form action="/ManageTerritories/AddressSearch" id="search-form" class="form-inline m-1">
+                            <div class="form-group mx-3">
+                                <input type="text" class="form-control" style="width:250px;" name="searchText" placeholder="Enter part of the address">
+                                <button type="submit" class="btn btn-primary">Search Addresses</button>
+                            </div>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-primary">Search Addresses</button>
-                </form>
+                </div>
             </div>
         </div>
-         @*<div id="checked-out-to-section" onload="getCheckedOutTerritories()">Loading...</div>*@
+        @*<div id="checked-out-to-section" onload="getCheckedOutTerritories()">Loading...</div>*@
     }
     else
     {
@@ -57,7 +61,7 @@
                 <!-- <p>
                     <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/ms-symbollockup_signin_light.png" /></button>
                 </p> -->
-                <p>
+            <p>
                     <a href="~/Identity/Account/LoginPassword" class="btn btn-info m-2">@Localizer["LoginAccountPassword"]</a>
                 </p>
             </div>
