@@ -1,5 +1,5 @@
-﻿using HtmlAgilityPack;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 
@@ -42,12 +42,12 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 throw new Exception(signedOutErrorMessage);
             }
 
-            var nodes = JObject.Parse(value);
-            var html = nodes.SelectToken("data.html") as JObject;
-
-            var text = html.Property("addresses").Value.ToString();
-
-            return text;
+            return JsonDocument.Parse(value)
+                .RootElement
+                .GetProperty("data")
+                .GetProperty("html")
+                .GetProperty("addresses")
+                .GetString();
         }
 
         public static List<AddressView> GetAddresses(string html)

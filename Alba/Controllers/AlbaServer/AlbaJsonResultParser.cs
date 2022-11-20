@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
 {
@@ -15,12 +15,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 throw new Exception(signedOutErrorMessage);
             }
 
-            var nodes = JObject.Parse(value);
-            var html = nodes.SelectToken("data.html") as JObject;
-
-            var text = html.Property(property).Value.ToString();
-
-            return text;
+            return JsonDocument.Parse(value).RootElement.GetProperty("data").GetProperty("html").GetProperty(property).GetString();
         }
     }
 }

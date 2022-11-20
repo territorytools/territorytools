@@ -1,8 +1,8 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
@@ -44,7 +44,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         {
             try
             {
-                var border = JsonConvert.DeserializeObject<Border>(
+                var border = JsonSerializer.Deserialize<Border>(
                     property.Value.ToString());
 
                 int.TryParse(property.Name, out int id);

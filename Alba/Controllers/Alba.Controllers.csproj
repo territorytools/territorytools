@@ -28,6 +28,7 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.8" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Text.Json" Version="7.0.0" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
 	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.56.0.2608" />

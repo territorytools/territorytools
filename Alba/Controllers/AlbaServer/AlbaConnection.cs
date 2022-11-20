@@ -1,6 +1,7 @@
 ﻿using Controllers.UseCases;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.AlbaServer
@@ -77,7 +78,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
         private void SubmitCredentials(Credentials credentials)
         {
             var result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
-            var logonResult = JsonConvert.DeserializeObject<LogonResult>(result);
+            LogonResult logonResult = JsonSerializer.Deserialize<LogonResult>(result);
 
             LogonResultChecker.CheckForErrors(logonResult);
 

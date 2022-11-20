@@ -5,11 +5,11 @@ using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Util.Store;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using data = Google.Apis.Sheets.v4.Data;
 
@@ -88,15 +88,19 @@ namespace TerritoryTools.Alba.Controllers
 
         public static bool IsJsonForAServiceAccount(string json)
         {
-            JObject document = JObject.Parse(json);
+            JsonDocument document = JsonDocument.Parse(json);
 
             bool isServiceAccount;
-            if ((string)document.SelectToken("type") == "service_account")
+            if (document.RootElement.TryGetProperty("type", out JsonElement element) 
+                && element.GetString() == "service_account")
             {
                 isServiceAccount = true;
             }
             // This file looks like an OAuth 2.0 JSON fileren.
-            else if(document.SelectToken("installed.redirect_uris") != null)
+            // path: "installed.redirect_uris"
+            else if ((document.RootElement.TryGetProperty("installed", out JsonElement installedElement)
+                && installedElement.TryGetProperty("redirect_uris", out JsonElement uris)
+                && uris.ValueKind != JsonValueKind.Null && uris.ValueKind != JsonValueKind.Undefined))
             {
                 isServiceAccount = false;
             }
