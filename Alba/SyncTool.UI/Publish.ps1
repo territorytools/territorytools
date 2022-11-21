@@ -25,7 +25,6 @@ $files = `
     "CsvHelper.dll", `
     "HtmlAgilityPack.dll", `
     "Microsoft.Bcl.AsyncInterfaces.dll", `
-    "Newtonsoft.Json.dll", `
     "System.Runtime.CompilerServices.Unsafe.dll", `
     "System.Threading.Tasks.Extensions.dll", `
     "System.ValueTuple.dll", `
