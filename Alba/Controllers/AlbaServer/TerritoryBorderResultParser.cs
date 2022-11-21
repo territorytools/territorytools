@@ -1,5 +1,4 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -18,18 +17,20 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
                 throw new Exception(SignedOutMessaged);
             }
 
-            var nodes = JObject.Parse(value);
-            var dataHtml = nodes.SelectToken("data.html") as JObject;
-            var territories = TerritoriesFrom(dataHtml.GetValue("territories")?.ToString());
-            
-            var dataBorders = nodes.SelectToken("data.borders") as JObject;
+            JsonElement data = JsonDocument.Parse(value).RootElement.GetProperty("data");
+            Dictionary<int, TerritoryValues> territories = TerritoriesFrom(data
+                .GetProperty("html")
+                .GetProperty("territories")
+                .GetRawText());
+
+            JsonElement dataBorders = data.GetProperty("borders");
             var borders = new List<AlbaTerritoryBorder>();
-            foreach (var property in dataBorders.Properties())
+            foreach (JsonProperty property in dataBorders.EnumerateObject())
             {
-                var border = BordersFrom(property);
-                
+                AlbaTerritoryBorder border = BordersFrom(property);
+
                 // Merge in values from dataBorders
-                var territory = territories[border.Id];
+                TerritoryValues territory = territories[border.Id];
                 border.Number = territory.Number;
                 border.Description = territory.Description;
                 border.Notes = territory.Notes;
@@ -40,12 +41,12 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return borders; 
         }
 
-        static AlbaTerritoryBorder BordersFrom(JProperty property) 
+        static AlbaTerritoryBorder BordersFrom(JsonProperty property) 
         {
             try
             {
-                var border = JsonSerializer.Deserialize<Border>(
-                    property.Value.ToString());
+                Border border = JsonSerializer
+                    .Deserialize<Border>(property.Value.GetRawText());
 
                 int.TryParse(property.Name, out int id);
                 int.TryParse(border.num, out int count);

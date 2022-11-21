@@ -1,8 +1,7 @@
 ﻿using TerritoryTools.Alba.Controllers.Nominatim;
 using Controllers.AlbaServer;
 using Controllers.Nominatim;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
 {
@@ -35,7 +34,7 @@ namespace TerritoryTools.Alba.Controllers.UseCases
             var resultString = client.DownloadString(url);
             // TODO: Need to geocode
 
-            GeocodedAddress[] result = JsonConvert.DeserializeObject<GeocodedAddress[]>(resultString);
+            GeocodedAddress[] result = JsonSerializer.Deserialize<GeocodedAddress[]>(resultString);
 
             if(result.Length == 0)
             {

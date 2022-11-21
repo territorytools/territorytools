@@ -1,9 +1,5 @@
-﻿using Google.Apis.Sheets.v4.Data;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using NUnit.Framework;
+using System.Text.Json;
 
 namespace TerritoryTools.Alba.Controllers.Tests
 {
@@ -21,13 +17,21 @@ namespace TerritoryTools.Alba.Controllers.Tests
                 }
             ";
 
-            JObject document = JObject.Parse(json);
+            JsonElement document = JsonDocument.Parse(json).RootElement;
 
-            var token = document.SelectToken("test_section.one");
+            string token = document
+                .GetProperty("test_section")
+                .GetProperty("one")
+                .GetString();
+
             Assert.IsNotNull(token);
-            Assert.AreEqual((string)token, "test value");
+            Assert.AreEqual(token, "test value");
 
-            var missingToken = document.SelectToken("missing_section.sub_section");
+            string missingToken = document
+                .GetProperty("missing_section")
+                .GetProperty("sub_section")
+                .GetString();
+
             Assert.IsNull(missingToken);
         }
 

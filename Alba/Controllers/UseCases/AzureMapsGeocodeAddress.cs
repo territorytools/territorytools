@@ -1,8 +1,8 @@
-﻿using TerritoryTools.Alba.Controllers.AzureMaps;
-using Controllers.AlbaServer;
+﻿using Controllers.AlbaServer;
 using Controllers.AzureMaps;
-using Newtonsoft.Json;
 using System;
+using System.Text.Json;
+using TerritoryTools.Alba.Controllers.AzureMaps;
 using TerritoryTools.Alba.Controllers.Models;
 
 namespace TerritoryTools.Alba.Controllers.UseCases
@@ -82,17 +82,18 @@ namespace TerritoryTools.Alba.Controllers.UseCases
 
         Coordinate GeocodeFrom(AlbaAddressImport address)
         {
-            var url = AzureMapsUrlBuilder.GeocodeAddress(address);
-            var resultString = client.DownloadString(url);
+            string url = AzureMapsUrlBuilder.GeocodeAddress(address);
+            string resultString = client.DownloadString(url);
 
-            var result = JsonConvert.DeserializeObject<GeocodeResult>(resultString);
+            GeocodeResult result = JsonSerializer
+                .Deserialize<GeocodeResult>(resultString);
 
             if (result.results.Length == 0)
             {
                 return null;
             }
 
-            var r = result.results[0];
+            Result r = result.results[0];
 
             return new Coordinate
             {
