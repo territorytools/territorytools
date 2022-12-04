@@ -52,6 +52,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 var publisher = new Models.Publisher()
                 {
                     SharedPhoneTerritoryLink = _configuration.GetValue<string>("SharedPhoneTerritoryLink"),
+                    SharedLettersReturnedLink = _configuration.GetValue<string>("SharedLettersReturnedLink"),
                     Email = User.Identity.Name,
                     UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete,
                     RemoteIpAddress = ControllerContext.HttpContext.Connection.RemoteIpAddress.ToString(),
