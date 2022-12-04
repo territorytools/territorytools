@@ -72,6 +72,7 @@ services:
       - TerritoryApiBaseUrl=$TerritoryApiBaseUrl
       - MobileBaseUrl=https://mobile.territorytools.org
       - SharedPhoneTerritoryLink=$SharedPhoneTerritoryLink
+      - SharedLettersReturnedLink=$SharedLettersReturnedLink
       - GoogleMyMapLink=$GoogleMyMapLink
 
 networks:
