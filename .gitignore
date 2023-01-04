@@ -335,6 +335,7 @@ ASALocalRun/
 
 Web/MainSite/DataVolume/
 Web/MainSite/wwwroot/commit.txt
+/commit.txt
 
 data/vault/file/
 data/certbot/etc/

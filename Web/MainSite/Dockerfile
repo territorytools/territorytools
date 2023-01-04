@@ -14,6 +14,8 @@ RUN dotnet restore Web/MainSite/Web.MainSite.csproj --packages /src/packages
 
 COPY . .
 
+COPY ./commit.txt Web/MainSite/wwwroot
+
 RUN dotnet build Web/MainSite/Web.MainSite.csproj -c Release -o /app --no-restore
 
 FROM build AS publish

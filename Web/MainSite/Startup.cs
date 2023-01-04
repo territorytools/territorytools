@@ -140,9 +140,17 @@ namespace TerritoryTools.Web.MainSite
             services.Configure<WebUIOptions>(Configuration);
 
             string commitPath = "wwwroot/commit.txt";
-            Configuration["GitCommit"] = System.IO.File.Exists(commitPath)
-                ? System.IO.File.ReadAllText(commitPath).TrimEnd()[..8]
-                : "dev";
+            string commit = "dev";
+            if(System.IO.File.Exists(commitPath)) 
+            {
+                string commitFileText = System.IO.File.ReadAllText(commitPath);
+                if(!string.IsNullOrWhiteSpace(commitFileText) && commitFileText.Length >= 8)
+                {
+                   commit = commitFileText.TrimEnd()[..8];
+                }
+            }
+
+             Configuration["GitCommit"] = commit;
 
             var users = (Configuration["Users"] ?? string.Empty)
                .Split(';')
