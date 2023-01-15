@@ -40,7 +40,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var user = _userFromApiService.ByEmail(User.Identity.Name);
-                if (user != null && (user.IsActive ?? false)) 
+                if (user != null && (user.IsActive ?? false) && user.CanAssignTerritories) 
                 {
                     return true;
                 }
@@ -51,11 +51,10 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         protected bool IsUser()
         {
-            var users = _userService.GetUsers(User.Identity.Name);
-
-            foreach (var user in users)
+            if (User.Identity.IsAuthenticated)
             {
-                if (StringsEqual(user.Email, User.Identity.Name))
+                var user = _userFromApiService.ByEmail(User.Identity.Name);
+                if (user != null && (user.IsActive ?? false))
                 {
                     return true;
                 }

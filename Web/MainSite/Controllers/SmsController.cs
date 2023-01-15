@@ -89,7 +89,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return Unauthorized();
             }
 
-            if (!Regex.IsMatch(to, @"\d\d\d\d\d\d\d\d\d\d"))
+            if (!Regex.IsMatch(to, @"\d{10}"))
             {
                 return BadRequest($"Bad phone number {to}");
             }

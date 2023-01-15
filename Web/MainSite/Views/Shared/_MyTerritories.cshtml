@@ -136,6 +136,11 @@ else
 
         function getCheckedOutTerritories()
         {
+            if(!userFullName) {
+                // Don't bother trying if the name is empty, that way we'll have less 404s in our logs
+                return;
+            } 
+
             $.ajax({
                 type: 'GET',
                 url: `/api/territories/checked-out-to?userFullName=${userFullName}`,
@@ -151,7 +156,7 @@ else
                     $('#checked-out-to-section')
                             .text('');
                     data.forEach(function(item) {
-                      var html = 
+                        var html = 
                         `<div class="d-flex mb-0" style="border-top: 1px solid #aaa;"> 
                             <div class="p-2" style="min-width:60px;">
                                 <i class="fas fa-map-location-dot pl-4" style="color:black;"></i>
@@ -166,7 +171,7 @@ else
                             </div>
                         </div>`
 
-                       $('#checked-out-to-section')
+                        $('#checked-out-to-section')
                             .append(html);
                     });
                 }
