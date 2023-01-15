@@ -70,12 +70,18 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             _sheetExtractor.LogMessage(sms);
         }
-        
+
         [Authorize]
         [HttpPost]
         public ActionResult<PhoneTerritoryCreateResult> Send(string from, string to, string message)
         {
             _logger.LogInformation($"Sending SMS: to: {to}, from: {from}, message: {message}");
+            if (string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                _logger.LogError("Cancel sending SMS user name was not suppied, unathorized.");
+                return Unauthorized();
+            }
+
             UserContract user = _userFromApiService.ByEmail(User.Identity.Name);
             if (!user.IsActive ?? false)
             {

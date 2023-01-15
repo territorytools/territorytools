@@ -58,6 +58,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
                     RemoteIpAddress = ControllerContext.HttpContext.Connection.RemoteIpAddress.ToString(),
             };
 
+                if(string.IsNullOrWhiteSpace(publisher.Email))
+                {
+                    return View(publisher);
+                }
+
                 var user = _userFromApiService.ByEmail(publisher.Email);
                 if (user == null || !(user.IsActive ?? false)) //!IsUser())
                 {
