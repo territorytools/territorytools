@@ -28,15 +28,15 @@ namespace TerritoryTools.Web.MainSite.Services
         }
         public T Post<T,B>(string relativePath, string queryString, B body)
         {
-            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
-            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            string territoryApiBaseUrl = _configuration.GetValue<string>("TerritoryApiBaseUrl");
+            if (string.IsNullOrWhiteSpace(territoryApiBaseUrl))
             {
-                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+                throw new ArgumentNullException(nameof(territoryApiBaseUrl));
             }
 
             HttpClient client = new();
             HttpResponseMessage? result = client.PostAsJsonAsync(
-                $"http://{territoryApiHostAndPort}/{relativePath}{queryString}", body)
+                $"{territoryApiBaseUrl}/{relativePath}{queryString}", body)
                 .Result;
 
             if (!result.IsSuccessStatusCode)
@@ -73,15 +73,15 @@ namespace TerritoryTools.Web.MainSite.Services
             if (!string.IsNullOrWhiteSpace(queryString) && !queryString.StartsWith("?"))
                 throw new ArgumentException($"Query string must start with a question mark ?");
 
-            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
-            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            string territoryApiBaseUrl = _configuration.GetValue<string>("TerritoryApiBaseUrl");
+            if (string.IsNullOrWhiteSpace(territoryApiBaseUrl))
             {
-                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+                throw new ArgumentNullException(nameof(territoryApiBaseUrl));
             }
 
             HttpClient client = new();
             HttpResponseMessage? result = client.GetAsync(
-                $"http://{territoryApiHostAndPort}/{relativePath}{queryString}")
+                $"{territoryApiBaseUrl}/{relativePath}{queryString}")
                 .Result;
 
             if (!result.IsSuccessStatusCode)
@@ -112,15 +112,15 @@ namespace TerritoryTools.Web.MainSite.Services
             if (!string.IsNullOrWhiteSpace(queryString) && !queryString.StartsWith("?"))
                 throw new ArgumentException($"Query string must start with a question mark ?");
 
-            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
-            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            string territoryApiBaseUrl = _configuration.GetValue<string>("TerritoryApiBaseUrl");
+            if (string.IsNullOrWhiteSpace(territoryApiBaseUrl))
             {
-                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+                throw new ArgumentNullException(nameof(territoryApiBaseUrl));
             }
 
             HttpClient client = new();
             HttpResponseMessage? result = client.DeleteAsync(
-                $"http://{territoryApiHostAndPort}/{relativePath}{queryString}")
+                $"{territoryApiBaseUrl}/{relativePath}{queryString}")
                 .Result;
 
             if (!result.IsSuccessStatusCode)
