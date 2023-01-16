@@ -111,7 +111,7 @@
         
         <!-- Modal footer -->
         <div class="modal-footer">
-          @*<button id="view-territory-button" type="button" class="btn btn-primary">View</button>*@
+          <a id="view-territory-button" type="button" class="btn btn-primary" target="_blank">View</a>
           @*<button id="edit-territory-button" type="button" class="btn btn-outline-primary">Edit</button>*@
           @*<button id="territory-assignment-button" type="button" class="btn btn-outline-primary">Assign</button>*@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -181,6 +181,7 @@
                             data-area-description="${item.areaDescription}"
                             data-signed-out-to="${item.signedOutTo}"
                             data-signed-out="${item.signedOutString}"
+                            data-view-link="${item.viewLink}"
                             data-toggle="modal" data-target="#myModal">
                           <td scope="row">
                             ${item.number}
@@ -309,6 +310,7 @@
              $("#modal-area-code").val( $(this).data('area-code') );
              $("#modal-area-description").val($(this).data('area-description'));
              $("#modal-current-assignee").val($(this).data('signed-out-to'));
+             $("#view-territory-button").attr('href', $(this).data('view-link'));
 
              if(!$(this).data('signed-out-to')) {
                  $("#unassign-button").attr('disabled','');
@@ -330,6 +332,16 @@
              
             ab.style.display = "none";
             ef.style.display = "block";
+        });
+
+           $(document).on("click", "#view-territory-button", function () {
+
+            //$("#modal-header-big").text("Edit");
+            //var ef = document.getElementById("edit-form");
+            //var ab = document.getElementById("assignment-buttons");
+             
+            //ab.style.display = "none";
+            //ef.style.display = "block";
         });
 
         $(document).on("click", "#territory-assignment-button", function () {
