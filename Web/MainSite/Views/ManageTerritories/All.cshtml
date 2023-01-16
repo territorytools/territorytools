@@ -23,8 +23,9 @@
         <tr>
           <th scope="col" x-onclick="sortTable(0)" style="cursor:pointer;max-width:50px;">#</th>
           <th scope="col" x-onclick="sortTable(1)" style="cursor:pointer;max-width:50px;">Description</th>
-          <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;max-width:50px;">Area</th>
-          <th scope="col" x-onclick="sortTable(3)" style="cursor:pointer;max-width:100px;">Signed-out To</th>
+          <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;max-width:25px;">Area</th>
+          <th scope="col" x-onclick="sortTable(2)" style="cursor:pointer;max-width:50px;">Status</th>
+          <th scope="col" x-onclick="sortTable(3)" style="cursor:pointer;max-width:75px;">Signed-out To</th>
         </tr>
       </thead>
       <tbody id="checked-out-to-section" onload="getCheckedOutTerritories()">
@@ -178,6 +179,7 @@
                           </td>
                           <td>${item.areaDescription}</td>
                           <td>${item.areaCode}</td>
+                          <td>${item.status}</td>
                           <td>${item.signedOutTo ?? ""}</td>
                         </tr>
                        `
