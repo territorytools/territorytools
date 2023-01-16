@@ -267,15 +267,15 @@ namespace TerritoryTools.Web.MainSite.Services
 
         public TerritoryLinkContract AssignmentLatestV2(AssignmentLatestRequest request)
         {
-            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
-            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            string territoryApiBaseUrl = _configuration.GetValue<string>("TerritoryApiBaseUrl");
+            if (string.IsNullOrWhiteSpace(territoryApiBaseUrl))
             {
-                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+                throw new ArgumentNullException(nameof(territoryApiBaseUrl));
             }
 
             HttpClient client = new();
             HttpResponseMessage? result = client.PostAsync(
-                $"http://{territoryApiHostAndPort}/territory-assignment/assignments/oldest/alba?area={request.Area}&albaUserId={request.AlbaUserId}", null)
+                $"{territoryApiBaseUrl}/territory-assignment/assignments/oldest/alba?area={request.Area}&albaUserId={request.AlbaUserId}", null)
                 .Result;
 
             if (!result.IsSuccessStatusCode)
@@ -305,15 +305,15 @@ namespace TerritoryTools.Web.MainSite.Services
             int? assigneeAlbaUserId,
             string assigner)
         {
-            string territoryApiHostAndPort = _configuration.GetValue<string>("TerritoryApiHostAndPort");
-            if (string.IsNullOrWhiteSpace(territoryApiHostAndPort))
+            string territoryApiBaseUrl = _configuration.GetValue<string>("TerritoryApiBaseUrl");
+            if (string.IsNullOrWhiteSpace(territoryApiBaseUrl))
             {
-                throw new ArgumentNullException(nameof(territoryApiHostAndPort));
+                throw new ArgumentNullException(nameof(territoryApiBaseUrl));
             }
 
             HttpClient client = new();
             HttpResponseMessage? result = client.PostAsync(
-                $"http://{territoryApiHostAndPort}/territory-assignment/assignments" +
+                $"{territoryApiBaseUrl}/territory-assignment/assignments" +
                 $"?territoryNumber={territoryNumber}" + 
                 $"&albaUserId={assigneeAlbaUserId}" +
                 $"&assignee={assigneeEmail}" +
