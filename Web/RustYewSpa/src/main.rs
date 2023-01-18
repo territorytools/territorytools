@@ -57,11 +57,11 @@ fn app() -> Html {
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
     #[at("/")]
+    Map,
+    #[at("/home")]
     Home,
     #[at("/secure")]
     Secure,
-    #[at("/map")]
-    Map,
     #[not_found]
     #[at("/404")]
     NotFound,
