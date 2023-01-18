@@ -243,11 +243,11 @@ pub fn territory_map() -> Html {
                 </a>
             <MapMenu>        
                 <TerritorySummary 
-                available={available_count}
-                signed_out={signed_out_count}
-                completed={completed_count}
-                total={total_count}
-                hidden={hidden_count} />      
+                    available={available_count}
+                    signed_out={signed_out_count}
+                    completed={completed_count}
+                    total={total_count}
+                    hidden={hidden_count} />      
             </MapMenu>            
         </div>
     }
