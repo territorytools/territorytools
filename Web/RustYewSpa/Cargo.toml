@@ -1,0 +1,31 @@
+[package]
+name = "leaflet-rs-example-yew-component"
+version = "0.1.0"
+authors = ["The leaflet-rs Developers"]
+license = "MIT/Apache-2.0"
+description = "An example using leaflet-rs in yew.rs component"
+homepage = "https://github.com/slowtec/leaflet-rs"
+repository = "https://github.com/slowtec/leaflet-rs"
+edition = "2021"
+publish = false
+
+[dependencies]
+yew = "0.19"
+yew-hooks = "0.2.0"
+leaflet = "0.2"
+wasm-bindgen = "0.2"
+gloo-console = "0.2.3"
+gloo-utils = "0.1"
+gloo-timers = "0.2.5"
+gloo-events = "0.1"
+reqwasm = "0.5.0"
+serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.85"
+wasm-bindgen-futures = "0.4"
+serde-wasm-bindgen = "0.4"
+futures = "0.3"
+indoc = "1.0"
+
+[dependencies.web-sys]
+version = "0.3"
+features = ["HtmlAnchorElement", "HtmlElement", "HtmlStyleElement", "CssStyleDeclaration", "console", "Window", "Document"]

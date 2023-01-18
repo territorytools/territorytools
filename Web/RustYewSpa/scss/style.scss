@@ -1,0 +1,90 @@
+@import "normalize";
+
+html,
+body {
+  box-sizing: border-box;
+}
+
+body {
+  // those styles are irrelevant, just here for nicer presentation
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  
+
+  //margin-top: 10px; // making room for the color legend borders on top
+
+  .map {
+    
+    height: 100vh; // 97vh
+  }
+
+  .component-container {
+    border-radius: 0.5em;
+    padding: 1em;
+  }
+
+  .map-container {
+    border: 1px solid red;
+    margin-bottom: 1em;
+  }
+
+  .control {
+    text-align: center;
+    border: 1px solid green;
+
+    button {
+      margin: 0.5em;
+    }
+  }
+}
+
+.tool-tip {
+  background-color: transparent;
+  border: transparent;
+  box-shadow: none;
+}
+
+.color-legend {
+  border-style: solid;
+  color: black;
+  padding: 4px;
+  margin: 2px;
+  font-family: sans-serif;
+}
+
+.color-legend-title {
+  border-style: solid;
+  border-color: transparent;
+}
+
+.color-legend-available {
+  border-color:rgba(0, 0, 0, 1.0);
+  background-color:rgba(0, 0, 0, 0.2);
+
+}
+
+.color-legend-signed-out {
+  border-color:rgba(255, 0, 255, 1.0);
+  background-color:rgba(255, 0, 255, 0.2);
+}
+
+.color-legend-completed {
+  border-color:rgba(0, 0, 255, 1.0);
+  background-color:rgba(0, 0, 255, 0.2);
+}
+
+// Floating agent
+.legend {
+  line-height: 18px;
+  color: #555;
+}
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}
