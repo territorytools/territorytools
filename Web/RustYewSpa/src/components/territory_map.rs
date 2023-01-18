@@ -1,6 +1,6 @@
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
-use crate::components::map_dashboard::MapDashboard;
+use crate::components::map_menu::MapMenu;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -241,12 +241,14 @@ pub fn territory_map() -> Html {
                         <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
                     </svg>
                 </a>
-            <MapDashboard 
+            <MapMenu>        
+                <TerritorySummary 
                 available={available_count}
                 signed_out={signed_out_count}
                 completed={completed_count}
                 total={total_count}
-                hidden={hidden_count} />   
+                hidden={hidden_count} />      
+            </MapMenu>            
         </div>
     }
 }
