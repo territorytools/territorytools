@@ -29,10 +29,12 @@ impl Component for Model {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
+        // let render = Router::render(|switch: Route| match switch {
+        //     Route::Home => html! { <TerritoryMap /> },
+        // });
+
         html! {
-            <BrowserRouter>
-                <Switch<Route> render={switch} />
-            </BrowserRouter>
+            <Router render={switch} />
         }
     }
 }
@@ -41,21 +43,37 @@ fn main() {
     yew::start_app::<Model>();
 }
 
-
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
     #[at("/")]
     Home,
-    #[at("/post/:id")]
-    Post { id: String },
-    #[at("/*path")]
-    Misc { path: String },
+    #[at("/map")]
+    Map,
 }
 
 fn switch(route: Route) -> Html {
     match route {
         Route::Home => html! { <h1>{ "Home" }</h1> },
-        Route::Post { id } => html! {<p>{format!("You are looking at Post {}", id)}</p>},
-        Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
+        Route::Map => html! { <TerritoryMap /> },
+        //Route::Post { id } => html! {<p>{format!("You are looking at Post {}", id)}</p>},
+        //Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
 }
+
+// #[derive(Clone, Routable, PartialEq)]
+// enum Route {
+//     #[at("/")]
+//     Home,
+//     #[at("/post/:id")]
+//     Post { id: String },
+//     #[at("/*path")]
+//     Misc { path: String },
+// }
+
+// fn switch(route: Route) -> Html {
+//     match route {
+//         Route::Home => html! { <h1>{ "Home" }</h1> },
+//         Route::Post { id } => html! {<p>{format!("You are looking at Post {}", id)}</p>},
+//         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
+//     }
+// }
