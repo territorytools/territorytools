@@ -70,8 +70,14 @@ pub fn user_selector() -> Html {
                             Some(_) => user.alba_full_name.clone().unwrap(),
                             None => "".to_string()
                         }
-                    };   
-                    html!{<option value={user.id.to_string()}>{user_full_name}</option>}
+                    };
+                    let alba_user_id: String = {
+                        match user.alba_user_id {
+                            Some(_) => user.alba_user_id.clone().unwrap(),
+                            None => "".to_string()
+                        }
+                    };  
+                    html!{<option value={alba_user_id.to_string()}>{user_full_name}</option>}
                 }).collect::<Html>()
             }
         </select>

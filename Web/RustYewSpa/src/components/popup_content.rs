@@ -25,7 +25,8 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span>{status}</span>
             {assignee_line}
             <br/><a 
-                    style='margin-top:5px;'
+                    style='margin-top:5px;color:white;'
+                    class='btn btn-primary btn-sm'
                     href='/app/assign/{territory_number}' target='_blank'>
                     Assign
                 </a>

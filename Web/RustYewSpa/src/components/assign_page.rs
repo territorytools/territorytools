@@ -53,6 +53,7 @@ impl Component for AssignPage {
             <>
                 <MenuBar/>
                 <AssignmentForm territory_number={ctx.props().id.clone()} />
+                <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
             </>
         }
     }

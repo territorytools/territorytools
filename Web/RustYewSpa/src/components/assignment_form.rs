@@ -58,7 +58,7 @@ impl Component for AssignmentForm {
                         <label for={"modal-number"}>{"Current Assignee:"}</label>
                         <div class={"input-group-append"}>
                             <input name={"assignee"} type={"text"} class={"form-control"} placeholder={"Nobody assigned"} id={"modal-current-assignee"}/> // readonly
-                            <button id={"unassign-button"} type={"button"} class={"btn btn-primary"}>{"Unassign"}</button>
+                            <button id={"unassign-button"} type={"button"} class={"btn btn-primary disabled"}>{"Unassign"}</button>
                         </div>
                     </div>
                     <div id={"unassign-status"}></div>
@@ -69,7 +69,7 @@ impl Component for AssignmentForm {
                         <div class={"input-group-append"}>
                             //<select id={"user-menu"} name={"albaUserId"} class={"custom-select"}></select>
                             <UserSelector />
-                            <button id={"assign-button"} type={"button"} class={"btn btn-primary"}>{"Assign"}</button>
+                            <button id={"assign-button"} type={"button"} class={"btn btn-primary disabled"}>{"Assign"}</button>
                         </div>
                     </div>
                     <div id={"assign-status"}></div>

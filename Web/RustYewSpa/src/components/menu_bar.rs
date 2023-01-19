@@ -39,26 +39,26 @@ pub fn menu_bar() -> Html {
                         <span class={"navbar-toggler-icon"}></span>
                     </button>
                     <div class={"navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"}>
-                        <ul class={"navbar-nav flex-grow"}>
-                            // Dropdown 
-                            <li class={"nav-item dropdown"}>
-                                <a class={"nav-link dropdown-toggle"} href={"#"} id={"navbardrop"} data-toggle={"dropdown"}>
-                                    <i class={"fas fa-language fa-lg text-body"}></i>
-                                </a>
-                                <div class={"dropdown-menu dropdown-menu-right"}>
-                                </div>
-                            </li>
-                            <li>
-                                <ul class={"navbar-nav"}>
-                                    <li class={"nav-item dropdown"}>
-                                        <a class={"nav-link dropdown-toggle"} href={"#"} id={"navbardrop"} data-toggle={"dropdown"}>
-                                            <i class={"fas fa-user-circle fa-lg text-body"}></i>
-                                            <span style={"color:black;"}>{"User"}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+                        // <ul class={"navbar-nav flex-grow"}>
+                        //     // Dropdown 
+                        //     <li class={"nav-item dropdown"}>
+                        //         <a class={"nav-link dropdown-toggle"} href={"#"} id={"navbardrop"} data-toggle={"dropdown"}>
+                        //             <i class={"fas fa-language fa-lg text-body"}></i>
+                        //         </a>
+                        //         <div class={"dropdown-menu dropdown-menu-right"}>
+                        //         </div>
+                        //     </li>
+                        //     <li>
+                        //         <ul class={"navbar-nav"}>
+                        //             <li class={"nav-item dropdown"}>
+                        //                 <a class={"nav-link dropdown-toggle"} href={"#"} id={"navbardrop"} data-toggle={"dropdown"}>
+                        //                     <i class={"fas fa-user-circle fa-lg text-body"}></i>
+                        //                     <span style={"color:black;"}>{"User"}</span>
+                        //                 </a>
+                        //             </li>
+                        //         </ul>
+                        //     </li>
+                        // </ul>
                         <ul class={"navbar-nav flex-grow-1"}>
                             <li class={"nav-item"}>
                                 <a class={"nav-link text-dark"} href={"/"}>{"Home"}</a>
