@@ -41,8 +41,8 @@ pub fn territory_map() -> Html {
             let territories = territories.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 
-                let uri: &str = "/data/territory-borders-all.json";
-                //let uri: &str = "/api/territories/borders";
+                //let uri: &str = "/data/territory-borders-all.json";
+                let uri: &str = "/api/territories/borders";
 
                 let fetched_territories: Vec<Territory> = Request::get(uri)
                     .send()
@@ -228,19 +228,19 @@ pub fn territory_map() -> Html {
                     width: auto; 
                     z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
                 "}
-                class={"btn btn-primary btn-sm"} 
+                class={"btn btn-primary btn-sm"} >
                 href={"/"}>
-                    <svg 
-                        xmlns={"http://www.w3.org/2000/svg"}
-                        width={"16"}
-                        height={"16"}
-                        fill={"currentColor"}
-                        class={"bi bi-house-fill"}
-                        viewBox={"0 0 16 16"}>
-                        <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
-                        <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
-                    </svg>
-                </a>
+                <svg 
+                    xmlns={"http://www.w3.org/2000/svg"}
+                    width={"16"}
+                    height={"16"}
+                    fill={"currentColor"}
+                    class={"bi bi-house-fill"}
+                    viewBox={"0 0 16 16"}>
+                    <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
+                    <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
+                </svg>
+            </a>
             <MapMenu>        
                 <TerritorySummary 
                     available={available_count}
@@ -252,6 +252,19 @@ pub fn territory_map() -> Html {
         </div>
     }
 }
+
+// #[function_component(Secure)]
+// fn secure() -> Html {
+//     let navigator = use_navigator().unwrap();
+
+//     let onclick = Callback::from(move |_| navigator.push(&Route::Home));
+//     html! {
+//         <div>
+//             <h1>{ "Secure" }</h1>
+//             <button {onclick}>{ "Go Home" }</button>
+//         </div>
+//     }
+// }
 
 fn add_tile_layer2(map: &Map) {
     TileLayer::new(

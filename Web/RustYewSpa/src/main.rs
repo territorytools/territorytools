@@ -1,5 +1,6 @@
 use crate::components::territory_map::TerritoryMap;
 use crate::components::territory_summary::TerritorySummary;
+use crate::components::assign_page::AssignPage;
 use yew_router::prelude::*;
 use yew::prelude::*;
 mod components;
@@ -56,14 +57,26 @@ fn app() -> Html {
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
-    #[at("/")]
+    #[at("/app")]
+    Root,
+    #[at("/wasm/index.html")]
+    Start,
+    #[at("/app/map")]
     Map,
-    #[at("/home")]
+    #[at("/app/home")]
     Home,
-    #[at("/secure")]
+    // #[at("/other")]
+    // Other,
+    #[at("/app/assign")]
+    Assign,
+    #[at("/app/secure")]
     Secure,
+    #[at("/app/territory/:id")]
+    TerritoryView { id: String },    
+    #[at("/app/*path")]
+    Misc { path: String },
     #[not_found]
-    #[at("/404")]
+    #[at("/app/404")]
     NotFound,
 }
 
@@ -82,14 +95,20 @@ fn secure() -> Html {
 
 fn switch(route: Route) -> Html {
     match route {
-        Route::Home => html! { <h1>{ "Home" }</h1> },
+        //Route::Home => html! { <Redirect<Route> to={"/"} },
+        Route::Home => html! { <h3>{"Home"}</h3> },
+        Route::Root => html! { <Redirect<Route> to={Route::Map}/> },
+        Route::Start => html! { <Redirect<Route> to={Route::Map}/> },
+        //Route::Other => html! { <Redirect<Route> to={"https://google.com"}/> },
+        Route::Assign => html! { <AssignPage id={"9999"} /> },
         Route::Map => html! { <TerritoryMap /> },
         Route::Secure => html! {
             <Secure />
         },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
-        //Route::Post { id } => html! {<p>{format!("You are looking at Post {}", id)}</p>},
-        //Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
+        //Route::NotFound => html! {<Redirect<Route> to={"/"}/>}
+        Route::TerritoryView { id } => html! {<p>{format!("You are looking at Territory {}", id)}</p>},
+        Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
 }
 
