@@ -18,8 +18,8 @@ pub enum Route {
     Home,
     // #[at("/other")]
     // Other,
-    #[at("/app/assign")]
-    Assign,
+    #[at("/app/assign/:id")]
+    Assign { id: String },
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]

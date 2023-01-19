@@ -52,9 +52,9 @@ impl Component for AssignPage {
         html! {
             <>
                 <MenuBar/>
-                <p>{"You picked id:"} { ctx.props().id.clone() }</p>
-                <AssignmentForm />
+                <AssignmentForm territory_number={ctx.props().id.clone()} />
             </>
         }
     }
 }
+

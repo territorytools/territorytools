@@ -1,6 +1,8 @@
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::models::territories::{Territory};
+use crate::components::route_stuff::Route;
+use yew_router::prelude::use_navigator;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
@@ -61,10 +63,27 @@ pub fn menu_bar() -> Html {
                             <li class={"nav-item"}>
                                 <a class={"nav-link text-dark"} href={"/"}>{"Home"}</a>
                             </li>
+                            <li class={"nav-item"}>
+                                <MapPageLink />
+                            </li>                            
                         </ul>
                     </div>
                 </div>
             </nav>
         </header>   
+    }
+}
+
+#[function_component(MapPageLink)]
+fn map_page_link() -> Html {
+    let navigator = use_navigator().unwrap();
+
+    let onclick = Callback::from(move |_| navigator.push(&Route::Map));
+    html! {
+
+        <a {onclick} class={"nav-link text-dark"} style={"cursor: pointer;"}>
+            {"Map"}
+        </a>
+
     }
 }

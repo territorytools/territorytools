@@ -24,11 +24,11 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span>Addresses: {address_count}</span>
             <br/><span>{status}</span>
             {assignee_line}
-            <br/><button 
+            <br/><a 
                     style='margin-top:5px;'
-                    href='/t/{territory_number}' target='_blank'>
+                    href='/app/assign/{territory_number}' target='_blank'>
                     Assign
-                </button>
+                </a>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap(),

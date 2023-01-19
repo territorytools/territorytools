@@ -270,7 +270,7 @@ fn home_button() -> Html {
 fn assign_page_link() -> Html {
     let navigator = use_navigator().unwrap();
 
-    let onclick = Callback::from(move |_| navigator.push(&Route::Assign));
+    let onclick = Callback::from(move |_| navigator.push(&Route::Assign { id: "4".to_string() }));
     html! {
 
         <button {onclick}

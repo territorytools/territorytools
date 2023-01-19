@@ -20,15 +20,42 @@ use web_sys::{
     Node
 };
 
-#[function_component(AssignmentForm)]
-pub fn menu_bar() -> Html {
-    html! {
-        <div class={"container"}>
+#[derive(Properties, PartialEq, Clone)]
+pub struct AssignmentFormProps {
+    pub territory_number: String,
+}
+
+pub struct AssignmentForm;
+//  {
+//     props: MapMenuProps,
+// }
+
+pub enum AssignmentFormMsg {
+
+}
+
+impl Component for AssignmentForm {
+    type Message = AssignmentFormMsg;
+    type Properties = AssignmentFormProps;
+
+    fn create(_ctx: &Context<Self>) -> Self {
+        Self {}
+    }
+
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+        true
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        html! {
+            <div class={"container"}>
             <div id={"assignment-buttons"}>
                 <form>
                     <div class={"form-group"}>
+                        <label for={"territory-number"}>{"Territory Number:"}</label>
+                        <input name={"territoryNumber"} type={"text"} class={"form-control"} id={"modal-territory-number"} 
+                        value={ctx.props().territory_number.clone()} /> // readonly
                         <label for={"modal-number"}>{"Current Assignee:"}</label>
-                        <input name={"territoryNumber"} type={"hidden"} class={"form-control"} id={"modal-territory-number"}/> // readonly
                         <div class={"input-group-append"}>
                             <input name={"assignee"} type={"text"} class={"form-control"} placeholder={"Nobody assigned"} id={"modal-current-assignee"}/> // readonly
                             <button id={"unassign-button"} type={"button"} class={"btn btn-primary"}>{"Unassign"}</button>
@@ -58,5 +85,6 @@ pub fn menu_bar() -> Html {
                 </form>
             </div>
         </div>
+        }
     }
 }
