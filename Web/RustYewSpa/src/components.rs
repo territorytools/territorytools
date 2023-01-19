@@ -4,3 +4,6 @@ pub mod popup_content;
 pub mod map_menu;
 pub mod assign_page;
 pub mod route_stuff;
+pub mod menu_bar;
+pub mod assignment_form;
+pub mod user_selector;
