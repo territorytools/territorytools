@@ -20,6 +20,12 @@ use web_sys::{
     Node
 };
 
+#[cfg(debug_assertions)]
+const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+
+#[cfg(not(debug_assertions))]
+const DATA_API_PATH: &str = "/api/territories/borders";
+
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
     // from create
@@ -42,7 +48,8 @@ pub fn territory_map() -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 
                 //let uri: &str = "/data/territory-borders-all.json";
-                let uri: &str = "/api/territories/borders";
+                //let uri: &str = "/api/territories/borders";
+                let uri: &str = DATA_API_PATH;
 
                 let fetched_territories: Vec<Territory> = Request::get(uri)
                     .send()
@@ -208,39 +215,10 @@ pub fn territory_map() -> Html {
   
     html!{
         <div style={"width:100%;"}>        
-            // <TerritorySummary 
-            //     available={available_count}
-            //     signed_out={signed_out_count}
-            //     completed={completed_count}
-            //     total={total_count}
-            //     hidden={hidden_count} />            
             {
                 {map_container}
             }
-            <a 
-                style={"
-                    position: absolute;
-                    height: auto;
-                    max-height: 60px;
-                    top: 1vh;
-                    right: 1vh;
-                    margin-right: 1vh; 
-                    width: auto; 
-                    z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
-                "}
-                class={"btn btn-primary btn-sm"} >
-                href={"/"}>
-                <svg 
-                    xmlns={"http://www.w3.org/2000/svg"}
-                    width={"16"}
-                    height={"16"}
-                    fill={"currentColor"}
-                    class={"bi bi-house-fill"}
-                    viewBox={"0 0 16 16"}>
-                    <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
-                    <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
-                </svg>
-            </a>
+            <HomeButton />
             <MapMenu>        
                 <TerritorySummary 
                     available={available_count}
@@ -250,6 +228,36 @@ pub fn territory_map() -> Html {
                     hidden={hidden_count} />      
             </MapMenu>            
         </div>
+    }
+}
+
+#[function_component(HomeButton)]
+fn home_button() -> Html {
+    html! {
+        <a 
+        style={"
+            position: absolute;
+            height: auto;
+            max-height: 60px;
+            top: 1vh;
+            right: 1vh;
+            margin-right: 1vh; 
+            width: auto; 
+            z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
+        "}
+        class={"btn btn-primary btn-sm"}
+        href={"/"}>
+        <svg 
+            xmlns={"http://www.w3.org/2000/svg"}
+            width={"16"}
+            height={"16"}
+            fill={"currentColor"}
+            class={"bi bi-house-fill"}
+            viewBox={"0 0 16 16"}>
+            <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
+            <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
+        </svg>
+    </a>
     }
 }
 
