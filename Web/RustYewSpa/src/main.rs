@@ -2,6 +2,8 @@ use crate::components::territory_map::TerritoryMap;
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::assign_page::AssignPage;
 use crate::components::route_stuff::Route;
+use wasm_bindgen::prelude::wasm_bindgen;
+use gloo_console::log;
 use yew_router::prelude::*;
 use yew::prelude::*;
 mod components;
@@ -86,6 +88,11 @@ fn switch(route: Route) -> Html {
         Route::TerritoryView { id } => html! {<p>{format!("You are looking at Territory {}", id)}</p>},
         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
+}
+
+#[wasm_bindgen] 
+pub fn test_log() {
+    log!("You just called from Rust from JavaScript!");
 }
 
 // #[derive(Clone, Routable, PartialEq)]

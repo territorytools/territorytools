@@ -27,7 +27,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><button 
                     style='margin-top:5px;color:white;'
                     class='btn btn-primary btn-sm'
-                    onclick=\"if(typeof window !== 'undefined'){{window.location.href='/app/assign/{territory_number}';}}\">
+                    onclick=\"test_log()\">
                     Assign
                 </button>
             <br/>
