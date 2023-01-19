@@ -1,12 +1,14 @@
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
+use crate::components::route_stuff::Route;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
 use reqwasm::http::{Request};
 use yew::prelude::*;
+use yew_router::prelude::*;
 use gloo_utils::document;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
@@ -219,6 +221,7 @@ pub fn territory_map() -> Html {
                 {map_container}
             }
             <HomeButton />
+            <AssignPageLink />
             <MapMenu>        
                 <TerritorySummary 
                     available={available_count}
@@ -230,6 +233,8 @@ pub fn territory_map() -> Html {
         </div>
     }
 }
+
+
 
 #[function_component(HomeButton)]
 fn home_button() -> Html {
@@ -245,7 +250,7 @@ fn home_button() -> Html {
             width: auto; 
             z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
         "}
-        class={"btn btn-primary btn-sm"}
+        class={"btn btn-primary"}
         href={"/"}>
         <svg 
             xmlns={"http://www.w3.org/2000/svg"}
@@ -261,6 +266,33 @@ fn home_button() -> Html {
     }
 }
 
+#[function_component(AssignPageLink)]
+fn assign_page_link() -> Html {
+    let navigator = use_navigator().unwrap();
+
+    let onclick = Callback::from(move |_| navigator.push(&Route::Assign));
+    html! {
+
+        <button {onclick}
+            style={"
+                position: absolute;
+                height: auto;
+                max-height: 60px;
+                top: 5vh;
+                right: 1vh;
+                margin-right: 1vh; 
+                width: auto; 
+                z-index: 1000;"}
+                class={"btn btn-primary"}>
+            <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-card-checklist"} viewBox={"0 0 16 16"}>
+                <path d={"M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"}/>
+                <path d={"M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"}/>
+            </svg>
+        </button>
+
+    }
+}
+
 // #[function_component(Secure)]
 // fn secure() -> Html {
 //     let navigator = use_navigator().unwrap();
@@ -268,8 +300,8 @@ fn home_button() -> Html {
 //     let onclick = Callback::from(move |_| navigator.push(&Route::Home));
 //     html! {
 //         <div>
-//             <h1>{ "Secure" }</h1>
-//             <button {onclick}>{ "Go Home" }</button>
+//             <h1>{ "Secure"} }</h1>
+//             <button {onclick}>{ "Go Home"} }</button>
 //         </div>
 //     }
 // }
