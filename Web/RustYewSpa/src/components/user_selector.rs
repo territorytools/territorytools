@@ -24,7 +24,7 @@ use web_sys::{
 const DATA_USERS_API_PATH: &str = "/data/users.json";
 
 #[cfg(not(debug_assertions))]
-const DATA_USERS_API_PATH: &str = "/api/users/all";
+const DATA_USERS_API_PATH: &str = "/api/users?active=true";
 
 
 #[function_component(UserSelector)]
