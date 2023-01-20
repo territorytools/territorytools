@@ -11,6 +11,7 @@ use gloo_utils::document;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use serde::{Serialize, Deserialize};
+use urlencoding::decode;
 //use js_sys::{Array, Date};
 use web_sys::{
     Document,
@@ -23,6 +24,8 @@ use web_sys::{
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignmentFormProps {
     pub territory_number: String,
+    pub assignee_name: String,
+    pub description: String,
 }
 
 pub struct AssignmentForm;
@@ -47,6 +50,9 @@ impl Component for AssignmentForm {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        let assignee_name: String = format!("{}", decode(&ctx.props().assignee_name).expect("UTF-8"));
+        let description: String = format!("{}", decode(&ctx.props().description).expect("UTF-8"));
+
         html! {
             <div class={"container"}>
             <div id={"assignment-buttons"}>
@@ -54,10 +60,14 @@ impl Component for AssignmentForm {
                     <div class={"form-group"}>
                         <label for={"territory-number"}>{"Territory Number:"}</label>
                         <input name={"territoryNumber"} type={"text"} class={"form-control"} id={"modal-territory-number"} 
-                        value={ctx.props().territory_number.clone()} /> // readonly
+                            value={ctx.props().territory_number.clone()} /> // readonly
+                        <label for={"modal-description"}>{"Description:"}</label>
+                        <div class={"input-group-append"}>
+                            <input value={description} name={"description"} type={"text"} class={"form-control"} placeholder={""} id={"modal-current-description"}/> // readonly
+                        </div>
                         <label for={"modal-number"}>{"Current Assignee:"}</label>
                         <div class={"input-group-append"}>
-                            <input name={"assignee"} type={"text"} class={"form-control"} placeholder={"Nobody assigned"} id={"modal-current-assignee"}/> // readonly
+                            <input value={assignee_name} name={"assignee"} type={"text"} class={"form-control"} placeholder={"Nobody assigned"} id={"modal-current-assignee"}/> // readonly
                             <button id={"unassign-button"} type={"button"} class={"btn btn-primary disabled"}>{"Unassign"}</button>
                         </div>
                     </div>

@@ -62,6 +62,7 @@ pub fn user_selector() -> Html {
 
     html! {
         <select id={"user-menu"} name={"albaUserId"} class={"custom-select"}>
+            <option value={"0"}>{"Select User"}</option>
             {
                 
                 users.iter().map(|user| {   

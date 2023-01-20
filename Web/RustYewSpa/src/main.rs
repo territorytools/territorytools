@@ -78,7 +78,7 @@ fn switch(route: Route) -> Html {
         Route::Root => html! { <Redirect<Route> to={Route::Map}/> },
         Route::Start => html! { <Redirect<Route> to={Route::Map}/> },
         //Route::Other => html! { <Redirect<Route> to={"https://google.com"}/> },
-        Route::Assign { id } => html! { <AssignPage id={id} /> },
+        Route::Assign { id, description, assignee_name } => html! { <AssignPage id={id} description={description} assignee_name={assignee_name}/> },
         Route::Map => html! { <TerritoryMap /> },
         Route::Secure => html! {
             <Secure />

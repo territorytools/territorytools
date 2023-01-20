@@ -24,6 +24,8 @@ use web_sys::{
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
     pub id: String,
+    pub assignee_name: String,
+    pub description: String,
 }
 
 pub struct AssignPage;
@@ -52,7 +54,10 @@ impl Component for AssignPage {
         html! {
             <>
                 <MenuBar/>
-                <AssignmentForm territory_number={ctx.props().id.clone()} />
+                <AssignmentForm 
+                    territory_number={ctx.props().id.clone()} 
+                    assignee_name={ctx.props().assignee_name.clone()}
+                    description={ctx.props().description.clone()}/>
                 <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
             </>
         }

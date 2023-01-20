@@ -8,6 +8,13 @@ pub fn popup_content(territory: &Territory) -> String  {
             Nome => "".to_string()
         }
     };
+    
+    let assignee_name = {
+        match &territory.signed_out_to {
+            Some(t) => territory.signed_out_to.clone().unwrap(),
+            Nome => "".to_string()
+        }
+    };
 
     let status = {
         if territory.last_completed_by.is_none() {
@@ -17,6 +24,21 @@ pub fn popup_content(territory: &Territory) -> String  {
         }
     };
 
+    let assign_button_html = 
+        if territory.status == "Available".to_string() && status != "Completed".to_string() {
+        //href='/app/assign/{territory_number}/{description}/{assignee_name}'>
+        format!("<br/><a 
+                    style='margin-top:5px;color:white;'
+                    class='btn btn-primary btn-sm'
+                    href='/app/assign/{territory_number}/Enter+description/Current+Assignee'>
+                    Assign
+                </a>",
+                territory_number = territory.number,
+                // description = territory.description.clone().unwrap(),
+                // assignee_name = assignee_name,
+                )
+    } else { "".to_string() };
+
     format!(
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>
@@ -24,12 +46,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span>Addresses: {address_count}</span>
             <br/><span>{status}</span>
             {assignee_line}
-            <br/><button 
-                    style='margin-top:5px;color:white;'
-                    class='btn btn-primary btn-sm'
-                    onclick=\"test_log()\">
-                    Assign
-                </button>
+            {assign_button_html}
             <br/>
         </div>",
         territory_number = territory.number,
@@ -37,17 +54,6 @@ pub fn popup_content(territory: &Territory) -> String  {
         status = status,
         //onclick_string = onclick_string,
         address_count = territory.address_count,
-        assignee_line = assignee_line,
+        assignee_line = assignee_line
     )
 }
-
-// <form>
-//     <input type='text' value='{description}'/>
-//     <br/>Addresses: <strong>{address_count}</strong>
-//     <br/>{status}
-//     <br/><button 
-//         onclick='{onclick_string}'>
-//         Save
-//     </button>            
-// </form>
-
