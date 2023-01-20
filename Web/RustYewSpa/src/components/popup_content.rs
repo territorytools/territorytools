@@ -30,11 +30,11 @@ pub fn popup_content(territory: &Territory) -> String  {
         format!("<br/><a 
                     style='margin-top:5px;color:white;'
                     class='btn btn-primary btn-sm'
-                    href='/app/assign/{territory_number}/Enter+description/Current+Assignee'>
+                    href='/app/assign/{territory_number}/{description}/Current+Assignee'>
                     Assign
                 </a>",
                 territory_number = territory.number,
-                // description = territory.description.clone().unwrap(),
+                description = territory.description.clone().unwrap(),
                 // assignee_name = assignee_name,
                 )
     } else { "".to_string() };

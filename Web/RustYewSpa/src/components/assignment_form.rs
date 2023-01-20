@@ -65,11 +65,11 @@ impl Component for AssignmentForm {
                         <div class={"input-group-append"}>
                             <input value={description} name={"description"} type={"text"} class={"form-control"} placeholder={""} id={"modal-current-description"}/> // readonly
                         </div>
-                        <label for={"modal-number"}>{"Current Assignee:"}</label>
-                        <div class={"input-group-append"}>
-                            <input value={assignee_name} name={"assignee"} type={"text"} class={"form-control"} placeholder={"Nobody assigned"} id={"modal-current-assignee"}/> // readonly
-                            <button id={"unassign-button"} type={"button"} class={"btn btn-primary disabled"}>{"Unassign"}</button>
-                        </div>
+                        // <label for={"modal-number"}>{"Current Assignee:"}</label>
+                        // <div class={"input-group-append"}>
+                        //     <input value={assignee_name} name={"assignee"} type={"text"} class={"form-control"} placeholder={"Nobody assigned"} id={"modal-current-assignee"}/> // readonly
+                        //     <button id={"unassign-button"} type={"button"} class={"btn btn-primary disabled"}>{"Unassign"}</button>
+                        // </div>
                     </div>
                     <div id={"unassign-status"}></div>
                 </form>
