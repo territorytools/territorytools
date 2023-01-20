@@ -25,7 +25,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
         [Route("{a?}/{b?}/{c?}/{d?}/{e?}/{f?}")]
         public void ForwardToApi()
         {
-            if(!User.Identity.IsAuthenticated)
+            string path = ControllerContext.HttpContext.Request.Path.Value;
+            string queryString = ControllerContext.HttpContext.Request.QueryString.Value;
+
+            _logger.LogTrace($"Forwarding request to API: Path: {path} QueryString: {queryString}");
+
+            if (!User.Identity.IsAuthenticated)
             {
                 //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
                 //HttpContext isn't thread safe
@@ -37,8 +42,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
             if (string.IsNullOrWhiteSpace(baseUrl))
                 throw new ArgumentNullException(nameof(baseUrl));
 
-            string path = ControllerContext.HttpContext.Request.Path.Value;
-            string queryString = ControllerContext.HttpContext.Request.QueryString.Value;
 
             string pathPrefix = "/api/"; // Same as controler Route attribute but with a trailing slash
             if (path.StartsWith(pathPrefix))
