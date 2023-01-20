@@ -43,10 +43,9 @@ impl Component for Model {
     }
 }
 
-fn main() {
-    //yew::Renderer::<Main>();
-    yew::Renderer::<Main>::new().render();
-}
+// fn main() {
+//     yew::Renderer::<Main>::new().render();
+// }
 
 #[function_component(Main)]
 fn app() -> Html {
@@ -90,7 +89,7 @@ fn switch(route: Route) -> Html {
     }
 }
 
-#[wasm_bindgen] 
+#[no_mangle] 
 pub fn test_log() {
     log!("You just called from Rust from JavaScript!");
 }
