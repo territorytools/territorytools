@@ -1,11 +1,14 @@
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
+use crate::components::map_menu::MapMenu;
+use crate::components::route_stuff::Route;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
 use reqwasm::http::{Request};
 use yew::prelude::*;
+use yew_router::prelude::*;
 use gloo_utils::document;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
@@ -18,6 +21,12 @@ use web_sys::{
     Window,
     Node
 };
+
+#[cfg(debug_assertions)]
+const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+
+#[cfg(not(debug_assertions))]
+const DATA_API_PATH: &str = "/api/territories/borders";
 
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
@@ -41,7 +50,8 @@ pub fn territory_map() -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 
                 //let uri: &str = "/data/territory-borders-all.json";
-                let uri: &str = "/api/territories/borders";
+                //let uri: &str = "/api/territories/borders";
+                let uri: &str = DATA_API_PATH;
 
                 let fetched_territories: Vec<Territory> = Request::get(uri)
                     .send()
@@ -207,48 +217,94 @@ pub fn territory_map() -> Html {
   
     html!{
         <div style={"width:100%;"}>        
-            // <TerritorySummary 
-            //     available={available_count}
-            //     signed_out={signed_out_count}
-            //     completed={completed_count}
-            //     total={total_count}
-            //     hidden={hidden_count} />            
             {
                 {map_container}
             }
-            <a 
-                style={"
-                    position: absolute;
-                    height: auto;
-                    max-height: 60px;
-                    top: 1vh;
-                    right: 1vh;
-                    margin-right: 1vh; 
-                    width: auto; 
-                    z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
-                "}
-                class={"btn btn-primary btn-sm"} 
-                href={"/"}>
-                    <svg 
-                        xmlns={"http://www.w3.org/2000/svg"}
-                        width={"16"}
-                        height={"16"}
-                        fill={"currentColor"}
-                        class={"bi bi-house-fill"}
-                        viewBox={"0 0 16 16"}>
-                        <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
-                        <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
-                    </svg>
-                </a>
-            <MapDashboard 
-                available={available_count}
-                signed_out={signed_out_count}
-                completed={completed_count}
-                total={total_count}
-                hidden={hidden_count} />   
+            <HomeButton />
+            <AssignPageLink />
+            <MapMenu>        
+                <TerritorySummary 
+                    available={available_count}
+                    signed_out={signed_out_count}
+                    completed={completed_count}
+                    total={total_count}
+                    hidden={hidden_count} />      
+            </MapMenu>            
         </div>
     }
 }
+
+
+
+#[function_component(HomeButton)]
+fn home_button() -> Html {
+    html! {
+        <a 
+        style={"
+            position: absolute;
+            height: auto;
+            max-height: 60px;
+            top: 1vh;
+            right: 1vh;
+            margin-right: 1vh; 
+            width: auto; 
+            z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
+        "}
+        class={"btn btn-primary"}
+        href={"/"}>
+        <svg 
+            xmlns={"http://www.w3.org/2000/svg"}
+            width={"16"}
+            height={"16"}
+            fill={"currentColor"}
+            class={"bi bi-house-fill"}
+            viewBox={"0 0 16 16"}>
+            <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
+            <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
+        </svg>
+    </a>
+    }
+}
+
+#[function_component(AssignPageLink)]
+fn assign_page_link() -> Html {
+    let navigator = use_navigator().unwrap();
+
+    let onclick = Callback::from(move |_| navigator.push(&Route::Assign { id: "4".to_string() }));
+    html! {
+
+        <button {onclick}
+            style={"
+                position: absolute;
+                height: auto;
+                max-height: 60px;
+                top: 5vh;
+                right: 1vh;
+                margin-right: 1vh; 
+                width: auto; 
+                z-index: 1000;"}
+                class={"btn btn-primary"}>
+            <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-card-checklist"} viewBox={"0 0 16 16"}>
+                <path d={"M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"}/>
+                <path d={"M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"}/>
+            </svg>
+        </button>
+
+    }
+}
+
+// #[function_component(Secure)]
+// fn secure() -> Html {
+//     let navigator = use_navigator().unwrap();
+
+//     let onclick = Callback::from(move |_| navigator.push(&Route::Home));
+//     html! {
+//         <div>
+//             <h1>{ "Secure"} }</h1>
+//             <button {onclick}>{ "Go Home"} }</button>
+//         </div>
+//     }
+// }
 
 fn add_tile_layer2(map: &Map) {
     TileLayer::new(
@@ -289,164 +345,4 @@ fn render_map(element: &HtmlElement) -> Html {
         Html::VRef(node.clone())
 }
 
-#[derive(PartialEq, Properties, Clone)]
-pub struct MapDashboardProperties {
-    pub available: i32,
-    pub signed_out: i32,
-    pub completed: i32,
-    pub total: i32,
-    pub hidden: i32
-}
-
-#[function_component(MapDashboard)]
-pub fn map_dashboard(props: &MapDashboardProperties) -> Html {
-    html! {
-        <div style={"
-            background-color: white;
-            font-family: arial;
-            border-radius: 5px;
-            display: block;
-            border-style: solid;
-            border-color: blue;
-            border-width: 1px;
-            position: absolute;
-            height: auto;
-            max-height: 60px;
-            bottom: 1vh;
-            right: 1vh;
-            margin-right: 1vh; 
-            width: auto; 
-            z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
-            "}>
-        //<p style={"margin:10px;background-color:white;"}>
-            <MapMenu>        
-                <TerritorySummary 
-                available={props.available}
-                signed_out={props.signed_out}
-                completed={props.completed}
-                total={props.total}
-                hidden={props.hidden} />      
-            </MapMenu>
-        </div>
-    }
-}
-
 //use yew::{Component, Context, html, Html};
-
-#[derive(Properties, PartialEq, Clone)]
-struct MapMenuProps {
-    //id: String,
-    #[prop_or_default]
-    children: Children,
-}
-
-struct MapMenu;
-//  {
-//     props: MapMenuProps,
-//     //link: ComponentLink<Self>,
-// }
-
-enum MapMenuMsg {
-    Click,
-}
-
-impl Component for MapMenu {
-    type Message = MapMenuMsg;
-    type Properties = MapMenuProps;
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self {}
-    }
-
-    // fn create(props: Self::Properties) -> Self {
-    //     Self { props }
-    // }
-
-
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            MapMenuMsg::Click => {
-                let window = web_sys::window().expect("no global `window` exists");
-                let document = window.document().expect("should have a document on window");
-
-                let to_be_hidden = document
-                    .get_element_by_id("to-be-hidden")
-                    .expect("should have #to_be_hidden on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#to_be_hidden should be an `HtmlElement`");
-
-                let hide_legend_button = document
-                    .get_element_by_id("hide-legend-button")
-                    .expect("should have #hide-legend-button on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#hide-legend-button should be an `HtmlElement`");
-                
-                let show_legend_button_icon = document
-                    .get_element_by_id("show-legend-button-icon")
-                    .expect("should have #hide-legend-button-text on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#hide-legend-button-text should be an `HtmlElement`");
-
-                let hide_legend_button_icon = document
-                    .get_element_by_id("hide-legend-button-icon")
-                    .expect("should have #hide-legend-button-icon on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#hide-legend-button-icon should be an `HtmlElement`");
-
-                let was_visible = to_be_hidden.get_attribute("data-visible")
-                    .expect("data-visible attribute should exist")
-                    .to_string();
-
-                if was_visible == "true" {
-                    to_be_hidden.set_attribute("data-visible", "false");
-                    hide(to_be_hidden);
-                    hide(hide_legend_button_icon);
-                    show(show_legend_button_icon);
-                } else {
-                    to_be_hidden.set_attribute("data-visible", "true");
-                    show(to_be_hidden);
-                    show(hide_legend_button_icon);
-                    hide(show_legend_button_icon);
-                }
-            }
-        };
-        true
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let click_callback = ctx.link().callback(|_| MapMenuMsg::Click);
-        html! {
-            <div style={"width:auto;z-index:1001;display:flex;flex-direction:row;"}>
-                <div id={"to-be-hidden"} style={"display: none;"} data-visible={"false"}>
-                    { for &mut ctx.props().children.iter() }
-                </div>
-                <button id={"hide-legend-button"} onclick={click_callback} class={"btn btn-primary btn-sm"}>
-                    <div id={"hide-legend-button-icon"} style={"display:none;"}>
-                        // chevron-bar-right
-                        <svg xmlns={"http://www.w3.org/2000/svg"}width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-chevron-bar-right"} viewBox={"0 0 16 16"}>
-                            <path fill-rule={"evenodd"} d={"M4.146 3.646a.5.5 0 0 0 0 .708L7.793 8l-3.647 3.646a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708 0zM11.5 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5z"}/>
-                        </svg>
-                    </div>
-                    <div id={"show-legend-button-icon"}>
-                        // bi-palette-fill
-                        <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-palette-fill"} viewBox={"0 0 16 16"}>
-                            <path d={"M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"}/>
-                        </svg>
-                    </div>
-                </button>
-            </div>
-        }
-    }
-}
-
-fn show(element: web_sys::HtmlElement) {
-    element
-        .style()
-        .set_property("display", "block");
-}
-
-fn hide(element: web_sys::HtmlElement) {
-    element
-        .style()
-        .set_property("display", "none");
-}

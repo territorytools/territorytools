@@ -25,10 +25,12 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span>{status}</span>
             {assignee_line}
             <br/><button 
-                    style='margin-top:5px;'
-                    href='/t/{territory_number}' target='_blank'>
+                    style='margin-top:5px;color:white;'
+                    class='btn btn-primary btn-sm'
+                    onclick=\"test_log()\">
                     Assign
                 </button>
+            <br/>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap(),

@@ -1,4 +1,4 @@
-# Leaflet-rs in yew.rs example
+# Leaflet-rs for Territory Tools Maps
 
 An example that shows how to use library to use Leaflet within
 a [yew.rs](https://yew.rs) component.
@@ -7,7 +7,7 @@ a [yew.rs](https://yew.rs) component.
 
 ```
 cargo install trunk
-# in current directory, so: src/examples/yew-component
+# in current directory, so: src/examples/yew-componenta
 trunk serve
 ```
 
@@ -21,5 +21,5 @@ trunk build --release
 
 ## Build with subfolder prefix
 ```
-trunk build --public-url "/wasm/"
+trunk build --release --public-url "/wasm/"
 ```
