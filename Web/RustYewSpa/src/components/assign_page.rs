@@ -1,3 +1,9 @@
+#[cfg(debug_assertions)]
+const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+
+#[cfg(not(debug_assertions))]
+const DATA_API_PATH: &str = "/api/territories/borders";
+
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::menu_bar::MenuBar;
@@ -68,6 +74,15 @@ impl Component for AssignPage {
                     //history.push(&Route::Home);
                     //login_reducer(result, store_dispatch);
                     log!(format!("Description: {}", assignment.description));
+                    let uri: &str = DATA_API_PATH;
+
+                    let fetched_territories: Vec<Territory> = Request::get(uri)
+                        .send()
+                        .await
+                        .unwrap()
+                        .json()
+                        .await
+                        .unwrap();                    
                 });
             })
         };
