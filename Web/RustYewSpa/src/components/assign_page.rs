@@ -1,8 +1,8 @@
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+const DATA_API_PATH: &str =  "/api/territory-assignment/assignments";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/territories/borders";
+const DATA_API_PATH: &str = "/api/territory-assignment/assignments";
 
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
@@ -13,11 +13,12 @@ use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
-use reqwasm::http::{Request};
 use yew::prelude::*;
 use yew::function_component;
 use gloo_utils::document;
 use gloo_console::log;
+use serde_json::json;
+use reqwasm::http::{Request};
 use gloo_timers::callback::Timeout;
 use serde::{Serialize, Deserialize};
 //use js_sys::{Array, Date};
@@ -74,15 +75,24 @@ impl Component for AssignPage {
                     //history.push(&Route::Home);
                     //login_reducer(result, store_dispatch);
                     log!(format!("Description: {}", assignment.description));
-                    let uri: &str = DATA_API_PATH;
+                    let uriString: String = format!("{path}?territoryNumber={descr}&assigner={descr}&assignee={descr}&albaUserId=111", 
+                        path = DATA_API_PATH,
+                        descr = assignment.description);
+                    
+                    let uri: &str = uriString.as_str();
 
-                    let fetched_territories: Vec<Territory> = Request::get(uri)
+                    let resp = Request::post(uri)
+                        .header("Content-Type", "application/json")
+                        .body("{ 'thing': 'other' }")
                         .send()
                         .await
-                        .unwrap()
-                        .json()
-                        .await
-                        .unwrap();                    
+                        .unwrap();
+
+                    if resp.status() != 200 {
+                        log!("Sorry the assignment failed.".to_string());
+                    } else {
+                        log!("Yay the assignment succeeded!".to_string());
+                    }
                 });
             })
         };
