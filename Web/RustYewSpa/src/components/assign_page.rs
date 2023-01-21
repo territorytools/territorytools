@@ -81,12 +81,13 @@ impl Component for AssignPage {
                     let uriString: String = format!("{path}?territoryNumber={descr}&assigner={descr}&assignee={descr}&albaUserId=111", 
                         path = DATA_API_PATH,
                         descr = assignment.description);
-                    
+
+                    let description = assignment.description.clone();
                     let uri: &str = uriString.as_str();
 
                     let resp = Request::post(uri)
                         .header("Content-Type", "application/json")
-                        .body("{ 'thing': 'other' }")
+                        //.body(format!("{{ 'description': '{description}' }}"))
                         .send()
                         .await
                         .unwrap();

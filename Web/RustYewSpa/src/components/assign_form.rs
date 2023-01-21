@@ -56,7 +56,7 @@ pub fn assign_form(props: &Props) -> Html {
         <form {onsubmit}>
             <div class={"form-group"}>
                 <BBTextInput data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
-                <BBButton label={"Login"} data_test="submit" />
+                <BBButton label={"Assign"} data_test="submit" />
             </div>
         </form>
         </div>

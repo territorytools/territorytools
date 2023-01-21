@@ -35,24 +35,7 @@ pub struct Props {
 pub fn bb_button(props: &Props) -> Html {
     let stylesheet = Style::new(css!(
         r#"
-          button {
-            font-size: 32px;
-            padding: 1px;
-            border-radius: 3px;
-            border: none;
-          }
           
-          button:hover {
-            cursor: pointer;
-          }
-          
-          .normal {
-            background-color: aquamarine;
-          }
-
-          .red {
-            background-color: red;
-          }
         "#
     ))
     .unwrap();
@@ -70,7 +53,7 @@ pub fn bb_button(props: &Props) -> Html {
 
     html! {
       <span class={stylesheet}>
-        <button data-test={props.data_test.clone()} {onclick} class={color.to_string()}>{&props.label}</button>
+        <button data-test={props.data_test.clone()} {onclick} class={"btn btn-primary"}>{&props.label}</button>
       </span>
     }
 }
