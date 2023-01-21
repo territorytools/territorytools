@@ -4,6 +4,9 @@ const DATA_API_PATH: &str =  "/api/skip/territory-assignment/assignments";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/skip/territory-assignment/assignments";
 
+// This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
+// This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
+
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::menu_bar::MenuBar;
