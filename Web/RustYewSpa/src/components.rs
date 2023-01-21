@@ -7,3 +7,5 @@ pub mod route_stuff;
 pub mod menu_bar;
 pub mod assignment_form;
 pub mod user_selector;
+pub mod assign_form;
+pub mod bb_text_input;

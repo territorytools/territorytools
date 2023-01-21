@@ -28,13 +28,15 @@ pub struct AssignmentFormProps {
     pub description: String,
 }
 
-pub struct AssignmentForm;
+pub struct AssignmentForm {
+    temp_description: String
+}
 //  {
 //     props: MapMenuProps,
 // }
 
 pub enum AssignmentFormMsg {
-
+    SetDescription(String),
 }
 
 impl Component for AssignmentForm {
@@ -42,10 +44,18 @@ impl Component for AssignmentForm {
     type Properties = AssignmentFormProps;
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {}
+        Self {
+            temp_description: "".to_string(),
+        }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            AssignmentFormMsg::SetDescription(description) => {
+                self.temp_description = description;
+                return false;
+            }
+        }        
         true
     }
 
@@ -63,7 +73,15 @@ impl Component for AssignmentForm {
                             value={ctx.props().territory_number.clone()} /> // readonly
                         <label for={"modal-description"}>{"Description:"}</label>
                         <div class={"input-group-append"}>
-                            <input value={description} name={"description"} type={"text"} class={"form-control"} placeholder={""} id={"modal-current-description"}/> // readonly
+                            <input 
+                                id={"modal-current-description"}
+                                name={"description"} 
+                                type={"text"} 
+                                class={"form-control"} 
+                                placeholder={""} 
+                                value={description} 
+                                //oninput={ctx.link().callback(|e: InputData|  AssignmentFormMsg::SetDescription(e.value))}
+                                /> 
                         </div>
                         // <label for={"modal-number"}>{"Current Assignee:"}</label>
                         // <div class={"input-group-append"}>
