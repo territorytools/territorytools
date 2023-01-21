@@ -51,9 +51,15 @@ pub fn assign_form(props: &Props) -> Html {
     };
 
     html! {
+        <div class={"container"}>
+        <div id={"assignment-buttons"}>
         <form {onsubmit}>
-            <BBTextInput data_test="description" label="Description" placeholder="What description do you want?" class="input" input_type={InputType::Text} onchange={description_onchange} />
-           // <BBButton label={props.action.to_string()} data_test="submit" />
+            <div class={"form-group"}>
+                <BBTextInput data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
+                // <BBButton label={props.action.to_string()} data_test="submit" />
+            </div>
         </form>
+        </div>
+        </div>
     }
 }

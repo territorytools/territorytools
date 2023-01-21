@@ -35,13 +35,7 @@ pub struct Props {
 pub fn bb_text_input(props: &Props) -> Html {
     let stylesheet = Style::new(css!(
         r#"
-      label {
-        font-size: 36px;
-      }
-      input {
-        font-size: 36px;
-        width: 100%;
-      }
+     
     "#
     ))
     .unwrap();
@@ -82,20 +76,23 @@ pub fn bb_text_input(props: &Props) -> Html {
     }
 
     html! {
-      <div class={classes!(stylesheet, class)}>
-        <div>
+        <>
+      //<div class={classes!(stylesheet, class)}>
+       // <div>
           <label for={id.clone()}>{&props.label}</label>
-        </div>
-        <div>
+        //</div>
+        //<div>
           <input
             type={props.input_type.to_string()}
             id={id}
+            class={"form-control"} 
             {placeholder}
             data-test={props.data_test.clone()}
             {onchange}
             value={state.deref().clone()}
           />
-        </div>
-      </div>
+          </>
+       // </div>
+      //</div>
     }
 }

@@ -1,8 +1,8 @@
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str =  "/api/territory-assignment/assignments";
+const DATA_API_PATH: &str =  "/api/skip/territory-assignment/assignments";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/territory-assignment/assignments";
+const DATA_API_PATH: &str = "/api/skip/territory-assignment/assignments";
 
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
