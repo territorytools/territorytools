@@ -108,7 +108,7 @@ impl Component for AssignPage {
                     assignee_name={ctx.props().assignee_name.clone()}
                     description={ctx.props().description.clone()}/>
                 <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
-                <AssignForm {onsubmit} />
+                <AssignForm {onsubmit} action={Action::Login} />
             </>
         }
     }

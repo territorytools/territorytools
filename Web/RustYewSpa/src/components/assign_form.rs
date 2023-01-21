@@ -1,8 +1,8 @@
-use yew::prelude::*;
 use std::ops::Deref;
+use yew::prelude::*;
 
 use crate::components::{
-    //bb_button::BBButton,
+    bb_button::BBButton,
     bb_text_input::{BBTextInput, InputType},
 };
 
@@ -11,14 +11,14 @@ use stylist::yew::styled_component;
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
     pub onsubmit: Callback<TerritoryAssignment>,
-    //pub action: Action,
+    pub action: Action,
 }
 
-// #[derive(Clone, PartialEq)]
-// pub enum Action {
-//     CreateAccount,
-//     Login,
-// }
+#[derive(Clone, PartialEq)]
+pub enum Action {
+    CreateAccount,
+    Login,
+}
 
 #[derive(Default, Clone)]
 pub struct TerritoryAssignment {
@@ -56,7 +56,7 @@ pub fn assign_form(props: &Props) -> Html {
         <form {onsubmit}>
             <div class={"form-group"}>
                 <BBTextInput data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
-                // <BBButton label={props.action.to_string()} data_test="submit" />
+                <BBButton label={"Login"} data_test="submit" />
             </div>
         </form>
         </div>
