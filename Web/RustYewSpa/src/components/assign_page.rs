@@ -38,7 +38,7 @@ use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
-    pub id: String,
+    pub territory_number: String,
     pub assignee_name: String,
     pub description: String,
 }
@@ -77,10 +77,14 @@ impl Component for AssignPage {
                     //let result = api::login(user.username, user.password).await;
                     //history.push(&Route::Home);
                     //login_reducer(result, store_dispatch);
+                    log!(format!("Territory Number: {}", assignment.territory_number));
                     log!(format!("Description: {}", assignment.description));
-                    let uriString: String = format!("{path}?territoryNumber={descr}&assigner={descr}&assignee={descr}&albaUserId=111", 
+                    log!(format!("Assignee: {}", assignment.assignee));
+                    let uriString: String = format!("{path}?territoryNumber={number}&assigner=wasm_app&assignee=none&albaUserId={assignee}", 
                         path = DATA_API_PATH,
-                        descr = assignment.description);
+                        number = assignment.territory_number,
+                        //descr = assignment.description,
+                        assignee = assignment.assignee);
 
                     let description = assignment.description.clone();
                     let uri: &str = uriString.as_str();
@@ -105,7 +109,7 @@ impl Component for AssignPage {
             <>
                 <MenuBar/>
                 <AssignmentForm 
-                    territory_number={ctx.props().id.clone()} 
+                    territory_number={ctx.props().territory_number.clone()} 
                     assignee_name={ctx.props().assignee_name.clone()}
                     description={ctx.props().description.clone()}/>
                 <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>

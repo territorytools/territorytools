@@ -1,34 +1,35 @@
-use crate::components::territory_map::TerritoryMap;
-use crate::components::territory_summary::TerritorySummary;
 use crate::components::assign_page::AssignPage;
 use crate::components::route_stuff::Route;
-use wasm_bindgen::prelude::wasm_bindgen;
+use crate::components::territory_map::TerritoryMap;
+use crate::components::territory_summary::TerritorySummary;
 use gloo_console::log;
-use yew_router::prelude::*;
+use wasm_bindgen::prelude::wasm_bindgen;
 use yew::prelude::*;
+use yew_router::prelude::*;
 mod components;
 mod models;
 
-enum Msg {
-}
+enum Msg {}
 
-struct Model {
-}
+struct Model {}
 
 impl Component for Model {
     type Message = Msg;
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self { 
-        }
+        Self {}
     }
 
     fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
-    fn changed(&mut self, _: &yew::Context<Self>, _: &<Self as yew::Component>::Properties) -> bool {
+    fn changed(
+        &mut self,
+        _: &yew::Context<Self>,
+        _: &<Self as yew::Component>::Properties,
+    ) -> bool {
         false
     }
 
@@ -78,19 +79,27 @@ fn switch(route: Route) -> Html {
         Route::Root => html! { <Redirect<Route> to={Route::Map}/> },
         Route::Start => html! { <Redirect<Route> to={Route::Map}/> },
         //Route::Other => html! { <Redirect<Route> to={"https://google.com"}/> },
-        Route::Assign { id, description, assignee_name } => html! { <AssignPage id={id} description={description} assignee_name={assignee_name}/> },
+        Route::Assign {
+            territory_number,
+            description,
+            assignee_name,
+        } => {
+            html! { <AssignPage territory_number={territory_number} description={description} assignee_name={assignee_name}/> }
+        }
         Route::Map => html! { <TerritoryMap /> },
         Route::Secure => html! {
             <Secure />
         },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
         //Route::NotFound => html! {<Redirect<Route> to={"/"}/>}
-        Route::TerritoryView { id } => html! {<p>{format!("You are looking at Territory {}", id)}</p>},
+        Route::TerritoryView { id } => {
+            html! {<p>{format!("You are looking at Territory {}", id)}</p>}
+        }
         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
 }
 
-#[wasm_bindgen] 
+#[wasm_bindgen]
 pub fn test_log() {
     log!("You just called from Rust from JavaScript!");
 }

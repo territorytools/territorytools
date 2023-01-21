@@ -19,6 +19,7 @@ use web_sys::{
     Window,
     Node
 };
+use web_sys::HtmlSelectElement;
 
 #[cfg(debug_assertions)]
 const DATA_USERS_API_PATH: &str = "/data/users.json";
@@ -27,8 +28,18 @@ const DATA_USERS_API_PATH: &str = "/data/users.json";
 const DATA_USERS_API_PATH: &str = "/api/users?active=true";
 
 
+#[derive(Properties, Clone, PartialEq)]
+pub struct Props {
+    // pub data_test: String,
+    // pub id: String,
+    // pub label: String,
+    // pub options: Vec<SelectOption>,
+    pub onchange: Callback<String>,
+}
+
+
 #[function_component(UserSelector)]
-pub fn user_selector() -> Html {
+pub fn user_selector(props: &Props) -> Html {
     
     let users = use_state(|| vec![]);
     {
@@ -60,8 +71,20 @@ pub fn user_selector() -> Html {
         log!("User: {}", user_full_name);
     });
 
+    let onchange = {
+        let props_onchange = props.onchange.clone();
+        Callback::from(move |event: Event| {
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
+            props_onchange.emit(value);
+        })
+    };
+
     html! {
-        <select id={"user-menu"} name={"albaUserId"} class={"custom-select"}>
+        <select id={"user-menu"} name={"albaUserId"} class={"custom-select"} {onchange}>
             <option value={"0"}>{"Select User"}</option>
             {
                 

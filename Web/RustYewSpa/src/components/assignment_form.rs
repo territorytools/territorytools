@@ -96,7 +96,7 @@ impl Component for AssignmentForm {
                         <label for={"user-menu"}>{"New Assignee:"}</label>
                         <div class={"input-group-append"}>
                             //<select id={"user-menu"} name={"albaUserId"} class={"custom-select"}></select>
-                            <UserSelector />
+                            //<UserSelector onchange={userselector_onchange}/>
                             <button id={"assign-button"} type={"button"} class={"btn btn-primary disabled"}>{"Assign"}</button>
                         </div>
                     </div>
