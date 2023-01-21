@@ -13,6 +13,9 @@ use stylist::yew::styled_component;
 pub struct Props {
     pub onsubmit: Callback<TerritoryAssignment>,
     pub action: Action,
+    pub territory_number: String,
+    pub description: String,
+    pub assignee_alba_id: String,
 }
 
 // TODO: Remove this "Login" stuff, it's not a login component
