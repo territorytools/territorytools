@@ -21,89 +21,66 @@ pub struct AssignPageProps {
     pub description: String,
 }
 
-pub struct AssignPage;
-//  {
-//     props: MapMenuProps,
-//     //link: ComponentLink<Self>,
-// }
-
-pub enum AssignPageMsg {
-
-}
-
-impl Component for AssignPage {
-    type Message = AssignPageMsg;
-    type Properties = AssignPageProps;
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self {}
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        true
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        
-        //let history = use_navigator().unwrap();
-        let onsubmit = {
+#[function_component(AssignPage)]
+pub fn assign_form(props: &AssignPageProps) -> Html {        
+    //let history = use_navigator().unwrap();
+    let onsubmit = {
+        //let store_dispatch = store_dispatch.clone();
+        Callback::from(move |assignment: TerritoryAssignment| {
+            // // //let navigator = use_navigator().unwrap();
+            //let history = history.clone();
+            // // //let navigator = navigator.clone();
             //let store_dispatch = store_dispatch.clone();
-            Callback::from(move |assignment: TerritoryAssignment| {
-                // // //let navigator = use_navigator().unwrap();
-                //let history = history.clone();
-                // // //let navigator = navigator.clone();
-                //let store_dispatch = store_dispatch.clone();
-    
-                spawn_local(async move {
-                    //let result = api::login(user.username, user.password).await;
-                    //history.push(&Route::Home);
-                    //login_reducer(result, store_dispatch);
-                    log!(format!("Territory Number: {}", assignment.territory_number));
-                    log!(format!("Description: {}", assignment.description));
-                    log!(format!("Assignee: {}", assignment.assignee));
-                    let uri_string: String = format!("{path}?territoryNumber={number}&assigner=wasm_app&assignee=none&albaUserId={assignee}", 
-                        path = DATA_API_PATH,
-                        number = assignment.territory_number,
-                        //descr = assignment.description,
-                        assignee = assignment.assignee);
 
-                    //let description = assignment.description.clone();
-                    let uri: &str = uri_string.as_str();
+            spawn_local(async move {
+                //let result = api::login(user.username, user.password).await;
+                //history.push(&Route::Home);
+                //login_reducer(result, store_dispatch);
+                log!(format!("Territory Number: {}", assignment.territory_number));
+                log!(format!("Description: {}", assignment.description));
+                log!(format!("Assignee: {}", assignment.assignee));
+                let uri_string: String = format!("{path}?territoryNumber={number}&assigner=wasm_app&assignee=none&albaUserId={assignee}", 
+                    path = DATA_API_PATH,
+                    number = assignment.territory_number,
+                    //descr = assignment.description,
+                    assignee = assignment.assignee);
 
-                    let resp = Request::post(uri)
-                        .header("Content-Type", "application/json")
-                        //.body(format!("{{ 'description': '{description}' }}"))
-                        .send()
-                        .await
-                        .unwrap();
+                //let description = assignment.description.clone();
+                let uri: &str = uri_string.as_str();
 
-                    if resp.status() != 200 {
-                        log!("Sorry the assignment failed.".to_string());
-                        // // //navigator.push(&Route::Map);
-                    } else {
-                        log!("Yay the assignment succeeded!".to_string());
-                        // // //navigator.push(&Route::NotFound);
-                    }
-                });
-            })
-        };
+                let resp = Request::post(uri)
+                    .header("Content-Type", "application/json")
+                    //.body(format!("{{ 'description': '{description}' }}"))
+                    .send()
+                    .await
+                    .unwrap();
 
-        html! {
-            <>
-                <MenuBar/>
-                // <AssignmentForm 
-                //     territory_number={ctx.props().territory_number.clone()} 
-                //     assignee_name={ctx.props().assignee_name.clone()}
-                //     description={ctx.props().description.clone()}/>
-                // <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
-                <AssignForm {onsubmit} 
-                    action={Action::Login} 
-                    territory_number={ctx.props().territory_number.clone()}
-                    description={ctx.props().description.clone()}
-                    assignee_alba_id={"0"}
-                />
-            </>
-        }
+                if resp.status() != 200 {
+                    log!("Sorry the assignment failed.".to_string());
+                    // // //navigator.push(&Route::Map);
+                } else {
+                    log!("Yay the assignment succeeded!".to_string());
+                    // // //navigator.push(&Route::NotFound);
+                }
+            });
+        })
+    };
+
+    html! {
+        <>
+            <MenuBar/>
+            // <AssignmentForm 
+            //     territory_number={ctx.props().territory_number.clone()} 
+            //     assignee_name={ctx.props().assignee_name.clone()}
+            //     description={ctx.props().description.clone()}/>
+            // <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
+            <AssignForm {onsubmit} 
+                action={Action::Login} 
+                territory_number={props.territory_number.clone()}
+                description={props.description.clone()}
+                assignee_alba_id={"0"}
+            />
+        </>
     }
 }
 
