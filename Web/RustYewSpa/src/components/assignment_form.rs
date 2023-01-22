@@ -1,25 +1,5 @@
-use crate::components::territory_summary::TerritorySummary;
-use crate::components::popup_content::popup_content;
-use crate::components::user_selector::UserSelector;
-use crate::models::territories::{Territory};
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
-use reqwasm::http::{Request};
 use yew::prelude::*;
-use gloo_utils::document;
-use gloo_console::log;
-use gloo_timers::callback::Timeout;
-use serde::{Serialize, Deserialize};
 use urlencoding::decode;
-//use js_sys::{Array, Date};
-use web_sys::{
-    Document,
-    Element,
-    HtmlElement,
-    Window,
-    Node
-};
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignmentFormProps {
@@ -56,7 +36,6 @@ impl Component for AssignmentForm {
                 return false;
             }
         }        
-        true
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {

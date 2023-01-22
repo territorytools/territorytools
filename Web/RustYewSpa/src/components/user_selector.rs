@@ -1,24 +1,8 @@
-use crate::components::territory_summary::TerritorySummary;
-use crate::components::popup_content::popup_content;
-use crate::models::territories::{Territory};
 use crate::models::users::{User};
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
 use reqwasm::http::{Request};
 use yew::prelude::*;
-use gloo_utils::document;
 use gloo_console::log;
-use gloo_timers::callback::Timeout;
-use serde::{Serialize, Deserialize};
-//use js_sys::{Array, Date};
-use web_sys::{
-    Document,
-    Element,
-    HtmlElement,
-    Window,
-    Node
-};
 use web_sys::HtmlSelectElement;
 
 #[cfg(debug_assertions)]

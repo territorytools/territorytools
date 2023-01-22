@@ -1,25 +1,6 @@
-use crate::components::territory_summary::TerritorySummary;
-use crate::components::popup_content::popup_content;
-use crate::models::territories::{Territory};
 use crate::components::route_stuff::Route;
 use yew_router::prelude::use_navigator;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
-use reqwasm::http::{Request};
 use yew::prelude::*;
-use gloo_utils::document;
-use gloo_console::log;
-use gloo_timers::callback::Timeout;
-use serde::{Serialize, Deserialize};
-//use js_sys::{Array, Date};
-use web_sys::{
-    Document,
-    Element,
-    HtmlElement,
-    Window,
-    Node
-};
 
 #[function_component(MenuBar)]
 pub fn menu_bar() -> Html {

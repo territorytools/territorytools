@@ -7,8 +7,6 @@ use crate::components::{
     user_selector::UserSelector,
 };
 
-use stylist::yew::styled_component;
-
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
     pub onsubmit: Callback<TerritoryAssignment>,

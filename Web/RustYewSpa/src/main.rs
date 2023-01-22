@@ -1,7 +1,6 @@
 use crate::components::assign_page::AssignPage;
 use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
-use crate::components::territory_summary::TerritorySummary;
 use gloo_console::log;
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::prelude::*;

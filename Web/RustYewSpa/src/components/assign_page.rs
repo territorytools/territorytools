@@ -7,34 +7,13 @@ const DATA_API_PATH: &str = "/api/skip/territory-assignment/assignments";
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
-use crate::components::territory_summary::TerritorySummary;
-use crate::components::popup_content::popup_content;
 use crate::components::menu_bar::MenuBar;
 use crate::components::assignment_form::AssignmentForm;
 use crate::components::assign_form::*;
-use crate::models::territories::{Territory};
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
 use yew::prelude::*;
-use yew::function_component;
-use gloo_utils::document;
 use gloo_console::log;
-use serde_json::json;
 use reqwasm::http::{Request};
-use gloo_timers::callback::Timeout;
-use serde::{Serialize, Deserialize};
-//use js_sys::{Array, Date};
-use web_sys::{
-    Document,
-    Element,
-    HtmlElement,
-    Window,
-    Node
-};
 use wasm_bindgen_futures::spawn_local;
-//use yewdux::prelude::*;
-use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
@@ -113,7 +92,12 @@ impl Component for AssignPage {
                     assignee_name={ctx.props().assignee_name.clone()}
                     description={ctx.props().description.clone()}/>
                 <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
-                <AssignForm {onsubmit} action={Action::Login} />
+                <AssignForm {onsubmit} 
+                    action={Action::Login} 
+                    territory_number={tx.props().territory_number.clone()}
+                    description={tx.props().description.clone()}
+                    assignee_alba_id={"0"}
+                />
             </>
         }
     }
