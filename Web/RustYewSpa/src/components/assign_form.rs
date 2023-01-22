@@ -1,11 +1,12 @@
-use std::ops::Deref;
-use yew::prelude::*;
-
 use crate::components::{
     bb_button::BBButton,
     bb_text_input::{BBTextInput, InputType},
     user_selector::UserSelector,
 };
+
+use std::ops::Deref;
+use yew::prelude::*;
+use urlencoding::decode;
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
@@ -19,7 +20,7 @@ pub struct Props {
 // TODO: Remove this "Login" stuff, it's not a login component
 #[derive(Clone, PartialEq)]
 pub enum Action {
-    CreateAccount,
+    //CreateAccount,
     Login,
 }
 
@@ -32,7 +33,15 @@ pub struct TerritoryAssignment {
 
 #[function_component(AssignForm)]
 pub fn assign_form(props: &Props) -> Html {
-    let state = use_state(TerritoryAssignment::default);
+    let state = use_state(||TerritoryAssignment {
+        territory_number: props.territory_number.clone(),
+        description: props.description.clone(),
+        assignee: props.assignee_alba_id.clone(),
+    });
+
+    let description: String = format!("{}", decode(&props.description).expect("UTF-8"));
+
+
 
     let territory_number_onchange = {
         let state = state.clone();
@@ -76,9 +85,9 @@ pub fn assign_form(props: &Props) -> Html {
         <div id={"assignment-buttons"}>
         <form {onsubmit}>
             <div class={"form-group"}>
-                <BBTextInput data_test="territory_number" label="Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
-                <BBTextInput data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
-                <label>{"Assignee to:"}</label>
+                <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
+                <BBTextInput value={description} data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
+                <label>{"Assignee to"}</label>
                 <UserSelector onchange={assignee_onchange} />
                 <BBButton label={"Assign"} data_test="submit" />
             </div>

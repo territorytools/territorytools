@@ -2,7 +2,6 @@ use crate::models::users::{User};
 use wasm_bindgen::JsCast;
 use reqwasm::http::{Request};
 use yew::prelude::*;
-use gloo_console::log;
 use web_sys::HtmlSelectElement;
 
 #[cfg(debug_assertions)]
@@ -45,15 +44,15 @@ pub fn user_selector(props: &Props) -> Html {
             || ()
         }, ());
     }
-    users.iter().map(|user| { 
-        let user_full_name: String = {
-            match user.alba_full_name {
-                Some(_) => user.alba_full_name.clone().unwrap(),
-                None => "".to_string()
-            }
-        };
-        log!("User: {}", user_full_name);
-    });
+    // users.iter().map(|user| { 
+    //     let user_full_name: String = {
+    //         match user.alba_full_name {
+    //             Some(_) => user.alba_full_name.clone().unwrap(),
+    //             None => "".to_string()
+    //         }
+    //     };
+    //     log!("User: {}", user_full_name);
+    // });
 
     let onchange = {
         let props_onchange = props.onchange.clone();

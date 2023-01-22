@@ -43,11 +43,11 @@ impl Component for MapMenu {
                     .dyn_into::<web_sys::HtmlElement>()
                     .expect("#to_be_hidden should be an `HtmlElement`");
 
-                let hide_legend_button = document
-                    .get_element_by_id("hide-legend-button")
-                    .expect("should have #hide-legend-button on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#hide-legend-button should be an `HtmlElement`");
+                // let hide_legend_button = document
+                //     .get_element_by_id("hide-legend-button")
+                //     .expect("should have #hide-legend-button on the page")
+                //     .dyn_into::<web_sys::HtmlElement>()
+                //     .expect("#hide-legend-button should be an `HtmlElement`");
                 
                 let show_legend_button_icon = document
                     .get_element_by_id("show-legend-button-icon")
@@ -66,12 +66,16 @@ impl Component for MapMenu {
                     .to_string();
 
                 if was_visible == "true" {
-                    to_be_hidden.set_attribute("data-visible", "false");
+                    to_be_hidden.set_attribute("data-visible", "false")
+                        .expect("'data-visible' should have been set to 'false'");
+
                     hide(to_be_hidden);
                     hide(hide_legend_button_icon);
                     show(show_legend_button_icon);
                 } else {
-                    to_be_hidden.set_attribute("data-visible", "true");
+                    to_be_hidden.set_attribute("data-visible", "true")
+                        .expect("'data-visible' should have been set to 'true'");
+
                     show(to_be_hidden);
                     show(hide_legend_button_icon);
                     hide(show_legend_button_icon);
@@ -128,11 +132,13 @@ impl Component for MapMenu {
 fn show(element: web_sys::HtmlElement) {
     element
         .style()
-        .set_property("display", "block");
+        .set_property("display", "block")
+        .expect("'display' should have been set to 'block'")
 }
 
 fn hide(element: web_sys::HtmlElement) {
     element
         .style()
-        .set_property("display", "none");
+        .set_property("display", "none")
+        .expect("'display' should have been set to 'none'")
 }

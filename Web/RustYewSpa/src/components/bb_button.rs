@@ -4,7 +4,6 @@ use yew::prelude::*;
 #[derive(Clone, PartialEq)]
 pub enum ButtonColor {
     Normal,
-    Red,
 }
 
 impl Default for ButtonColor {
@@ -17,7 +16,6 @@ impl ToString for ButtonColor {
     fn to_string(&self) -> String {
         match self {
             ButtonColor::Normal => "normal",
-            ButtonColor::Red => "red",
         }
         .to_owned()
     }
@@ -40,7 +38,7 @@ pub fn bb_button(props: &Props) -> Html {
     ))
     .unwrap();
 
-    let color = props.color.clone().unwrap_or_default();
+    //let color = props.color.clone().unwrap_or_default();
 
     let onclick = {
         let props_onclick = props.onclick.clone();

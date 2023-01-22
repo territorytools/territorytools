@@ -40,7 +40,7 @@ impl Component for AssignPage {
         Self {}
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         true
     }
 
@@ -59,14 +59,14 @@ impl Component for AssignPage {
                     log!(format!("Territory Number: {}", assignment.territory_number));
                     log!(format!("Description: {}", assignment.description));
                     log!(format!("Assignee: {}", assignment.assignee));
-                    let uriString: String = format!("{path}?territoryNumber={number}&assigner=wasm_app&assignee=none&albaUserId={assignee}", 
+                    let uri_string: String = format!("{path}?territoryNumber={number}&assigner=wasm_app&assignee=none&albaUserId={assignee}", 
                         path = DATA_API_PATH,
                         number = assignment.territory_number,
                         //descr = assignment.description,
                         assignee = assignment.assignee);
 
-                    let description = assignment.description.clone();
-                    let uri: &str = uriString.as_str();
+                    //let description = assignment.description.clone();
+                    let uri: &str = uri_string.as_str();
 
                     let resp = Request::post(uri)
                         .header("Content-Type", "application/json")

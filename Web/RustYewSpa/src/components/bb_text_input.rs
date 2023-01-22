@@ -1,6 +1,6 @@
 use std::ops::Deref;
 use gloo::console::log;
-use stylist::{yew::styled_component, Style};
+use stylist::{yew::styled_component};
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -8,14 +8,12 @@ use yew::prelude::*;
 #[derive(PartialEq, Clone)]
 pub enum InputType {
     Text,
-    Password,
 }
 
 impl ToString for InputType {
     fn to_string(&self) -> String {
         match self {
             InputType::Text => "text".to_owned(),
-            InputType::Password => "password".to_owned(),
         }
     }
 }
@@ -33,15 +31,15 @@ pub struct Props {
 
 #[styled_component(BBTextInput)]
 pub fn bb_text_input(props: &Props) -> Html {
-    let stylesheet = Style::new(css!(
-        r#"
+    // let stylesheet = Style::new(css!(
+    //     r#"
      
-    "#
-    ))
-    .unwrap();
+    // "#
+    // ))
+    // .unwrap();
     let placeholder = props.placeholder.clone().unwrap_or_default();
     let id = props.label.to_lowercase().replace(' ', "-");
-    let class = props.class.clone().unwrap_or_default();
+    //let class = props.class.clone().unwrap_or_default();
     let state = use_state(String::new);
     let initial_load = use_state(|| false);
     let onchange = {

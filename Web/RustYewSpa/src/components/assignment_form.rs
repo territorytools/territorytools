@@ -9,14 +9,14 @@ pub struct AssignmentFormProps {
 }
 
 pub struct AssignmentForm {
-    temp_description: String
+    //temp_description: String
 }
 //  {
 //     props: MapMenuProps,
 // }
 
 pub enum AssignmentFormMsg {
-    SetDescription(String),
+    //SetDescription(String),
 }
 
 impl Component for AssignmentForm {
@@ -25,21 +25,20 @@ impl Component for AssignmentForm {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            temp_description: "".to_string(),
+            //temp_description: "".to_string(),
         }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            AssignmentFormMsg::SetDescription(description) => {
-                self.temp_description = description;
-                return false;
-            }
+            // AssignmentFormMsg::SetDescription(description) => {
+            //     self.temp_description = description;
+            //     return false;
+            // }
         }        
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let assignee_name: String = format!("{}", decode(&ctx.props().assignee_name).expect("UTF-8"));
         let description: String = format!("{}", decode(&ctx.props().description).expect("UTF-8"));
 
         html! {

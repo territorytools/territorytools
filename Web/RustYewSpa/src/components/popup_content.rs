@@ -4,17 +4,17 @@ pub fn popup_content(territory: &Territory) -> String  {
     //let onclick_string = format!("alert(\"You clicked {}\");", territory.number);
     let assignee_line = {
         match &territory.signed_out_to {
-            Some(t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
-            Nome => "".to_string()
+            Some(_t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
+            None => "".to_string()
         }
     };
     
-    let assignee_name = {
-        match &territory.signed_out_to {
-            Some(t) => territory.signed_out_to.clone().unwrap(),
-            Nome => "".to_string()
-        }
-    };
+    // let assignee_name = {
+    //     match &territory.signed_out_to {
+    //         Some(_) => territory.signed_out_to.clone().unwrap(),
+    //         None => "".to_string()
+    //     }
+    // };
 
     let status = {
         if territory.last_completed_by.is_none() {
