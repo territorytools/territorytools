@@ -13,6 +13,7 @@ use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request};
 use wasm_bindgen_futures::spawn_local;
+use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew_router::prelude::use_navigator;
 
@@ -59,12 +60,30 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                     .await
                     .unwrap();
 
+                let window = web_sys::window().expect("no global `window` exists");
+                let document = window.document().expect("should have a document on window");
+                let result_success = document
+                    .get_element_by_id("result-success")
+                    .expect("should have #to_be_hidden on the page")
+                    .dyn_into::<web_sys::HtmlElement>()
+                    .expect("#to_be_hidden should be an `HtmlElement`");
+                
+                let result_failure = document
+                    .get_element_by_id("result-failure")
+                    .expect("should have #to_be_hidden on the page")
+                    .dyn_into::<web_sys::HtmlElement>()
+                    .expect("#to_be_hidden should be an `HtmlElement`");
+
                 if resp.status() != 200 {
                     log!("Sorry the assignment failed.".to_string());
-                    navigator.push(&Route::NotFound);
+                    //navigator.push(&Route::NotFound);
+                    show(result_failure);
+                    hide(result_success);
                 } else {
                     log!("Yay the assignment succeeded!".to_string());
-                    navigator.push(&Route::Map);
+                    //navigator.push(&Route::Map);
+                    show(result_success);
+                    hide(result_failure);
                 }
             });
         })
@@ -84,7 +103,28 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                 description={props.description.clone()}
                 assignee_alba_id={"0"}
             />
+
+            <div class={"container"}>
+                //<div id={"assignment-buttons"}>
+                    <div id={"result-success"} style={"display:none;color:blue;"}>{"Success"}</div>
+                    <div id={"result-failure"} style={"display:none;color:red;"}>{"Failed"}</div>
+                //</div>
+            </div>
         </>
     }
 }
 
+
+fn show(element: web_sys::HtmlElement) {
+    element
+        .style()
+        .set_property("display", "block")
+        .expect("'display' should have been set to 'block'")
+}
+
+fn hide(element: web_sys::HtmlElement) {
+    element
+        .style()
+        .set_property("display", "none")
+        .expect("'display' should have been set to 'none'")
+}
