@@ -1,18 +1,20 @@
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str =  "/api/skip/territory-assignment/assignments";
+const DATA_API_PATH: &str =  "/api/territory-assignment/assignments";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/skip/territory-assignment/assignments";
+const DATA_API_PATH: &str = "/api/territory-assignment/assignments";
 
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
 use crate::components::menu_bar::MenuBar;
 use crate::components::assign_form::*;
+use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request};
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
@@ -24,11 +26,13 @@ pub struct AssignPageProps {
 #[function_component(AssignPage)]
 pub fn assign_form(props: &AssignPageProps) -> Html {        
     //let history = use_navigator().unwrap();
+    let navigator = use_navigator().unwrap();
     let onsubmit = {
         //let store_dispatch = store_dispatch.clone();
         Callback::from(move |assignment: TerritoryAssignment| {
-            // // //let navigator = use_navigator().unwrap();
+            //let navigator = use_navigator().unwrap();
             //let history = history.clone();
+            let navigator = navigator.clone();
             // // //let navigator = navigator.clone();
             //let store_dispatch = store_dispatch.clone();
 
@@ -57,10 +61,10 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
 
                 if resp.status() != 200 {
                     log!("Sorry the assignment failed.".to_string());
-                    // // //navigator.push(&Route::Map);
+                    navigator.push(&Route::NotFound);
                 } else {
                     log!("Yay the assignment succeeded!".to_string());
-                    // // //navigator.push(&Route::NotFound);
+                    navigator.push(&Route::Map);
                 }
             });
         })

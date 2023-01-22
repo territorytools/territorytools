@@ -89,7 +89,7 @@ fn switch(route: Route) -> Html {
         Route::Secure => html! {
             <Secure />
         },
-        Route::NotFound => html! { <h1>{ "404" }</h1> },
+        Route::NotFound => html! { <div><h1>{ "404" }</h1><h2>{"Not Found"}</h2></div> },
         //Route::NotFound => html! {<Redirect<Route> to={"/"}/>}
         Route::TerritoryView { id } => {
             html! {<p>{format!("You are looking at Territory {}", id)}</p>}
