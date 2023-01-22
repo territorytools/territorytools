@@ -8,12 +8,11 @@ const DATA_API_PATH: &str = "/api/skip/territory-assignment/assignments";
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
 use crate::components::menu_bar::MenuBar;
-use crate::components::assignment_form::AssignmentForm;
 use crate::components::assign_form::*;
-use yew::prelude::*;
 use gloo_console::log;
 use reqwasm::http::{Request};
 use wasm_bindgen_futures::spawn_local;
+use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
@@ -45,11 +44,14 @@ impl Component for AssignPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        
         //let history = use_navigator().unwrap();
         let onsubmit = {
             //let store_dispatch = store_dispatch.clone();
             Callback::from(move |assignment: TerritoryAssignment| {
+                // // //let navigator = use_navigator().unwrap();
                 //let history = history.clone();
+                // // //let navigator = navigator.clone();
                 //let store_dispatch = store_dispatch.clone();
     
                 spawn_local(async move {
@@ -77,8 +79,10 @@ impl Component for AssignPage {
 
                     if resp.status() != 200 {
                         log!("Sorry the assignment failed.".to_string());
+                        // // //navigator.push(&Route::Map);
                     } else {
                         log!("Yay the assignment succeeded!".to_string());
+                        // // //navigator.push(&Route::NotFound);
                     }
                 });
             })
@@ -87,11 +91,11 @@ impl Component for AssignPage {
         html! {
             <>
                 <MenuBar/>
-                <AssignmentForm 
-                    territory_number={ctx.props().territory_number.clone()} 
-                    assignee_name={ctx.props().assignee_name.clone()}
-                    description={ctx.props().description.clone()}/>
-                <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
+                // <AssignmentForm 
+                //     territory_number={ctx.props().territory_number.clone()} 
+                //     assignee_name={ctx.props().assignee_name.clone()}
+                //     description={ctx.props().description.clone()}/>
+                // <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
                 <AssignForm {onsubmit} 
                     action={Action::Login} 
                     territory_number={ctx.props().territory_number.clone()}

@@ -2,10 +2,12 @@ use crate::components::{
     bb_button::BBButton,
     bb_text_input::{BBTextInput, InputType},
     user_selector::UserSelector,
+    // // //route_stuff::Route,
 };
 
 use std::ops::Deref;
 use yew::prelude::*;
+// // //use yew_router::prelude::use_navigator;
 use urlencoding::decode;
 
 #[derive(Properties, Clone, PartialEq)]
@@ -33,6 +35,7 @@ pub struct TerritoryAssignment {
 
 #[function_component(AssignForm)]
 pub fn assign_form(props: &Props) -> Html {
+    // // //let navigator = use_navigator().unwrap();
     let state = use_state(||TerritoryAssignment {
         territory_number: props.territory_number.clone(),
         description: props.description.clone(),
@@ -40,8 +43,6 @@ pub fn assign_form(props: &Props) -> Html {
     });
 
     let description: String = format!("{}", decode(&props.description).expect("UTF-8"));
-
-
 
     let territory_number_onchange = {
         let state = state.clone();
@@ -77,6 +78,8 @@ pub fn assign_form(props: &Props) -> Html {
             event.prevent_default();
             let assignment = state.deref().clone();
             onsubmit_prop.emit(assignment);
+            
+            // // //navigator.push(&Route::Map);
         })
     };
 
@@ -85,9 +88,9 @@ pub fn assign_form(props: &Props) -> Html {
         <div id={"assignment-buttons"}>
         <form {onsubmit}>
             <div class={"form-group"}>
-                <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
-                <BBTextInput value={description} data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
-                <label>{"Assignee to"}</label>
+                <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="区域号码 Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
+                <BBTextInput value={description} data_test="description" label="区域名称 Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
+                <label>{"委派给 Assign to"}</label>
                 <div class={"input-group-append"}>
                 <UserSelector onchange={assignee_onchange} />
                 <BBButton label={"Assign"} data_test="submit" />
