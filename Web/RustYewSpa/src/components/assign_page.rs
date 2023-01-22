@@ -94,8 +94,8 @@ impl Component for AssignPage {
                 <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
                 <AssignForm {onsubmit} 
                     action={Action::Login} 
-                    territory_number={tx.props().territory_number.clone()}
-                    description={tx.props().description.clone()}
+                    territory_number={ctx.props().territory_number.clone()}
+                    description={ctx.props().description.clone()}
                     assignee_alba_id={"0"}
                 />
             </>
