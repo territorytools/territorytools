@@ -88,8 +88,10 @@ pub fn assign_form(props: &Props) -> Html {
                 <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
                 <BBTextInput value={description} data_test="description" label="Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
                 <label>{"Assignee to"}</label>
+                <div class={"input-group-append"}>
                 <UserSelector onchange={assignee_onchange} />
                 <BBButton label={"Assign"} data_test="submit" />
+                </div>
             </div>
         </form>
         </div>

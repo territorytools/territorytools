@@ -1,8 +1,8 @@
 use std::ops::Deref;
-use gloo::console::log;
 use stylist::{yew::styled_component};
-use wasm_bindgen::JsCast;
+use gloo::console::log;
 use web_sys::HtmlInputElement;
+use wasm_bindgen::JsCast;
 use yew::prelude::*;
 
 #[derive(PartialEq, Clone)]
@@ -33,7 +33,7 @@ pub struct Props {
 pub fn bb_text_input(props: &Props) -> Html {
     // let stylesheet = Style::new(css!(
     //     r#"
-     
+
     // "#
     // ))
     // .unwrap();
@@ -68,29 +68,24 @@ pub fn bb_text_input(props: &Props) -> Html {
                     initial_load.set(true);
                 }
             }
-
             || {}
         })
     }
 
     html! {
         <>
-      //<div class={classes!(stylesheet, class)}>
-       // <div>
           <label for={id.clone()}>{&props.label}</label>
-        //</div>
-        //<div>
           <input
             type={props.input_type.to_string()}
             id={id}
             class={"form-control"} 
+            style={"background-color:white;"}
             {placeholder}
             data-test={props.data_test.clone()}
             {onchange}
             value={state.deref().clone()}
+            readonly=true
           />
-          </>
-       // </div>
-      //</div>
+        </>
     }
 }
