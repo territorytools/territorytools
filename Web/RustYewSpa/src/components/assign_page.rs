@@ -95,7 +95,7 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
             if state.completed {
                 <div class={"container"}>
                     if state.success {
-                        <div id={"result-success"} style={"display:block;"}>
+                        <div>
                             <p style={"color:blue;"}>{"Success"}</p>
                             <a 
                                 style={"color:blue;margin-bottom:10px;"} 
@@ -114,7 +114,7 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                             />
                         </div>
                     } else {
-                        <div id={"result-failure"} style={"display:block;color:red;"}>{"Failed"}</div>
+                        <div style={"color:red;"}>{"Failed"}</div>
                     }
                 </div>
             }
