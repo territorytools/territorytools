@@ -16,13 +16,11 @@ const ASSIGN_METHOD: &str = "POST";
 use crate::components::menu_bar::MenuBar;
 use crate::components::assign_form::*;
 use crate::models::territory_links::TerritoryLinkContract;
-// // // //use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use wasm_bindgen_futures::spawn_local;
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
-// // //use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
@@ -33,21 +31,13 @@ pub struct AssignPageProps {
 
 #[function_component(AssignPage)]
 pub fn assign_form(props: &AssignPageProps) -> Html {        
-    //let history = use_navigator().unwrap();
-    // // //let navigator = use_navigator().unwrap();
     let onsubmit = {
         //let store_dispatch = store_dispatch.clone();
         Callback::from(move |assignment: TerritoryAssignment| {
-            //let navigator = use_navigator().unwrap();
-            //let history = history.clone();
-            // // //let navigator = navigator.clone();
-            // // //let navigator = navigator.clone();
             //let store_dispatch = store_dispatch.clone();
 
             spawn_local(async move {
                 //let result = api::login(user.username, user.password).await;
-                //history.push(&Route::Home);
-                //login_reducer(result, store_dispatch);
                 log!(format!("Territory Number: {}", assignment.territory_number));
                 log!(format!("Description: {}", assignment.description));
                 log!(format!("Assignee: {}", assignment.assignee));
@@ -90,7 +80,6 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
 
                 if resp.status() != 200 {
                     log!("Sorry the assignment failed.".to_string());
-                    //navigator.push(&Route::NotFound);
                     hide(result_success);
                     
                     let inner_text = format!("Failed to assign territory! Code: {}", resp.status());
@@ -99,7 +88,6 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                     show(result_failure);
                 } else {
                     log!("Yay the assignment succeeded!".to_string());
-                    //navigator.push(&Route::Map);
                        
                     let link_contract: TerritoryLinkContract = resp
                         .json()
@@ -114,8 +102,6 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                         .dyn_into::<web_sys::HtmlElement>()
                         .expect("#result-link should be an `HtmlElement`");
                         
-                    //let inner_text = format!("MTK: {}", link_contract.alba_mobile_territory_key);
-                    
                     result_link.set_inner_text(&link_contract.territory_uri);
                     result_link
                         .set_attribute("href", &link_contract.territory_uri)
@@ -192,7 +178,6 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
             />
 
             <div class={"container"}>
-                //<div id={"assignment-buttons"}>
                 <div id={"result-failure"} style={"display:none;color:red;"}>{"Failed"}</div>
                 <div id={"result-success"} style={"display:none;"}>
                     <p style={"color:blue;"}>{"Success"}</p>
