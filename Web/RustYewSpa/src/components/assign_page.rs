@@ -31,6 +31,20 @@ pub struct AssignPageProps {
 
 #[function_component(AssignPage)]
 pub fn assign_form(props: &AssignPageProps) -> Html {        
+    //let link_contract: TerritoryLinkContract::default; 
+    // let territory_number: String = "".to_string();
+    // let assignee_email: String = "".to_string();
+    // let territory_uri: String = "".to_string();
+    // let link_contract = TerritoryLinkContract {
+    //     id: "".to_string(),
+    //     territory_uri: "".to_string(),
+    //     alba_mobile_territory_key: "".to_string(),
+    //     territory_number: "".to_string(),
+    //     assignee_email: "".to_string(),
+    //     assignee_phone: "".to_string(),
+    //     successful: false,
+    // };
+
     let onsubmit = {
         //let store_dispatch = store_dispatch.clone();
         Callback::from(move |assignment: TerritoryAssignment| {
@@ -93,7 +107,10 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                         .json()
                         .await
                         .unwrap();
-
+                    
+                    // territory_number = link_contract.territory_number.clone();
+                    // assignee_email = link_contract.assignee_email.clone();
+                    // territory_uri = link_contract.territory_uri.clone();
                     hide(result_failure);
 
                     let result_link = document
@@ -134,32 +151,32 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                         .set_attribute("value", &link_contract.assignee_phone)
                         .expect("Value should have been set");
                      
-                    let email_link_href = format!(
-                        "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
-                        assignee_email = link_contract.assignee_email,
-                        territory_number = link_contract.territory_number,
-                        territory_uri = link_contract.territory_uri,
-                    );
+                    // let email_link_href = format!(
+                    //     "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
+                    //     assignee_email = link_contract.assignee_email,
+                    //     territory_number = link_contract.territory_number,
+                    //     territory_uri = link_contract.territory_uri,
+                    // );
 
-                    let email_link = document
-                        .get_element_by_id("email-link")
-                        .expect("should have #email-link on the page")
-                        .dyn_into::<web_sys::HtmlElement>()
-                        .expect("#email-link should be an `HtmlElement`");
+                    // let email_link = document
+                    //     .get_element_by_id("email-link")
+                    //     .expect("should have #email-link on the page")
+                    //     .dyn_into::<web_sys::HtmlElement>()
+                    //     .expect("#email-link should be an `HtmlElement`");
                 
-                    email_link
-                        .set_attribute("href", &email_link_href)
-                        .expect("Attribute href should have been set");
+                    // email_link
+                    //     .set_attribute("href", &email_link_href)
+                    //     .expect("Attribute href should have been set");
                     
-                    let email_address = document
-                        .get_element_by_id("email-address")
-                        .expect("should have #email-address on the page")
-                        .dyn_into::<web_sys::HtmlElement>()
-                        .expect("#email-link should be an `HtmlElement`");
+                    // let email_address = document
+                    //     .get_element_by_id("email-address")
+                    //     .expect("should have #email-address on the page")
+                    //     .dyn_into::<web_sys::HtmlElement>()
+                    //     .expect("#email-link should be an `HtmlElement`");
 
-                    email_address
-                        .set_attribute("value", &link_contract.assignee_email)
-                        .expect("Value should have been set");
+                    // email_address
+                    //     .set_attribute("value", &link_contract.assignee_email)
+                    //     .expect("Value should have been set");
                     
                     show(result_success);
                 }
@@ -189,13 +206,18 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                             <a class={"btn btn-primary"} id={"sms-link"} href={"#"}>{"Send"}</a>
                         </div>
                     </div>
-                    <div id={"email-section"} class={"form-group"}>
-                    <label for={"email-address"}>{"Send as email message:"}</label>
-                    <div class={"input-group-append"}>
-                        <input id={"email-address"} name={"emailAddress"} type={"text"} class={"form-control"} readonly={true} />
-                        <a class={"btn btn-primary"} id={"email-link"} href={"#"} target="_blamk">{"Send"}</a>
-                    </div>
-                </div>
+                    <EmailSection 
+                        territory_number={"territory_number"}
+                        assignee_email={"assignee_email"}
+                        territory_uri={"territory_uri"}
+                    />
+                    // <div id={"email-section"} class={"form-group"}>
+                    // <label for={"email-address"}>{"Send as email message:"}</label>
+                    // <div class={"input-group-append"}>
+                    //     <input id={"email-address"} name={"emailAddress"} type={"text"} class={"form-control"} readonly={true} />
+                    //     <a class={"btn btn-primary"} id={"email-link"} href={"#"} target="_blamk">{"Send"}</a>
+                    // </div>
+                //</div>
                 </div>
             </div>
         </>
@@ -215,4 +237,65 @@ fn hide(element: web_sys::HtmlElement) {
         .style()
         .set_property("display", "none")
         .expect("'display' should have been set to 'none'")
+}
+
+#[derive(Properties, PartialEq, Clone)]
+pub struct EmailSectionProps {
+    pub territory_number: String,
+    pub assignee_email: String,
+    pub territory_uri: String,
+}
+
+#[function_component(EmailSection)]
+pub fn email_section(props: &EmailSectionProps) -> Html {
+    let email_link_href = format!(
+        "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
+        assignee_email = props.assignee_email,
+        territory_number = props.territory_number,
+        territory_uri = props.territory_uri,
+    );
+
+    // let email_link = document
+    //     .get_element_by_id("email-link")
+    //     .expect("should have #email-link on the page")
+    //     .dyn_into::<web_sys::HtmlElement>()
+    //     .expect("#email-link should be an `HtmlElement`");
+
+    // email_link
+    //     .set_attribute("href", &email_link_href)
+    //     .expect("Attribute href should have been set");
+    
+    // let email_address = document
+    //     .get_element_by_id("email-address")
+    //     .expect("should have #email-address on the page")
+    //     .dyn_into::<web_sys::HtmlElement>()
+    //     .expect("#email-link should be an `HtmlElement`");
+
+    // email_address
+    //     .set_attribute("value", &props.assignee_email)
+    //     .expect("Value should have been set");
+
+    html! {
+        <div id={"email-section"} class={"form-group"}>
+            <label for={"email-address"}>{"Send as email message:"}</label>
+            <div class={"input-group-append"}>
+                <input 
+                    id={"email-address"} 
+                    value={props.assignee_email.clone()} 
+                    name={"emailAddress"} 
+                    type={"text"} 
+                    class={"form-control"} 
+                    readonly={true} 
+                />
+                <a 
+                    class={"btn btn-primary"} 
+                    id={"email-link"} 
+                    href={email_link_href} 
+                    target="_blamk"
+                >
+                {"Send"}
+                </a>
+            </div>
+        </div>
+    }
 }

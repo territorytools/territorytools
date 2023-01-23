@@ -35,7 +35,6 @@ pub struct TerritoryAssignment {
 
 #[function_component(AssignForm)]
 pub fn assign_form(props: &Props) -> Html {
-    // // //let navigator = use_navigator().unwrap();
     let state = use_state(||TerritoryAssignment {
         territory_number: props.territory_number.clone(),
         description: props.description.clone(),
