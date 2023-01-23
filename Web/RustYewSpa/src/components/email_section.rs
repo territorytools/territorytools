@@ -10,7 +10,7 @@ pub struct EmailSectionProps {
 #[function_component(EmailSection)]
 pub fn email_section(props: &EmailSectionProps) -> Html {
     let email_link_href = format!(
-        "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
+        "mailto:{assignee_email}?subject=Territory%20{territory_number}&body=Territory%20{territory_number}%20{territory_uri}",
         assignee_email = props.assignee_email,
         territory_number = props.territory_number,
         territory_uri = props.territory_uri,

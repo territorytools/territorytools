@@ -19,8 +19,8 @@ pub fn popup_content(territory: &Territory) -> String  {
     let assign_button_html = 
         if territory.status == "Available".to_string() && status != "Completed".to_string() {
         let description: String = match &territory.description {
-            Some(v) => v.clone(),
-            None => "".to_string()
+            Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
+            None => "(empty)".to_string()
         };
 
         format!("<br/><a 
@@ -30,7 +30,6 @@ pub fn popup_content(territory: &Territory) -> String  {
                     Assign
                 </a>",
                 territory_number = territory.number,
-                description = description,
                 )
     } else { "".to_string() };
 
@@ -46,9 +45,6 @@ pub fn popup_content(territory: &Territory) -> String  {
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap(),
-        status = status,
-        //onclick_string = onclick_string,
         address_count = territory.address_count,
-        assignee_line = assignee_line
     )
 }
