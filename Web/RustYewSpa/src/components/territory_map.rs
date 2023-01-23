@@ -99,6 +99,11 @@ pub fn territory_map() -> Html {
             }
         };
 
+        let hidden: bool = match &t.group_id {
+            Some(v) => v == "outer",
+            _ => false,
+        };
+
         // let description: String = {
         //     match t.description {
         //         Some(_) => t.description.clone().unwrap(),
@@ -141,10 +146,6 @@ pub fn territory_map() -> Html {
             }
         };
 
-        if area_code != "TER" {
-            hidden_count += 1;
-        }
-
         if area_code == "TER" {
             let plolyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
@@ -153,6 +154,9 @@ pub fn territory_map() -> Html {
             );
 
             plolyline.addTo(&leaflet_map);
+            hidden_count += 1;
+        } else if hidden {
+            hidden_count += 1;
         } else {
             
             let poly = Polygon::new_with_options(polygon.iter().map(JsValue::from).collect(),
