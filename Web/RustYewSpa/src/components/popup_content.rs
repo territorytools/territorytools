@@ -1,7 +1,6 @@
 use crate::models::territories::{Territory};
 
 pub fn popup_content(territory: &Territory) -> String  {
-    //let onclick_string = format!("alert(\"You clicked {}\");", territory.number);
     let assignee_line = {
         match &territory.signed_out_to {
             Some(_t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
@@ -9,13 +8,6 @@ pub fn popup_content(territory: &Territory) -> String  {
         }
     };
     
-    // let assignee_name = {
-    //     match &territory.signed_out_to {
-    //         Some(_) => territory.signed_out_to.clone().unwrap(),
-    //         None => "".to_string()
-    //     }
-    // };
-
     let status = {
         if territory.last_completed_by.is_none() {
             &territory.status
@@ -26,7 +18,11 @@ pub fn popup_content(territory: &Territory) -> String  {
 
     let assign_button_html = 
         if territory.status == "Available".to_string() && status != "Completed".to_string() {
-        //href='/app/assign/{territory_number}/{description}/{assignee_name}'>
+        let description: String = match &territory.description {
+            Some(v) => v.clone(),
+            None => "".to_string()
+        };
+
         format!("<br/><a 
                     style='margin-top:5px;color:white;'
                     class='btn btn-primary btn-sm'
@@ -34,8 +30,7 @@ pub fn popup_content(territory: &Territory) -> String  {
                     Assign
                 </a>",
                 territory_number = territory.number,
-                description = territory.description.clone().unwrap(),
-                // assignee_name = assignee_name,
+                description = description,
                 )
     } else { "".to_string() };
 
