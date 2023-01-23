@@ -18,11 +18,18 @@ use crate::components::assign_form::*;
 use crate::components::email_section::EmailSection;
 use crate::components::sms_section::SmsSection;
 use crate::models::territory_links::TerritoryLinkContract;
-use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use wasm_bindgen_futures::spawn_local;
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct AssignmentResult {
+    pub link_contract: TerritoryLinkContract,
+    pub success: bool,
+    pub status: u16,
+    pub completed: bool,
+}
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
@@ -33,18 +40,12 @@ pub struct AssignPageProps {
 
 #[function_component(AssignPage)]
 pub fn assign_form(props: &AssignPageProps) -> Html {        
-    //let link_contract: TerritoryLinkContract::default; 
-    let state = use_state(|| TerritoryLinkContract::default());
+    let state = use_state(|| AssignmentResult::default());
 
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |assignment: TerritoryAssignment| {
-        //let store_dispatch = store_dispatch.clone();
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
-            //let result = api::login(user.username, user.password).await;
-            log!(format!("Territory Number: {}", assignment.territory_number));
-            log!(format!("Description: {}", assignment.description));
-            log!(format!("Assignee: {}", assignment.assignee));
             let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}", 
                 path = DATA_API_PATH,
                 number = assignment.territory_number,
@@ -68,41 +69,54 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                 .await
                 .unwrap();
 
-            let window = web_sys::window().expect("no global `window` exists");
-            let document = window.document().expect("should have a document on window");
-            let result_success = document
-                .get_element_by_id("result-success")
-                .expect("should have #to_be_hidden on the page")
-                .dyn_into::<web_sys::HtmlElement>()
-                .expect("#to_be_hidden should be an `HtmlElement`");
+            // let window = web_sys::window().expect("no global `window` exists");
+            // let document = window.document().expect("should have a document on window");
+            // let result_success = document
+            //     .get_element_by_id("result-success")
+            //     .expect("should have #to_be_hidden on the page")
+            //     .dyn_into::<web_sys::HtmlElement>()
+            //     .expect("#to_be_hidden should be an `HtmlElement`");
             
-            let result_failure = document
-                .get_element_by_id("result-failure")
-                .expect("should have #to_be_hidden on the page")
-                .dyn_into::<web_sys::HtmlElement>()
-                .expect("#to_be_hidden should be an `HtmlElement`");
+            // let result_failure = document
+            //     .get_element_by_id("result-failure")
+            //     .expect("should have #to_be_hidden on the page")
+            //     .dyn_into::<web_sys::HtmlElement>()
+            //     .expect("#to_be_hidden should be an `HtmlElement`");
 
             if resp.status() != 200 {
-                log!("Sorry the assignment failed.".to_string());
-                hide(result_success);
+                //hide(result_success);
                 
-                let inner_text = format!("Failed to assign territory! Code: {}", resp.status());
+                //let inner_text = format!("Failed to assign territory! Code: {}", resp.status());
                 
-                result_failure.set_inner_text(&inner_text);
-                show(result_failure);
+                //result_failure.set_inner_text(&inner_text);
+
+                let result = AssignmentResult {
+                    success: false,
+                    link_contract: TerritoryLinkContract::default(),
+                    status: resp.status(),
+                    completed: true,
+                };
+                
+                cloned_state.set(result);
+
+                //show(result_failure);
             } else {
-                log!("Yay the assignment succeeded!".to_string());
-                    
+                //hide(result_failure);
+
                 let link_contract: TerritoryLinkContract = resp
                     .json()
                     .await
                     .unwrap();
-
-                hide(result_failure);
                 
-                cloned_state.set(link_contract);
+                let result = AssignmentResult {
+                    success: true,
+                    link_contract: link_contract,
+                    status: resp.status(),
+                    completed: true,
+                };
 
-                show(result_success);
+                cloned_state.set(result);
+                //show(result_success);
             }
         });
     });
@@ -116,23 +130,32 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                 assignee_alba_id={"0"}
             />
 
-            <div class={"container"}>
-                <div id={"result-failure"} style={"display:none;color:red;"}>{"Failed"}</div>
-                <div id={"result-success"} style={"display:none;"}>
-                    <p style={"color:blue;"}>{"Success"}</p>
-                    <a style={"color:blue;margin-bottom:10px;"} href={state.territory_uri.clone()}>{state.territory_uri.clone()}</a>
-                    <SmsSection
-                        territory_number={state.territory_number.clone()}
-                        assignee_phone={state.assignee_phone.clone()}
-                        territory_uri={state.territory_uri.clone()}
-                    />
-                    <EmailSection 
-                        territory_number={state.territory_number.clone()}
-                        assignee_email={state.assignee_email.clone()}
-                        territory_uri={state.territory_uri.clone()}
-                    />
+            if state.completed {
+                <div class={"container"}>
+                    if state.success {
+                        <div id={"result-success"} style={"display:block;"}>
+                            <p style={"color:blue;"}>{"Success"}</p>
+                            <a 
+                                style={"color:blue;margin-bottom:10px;"} 
+                                href={state.link_contract.territory_uri.clone()}>
+                                {state.link_contract.territory_uri.clone()}
+                            </a>
+                            <SmsSection
+                                territory_number={state.link_contract.territory_number.clone()}
+                                assignee_phone={state.link_contract.assignee_phone.clone()}
+                                territory_uri={state.link_contract.territory_uri.clone()}
+                            />
+                            <EmailSection 
+                                territory_number={state.link_contract.territory_number.clone()}
+                                assignee_email={state.link_contract.assignee_email.clone()}
+                                territory_uri={state.link_contract.territory_uri.clone()}
+                            />
+                        </div>
+                    } else {
+                        <div id={"result-failure"} style={"display:block;color:red;"}>{"Failed"}</div>
+                    }
                 </div>
-            </div>
+            }
         </>
     }
 }
