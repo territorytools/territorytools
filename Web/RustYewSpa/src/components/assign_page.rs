@@ -16,6 +16,7 @@ const ASSIGN_METHOD: &str = "POST";
 use crate::components::menu_bar::MenuBar;
 use crate::components::assign_form::*;
 use crate::components::email_section::EmailSection;
+use crate::components::sms_section::SmsSection;
 use crate::models::territory_links::TerritoryLinkContract;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
@@ -114,63 +115,8 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                     .set_attribute("href", &link_contract.territory_uri)
                     .expect("Attribute href should have been set");
                 
-                let sms_link_href = format!(
-                    "sms://{assignee_phone}?body=Territory%20{territory_number}%20{territory_uri}",
-                    assignee_phone = link_contract.assignee_phone,
-                    territory_number = link_contract.territory_number,
-                    territory_uri = link_contract.territory_uri,
-                );
-                
-                let sms_link = document
-                    .get_element_by_id("sms-link")
-                    .expect("should have #sms-link on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#sms-link should be an `HtmlElement`");
-                
-                sms_link
-                    .set_attribute("href", &sms_link_href)
-                    .expect("Attribute href should have been set");
-                
-                let sms_number = document
-                    .get_element_by_id("sms-number")
-                    .expect("should have #sms-number on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#sms-link should be an `HtmlElement`");
-
-                sms_number
-                    .set_attribute("value", &link_contract.assignee_phone)
-                    .expect("Value should have been set");
-                
-                //let contract = cloned_state.deref().clone();    
                 cloned_state.set(link_contract);
-                
-                // let email_link_href = format!(
-                //     "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
-                //     assignee_email = link_contract.assignee_email,
-                //     territory_number = link_contract.territory_number,
-                //     territory_uri = link_contract.territory_uri,
-                // );
 
-                // let email_link = document
-                //     .get_element_by_id("email-link")
-                //     .expect("should have #email-link on the page")
-                //     .dyn_into::<web_sys::HtmlElement>()
-                //     .expect("#email-link should be an `HtmlElement`");
-            
-                // email_link
-                //     .set_attribute("href", &email_link_href)
-                //     .expect("Attribute href should have been set");
-                
-                // let email_address = document
-                //     .get_element_by_id("email-address")
-                //     .expect("should have #email-address on the page")
-                //     .dyn_into::<web_sys::HtmlElement>()
-                //     .expect("#email-link should be an `HtmlElement`");
-
-                // email_address
-                //     .set_attribute("value", &link_contract.assignee_email)
-                //     .expect("Value should have been set");
-                
                 show(result_success);
             }
         });
@@ -191,13 +137,11 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                 <div id={"result-success"} style={"display:none;"}>
                     <p style={"color:blue;"}>{"Success"}</p>
                     <a id={"result-link"} style={"color:blue;"} href={"#"}></a>
-                    <div id={"sms-section"} class={"form-group"}>
-                        <label for={"sms-number"}>{"Send as text message:"}</label>
-                        <div class={"input-group-append"}>
-                            <input id={"sms-number"} name={"phoneNumber"} type={"text"} class={"form-control"} readonly={true} />
-                            <a class={"btn btn-primary"} id={"sms-link"} href={"#"}>{"Send"}</a>
-                        </div>
-                    </div>
+                    <SmsSection
+                        territory_number={state.territory_number.clone()}
+                        assignee_phone={state.assignee_phone.clone()}
+                        territory_uri={state.territory_uri.clone()}
+                    />
                     <EmailSection 
                         territory_number={state.territory_number.clone()}
                         assignee_email={state.assignee_email.clone()}
