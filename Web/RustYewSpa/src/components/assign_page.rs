@@ -13,10 +13,9 @@ const ASSIGN_METHOD: &str = "POST";
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
-use std::clone;
-use std::ops::Deref;
 use crate::components::menu_bar::MenuBar;
 use crate::components::assign_form::*;
+use crate::components::email_section::EmailSection;
 use crate::models::territory_links::TerritoryLinkContract;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
@@ -200,17 +199,10 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                         </div>
                     </div>
                     <EmailSection 
-                        territory_number={"territory_number"}
-                        assignee_email={"assignee_email"}
+                        territory_number={state.territory_number.clone()}
+                        assignee_email={state.assignee_email.clone()}
                         territory_uri={state.territory_uri.clone()}
                     />
-                    // <div id={"email-section"} class={"form-group"}>
-                    // <label for={"email-address"}>{"Send as email message:"}</label>
-                    // <div class={"input-group-append"}>
-                    //     <input id={"email-address"} name={"emailAddress"} type={"text"} class={"form-control"} readonly={true} />
-                    //     <a class={"btn btn-primary"} id={"email-link"} href={"#"} target="_blamk">{"Send"}</a>
-                    // </div>
-                //</div>
                 </div>
             </div>
         </>
@@ -230,65 +222,4 @@ fn hide(element: web_sys::HtmlElement) {
         .style()
         .set_property("display", "none")
         .expect("'display' should have been set to 'none'")
-}
-
-#[derive(Properties, PartialEq, Clone)]
-pub struct EmailSectionProps {
-    pub territory_number: String,
-    pub assignee_email: String,
-    pub territory_uri: String,
-}
-
-#[function_component(EmailSection)]
-pub fn email_section(props: &EmailSectionProps) -> Html {
-    let email_link_href = format!(
-        "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
-        assignee_email = props.assignee_email,
-        territory_number = props.territory_number,
-        territory_uri = props.territory_uri,
-    );
-
-    // let email_link = document
-    //     .get_element_by_id("email-link")
-    //     .expect("should have #email-link on the page")
-    //     .dyn_into::<web_sys::HtmlElement>()
-    //     .expect("#email-link should be an `HtmlElement`");
-
-    // email_link
-    //     .set_attribute("href", &email_link_href)
-    //     .expect("Attribute href should have been set");
-    
-    // let email_address = document
-    //     .get_element_by_id("email-address")
-    //     .expect("should have #email-address on the page")
-    //     .dyn_into::<web_sys::HtmlElement>()
-    //     .expect("#email-link should be an `HtmlElement`");
-
-    // email_address
-    //     .set_attribute("value", &props.assignee_email)
-    //     .expect("Value should have been set");
-
-    html! {
-        <div id={"email-section"} class={"form-group"}>
-            <label for={"email-address"}>{"Send as email message:"}</label>
-            <div class={"input-group-append"}>
-                <input 
-                    id={"email-address"} 
-                    value={props.assignee_email.clone()} 
-                    name={"emailAddress"} 
-                    type={"text"} 
-                    class={"form-control"} 
-                    readonly={true} 
-                />
-                <a 
-                    class={"btn btn-primary"} 
-                    id={"email-link"} 
-                    href={email_link_href} 
-                    target="_blamk"
-                >
-                {"Send"}
-                </a>
-            </div>
-        </div>
-    }
 }
