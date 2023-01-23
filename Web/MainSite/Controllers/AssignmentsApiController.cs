@@ -40,40 +40,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
             _logger = logger;
         }
 
-        //[HttpGet("[action]")]
-        //public IActionResult Assign(int territoryId, int userId)
-        //{
-        //    _territoryAssignmentService.Assign(territoryId, userId, User.Identity.Name);
-
-        //    return Redirect($"/Home/AssignSuccess?territoryId={territoryId}&userName={User.Identity.Name}");
-        //}
-
-        //// TODO Remove this It shouldn't be used
-        //[HttpPost("latest")]
-        //public ActionResult<AssignmentResult> AssignLatest(
-        //    string userName,
-        //    int userId,
-        //    [Range(1, 99)]
-        //    int count = 1,
-        //    string area = "*")
-        //{
-        //    var request = new AssignmentLatestRequest
-        //    {
-        //        RealUserName = User.Identity.Name,
-        //        AlbaUserId = userId,
-        //        Count = count,
-        //        Area = area
-        //    };
-
-        //    AssignmentResult result = _assignmentService.AssignmentLatest(request);
-
-        //    if(result.Success)
-        //        return Ok(result);
-        //    else
-        //        return BadRequest(result);
-        //}
-
-
         [HttpPost]
         public ActionResult<TerritoryLinkContract> PostAssignment(
             string territoryNumber,

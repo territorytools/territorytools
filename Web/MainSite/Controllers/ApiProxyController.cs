@@ -49,9 +49,32 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 path = $"{path.Substring(pathPrefix.Length)}";
             }
 
+            HttpMethod method;
+            switch (ControllerContext.HttpContext.Request.Method.ToUpperInvariant())
+            {
+                case "POST":
+                    method = HttpMethod.Post;
+                    break;
+                case "PUT":
+                    method = HttpMethod.Put;
+                    break;
+                case "DELETE":
+                    method = HttpMethod.Delete;
+                    break;
+                case "PATCH":
+                    method = HttpMethod.Patch;
+                    break;
+                case "OPTIONS":
+                    method = HttpMethod.Options;
+                    break;
+                default:
+                    method = HttpMethod.Get;
+                    break;
+            }
+
             HttpClient client = new();
             HttpRequestMessage requestMessage = new HttpRequestMessage(
-                HttpMethod.Get,
+                method,
                 $"{baseUrl}/{path}{queryString}");
 
             requestMessage.Headers.Add("x-territory-tools-user", User.Identity.Name);
