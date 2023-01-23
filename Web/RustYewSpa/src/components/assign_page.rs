@@ -1,21 +1,28 @@
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str =  "/api/assignments";
+const DATA_API_PATH: &str = "/data/post_assignments.json";
+
+#[cfg(debug_assertions)]
+const ASSIGN_METHOD: &str = "GET";
 
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/assignments";
+
+#[cfg(not(debug_assertions))]
+const ASSIGN_METHOD: &str = "POST";
 
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
 use crate::components::menu_bar::MenuBar;
 use crate::components::assign_form::*;
-use crate::components::route_stuff::Route;
+use crate::models::territory_links::TerritoryLinkContract;
+// // // //use crate::components::route_stuff::Route;
 use gloo_console::log;
-use reqwasm::http::{Request};
+use reqwasm::http::{Request, Method};
 use wasm_bindgen_futures::spawn_local;
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
-use yew_router::prelude::use_navigator;
+// // //use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct AssignPageProps {
@@ -27,13 +34,13 @@ pub struct AssignPageProps {
 #[function_component(AssignPage)]
 pub fn assign_form(props: &AssignPageProps) -> Html {        
     //let history = use_navigator().unwrap();
-    let navigator = use_navigator().unwrap();
+    // // //let navigator = use_navigator().unwrap();
     let onsubmit = {
         //let store_dispatch = store_dispatch.clone();
         Callback::from(move |assignment: TerritoryAssignment| {
             //let navigator = use_navigator().unwrap();
             //let history = history.clone();
-            let navigator = navigator.clone();
+            // // //let navigator = navigator.clone();
             // // //let navigator = navigator.clone();
             //let store_dispatch = store_dispatch.clone();
 
@@ -52,8 +59,15 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
 
                 //let description = assignment.description.clone();
                 let uri: &str = uri_string.as_str();
+                
+                let method: Method = match ASSIGN_METHOD {
+                    "POST" => Method::POST,
+                    "GET" => Method::GET,
+                    &_ =>  Method::GET,
+                };
 
-                let resp = Request::post(uri)
+                let resp = Request::new(uri)
+                    .method(method)
                     .header("Content-Type", "application/json")
                     //.body(format!("{{ 'description': '{description}' }}"))
                     .send()
@@ -77,13 +91,91 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                 if resp.status() != 200 {
                     log!("Sorry the assignment failed.".to_string());
                     //navigator.push(&Route::NotFound);
-                    show(result_failure);
                     hide(result_success);
+                    
+                    let inner_text = format!("Failed to assign territory! Code: {}", resp.status());
+                    
+                    result_failure.set_inner_text(&inner_text);
+                    show(result_failure);
                 } else {
                     log!("Yay the assignment succeeded!".to_string());
                     //navigator.push(&Route::Map);
-                    show(result_success);
+                       
+                    let link_contract: TerritoryLinkContract = resp
+                        .json()
+                        .await
+                        .unwrap();
+
                     hide(result_failure);
+
+                    let result_link = document
+                        .get_element_by_id("result-link")
+                        .expect("should have #result-link on the page")
+                        .dyn_into::<web_sys::HtmlElement>()
+                        .expect("#result-link should be an `HtmlElement`");
+                        
+                    //let inner_text = format!("MTK: {}", link_contract.alba_mobile_territory_key);
+                    
+                    result_link.set_inner_text(&link_contract.territory_uri);
+                    result_link
+                        .set_attribute("href", &link_contract.territory_uri)
+                        .expect("Attribute href should have been set");
+                    
+                    let sms_link_href = format!(
+                        "sms://{assignee_phone}?body=Territory%20{territory_number}%20{territory_uri}",
+                        assignee_phone = link_contract.assignee_phone,
+                        territory_number = link_contract.territory_number,
+                        territory_uri = link_contract.territory_uri,
+                    );
+                    
+                    let sms_link = document
+                        .get_element_by_id("sms-link")
+                        .expect("should have #sms-link on the page")
+                        .dyn_into::<web_sys::HtmlElement>()
+                        .expect("#sms-link should be an `HtmlElement`");
+                    
+                    sms_link
+                        .set_attribute("href", &sms_link_href)
+                        .expect("Attribute href should have been set");
+                    
+                    let sms_number = document
+                        .get_element_by_id("sms-number")
+                        .expect("should have #sms-number on the page")
+                        .dyn_into::<web_sys::HtmlElement>()
+                        .expect("#sms-link should be an `HtmlElement`");
+
+                    sms_number
+                        .set_attribute("value", &link_contract.assignee_phone)
+                        .expect("Value should have been set");
+                     
+                    let email_link_href = format!(
+                        "mailto://{assignee_email}?body=Territory%20{territory_number}%20{territory_uri}",
+                        assignee_email = link_contract.assignee_email,
+                        territory_number = link_contract.territory_number,
+                        territory_uri = link_contract.territory_uri,
+                    );
+
+                    let email_link = document
+                        .get_element_by_id("email-link")
+                        .expect("should have #email-link on the page")
+                        .dyn_into::<web_sys::HtmlElement>()
+                        .expect("#email-link should be an `HtmlElement`");
+                
+                    email_link
+                        .set_attribute("href", &email_link_href)
+                        .expect("Attribute href should have been set");
+                    
+                    let email_address = document
+                        .get_element_by_id("email-address")
+                        .expect("should have #email-address on the page")
+                        .dyn_into::<web_sys::HtmlElement>()
+                        .expect("#email-link should be an `HtmlElement`");
+
+                    email_address
+                        .set_attribute("value", &link_contract.assignee_email)
+                        .expect("Value should have been set");
+                    
+                    show(result_success);
                 }
             });
         })
@@ -92,11 +184,6 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
     html! {
         <>
             <MenuBar/>
-            // <AssignmentForm 
-            //     territory_number={ctx.props().territory_number.clone()} 
-            //     assignee_name={ctx.props().assignee_name.clone()}
-            //     description={ctx.props().description.clone()}/>
-            // <h3 style={"color:red;"}>{"This page does not work yet! Needs a result form."}</h3>
             <AssignForm {onsubmit} 
                 action={Action::Login} 
                 territory_number={props.territory_number.clone()}
@@ -106,9 +193,25 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
 
             <div class={"container"}>
                 //<div id={"assignment-buttons"}>
-                    <div id={"result-success"} style={"display:none;color:blue;"}>{"Success"}</div>
-                    <div id={"result-failure"} style={"display:none;color:red;"}>{"Failed"}</div>
-                //</div>
+                <div id={"result-failure"} style={"display:none;color:red;"}>{"Failed"}</div>
+                <div id={"result-success"} style={"display:none;"}>
+                    <p style={"color:blue;"}>{"Success"}</p>
+                    <a id={"result-link"} style={"color:blue;"} href={"#"}></a>
+                    <div id={"sms-section"} class={"form-group"}>
+                        <label for={"sms-number"}>{"Send as text message:"}</label>
+                        <div class={"input-group-append"}>
+                            <input id={"sms-number"} name={"phoneNumber"} type={"text"} class={"form-control"} readonly={true} />
+                            <a class={"btn btn-primary"} id={"sms-link"} href={"#"}>{"Send"}</a>
+                        </div>
+                    </div>
+                    <div id={"email-section"} class={"form-group"}>
+                    <label for={"email-address"}>{"Send as email message:"}</label>
+                    <div class={"input-group-append"}>
+                        <input id={"email-address"} name={"emailAddress"} type={"text"} class={"form-control"} readonly={true} />
+                        <a class={"btn btn-primary"} id={"email-link"} href={"#"} target="_blamk">{"Send"}</a>
+                    </div>
+                </div>
+                </div>
             </div>
         </>
     }
