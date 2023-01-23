@@ -2,28 +2,18 @@ use crate::components::{
     bb_button::BBButton,
     bb_text_input::{BBTextInput, InputType},
     user_selector::UserSelector,
-    // // //route_stuff::Route,
 };
 
 use std::ops::Deref;
 use yew::prelude::*;
-// // //use yew_router::prelude::use_navigator;
 use urlencoding::decode;
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
     pub onsubmit: Callback<TerritoryAssignment>,
-    pub action: Action,
     pub territory_number: String,
     pub description: String,
     pub assignee_alba_id: String,
-}
-
-// TODO: Remove this "Login" stuff, it's not a login component
-#[derive(Clone, PartialEq)]
-pub enum Action {
-    //CreateAccount,
-    Login,
 }
 
 #[derive(Default, Clone)]
@@ -77,8 +67,6 @@ pub fn assign_form(props: &Props) -> Html {
             event.prevent_default();
             let assignment = state.deref().clone();
             onsubmit_prop.emit(assignment);
-            
-            // // //navigator.push(&Route::Map);
         })
     };
 

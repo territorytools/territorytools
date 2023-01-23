@@ -17,20 +17,17 @@ pub fn email_section(props: &EmailSectionProps) -> Html {
     );
 
     html! {
-        <div id={"email-section"} class={"form-group"}>
-            <label for={"email-address"}>{"Send as email message:"}</label>
+        <div class={"form-group"}>
+            <label for={"email-address"}>{"Send as text message:"}</label>
             <div class={"input-group-append"}>
                 <input 
-                    id={"email-address"} 
                     value={props.assignee_email.clone()} 
-                    name={"emailAddress"} 
                     type={"text"} 
                     class={"form-control"} 
                     readonly={true} 
                 />
                 <a 
                     class={"btn btn-primary"} 
-                    id={"email-link"} 
                     href={email_link_href} 
                     target="_blamk"
                 >

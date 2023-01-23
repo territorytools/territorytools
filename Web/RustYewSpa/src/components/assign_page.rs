@@ -98,22 +98,7 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                     .await
                     .unwrap();
 
-                
-                // territory_number = link_contract.territory_number.clone();
-                // assignee_email = link_contract.assignee_email.clone();
-                // territory_uri = link_contract.territory_uri.clone();
                 hide(result_failure);
-
-                let result_link = document
-                    .get_element_by_id("result-link")
-                    .expect("should have #result-link on the page")
-                    .dyn_into::<web_sys::HtmlElement>()
-                    .expect("#result-link should be an `HtmlElement`");
-                    
-                result_link.set_inner_text(&link_contract.territory_uri);
-                result_link
-                    .set_attribute("href", &link_contract.territory_uri)
-                    .expect("Attribute href should have been set");
                 
                 cloned_state.set(link_contract);
 
@@ -126,7 +111,6 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
         <>
             <MenuBar/>
             <AssignForm {onsubmit} 
-                action={Action::Login} 
                 territory_number={props.territory_number.clone()}
                 description={props.description.clone()}
                 assignee_alba_id={"0"}
@@ -136,7 +120,7 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                 <div id={"result-failure"} style={"display:none;color:red;"}>{"Failed"}</div>
                 <div id={"result-success"} style={"display:none;"}>
                     <p style={"color:blue;"}>{"Success"}</p>
-                    <a id={"result-link"} style={"color:blue;"} href={"#"}></a>
+                    <a style={"color:blue;margin-bottom:10px;"} href={state.territory_uri.clone()}>{state.territory_uri.clone()}</a>
                     <SmsSection
                         territory_number={state.territory_number.clone()}
                         assignee_phone={state.assignee_phone.clone()}
@@ -167,3 +151,4 @@ fn hide(element: web_sys::HtmlElement) {
         .set_property("display", "none")
         .expect("'display' should have been set to 'none'")
 }
+
