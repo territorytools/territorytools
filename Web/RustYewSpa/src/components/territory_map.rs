@@ -4,7 +4,7 @@ use crate::components::map_menu::MapMenu;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, LatLngBounds};
+use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
 use reqwasm::http::{Request};
 use yew::prelude::*;
 use gloo_utils::document;

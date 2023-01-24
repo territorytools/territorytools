@@ -1,4 +1,5 @@
 use crate::components::assign_page::AssignPage;
+use crate::components::territory_edit_page::TerritoryEditPage;
 use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
 use gloo_console::log;
@@ -84,6 +85,17 @@ fn switch(route: Route) -> Html {
             assignee_name,
         } => {
             html! { <AssignPage territory_number={territory_number} description={description} assignee_name={assignee_name}/> }
+        }
+        Route::Edit {
+            territory_number,
+            //description,
+            //group_id,
+        } => {
+            html! { <TerritoryEditPage 
+                territory_number={territory_number} 
+                // description={description} 
+                // group_id={group_id}
+                /> }
         }
         Route::Map => html! { <TerritoryMap /> },
         Route::Secure => html! {

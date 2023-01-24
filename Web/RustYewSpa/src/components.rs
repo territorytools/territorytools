@@ -11,3 +11,5 @@ pub mod bb_text_input;
 pub mod user_selector;
 pub mod email_section;
 pub mod sms_section;
+pub mod territory_edit_form;
+pub mod territory_edit_page;

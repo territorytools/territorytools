@@ -20,6 +20,12 @@ pub enum Route {
         description: String,
         assignee_name: String,
     },
+    #[at("/app/territories/:territory_number")]
+    Edit {
+        territory_number: String,
+        //description: String,
+        //group_id: String,
+    },
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
