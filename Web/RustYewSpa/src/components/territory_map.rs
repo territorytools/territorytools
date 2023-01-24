@@ -4,7 +4,7 @@ use crate::components::map_menu::MapMenu;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
+use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, LatLngBounds};
 use reqwasm::http::{Request};
 use yew::prelude::*;
 use gloo_utils::document;
@@ -80,6 +80,11 @@ pub fn territory_map() -> Html {
     let mut completed_count = 0;
     let mut total_count = 0;
     let mut hidden_count = 0;
+
+    //leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    //let mut bounds: LatLngBounds = leaflet_map.getBounds();
+    //log!("Bounds: {}", bounds.clone());
+
     for t in territories.iter() {      
         total_count += 1;
 
@@ -147,13 +152,16 @@ pub fn territory_map() -> Html {
         };
 
         if area_code == "TER" {
-            let plolyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
+            let polyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
                 color: territory_color.into() 
             }).expect("Unable to serialize polygon options")
             );
+            
+            let bounds = polyline.getBounds();
+            leaflet_map.fitBounds(&bounds);
 
-            plolyline.addTo(&leaflet_map);
+            polyline.addTo(&leaflet_map);
             hidden_count += 1;
         } else if hidden {
             hidden_count += 1;
@@ -197,7 +205,8 @@ pub fn territory_map() -> Html {
     }
 
     // from rendered
-    leaflet_map.setView(&LatLng::new(47.66, -122.33), 10.0);
+    leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    
 
     // let legendBoxProps = leaflet::Control::extend(
     //     &serde_wasm_bindgen::to_value(&LegendBoxOptions { 
