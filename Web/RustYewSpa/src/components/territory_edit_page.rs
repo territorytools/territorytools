@@ -91,7 +91,7 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
                 .body(format!("{{ 'territory_number': '{territory_number}', 'description': '{description}', 'group_id': '{group_id}' }}"))
                 .send()
                 .await
-                .unwrap();
+                .expect("A result from the endpoint");
 
             // let link_contract: TerritoryLinkContract = if resp.status() == 200 {
             //     resp.json().await.unwrap()
