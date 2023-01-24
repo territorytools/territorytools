@@ -20,7 +20,7 @@ pub enum Route {
         description: String,
         assignee_name: String,
     },
-    #[at("/app/territories/:territory_number")]
+    #[at("/app/territories/:territory_number/edit")]
     Edit {
         territory_number: String,
         //description: String,

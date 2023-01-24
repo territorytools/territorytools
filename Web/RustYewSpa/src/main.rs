@@ -1,7 +1,8 @@
 use crate::components::assign_page::AssignPage;
-use crate::components::territory_edit_page::TerritoryEditPage;
+use crate::components::territory_edit_page::*;
 use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
+use crate::components::territory_edit_page::*;
 use gloo_console::log;
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::prelude::*;
@@ -90,13 +91,12 @@ fn switch(route: Route) -> Html {
             territory_number,
             //description,
             //group_id,
-        } => {
-            html! { <TerritoryEditPage 
-                territory_number={territory_number} 
-                // description={description} 
-                // group_id={group_id}
-                /> }
-        }
+        } => //territory_edit_page(TerritoryEditPageProps { territory_number: territory_number}),
+            html! { 
+                <TerritoryEditPage 
+                    territory_number={territory_number}
+                /> },
+        
         Route::Map => html! { <TerritoryMap /> },
         Route::Secure => html! {
             <Secure />

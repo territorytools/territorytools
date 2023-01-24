@@ -16,15 +16,25 @@ const ASSIGN_METHOD: &str = "PUT";
 use crate::components::territory_edit_form::*;
 use crate::components::menu_bar::MenuBar;
 use crate::components::territory_edit_form::TerritoryEditForm;
+use gloo_console::log;
 use reqwasm::http::{Request, Method};
+use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use yew_router::hooks::use_location;
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritoryEditResult {
     pub success: bool,
     pub status: u16,
     pub completed: bool,
+}
+
+// App theme
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct TerritoryEditPageParameters {
+    pub description: String,
+    pub group_id: String,
 }
 
 #[derive(Properties, PartialEq, Clone)]
@@ -37,18 +47,27 @@ pub struct TerritoryEditPageProps {
 #[function_component(TerritoryEditPage)]
 pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {        
     let state = use_state(|| TerritoryEditResult::default());
+    //let parameters = use_context::<TerritoryEditPageParameters>().expect("no ctx found");
+    let location = use_location().expect("Should be a location");
+    log!("Query: {}", location.query_str());
+    let parameters: TerritoryEditPageParameters = location.query().expect("An object");
+    log!("Query.groupid: {}", &parameters.group_id);
+    //let parameters = user
+
+    // log!("description: {}", parameters.description);
+    // log!("group_id: {}", parameters.group_id);
 
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |_modification: TerritoryModification| {
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
-            let fetched_territory: Territory = Request::get("/data/territory_modification.json")
-                .send()
-                .await
-                .unwrap()
-                .json()
-                .await
-                .unwrap();
+        //     let fetched_territory: Territory = Request::get("/data/territory_modification.json")
+        //         .send()
+        //         .await
+        //         .unwrap()
+        //         .json()
+        //         .await
+        //         .unwrap();
             
 
             let uri_string: String = format!("{path}", 
@@ -95,8 +114,8 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
             <MenuBar/>
             <TerritoryEditForm {onsubmit} 
                 territory_number={props.territory_number.clone()}
-                // description={props.description.clone()}
-                // group_id={props.group_id.clone()}
+                description={parameters.description}
+                group_id={parameters.group_id}
             />
 
             if state.completed {

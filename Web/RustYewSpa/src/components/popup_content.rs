@@ -32,15 +32,22 @@ pub fn popup_content(territory: &Territory) -> String  {
                 territory_number = territory.number,
                 )
     } else { "".to_string() };
+    
+    let description: String = match &territory.description {
+        Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
+        None => "(empty)".to_string()
+    };
 
     let edit_button_html = 
         format!("<br/><a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
-            href='/app/territories/{territory_number}/edit'>
+            href='/app/territories/{territory_number}/edit?description={description}&group_id={group_id}'>
             Edit
         </a>",
         territory_number = territory.number,
+        //description = description,
+        group_id = "testing"
         );
 
     format!(
