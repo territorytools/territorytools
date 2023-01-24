@@ -33,6 +33,16 @@ pub fn popup_content(territory: &Territory) -> String  {
                 )
     } else { "".to_string() };
 
+    let edit_button_html = 
+        format!("<br/><a 
+            style='margin-top:5px;color:white;'
+            class='btn btn-primary btn-sm'
+            href='/app/territories/{territory_number}/edit'>
+            Edit
+        </a>",
+        territory_number = territory.number,
+        );
+
     format!(
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>
@@ -41,6 +51,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span>{status}</span>
             {assignee_line}
             {assign_button_html}
+            {edit_button_html}
             <br/>
         </div>",
         territory_number = territory.number,
