@@ -1,24 +1,8 @@
-use crate::components::territory_summary::TerritorySummary;
-use crate::components::popup_content::popup_content;
-use crate::models::territories::{Territory};
 use crate::models::users::{User};
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
 use reqwasm::http::{Request};
 use yew::prelude::*;
-use gloo_utils::document;
-use gloo_console::log;
-use gloo_timers::callback::Timeout;
-use serde::{Serialize, Deserialize};
-//use js_sys::{Array, Date};
-use web_sys::{
-    Document,
-    Element,
-    HtmlElement,
-    Window,
-    Node
-};
+use web_sys::HtmlSelectElement;
 
 #[cfg(debug_assertions)]
 const DATA_USERS_API_PATH: &str = "/data/users.json";
@@ -27,8 +11,18 @@ const DATA_USERS_API_PATH: &str = "/data/users.json";
 const DATA_USERS_API_PATH: &str = "/api/users?active=true";
 
 
+#[derive(Properties, Clone, PartialEq)]
+pub struct Props {
+    // pub data_test: String,
+    // pub id: String,
+    // pub label: String,
+    // pub options: Vec<SelectOption>,
+    pub onchange: Callback<String>,
+}
+
+
 #[function_component(UserSelector)]
-pub fn user_selector() -> Html {
+pub fn user_selector(props: &Props) -> Html {
     
     let users = use_state(|| vec![]);
     {
@@ -50,18 +44,31 @@ pub fn user_selector() -> Html {
             || ()
         }, ());
     }
-    users.iter().map(|user| { 
-        let user_full_name: String = {
-            match user.alba_full_name {
-                Some(_) => user.alba_full_name.clone().unwrap(),
-                None => "".to_string()
-            }
-        };
-        log!("User: {}", user_full_name);
-    });
+    // users.iter().map(|user| { 
+    //     let user_full_name: String = {
+    //         match user.alba_full_name {
+    //             Some(_) => user.alba_full_name.clone().unwrap(),
+    //             None => "".to_string()
+    //         }
+    //     };
+    //     log!("User: {}", user_full_name);
+    // });
+
+    let onchange = {
+        let props_onchange = props.onchange.clone();
+        Callback::from(move |event: Event| {
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlSelectElement>()
+                .value();
+            props_onchange.emit(value);
+        })
+    };
 
     html! {
-        <select id={"user-menu"} name={"albaUserId"} class={"custom-select"}>
+        <select id={"user-menu"} name={"albaUserId"} class={"custom-select"} {onchange}>
+            <option value={"0"}>{"Select User"}</option>
             {
                 
                 users.iter().map(|user| {   

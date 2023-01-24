@@ -1,14 +1,13 @@
 use crate::models::territories::{Territory};
 
 pub fn popup_content(territory: &Territory) -> String  {
-    //let onclick_string = format!("alert(\"You clicked {}\");", territory.number);
     let assignee_line = {
         match &territory.signed_out_to {
-            Some(t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
-            Nome => "".to_string()
+            Some(_t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
+            None => "".to_string()
         }
     };
-
+    
     let status = {
         if territory.last_completed_by.is_none() {
             &territory.status
@@ -17,6 +16,40 @@ pub fn popup_content(territory: &Territory) -> String  {
         }
     };
 
+    let assign_button_html = 
+        if territory.status == "Available".to_string() && status != "Completed".to_string() {
+        let description: String = match &territory.description {
+            Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
+            None => "(empty)".to_string()
+        };
+
+        format!("<br/><a 
+                    style='margin-top:5px;color:white;'
+                    class='btn btn-primary btn-sm'
+                    href='/app/assign/{territory_number}/{description}/Current+Assignee'>
+                    Assign
+                </a>",
+                territory_number = territory.number,
+                )
+    } else { "".to_string() };
+    
+    let description: String = match &territory.description {
+        Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
+        None => "(empty)".to_string()
+    };
+
+    let edit_button_html = 
+        format!("<br/><a 
+            style='margin-top:5px;color:white;'
+            class='btn btn-primary btn-sm'
+            href='/app/territories/{territory_number}/edit?description={description}&group_id={group_id}'>
+            Edit
+        </a>",
+        territory_number = territory.number,
+        //description = description,
+        group_id = "testing"
+        );
+
     format!(
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>
@@ -24,30 +57,12 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span>Addresses: {address_count}</span>
             <br/><span>{status}</span>
             {assignee_line}
-            <br/><button 
-                    style='margin-top:5px;color:white;'
-                    class='btn btn-primary btn-sm'
-                    onclick=\"test_log()\">
-                    Assign
-                </button>
+            {assign_button_html}
+            {edit_button_html}
             <br/>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap(),
-        status = status,
-        //onclick_string = onclick_string,
         address_count = territory.address_count,
-        assignee_line = assignee_line,
     )
 }
-
-// <form>
-//     <input type='text' value='{description}'/>
-//     <br/>Addresses: <strong>{address_count}</strong>
-//     <br/>{status}
-//     <br/><button 
-//         onclick='{onclick_string}'>
-//         Save
-//     </button>            
-// </form>
-

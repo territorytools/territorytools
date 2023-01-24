@@ -1,24 +1,20 @@
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
-use crate::components::route_stuff::Route;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Control};
+use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
 use reqwasm::http::{Request};
 use yew::prelude::*;
-use yew_router::prelude::*;
 use gloo_utils::document;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use serde::{Serialize, Deserialize};
 //use js_sys::{Array, Date};
 use web_sys::{
-    Document,
     Element,
     HtmlElement,
-    Window,
     Node
 };
 
@@ -84,6 +80,11 @@ pub fn territory_map() -> Html {
     let mut completed_count = 0;
     let mut total_count = 0;
     let mut hidden_count = 0;
+
+    //leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    //let mut bounds: LatLngBounds = leaflet_map.getBounds();
+    //log!("Bounds: {}", bounds.clone());
+
     for t in territories.iter() {      
         total_count += 1;
 
@@ -101,6 +102,11 @@ pub fn territory_map() -> Html {
                 Some(_) => "yes".to_string(),
                 None => "no".to_string()
             }
+        };
+
+        let hidden: bool = match &t.group_id {
+            Some(v) => v == "outer",
+            _ => false,
         };
 
         // let description: String = {
@@ -145,18 +151,20 @@ pub fn territory_map() -> Html {
             }
         };
 
-        if area_code != "TER" {
-            hidden_count += 1;
-        }
-
         if area_code == "TER" {
-            let plolyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
+            let polyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
                 color: territory_color.into() 
             }).expect("Unable to serialize polygon options")
             );
+            
+            let bounds = polyline.getBounds();
+            leaflet_map.fitBounds(&bounds);
 
-            plolyline.addTo(&leaflet_map);
+            polyline.addTo(&leaflet_map);
+            hidden_count += 1;
+        } else if hidden {
+            hidden_count += 1;
         } else {
             
             let poly = Polygon::new_with_options(polygon.iter().map(JsValue::from).collect(),
@@ -197,7 +205,8 @@ pub fn territory_map() -> Html {
     }
 
     // from rendered
-    leaflet_map.setView(&LatLng::new(47.66, -122.33), 10.0);
+    leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    
 
     // let legendBoxProps = leaflet::Control::extend(
     //     &serde_wasm_bindgen::to_value(&LegendBoxOptions { 
@@ -221,7 +230,7 @@ pub fn territory_map() -> Html {
                 {map_container}
             }
             <HomeButton />
-            <AssignPageLink />
+            // <AssignPageLink />
             <MapMenu>        
                 <TerritorySummary 
                     available={available_count}
@@ -266,32 +275,32 @@ fn home_button() -> Html {
     }
 }
 
-#[function_component(AssignPageLink)]
-fn assign_page_link() -> Html {
-    let navigator = use_navigator().unwrap();
+// #[function_component(AssignPageLink)]
+// fn assign_page_link() -> Html {
+//     let navigator = use_navigator().unwrap();
 
-    let onclick = Callback::from(move |_| navigator.push(&Route::Assign { id: "4".to_string() }));
-    html! {
+//     let onclick = Callback::from(move |_| navigator.push(&Route::Assign { id: "4".to_string(), description: "".to_string(), assignee_name: "".to_string() }));
+//     html! {
 
-        <button {onclick}
-            style={"
-                position: absolute;
-                height: auto;
-                max-height: 60px;
-                top: 5vh;
-                right: 1vh;
-                margin-right: 1vh; 
-                width: auto; 
-                z-index: 1000;"}
-                class={"btn btn-primary"}>
-            <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-card-checklist"} viewBox={"0 0 16 16"}>
-                <path d={"M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"}/>
-                <path d={"M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"}/>
-            </svg>
-        </button>
+//         <button {onclick}
+//             style={"
+//                 position: absolute;
+//                 height: auto;
+//                 max-height: 60px;
+//                 top: 5vh;
+//                 right: 1vh;
+//                 margin-right: 1vh; 
+//                 width: auto; 
+//                 z-index: 1000;"}
+//                 class={"btn btn-primary"}>
+//             <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-card-checklist"} viewBox={"0 0 16 16"}>
+//                 <path d={"M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"}/>
+//                 <path d={"M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"}/>
+//             </svg>
+//         </button>
 
-    }
-}
+//     }
+// }
 
 // #[function_component(Secure)]
 // fn secure() -> Html {

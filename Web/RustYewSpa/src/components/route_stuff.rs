@@ -1,8 +1,4 @@
-use crate::components::territory_map::TerritoryMap;
-use crate::components::territory_summary::TerritorySummary;
-use crate::components::assign_page::AssignPage;
 use yew_router::prelude::*;
-use yew::prelude::*;
 //mod components;
 //mod models;
 
@@ -18,15 +14,25 @@ pub enum Route {
     Home,
     // #[at("/other")]
     // Other,
-    #[at("/app/assign/:id")]
-    Assign { id: String },
+    #[at("/app/assign/:territory_number/:description/:assignee_name")]
+    Assign {
+        territory_number: String,
+        description: String,
+        assignee_name: String,
+    },
+    #[at("/app/territories/:territory_number/edit")]
+    Edit {
+        territory_number: String,
+        //description: String,
+        //group_id: String,
+    },
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
-    TerritoryView { id: String },    
+    TerritoryView { id: String },
     #[at("/app/*path")]
     Misc { path: String },
     #[not_found]
-    #[at("/app/404")]
+    #[at("/404")]
     NotFound,
 }
