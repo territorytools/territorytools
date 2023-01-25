@@ -16,7 +16,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         public ApiProxyController(
             IOptions<WebUIOptions> optionsAccessor,
-            ILogger<AssignmentsApiController> logger)
+            ILogger<ApiProxyController> logger)
         {
             _logger = logger;
             _options = optionsAccessor.Value;
