@@ -30,7 +30,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
         group_id: props.group_id.clone(),
     });
 
-    let territory_number: String = format!("{}", decode(&props.territory_number).expect("UTF-8"));
+    let _territory_number: String = format!("{}", decode(&props.territory_number).expect("UTF-8"));
     let description: String = format!("{}", decode(&props.description).expect("UTF-8"));
     let group_id: String = format!("{}", decode(&props.group_id).expect("UTF-8"));
 
@@ -75,7 +75,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
         <div class={"container"}>
             <form {onsubmit}>
                 <div class={"form-group"}>
-                    <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="区域号码 Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
+                    <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="区域号码 Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} readonly={true} />
                     <BBTextInput value={description} data_test="description" label="区域名称 Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
                     <BBTextInput value={group_id} data_test="group_id" label="Group ID" placeholder="What group_id do you want?" class="form-control" input_type={InputType::Text} onchange={group_id_onchange} />
                     // <label>{"委派给 Assign to"}</label>

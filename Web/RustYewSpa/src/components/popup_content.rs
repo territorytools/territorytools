@@ -38,6 +38,11 @@ pub fn popup_content(territory: &Territory) -> String  {
         None => "(empty)".to_string()
     };
 
+    let group_id: String = match &territory.group_id {
+        Some(v) => if v == "" { "".to_string() } else { v.clone() },
+        None => "".to_string()
+    };
+
     let edit_button_html = 
         format!("<br/><a 
             style='margin-top:5px;color:white;'
@@ -47,7 +52,7 @@ pub fn popup_content(territory: &Territory) -> String  {
         </a>",
         territory_number = territory.number,
         //description = description,
-        group_id = "testing"
+        group_id = group_id
         );
 
     format!(

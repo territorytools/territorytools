@@ -132,7 +132,11 @@ pub fn territory_map() -> Html {
         };
   
         let territory_color: String = {
-            if area_code == "TER" {
+            if hidden && t.status != "Signed-out" {
+                //"#009".to_string()
+                hidden_count += 1;
+                "gray".to_string()
+            } else if area_code == "TER" {
                 "red".to_string()
             } else if t.status == "Signed-out" {
                 //"#b00".to_string()
@@ -151,10 +155,15 @@ pub fn territory_map() -> Html {
             }
         };
 
+        let opacity: f32 = {
+            if hidden { 0.2 } else { 0.8 }
+        };
+
         if area_code == "TER" {
             let polyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
-                color: territory_color.into() 
+                color: territory_color.into(),
+                opacity: opacity.into(),
             }).expect("Unable to serialize polygon options")
             );
             
@@ -163,13 +172,14 @@ pub fn territory_map() -> Html {
 
             polyline.addTo(&leaflet_map);
             hidden_count += 1;
-        } else if hidden {
-            hidden_count += 1;
+        // } else if hidden {
+        //     hidden_count += 1;
         } else {
             
             let poly = Polygon::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
-                color: territory_color.into() 
+                color: territory_color.into(),
+                opacity: opacity.into(),
             }).expect("Unable to serialize polygon options")
             );
             
@@ -331,6 +341,7 @@ struct LegendBoxOptions {
 #[derive(Serialize, Deserialize)]
 struct PolylineOptions {
     color: String,
+    opacity: f32,
 }
 
 #[derive(Serialize, Deserialize)]
