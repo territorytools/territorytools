@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
@@ -30,7 +31,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
             _logger.LogTrace($"Forwarding request to API: Path: {path} QueryString: {queryString}");
 
-            if (!User.Identity.IsAuthenticated)
+            if (false) //!User.Identity.IsAuthenticated)
             {
                 //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
                 //HttpContext isn't thread safe
@@ -77,6 +78,23 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 method,
                 $"{baseUrl}/{path}{queryString}");
 
+            var body = ControllerContext.HttpContext.Request.Body;
+            //var content = new HttpC
+            foreach (var header in ControllerContext.HttpContext.Request.Headers)
+            {
+                if (header.Key.ToLowerInvariant() != "x-territory-tools-user")
+                {
+                    var values = new List<string>();
+                    foreach(var value in header.Value)
+                    {
+                        values.Add(value);
+                    }
+
+                    requestMessage.Headers.Add(header.Key, values);
+                }
+            }
+
+            requestMessage.Content = new StreamContent(body);
             requestMessage.Headers.Add("x-territory-tools-user", User.Identity.Name);
 
             var context = ControllerContext.HttpContext;
