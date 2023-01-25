@@ -9,7 +9,7 @@ using System.Net.Http;
 namespace TerritoryTools.Web.MainSite.Controllers
 {
     [ApiController]
-    [Route("/api")]
+    [Route("/api-old")]
     public class ApiProxyController : ControllerBase
     {
         readonly WebUIOptions _options;

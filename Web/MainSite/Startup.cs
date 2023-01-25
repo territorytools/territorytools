@@ -286,7 +286,7 @@ namespace TerritoryTools.Web.MainSite
 
             //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
             app.UseAuthentication();
-
+            app.UseMiddleware<ReverseProxyMiddleware>();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
