@@ -11,7 +11,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
 {
     [Authorize]
     // TODO: Try this: [ApiController]
-    [Route("api/territories")]
+    [Route("api/personal-territories")]
     public class TerritoriesApiController : Controller
     {
         private readonly ITerritoryApiService _territoryApiService;
