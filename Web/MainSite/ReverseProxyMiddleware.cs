@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -12,9 +13,13 @@ namespace TerritoryTools.Web.MainSite
     {
         private static readonly HttpClient _httpClient = new HttpClient();
         private readonly RequestDelegate _nextMiddleware;
+        private readonly ILogger<ReverseProxyMiddleware> _logger;
         private readonly string _baseUrl;
 
-        public ReverseProxyMiddleware(RequestDelegate nextMiddleware, IConfiguration configuration)
+        public ReverseProxyMiddleware(
+            RequestDelegate nextMiddleware, 
+            IConfiguration configuration,
+            ILogger<ReverseProxyMiddleware> logger)
         {
             _baseUrl = configuration.GetValue<string>("TerritoryApiBaseUrl");
             if (string.IsNullOrWhiteSpace(_baseUrl))
@@ -23,19 +28,23 @@ namespace TerritoryTools.Web.MainSite
             }
 
             _nextMiddleware = nextMiddleware;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
         {
+            _logger.LogTrace($"ReverseProxy: Incoming: Path: {context.Request.Path} QueryString: {context.Request.QueryString}");
             Uri targetUri = BuildTargetUri(context.Request);
 
             if (targetUri != null)
             {
+                _logger.LogTrace($"ReverseProxy: Forwarded to: {targetUri}");
                 if (!context.User.Identity.IsAuthenticated)
                 {
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
                     //HttpContext isn't thread safe
                     context.Response.StatusCode = 401;
+                    _logger.LogTrace($"ReverseProxy: Not Authenticated");
                     return;
                 }
 
@@ -47,8 +56,15 @@ namespace TerritoryTools.Web.MainSite
                     CopyFromTargetResponseHeaders(context, responseMessage);
                     await responseMessage.Content.CopyToAsync(context.Response.Body);
                 }
+
+                _logger.LogTrace($"ReverseProxy: Done");
                 return;
             }
+            else
+            {
+                _logger.LogTrace($"ReverseProxy: Not forwarded");
+            }
+
             await _nextMiddleware(context);
         }
 
