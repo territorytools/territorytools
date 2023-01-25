@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -11,18 +12,33 @@ namespace TerritoryTools.Web.MainSite
     {
         private static readonly HttpClient _httpClient = new HttpClient();
         private readonly RequestDelegate _nextMiddleware;
+        private readonly string _baseUrl;
 
-        public ReverseProxyMiddleware(RequestDelegate nextMiddleware)
+        public ReverseProxyMiddleware(RequestDelegate nextMiddleware, IConfiguration configuration)
         {
+            _baseUrl = configuration.GetValue<string>("TerritoryApiBaseUrl");
+            if (string.IsNullOrWhiteSpace(_baseUrl))
+            {
+                throw new ArgumentNullException("baseUrl");
+            }
+
             _nextMiddleware = nextMiddleware;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            var targetUri = BuildTargetUri(context.Request);
+            Uri targetUri = BuildTargetUri(context.Request);
 
             if (targetUri != null)
             {
+                if (!context.User.Identity.IsAuthenticated)
+                {
+                    //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
+                    //HttpContext isn't thread safe
+                    context.Response.StatusCode = 401;
+                    return;
+                }
+
                 var targetRequestMessage = CreateTargetMessage(context, targetUri);
 
                 using (var responseMessage = await _httpClient.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
@@ -65,6 +81,8 @@ namespace TerritoryTools.Web.MainSite
             {
                 requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
             }
+
+            requestMessage.Headers.Add("x-territory-tools-user", context.User.Identity.Name);
         }
 
         private void CopyFromTargetResponseHeaders(HttpContext context, HttpResponseMessage responseMessage)
@@ -98,9 +116,10 @@ namespace TerritoryTools.Web.MainSite
         {
             Uri targetUri = null;
 
-            if (request.Path.StartsWithSegments("/api-v2", out var remainingPath))
+            if (request.Path.StartsWithSegments("/api", out var remainingPath) 
+                && !request.Path.StartsWithSegments("/api/personal-territories"))
             {
-                targetUri = new Uri("http://localhost:5123" + remainingPath);
+                targetUri = new Uri(_baseUrl + remainingPath);
             }
 
             return targetUri;
