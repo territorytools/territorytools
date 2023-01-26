@@ -27,6 +27,8 @@ pub struct Props {
     pub input_type: InputType,
     pub onchange: Callback<String>,
     pub value: Option<String>,
+    #[prop_or(false)]
+    pub readonly: bool,
 }
 
 #[styled_component(BBTextInput)]
@@ -87,7 +89,7 @@ pub fn bb_text_input(props: &Props) -> Html {
             data-test={props.data_test.clone()}
             {onchange}
             value={state.deref().clone()}
-            readonly=true
+            readonly={props.readonly}
           />
         </>
     }

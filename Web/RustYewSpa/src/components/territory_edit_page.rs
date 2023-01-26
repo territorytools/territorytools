@@ -5,7 +5,7 @@ const DATA_API_PATH: &str = "/data/put_territories.json";
 const ASSIGN_METHOD: &str = "GET";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/territories";
+const DATA_API_PATH: &str = "/api/territories/save";
 
 #[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "PUT";
@@ -88,7 +88,7 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
             let resp = Request::new(uri)
                 .method(method)
                 .header("Content-Type", "application/json")
-                .body(format!("{{ 'territory_number': '{territory_number}', 'description': '{description}', 'group_id': '{group_id}' }}"))
+                .body(format!("{{ \"TerritoryNumber\": \"{territory_number}\", \"Description\": \"{description}\", \"GroupId\": \"{group_id}\" }}"))
                 .send()
                 .await
                 .expect("A result from the endpoint");
