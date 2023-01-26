@@ -76,7 +76,7 @@ namespace TerritoryTools.Web.MainSite
             requestMessage.RequestUri = targetUri;
             requestMessage.Headers.Host = targetUri.Host;
             requestMessage.Method = GetMethod(context.Request.Method);
-
+            
             return requestMessage;
         }
 
@@ -135,7 +135,7 @@ namespace TerritoryTools.Web.MainSite
             if (request.Path.StartsWithSegments("/api", out var remainingPath) 
                 && !request.Path.StartsWithSegments("/api/personal-territories"))
             {
-                targetUri = new Uri(_baseUrl + remainingPath);
+                targetUri = new Uri($"{_baseUrl}{remainingPath}{request.QueryString}");
             }
 
             return targetUri;
