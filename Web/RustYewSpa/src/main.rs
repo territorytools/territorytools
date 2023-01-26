@@ -9,50 +9,13 @@ use yew_router::prelude::*;
 mod components;
 mod models;
 
-enum Msg {}
-
-struct Model {}
-
-impl Component for Model {
-    type Message = Msg;
-    type Properties = ();
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self {}
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        true
-    }
-
-    fn changed(
-        &mut self,
-        _: &yew::Context<Self>,
-        _: &<Self as yew::Component>::Properties,
-    ) -> bool {
-        false
-    }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        // let render = Router::render(|switch: Route| match switch {
-        //     Route::Home => html! { <TerritoryMap /> },
-        // });
-
-        html! {
-            <p>{"Hi"}</p>
-        }
-    }
-}
-
 fn main() {
-    //yew::Renderer::<Main>();
-    yew::Renderer::<Main>::new().render();
+    yew::Renderer::<App>::new().render();
 }
 
-#[function_component(Main)]
+#[function_component(App)]
 fn app() -> Html {
     html! {
-        // <TerritoryMap/>
         <BrowserRouter>
             <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
         </BrowserRouter>
@@ -95,9 +58,8 @@ fn switch(route: Route) -> Html {
                 <TerritoryEditPage 
                     territory_number={territory_number}
                 /> },
-        
         Route::Map => html! { <TerritoryMap /> },
-        Route::Secure => html! {
+        Route::Secure => html! { // TODO: Delete this
             <Secure />
         },
         Route::NotFound => html! { <div><h1>{ "404" }</h1><h2>{"Not Found"}</h2></div> },

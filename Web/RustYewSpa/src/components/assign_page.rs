@@ -1,11 +1,11 @@
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/post_assignments.json";
+const API_ASSIGN_URL: &str = "/data/post_assignments.json";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/assignments";
+const API_ASSIGN_URL: &str = "/api/territory-assignment/assignments";
 
 #[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "POST";
@@ -45,8 +45,8 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
     let onsubmit = Callback::from(move |assignment: TerritoryAssignment| {
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
-            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}", 
-                path = DATA_API_PATH,
+            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}&assigner=not-available", 
+                path = API_ASSIGN_URL,
                 number = assignment.territory_number,
                 assignee = assignment.assignee);
 

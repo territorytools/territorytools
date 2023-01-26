@@ -16,12 +16,14 @@ const ASSIGN_METHOD: &str = "PUT";
 use crate::components::territory_edit_form::*;
 use crate::components::menu_bar::MenuBar;
 use crate::components::territory_edit_form::TerritoryEditForm;
+use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
+use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritoryEditResult {
@@ -47,6 +49,8 @@ pub struct TerritoryEditPageProps {
 #[function_component(TerritoryEditPage)]
 pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {        
     let state = use_state(|| TerritoryEditResult::default());
+    let navigator = use_navigator().unwrap();
+
     //let parameters = use_context::<TerritoryEditPageParameters>().expect("no ctx found");
     let location = use_location().expect("Should be a location");
     log!("Query: {}", location.query_str());
@@ -58,8 +62,10 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
     // log!("group_id: {}", parameters.group_id);
 
     let cloned_state = state.clone();
+    let navigator = navigator.clone();
     let onsubmit = Callback::from(move |_modification: TerritoryModification| {
         let cloned_state = cloned_state.clone();
+        let navigator = navigator.clone();
         spawn_local(async move {
         //     let fetched_territory: Territory = Request::get("/data/territory_modification.json")
         //         .send()
@@ -106,6 +112,10 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
             };
 
             cloned_state.set(result);
+
+            if resp.status() == 200 {
+                navigator.push(&Route::Map);
+            }
         });
     });
 

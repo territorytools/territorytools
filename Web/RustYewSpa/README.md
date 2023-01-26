@@ -21,7 +21,7 @@ trunk build --release
 
 ## Build with subfolder prefix
 ```
-trunk build --release --public-url "/wasm/"
+trunk build --release --public-url "/app/"
 ```
 
 ## Notes
