@@ -26,19 +26,21 @@ pub struct Props {
     pub data_test: String,
     pub label: String,
     pub onclick: Option<Callback<MouseEvent>>,
-    pub color: Option<ButtonColor>,
+   //pub color: Option<ButtonColor>,
+    pub class: String,
 }
 
 #[styled_component(BBButton)]
 pub fn bb_button(props: &Props) -> Html {
     let stylesheet = Style::new(css!(
         r#"
-          
+          margin-right:3px;
         "#
     ))
     .unwrap();
 
     //let color = props.color.clone().unwrap_or_default();
+    let class = props.class.clone();
 
     let onclick = {
         let props_onclick = props.onclick.clone();
@@ -51,7 +53,7 @@ pub fn bb_button(props: &Props) -> Html {
 
     html! {
       <span class={stylesheet}>
-        <button data-test={props.data_test.clone()} {onclick} class={"btn btn-primary"}>{&props.label}</button>
+        <button data-test={props.data_test.clone()} {onclick} {class}>{&props.label}</button>
       </span>
     }
 }

@@ -13,9 +13,9 @@ const ASSIGN_METHOD: &str = "PUT";
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
-use crate::components::territory_edit_form::*;
+use crate::components::territory_edit_form_example::*;
 use crate::components::menu_bar::MenuBar;
-use crate::components::territory_edit_form::TerritoryEditForm;
+use crate::components::territory_edit_form_example::TerritoryEditFormExample;
 use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
@@ -46,8 +46,8 @@ pub struct TerritoryEditPageProps {
     // pub group_id: String,
 }
 
-#[function_component(TerritoryEditPage)]
-pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {        
+#[function_component(TerritoryEditPageExample)]
+pub fn territory_edit_page_example(props: &TerritoryEditPageProps) -> Html {        
     let state = use_state(|| TerritoryEditResult::default());
     let navigator = use_navigator().unwrap();
 
@@ -123,7 +123,7 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
     html! {
         <>
             <MenuBar/>
-            <TerritoryEditForm {onsubmit} 
+            <TerritoryEditFormExample {onsubmit} 
                 territory_number={props.territory_number.clone()}
                 description={parameters.description}
                 group_id={parameters.group_id}

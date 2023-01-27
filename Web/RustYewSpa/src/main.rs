@@ -1,5 +1,6 @@
 use crate::components::assign_page::AssignPage;
 use crate::components::territory_edit_page::*;
+use crate::components::territory_edit_page_example::*;
 use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
 use gloo_console::log;
@@ -58,6 +59,13 @@ fn switch(route: Route) -> Html {
                 <TerritoryEditPage 
                     territory_number={territory_number}
                 /> },
+        Route::EditExample {
+                    territory_number,
+                } => 
+                    html! { 
+                        <TerritoryEditPageExample
+                            territory_number={territory_number}
+                        /> },                
         Route::Map => html! { <TerritoryMap /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />

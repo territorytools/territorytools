@@ -26,6 +26,10 @@ pub enum Route {
         //description: String,
         //group_id: String,
     },
+    #[at("/app/territories/:territory_number/example")]
+    EditExample {
+        territory_number: String,
+    },
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]

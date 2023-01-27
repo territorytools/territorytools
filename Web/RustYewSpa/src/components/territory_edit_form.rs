@@ -83,7 +83,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
                     // <UserSelector onchange={assignee_onchange} />
                     // <BBButton label={"Assign"} data_test="submit" />
                     // </div>
-                    <BBButton label={"Save"} data_test="submit" />
+                    <BBButton label={"Save"} data_test="submit" class={"btn btn-primary"}/>
                 </div>
             </form>
         </div>
