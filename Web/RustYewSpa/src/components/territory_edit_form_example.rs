@@ -103,14 +103,14 @@ pub fn territory_edit_form(props: &Props) -> Html {
                     // <UserSelector onchange={assignee_onchange} />
                     // <BBButton label={"Assign"} data_test="submit" />
                     // </div>
-                    <BBButton label={"完成了 Complete"} class={"btn btn-primary"} data_test="submit" />
+                
                     //<BBButton label={"Close"} class={"btn btn-secondary"} data_test="close" />
                 </div>
             </form>
         </div>
         <div class={"container"}>
             
-            <div class={"row border-top py-2"}>
+            <div class={"row border-top border-bottom py-2"}>
                 <div class={"col-12"}>
                     <svg xmlns={"http://www.w3.org/2000/svg"} width={"64"} height={"64"} fill={"currentColor"} class={"bi bi-envelope-check"} viewBox={"0 0 32 32"}>
                         //<path d={"M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z"}/>
@@ -155,7 +155,9 @@ pub fn territory_edit_form(props: &Props) -> Html {
                 <div class={"col-xs-9 col-11 pl-4"}>
                     <strong>{"Ou, Dixiong"}</strong><span class={"badge bg-success ml-2 text-white"}>{"寄出: 2023年1月12日"}</span>
                     <br/>
-                    <span style={"width:10px;margin-top:0;"}>{"112233 NE Bellevue-Kirkland Way, #701-B Lynnwood, WA 98087"}</span>
+                    <span>{"112233 NE Bellevue-Kirkland Way, #701-B Lynnwood, WA 98087"}</span>
+                    <br/>
+                    <span><em class={"text-success"}>{"I sent the letter that I really like, the one with the thing, and a brochure."}</em></span>
                 </div>
             </div>
             <div class={"row border-top py-2"}>
@@ -175,6 +177,8 @@ pub fn territory_edit_form(props: &Props) -> Html {
                 <span style={"width:10px;margin-top:0;"}>{"8878 NE Lynnwood-Kirkland St, #1919-C Lynnwood, WA 98087"}</span>
             </div>
         </div>
+        <br/>
+        <BBButton label={"完成了 Complete"} class={"btn btn-primary"} data_test="submit" />
         </div>
         </>
     }
