@@ -206,7 +206,7 @@
             var territoryNumber = $('#modal-header-number').text();
              $.ajax({
                 type: 'DELETE',
-                url: `/api/assignments/v2?territoryNumber=${territoryNumber}`,
+                url: `/api/territory-assignment/assignments?territoryNumber=${territoryNumber}&assignerEmail=manager-list`,
                 //dataType: 'json',
                 processData: false,
                 contentType: false,
