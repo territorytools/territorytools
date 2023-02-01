@@ -231,7 +231,7 @@
             var userName = $('#user-menu .selected').text();
              $.ajax({
                 type: 'POST',
-                url: `/api/assignments?territoryNumber=${territoryNumber}&albaUserId=${albaUserId}`,
+                url: `/api/territory-assignment/assignments?territoryNumber=${territoryNumber}&albaUserId=${albaUserId}&assigner=manage-page`,
                 //dataType: 'json',
                 processData: false,
                 contentType: false,
