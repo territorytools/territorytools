@@ -94,7 +94,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
         <>
         <div class={"container"}>
           
-            <div class={"row border-top border-bottom py-2"}>
+            <div class={"border-bottom pb-2"}>
                 <div class={"col-12"}>
                     <svg xmlns={"http://www.w3.org/2000/svg"} width={"64"} height={"64"} fill={"currentColor"} class={"bi bi-envelope-check"} viewBox={"0 0 32 32"}>
                         <path d={"M8.47 1.318a1 1 0 0 0-.94 0l-6 3.2A1 1 0 0 0 1 5.4v.817l5.75 3.45L8 8.917l1.25.75L15 6.217V5.4a1 1 0 0 0-.53-.882l-6-3.2ZM15 7.383l-4.778 2.867L15 13.117V7.383Zm-.035 6.88L8 10.082l-6.965 4.18A1 1 0 0 0 2 15h12a1 1 0 0 0 .965-.738ZM1 13.116l4.778-2.867L1 7.383v5.734ZM7.059.435a2 2 0 0 1 1.882 0l6 3.2A2 2 0 0 1 16 5.4V14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5.4a2 2 0 0 1 1.059-1.765l6-3.2Z"}/>
@@ -133,6 +133,21 @@ pub fn territory_edit_form(props: &Props) -> Html {
             <h5>{"地址 Addresses"}</h5>
             <div class={"row border-top py-2"}>
                 <div class={"col-xs-3 col-1"}>
+                    <svg class={"d-none d-md-block"} xmlns={"http://www.w3.org/2000/svg"} width={"48"} height={"48"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                    </svg>                    
+                    <svg class={"d-block d-md-none"} xmlns={"http://www.w3.org/2000/svg"} width={"32"} height={"32"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                    </svg>
+                </div>           
+                <div class={"col-xs-9 col-11 pl-4"}>
+                    <strong>{"An, Ping"}</strong>
+                    <br/>
+                    <span style={"width:10px;margin-top:0;"}>{"333 Yeah Right St, Lynnwood, WA 98087"}</span>
+                </div>
+            </div>
+            <div class={"row border-top py-2"}>
+                <div class={"col-xs-3 col-1"}>
                     <svg class={"d-none d-md-block"} xmlns={"http://www.w3.org/2000/svg"} width={"48"} height={"48"} fill={"currentColor"} class={"bi bi-envelope-check"} viewBox={"0 0 16 16"}>
                         <path d={"M8.47 1.318a1 1 0 0 0-.94 0l-6 3.2A1 1 0 0 0 1 5.4v.817l5.75 3.45L8 8.917l1.25.75L15 6.217V5.4a1 1 0 0 0-.53-.882l-6-3.2ZM15 7.383l-4.778 2.867L15 13.117V7.383Zm-.035 6.88L8 10.082l-6.965 4.18A1 1 0 0 0 2 15h12a1 1 0 0 0 .965-.738ZM1 13.116l4.778-2.867L1 7.383v5.734ZM7.059.435a2 2 0 0 1 1.882 0l6 3.2A2 2 0 0 1 16 5.4V14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5.4a2 2 0 0 1 1.059-1.765l6-3.2Z"}/>
                     </svg>
@@ -144,6 +159,21 @@ pub fn territory_edit_form(props: &Props) -> Html {
                     <strong>{"Bo, Aike"}</strong>
                     <br/>
                     <span style={"width:10px;margin-top:0;"}>{"31434 Ash Way, #701-B Lynnwood, WA 98087"}</span>
+                </div>
+            </div>            
+            <div class={"row border-top py-2"}>
+                <div class={"col-xs-3 col-1"}>
+                    <svg class={"d-none d-md-block"} xmlns={"http://www.w3.org/2000/svg"} width={"48"} height={"48"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
+                        <path d={"M4 0a2 2 0 0 0-2 2v1.133l-.941.502A2 2 0 0 0 0 5.4V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.4a2 2 0 0 0-1.059-1.765L14 3.133V2a2 2 0 0 0-2-2H4Zm10 4.267.47.25A1 1 0 0 1 15 5.4v.817l-1 .6v-2.55Zm-1 3.15-3.75 2.25L8 8.917l-1.25.75L3 7.417V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5.417Zm-11-.6-1-.6V5.4a1 1 0 0 1 .53-.882L2 4.267v2.55Zm13 .566v5.734l-4.778-2.867L15 7.383Zm-.035 6.88A1 1 0 0 1 14 15H2a1 1 0 0 1-.965-.738L8 10.083l6.965 4.18ZM1 13.116V7.383l4.778 2.867L1 13.117Z"}/>
+                    </svg>                    
+                    <svg  class={"d-block d-md-none"} xmlns={"http://www.w3.org/2000/svg"} width={"32"} height={"32"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
+                        <path d={"M4 0a2 2 0 0 0-2 2v1.133l-.941.502A2 2 0 0 0 0 5.4V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.4a2 2 0 0 0-1.059-1.765L14 3.133V2a2 2 0 0 0-2-2H4Zm10 4.267.47.25A1 1 0 0 1 15 5.4v.817l-1 .6v-2.55Zm-1 3.15-3.75 2.25L8 8.917l-1.25.75L3 7.417V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5.417Zm-11-.6-1-.6V5.4a1 1 0 0 1 .53-.882L2 4.267v2.55Zm13 .566v5.734l-4.778-2.867L15 7.383Zm-.035 6.88A1 1 0 0 1 14 15H2a1 1 0 0 1-.965-.738L8 10.083l6.965 4.18ZM1 13.116V7.383l4.778 2.867L1 13.117Z"}/>
+                    </svg>
+                </div>           
+                <div class={"col-xs-9 col-11 pl-4"}>
+                    <strong>{"Bo, Anni"}</strong>
+                    <br/>
+                    <span style={"width:10px;margin-top:0;"}>{"544 Human Way, Lynnwood, WA 98087"}</span>
                 </div>
             </div>
             <div class={"row border-top py-2"}>
