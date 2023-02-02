@@ -1,14 +1,8 @@
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-links.json";
 
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
-
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territory-links";
-
-#[cfg(not(debug_assertions))]
-const ASSIGN_METHOD: &str = "POST";
 
 use crate::components::assign_form::*;
 use crate::components::email_section::EmailSection;

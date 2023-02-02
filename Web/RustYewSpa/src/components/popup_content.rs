@@ -23,7 +23,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             None => "(empty)".to_string()
         };
 
-        format!("<br/><button onclick=\"wasm.try_it();alert('tested 3');\">Test</button>")
+        format!("<br/><button onclick=\"test_log();alert('tested 3');\">Test</button>")
         // format!("<br/><a 
         //             style='margin-top:5px;color:white;'
         //             class='btn btn-primary btn-sm'

@@ -6,12 +6,14 @@ use crate::components::territory_map::TerritoryMap;
 use crate::components::link_page::TerritoryLinkPage;
 use gloo_console::log;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::JsValue;
 use yew::prelude::*;
 use yew_router::prelude::*;
 mod components;
 mod models;
 
-fn main() {
+#[wasm_bindgen]
+pub fn old_main() {
     yew::Renderer::<App>::new().render();
 }
 
@@ -106,13 +108,37 @@ pub fn test_log() {
 // }
 
 #[wasm_bindgen]           
-pub fn try_it() {
+pub fn try_it()  -> Result<(), JsValue> {
     // do something
     log!("tried it");
+    //lert!("you did it!");
+    Ok(())
 }
 
 // // export a Rust function called `bar`
-// #[no_mangle]
-// pub extern fn bar() { 
-//     log!("tried bar");
-// }
+ #[no_mangle]
+ pub extern fn bar() { 
+     log!("tried bar");
+ }
+
+ #[wasm_bindgen(start)]
+pub fn main() -> Result<(), JsValue> {
+    // Use `web_sys`'s global `window` function to get a handle on the global
+    // window object.
+    let window = web_sys::window().expect("no global `window` exists");
+    let document = window.document().expect("should have a document on window");
+    let body = document.body().expect("document should have a body");
+
+    // Manufacture the element we're gonna append
+    let val = document.create_element("p")?;
+    val.set_inner_html("Hello from Rust!");
+
+    body.append_child(&val)?;
+
+    Ok(())
+}
+
+#[wasm_bindgen]
+pub fn add(a: u32, b: u32) -> u32 {
+    a + b
+}

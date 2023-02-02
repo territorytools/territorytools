@@ -34,5 +34,5 @@ stylist = { version = "0.11.0", features = ["yew"] }
 version = "0.3"
 features = ["HtmlInputElement", "HtmlSelectElement", "HtmlAnchorElement", "HtmlElement", "HtmlStyleElement", "CssStyleDeclaration", "console", "Window", "Document"]
 
-#[lib]
-#crate-type=["cdylib", "rlib"]
+[lib]
+crate-type=["cdylib", "rlib"]
