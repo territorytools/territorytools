@@ -23,14 +23,15 @@ pub fn popup_content(territory: &Territory) -> String  {
             None => "(empty)".to_string()
         };
 
-        format!("<br/><a 
-                    style='margin-top:5px;color:white;'
-                    class='btn btn-primary btn-sm'
-                    href='/app/assign/{territory_number}/{description}/Current+Assignee'>
-                    Assign
-                </a>",
-                territory_number = territory.number,
-                )
+        format!("<br/><button onclick=\"wasm.try_it();alert('tested 3');\">Test</button>")
+        // format!("<br/><a 
+        //             style='margin-top:5px;color:white;'
+        //             class='btn btn-primary btn-sm'
+        //             href='/app/assign/{territory_number}/{description}/Current+Assignee'>
+        //             Assign
+        //         </a>",
+        //         territory_number = territory.number,
+        //         )
     } else { "".to_string() };
     
     let description: String = match &territory.description {

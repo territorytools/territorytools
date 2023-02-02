@@ -34,6 +34,8 @@ pub enum Route {
     Secure,
     #[at("/app/territory/:id")]
     TerritoryView { id: String },
+    #[at("/app/links")]
+    Links,
     #[at("/app/*path")]
     Misc { path: String },
     #[not_found]

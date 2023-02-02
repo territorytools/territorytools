@@ -3,6 +3,7 @@ use crate::components::territory_edit_page::*;
 use crate::components::territory_edit_page_example::*;
 use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
+use crate::components::link_page::TerritoryLinkPage;
 use gloo_console::log;
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::prelude::*;
@@ -74,7 +75,9 @@ fn switch(route: Route) -> Html {
         //Route::NotFound => html! {<Redirect<Route> to={"/"}/>}
         Route::TerritoryView { id } => {
             html! {<p>{format!("You are looking at Territory {}", id)}</p>}
-        }
+        },
+        Route::Links => 
+            html! { <TerritoryLinkPage /> },
         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
 }
@@ -100,4 +103,16 @@ pub fn test_log() {
 //         Route::Post { id } => html! {<p>{format!("You are looking at Post {}", id)}</p>},
 //         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
 //     }
+// }
+
+#[wasm_bindgen]           
+pub fn try_it() {
+    // do something
+    log!("tried it");
+}
+
+// // export a Rust function called `bar`
+// #[no_mangle]
+// pub extern fn bar() { 
+//     log!("tried bar");
 // }

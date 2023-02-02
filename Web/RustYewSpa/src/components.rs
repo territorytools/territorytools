@@ -15,3 +15,4 @@ pub mod territory_edit_form;
 pub mod territory_edit_page;
 pub mod territory_edit_form_example;
 pub mod territory_edit_page_example;
+pub mod link_page;

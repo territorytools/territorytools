@@ -83,6 +83,21 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
         });
     });
 
+    let assignee_phone = match &state.link_contract.assignee_phone {
+        Some(v) => v.to_string(),
+        _ => "None".to_string(),
+    };
+
+    let assignee_email = match &state.link_contract.assignee_email {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+
+    let territory_uri = match &state.link_contract.territory_uri {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+
     html! {
         <>
             <MenuBar/>
@@ -104,13 +119,13 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                             </a>
                             <SmsSection
                                 territory_number={state.link_contract.territory_number.clone()}
-                                assignee_phone={state.link_contract.assignee_phone.clone()}
-                                territory_uri={state.link_contract.territory_uri.clone()}
+                                assignee_phone={assignee_phone.clone()}
+                                territory_uri={territory_uri.clone()}
                             />
                             <EmailSection 
                                 territory_number={state.link_contract.territory_number.clone()}
-                                assignee_email={state.link_contract.assignee_email.clone()}
-                                territory_uri={state.link_contract.territory_uri.clone()}
+                                assignee_email={assignee_email.clone()}
+                                territory_uri={territory_uri.clone()}
                             />
                         </div>
                     } else {

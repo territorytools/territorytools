@@ -1,6 +1,7 @@
 use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
+use crate::components::bb_button::BBButton;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -61,6 +62,17 @@ pub fn territory_map() -> Html {
             || ()
         }, ());
     }
+
+    let onsubmit = {
+        //let onsubmit_prop = props.onsubmit.clone();
+        //let state = state;
+        Callback::from(move |event: SubmitEvent| {
+            // event.prevent_default();
+            // let modification = state.deref().clone();
+            log!("button was pushed");
+            // onsubmit_prop.emit(modification);
+        })
+    };
 
     let tcount: usize = territories.len();
     log!("Map Comp Loaded Territories 2: ", tcount);
@@ -241,16 +253,34 @@ pub fn territory_map() -> Html {
             }
             <HomeButton />
             // <AssignPageLink />
-            <MapMenu>        
-                <TerritorySummary 
-                    available={available_count}
-                    signed_out={signed_out_count}
-                    completed={completed_count}
-                    total={total_count}
-                    hidden={hidden_count} />      
-            </MapMenu>            
+            <MapMenu
+
+                bottom_vh={1}
+                svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
+                <div>
+                    <span>{"One"}</span>
+                    <span>{"Two"}</span>
+                    <BBButton label={"Test"} data_test="submit" class={"btn btn-primary"} onclick={click_bbbutton}/>
+                    <BBButton label={"Four"} data_test="submit" class={"btn btn-primary"}/>
+                </div>
+            </MapMenu>       
+            // <MapMenu 
+            //     bottom_vh={1}
+            //     svg_path_d={"M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"}>        
+            //     <TerritorySummary 
+            //         available={available_count}
+            //         signed_out={signed_out_count}
+            //         completed={completed_count}
+            //         total={total_count}
+            //         hidden={hidden_count} />      
+            // </MapMenu>            
         </div>
     }
+}
+
+
+fn click_bbbutton(event: web_sys::MouseEvent) {
+    log!("bbbutton click");
 }
 
 
@@ -366,3 +396,4 @@ fn render_map(element: &HtmlElement) -> Html {
 }
 
 //use yew::{Component, Context, html, Html};
+
