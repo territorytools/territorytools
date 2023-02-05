@@ -18,6 +18,7 @@ use web_sys::{
     HtmlElement,
     Node
 };
+use yew_router::hooks::use_location;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
@@ -25,9 +26,22 @@ const DATA_API_PATH: &str = "/data/territory-borders-all.json";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/borders";
 
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct TerritoryMapParameters {
+    pub group_id: Option<String>,
+}
+
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
-    // from create
+    let location = use_location().expect("Should be a location to get query string");
+    //log!("territory_map Query: {}", location.query_str());
+    let parameters: TerritoryMapParameters = location.query().expect("An object");
+    let group_id: String = match &parameters.group_id {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+    log!("territory_map Query.group_id: {}", group_id.clone());
+
     let container: Element = document().create_element("div").unwrap();
     let container: HtmlElement = container.dyn_into().unwrap();
     let map_container = render_map(&container);
@@ -48,9 +62,10 @@ pub fn territory_map() -> Html {
                 
                 //let uri: &str = "/data/territory-borders-all.json";
                 //let uri: &str = "/api/territories/borders";
-                let uri: &str = DATA_API_PATH;
+                let group_id: String = group_id;
+                let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
 
-                let fetched_territories: Vec<Territory> = Request::get(uri)
+                let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
                     .send()
                     .await
                     .unwrap()
@@ -262,14 +277,15 @@ pub fn territory_map() -> Html {
                 bottom_vh={1}
                 svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
                 <div>
-                    <BBButton label={"1"} data_test="submit" class={"btn btn-primary"} onclick={click_bbbutton}/>
-                    <BBButton label={"2"} data_test="submit" class={"btn btn-primary"}/>
-                    <BBButton label={"3"} data_test="submit" class={"btn btn-primary"}/>
-                    <BBButton label={"4"} data_test="submit" class={"btn btn-primary"}/>
-                    <BBButton label={"5"} data_test="submit" class={"btn btn-primary"}/>
-                    <BBButton label={"6"} data_test="submit" class={"btn btn-primary"}/>
-                    <BBButton label={"7"} data_test="submit" class={"btn btn-primary"}/>
-                    <BBButton label={"core"} data_test="submit" class={"btn btn-primary"}/>
+                    <a href={"/app/map?group_id=core"} class={"btn btn-primary"}>{"0"}</a>
+                    <a href={"/app/map?group_id=1"} class={"btn btn-primary"}>{"1"}</a>
+                    <a href={"/app/map?group_id=2"} class={"btn btn-primary"}>{"2"}</a>
+                    <a href={"/app/map?group_id=3"} class={"btn btn-primary"}>{"3"}</a>
+                    <a href={"/app/map?group_id=4"} class={"btn btn-primary"}>{"4"}</a>
+                    <a href={"/app/map?group_id=5"} class={"btn btn-primary"}>{"5"}</a>
+                    <a href={"/app/map?group_id=6"} class={"btn btn-primary"}>{"6"}</a>
+                    <a href={"/app/map?group_id=7"} class={"btn btn-primary"}>{"7"}</a>
+                    <a href={"/app/map"} class={"btn btn-primary"}>{"*"}</a>
                 </div>
             </MapMenu>       
             // <MapMenu 
