@@ -28,7 +28,7 @@ const DATA_API_PATH: &str = "/api/territories/borders";
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct TerritoryMapParameters {
-    pub group_id: String,
+    pub group_id: Option<String>,
 }
 
 #[function_component(TerritoryMap)]
@@ -36,7 +36,11 @@ pub fn territory_map() -> Html {
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
     let parameters: TerritoryMapParameters = location.query().expect("An object");
-    log!("territory_map Query.group_id: {}", &parameters.group_id);
+    let group_id: String = match &parameters.group_id {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+    log!("territory_map Query.group_id: {}", group_id.clone());
 
     let container: Element = document().create_element("div").unwrap();
     let container: HtmlElement = container.dyn_into().unwrap();
@@ -58,7 +62,7 @@ pub fn territory_map() -> Html {
                 
                 //let uri: &str = "/data/territory-borders-all.json";
                 //let uri: &str = "/api/territories/borders";
-                let group_id: String = parameters.group_id;
+                let group_id: String = group_id;
                 let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
 
                 let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
@@ -281,6 +285,7 @@ pub fn territory_map() -> Html {
                     <a href={"/app/map?group_id=5"} class={"btn btn-primary"}>{"5"}</a>
                     <a href={"/app/map?group_id=6"} class={"btn btn-primary"}>{"6"}</a>
                     <a href={"/app/map?group_id=7"} class={"btn btn-primary"}>{"7"}</a>
+                    <a href={"/app/map"} class={"btn btn-primary"}>{"*"}</a>
                 </div>
             </MapMenu>       
             // <MapMenu 
