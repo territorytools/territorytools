@@ -1,14 +1,8 @@
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-links.json";
 
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
-
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territory-links";
-
-#[cfg(not(debug_assertions))]
-const ASSIGN_METHOD: &str = "POST";
 
 use crate::components::assign_form::*;
 use crate::components::email_section::EmailSection;
@@ -29,7 +23,7 @@ pub struct TerritoryLinkCollection {
 }
 
 #[function_component(TerritoryLinkPage)]
-pub fn territory_link_page(props: &TerritoryLinkPageProps) -> Html {        
+pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {        
     let state = use_state(|| TerritoryLinkCollection {});
     let cloned_state = state.clone();
     let links = use_state(|| vec![]);
