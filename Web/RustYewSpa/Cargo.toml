@@ -13,6 +13,7 @@ publish = false
 yew = "0.20"
 yew-hooks = "0.2.0"
 yew-router = "0.17"
+yew-bootstrap = "0.5.4"
 leaflet = "0.2"
 futures = "0.3"
 gloo = "0.8.0"

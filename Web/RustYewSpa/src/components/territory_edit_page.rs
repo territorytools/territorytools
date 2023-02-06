@@ -22,6 +22,8 @@ use reqwasm::http::{Request, Method};
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use yew_bootstrap::component::{BrandType, NavBar, NavDropdownItem, NavItem, Alert};
+use yew_bootstrap::util::Color;
 use yew_router::hooks::use_location;
 use yew_router::prelude::use_navigator;
 
@@ -119,10 +121,22 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
             }
         });
     });
-
+    let brand = BrandType::BrandSimple { 
+        text: AttrValue::from("TT"), 
+        url: Some(AttrValue::from("https://yew.rs")) 
+    };
     html! {
         <>
-            <MenuBar/>
+            //<MenuBar/>
+            <NavBar nav_id={"test-nav"} class="navbar-expand-lg navbar-light bg-light" brand={brand}>
+                <NavItem text="Home" url={AttrValue::from("/")} />
+                <NavItem text="more">
+                    <NavDropdownItem text="dropdown item 1" url={AttrValue::from("/dropdown1")} />
+                </NavItem>
+            </NavBar>
+            <Alert style={Color::Primary}>
+            {"This is a primary alert!"}
+        </Alert>
             <TerritoryEditForm {onsubmit} 
                 territory_number={props.territory_number.clone()}
                 description={parameters.description}
