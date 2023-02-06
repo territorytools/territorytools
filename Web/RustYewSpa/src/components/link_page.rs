@@ -4,14 +4,9 @@ const DATA_API_PATH: &str = "/data/territory-links.json";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territory-links";
 
-use crate::components::assign_form::*;
-use crate::components::email_section::EmailSection;
 use crate::components::menu_bar::MenuBar;
-use crate::components::sms_section::SmsSection;
-
 use crate::models::territory_links::TerritoryLinkContract;
-use reqwasm::http::{Request, Method};
-use wasm_bindgen_futures::spawn_local;
+use reqwasm::http::{Request};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone)]
@@ -24,8 +19,7 @@ pub struct TerritoryLinkCollection {
 
 #[function_component(TerritoryLinkPage)]
 pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {        
-    let state = use_state(|| TerritoryLinkCollection {});
-    let cloned_state = state.clone();
+    
     let links = use_state(|| vec![]);
     {
         let links = links.clone();

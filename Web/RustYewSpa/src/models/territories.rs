@@ -16,6 +16,8 @@ pub struct Territory {
     pub last_completed_by: Option<String>,
     pub signed_out_to: Option<String>,
     pub group_id: Option<String>,
+    pub sub_group_id: Option<String>,
+    pub is_active: bool,
     pub border: Vec<Vec<f32>>,
 }
 

@@ -89,9 +89,6 @@ fn map_page_link() -> Html {
 
 #[function_component(HomePageLink)]
 fn home_page_link() -> Html {
-    let navigator = use_navigator().unwrap();
-
-    //let onclick = Callback::from(move |_| navigator.push(&Route::Home));
     html! {
         <>
             <a class={"nav-link text-dark"} style={"cursor:pointer;"} href={"/"}>

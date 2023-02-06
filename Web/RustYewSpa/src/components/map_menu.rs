@@ -1,8 +1,5 @@
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
-use crate::components::{
-    bb_button::BBButton,
-};
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct MapMenuProps {

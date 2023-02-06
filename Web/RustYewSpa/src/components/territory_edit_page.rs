@@ -22,8 +22,6 @@ use reqwasm::http::{Request, Method};
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use yew_bootstrap::component::{BrandType, NavBar, NavDropdownItem, NavItem, Alert};
-use yew_bootstrap::util::Color;
 use yew_router::hooks::use_location;
 use yew_router::prelude::use_navigator;
 
@@ -125,9 +123,9 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
     html! {
         <>
             <MenuBar/>
-            <Alert style={Color::Primary}>
-            {"This is a primary alert!"}
-        </Alert>
+            // <Alert style={Color::Primary}>
+            //     {"This is a primary alert!"}
+            // </Alert>
             <TerritoryEditForm {onsubmit} 
                 territory_number={props.territory_number.clone()}
                 description={parameters.description}

@@ -1,11 +1,9 @@
-use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
-use crate::components::bb_button::BBButton;
 use crate::models::territories::{Territory};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, MouseEvent};
+use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
 use reqwasm::http::{Request};
 use yew::prelude::*;
 use gloo_utils::document;
@@ -78,17 +76,6 @@ pub fn territory_map() -> Html {
         }, ());
     }
 
-    let onsubmit = {
-        //let onsubmit_prop = props.onsubmit.clone();
-        //let state = state;
-        Callback::from(move |event: SubmitEvent| {
-            // event.prevent_default();
-            // let modification = state.deref().clone();
-            log!("button was pushed");
-            // onsubmit_prop.emit(modification);
-        })
-    };
-
     let tcount: usize = territories.len();
     log!("Map Comp Loaded Territories 2: ", tcount);
     // Figure out how to show when there is no data
@@ -102,18 +89,14 @@ pub fn territory_map() -> Html {
         }
     }
     
-    let mut available_count = 0;
-    let mut signed_out_count = 0;
-    let mut completed_count = 0;
-    let mut total_count = 0;
-    let mut hidden_count = 0;
-
-    //leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
-    //let mut bounds: LatLngBounds = leaflet_map.getBounds();
-    //log!("Bounds: {}", bounds.clone());
+    // TerritorySummary // let mut available_count = 0;
+    // TerritorySummary // let mut signed_out_count = 0;
+    // TerritorySummary // let mut completed_count = 0;
+    // TerritorySummary // let mut total_count = 0;
+    // TerritorySummary // let mut hidden_count = 0;
 
     for t in territories.iter() {      
-        total_count += 1;
+        // TerritorySummary // total_count += 1;
 
         let mut polygon: Vec<LatLng> = Vec::new();
             
@@ -131,25 +114,12 @@ pub fn territory_map() -> Html {
             }
         };
 
-        let hidden: bool = match &t.group_id {
-            Some(v) => v == "outer",
-            _ => false,
+        let group_id: String = {
+            match &t.group_id {
+                Some(v) => v.to_string(),
+                None => "".to_string()
+            }
         };
-
-        // let description: String = {
-        //     match t.description {
-        //         Some(_) => t.description.clone().unwrap(),
-        //         None => "".to_string()
-        //     }
-        // };
-
-        // let status: String = {
-        //     if t.status == "Available" && completed_by == "yes" {
-        //         "Completed".to_string()
-        //     } else {
-        //         t.status.clone()
-        //     }
-        // };
         
         let area_code: String = {
             match t.area_code {
@@ -159,23 +129,16 @@ pub fn territory_map() -> Html {
         };
   
         let territory_color: String = {
-            if hidden && t.status != "Signed-out" {
-                //"#009".to_string()
-                hidden_count += 1;
-                "gray".to_string()
-            } else if area_code == "TER" {
+            if area_code == "TER" {
                 "red".to_string()
             } else if t.status == "Signed-out" {
-                //"#b00".to_string()
-                signed_out_count += 1;
+                // TerritorySummary // signed_out_count += 1;
                 "magenta".to_string()
             } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
-                //"#b0b".to_string() // Completed
-                completed_count += 1;   
+                // TerritorySummary // completed_count += 1;   
                 "blue".to_string() // Completed
             } else if t.status == "Available" {
-                //"#009".to_string()
-                available_count += 1;
+                // TerritorySummary // available_count += 1;
                 "black".to_string()
             } else {
                 "#090".to_string()
@@ -183,14 +146,14 @@ pub fn territory_map() -> Html {
         };
 
         let opacity: f32 = {
-            if hidden { 0.2 } else { 0.8 }
+            if t.is_active { 1.0 } else { 0.1 }
         };
 
         if area_code == "TER" {
             let polyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
                 color: territory_color.into(),
-                opacity: opacity.into(),
+                opacity: 1.0,
             }).expect("Unable to serialize polygon options")
             );
             
@@ -198,9 +161,7 @@ pub fn territory_map() -> Html {
             leaflet_map.fitBounds(&bounds);
 
             polyline.addTo(&leaflet_map);
-            hidden_count += 1;
-        // } else if hidden {
-        //     hidden_count += 1;
+            // TerritorySummary // hidden_count += 1;
         } else {
             
             let poly = Polygon::new_with_options(polygon.iter().map(JsValue::from).collect(),
@@ -211,8 +172,7 @@ pub fn territory_map() -> Html {
             );
             
             let tooltip_text: String = format!(
-                "{} : {}", 
-                area_code,
+                "{group_id}: {area_code}: {}", 
                 t.number);
 
             let popup_text = popup_content(&t);
@@ -223,8 +183,6 @@ pub fn territory_map() -> Html {
                     &serde_wasm_bindgen::to_value(&TooltipOptions {
                         sticky: true,
                         permanent: false,
-                        //direction: "center".to_string(),
-                        //className: "tool-tip".to_string(),
                         opacity: 0.9
                     }).expect("Unable to serialize tooltip options")
                 );
@@ -301,12 +259,6 @@ pub fn territory_map() -> Html {
         </div>
     }
 }
-
-
-fn click_bbbutton(event: web_sys::MouseEvent) {
-    log!("bbbutton click");
-}
-
 
 
 #[function_component(HomeButton)]
