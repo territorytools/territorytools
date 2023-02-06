@@ -12,7 +12,7 @@ pub fn menu_bar() -> Html {
             <nav class={"navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"}>
                 <div class={"container"}>
                     <a class={"navbar-brand"} href={"/"}>
-                        <img src={"/favicon-32x32.png"} alt={"Logo"} style={"width:20px;"} />
+                        <img src={"/favicon-32x32.png"} alt={"Logo"} class="mx-1" style={"width:20px;"} />
                         {"TT"}
                     </a>
                     <ul class={"navbar-nav flex-grow-1"}>
@@ -73,12 +73,12 @@ fn map_page_link() -> Html {
             
             <a {onclick} class={"nav-link text-dark"} style={"cursor:pointer;"}>
                 <div>
-                    <svg style={" width: 20px; height: auto; "} xmlns={"http://www.w3.org/2000/svg"} viewBox={"0 0 576 512"}>
+                    <svg style={" width: 20px; height: auto; "} xmlns={"http://www.w3.org/2000/svg"} fill={"currentColor"} viewBox={"0 0 576 512"}>
                         //0 0 576 512
                         // Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc.
                         <path d={"M408 120c0 54.6-73.1 151.9-105.2 192c-7.7 9.6-22 9.6-29.6 0C241.1 271.9 168 174.6 168 120C168 53.7 221.7 0 288 0s120 53.7 120 120zm8 80.4c3.5-6.9 6.7-13.8 9.6-20.6c.5-1.2 1-2.5 1.5-3.7l116-46.4C558.9 123.4 576 135 576 152V422.8c0 9.8-6 18.6-15.1 22.3L416 503V200.4zM137.6 138.3c2.4 14.1 7.2 28.3 12.8 41.5c2.9 6.8 6.1 13.7 9.6 20.6V451.8L32.9 502.7C17.1 509 0 497.4 0 480.4V209.6c0-9.8 6-18.6 15.1-22.3l122.6-49zM327.8 332c13.9-17.4 35.7-45.7 56.2-77V504.3L192 449.4V255c20.5 31.3 42.3 59.6 56.2 77c20.5 25.6 59.1 25.6 79.6 0zM288 152c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40z"}/>
                     </svg>
-                    //<span style={"margin-left:5px;"}>{"Map"}</span>
+                    <span style={"margin-left:5px;"}>{"地图 Map"}</span>
                 </div>
             </a>
         </>
@@ -95,9 +95,9 @@ fn home_page_link() -> Html {
     html! {
         <>
             <a class={"nav-link text-dark"} style={"cursor:pointer;"} href={"/"}>
-                <div>
-                <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-house-fill"} viewBox={"0 0 16 16"}>
-                    <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
+                <div style="width:auto;">
+                <svg xmlns="http://www.w3.org/2000/svg" width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-house-fill mx-1"} viewBox={"0 0 16 16"}>
+                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
                     <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
                 </svg>
                 <span>{"Home"}</span>

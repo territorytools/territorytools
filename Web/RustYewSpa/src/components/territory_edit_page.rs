@@ -121,19 +121,10 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
             }
         });
     });
-    let brand = BrandType::BrandSimple { 
-        text: AttrValue::from("TT"), 
-        url: Some(AttrValue::from("https://yew.rs")) 
-    };
+
     html! {
         <>
-            //<MenuBar/>
-            <NavBar nav_id={"test-nav"} class="navbar-expand-lg navbar-light bg-light" brand={brand}>
-                <NavItem text="Home" url={AttrValue::from("/")} />
-                <NavItem text="more">
-                    <NavDropdownItem text="dropdown item 1" url={AttrValue::from("/dropdown1")} />
-                </NavItem>
-            </NavBar>
+            <MenuBar/>
             <Alert style={Color::Primary}>
             {"This is a primary alert!"}
         </Alert>
