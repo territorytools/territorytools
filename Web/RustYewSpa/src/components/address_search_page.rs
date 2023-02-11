@@ -1,33 +1,24 @@
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/addresses_search.json";
 
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
-
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/addresses/search";
-
-#[cfg(not(debug_assertions))]
-const ASSIGN_METHOD: &str = "PUT";
 
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
-use crate::components::territory_edit_form::*;
 use crate::components::menu_bar::MenuBar;
-use crate::components::territory_edit_form::TerritoryEditForm;
-use crate::components::{
-  //  bb_button::BBButton,
-    bb_text_input::{BBTextInput, InputType},
-};
+// use crate::components::{
+//   //  bb_button::BBButton,
+//     bb_text_input::{BBTextInput, InputType},
+// };
 //use crate::components::route_stuff::Route;
 use std::ops::Deref;
-use gloo_console::log;
-use reqwasm::http::{Request, Method};
+use reqwasm::http::{Request};
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use yew_router::hooks::use_location;
+//use yew_router::hooks::use_location;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 //use yew_router::prelude::use_navigator;
@@ -97,14 +88,14 @@ pub fn address_search_page() -> Html {
     });
 
     
-    let search_text_onchange = {
-        let state = state.clone();
-        Callback::from(move |search_text: String| {
-            let mut modification = state.deref().clone();
-            modification.search_text = search_text;
-            state.set(modification);
-        })
-    };
+    // let search_text_onchange = {
+    //     let state = state.clone();
+    //     Callback::from(move |search_text: String| {
+    //         let mut modification = state.deref().clone();
+    //         modification.search_text = search_text;
+    //         state.set(modification);
+    //     })
+    // };
 
     let onchange = {
         //let emit_onchange = props.onchange.clone();
