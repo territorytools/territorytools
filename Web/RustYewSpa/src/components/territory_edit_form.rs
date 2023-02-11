@@ -84,6 +84,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
                     // <BBButton label={"Assign"} data_test="submit" />
                     // </div>
                     <BBButton label={"Save"} data_test="submit" class={"btn btn-primary"}/>
+                    <a class="btn btn-secondary" href="/app/map">{"Close"}</a>
                 </div>
             </form>
         </div>

@@ -60,7 +60,9 @@ pub fn territory_map() -> Html {
                 
                 //let uri: &str = "/data/territory-borders-all.json";
                 //let uri: &str = "/api/territories/borders";
+
                 let group_id: String = group_id;
+                // TODO: Try activeGroupId instead of groupId, needs to be set up in the API too
                 let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
 
                 let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
