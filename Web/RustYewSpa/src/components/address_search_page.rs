@@ -43,6 +43,7 @@ pub struct AddressSearchResults {
 #[serde(rename_all = "camelCase")]
 pub struct Address {
     pub alba_address_id: i32,
+    pub territory_number: Option<String>,
     pub name: Option<String>,
     pub street: Option<String>,
     pub city: Option<String>,
@@ -138,9 +139,8 @@ pub fn address_search_page() -> Html {
                             <button class={"btn btn-primary"} {onclick}>{"Search"}</button>
                     </div>
                 </div>
-                <div class="d-flex flex-row">
-                    <div class="d-flex flex-colum">
-                    
+                <div class="row">
+                    <div class="col">
                         <span>{"Count: "}{state.count}</span>
                     </div>
                 </div>
@@ -148,16 +148,21 @@ pub fn address_search_page() -> Html {
                     state.addresses.iter().map(|address| {   
                         html! {
                             <>
-                                <div class="row">
-                                    <div class="col" style="border-top: 1px solid gray;font-weight:bold;">
+                                <div class="row" style="border-top: 1px solid gray;">
+                                    <div class="col-1">
+                                        {address.territory_number.clone()}
+                                    </div>
+                                    <div class="col" style="font-weight:bold;">
                                         {address.name.clone()}
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-8">
-                                        {address.street.clone()}
+                                    <div class="col-1">
+                                        <small>{address.alba_address_id}</small>
                                     </div>
                                     <div class="col">
+                                        {address.street.clone()}
+                                        {", "}
                                         {address.city.clone()}
                                         {", "}
                                         {address.postal_code.clone()}
