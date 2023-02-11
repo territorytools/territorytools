@@ -123,7 +123,7 @@ pub fn address_search_page() -> Html {
                 <div class="d-flex flex-row">
                     <div class="d-flex flex-colum">
                             //<BBTextInput value={""} data_test="address_text" label="" placeholder="Enter part address" class="form-control" input_type={InputType::Text} 
-                            <input type="text" value="" style="width:400px;" placeholder="Enter part address" class="form-control" 
+                            <input type="text" value="" style="max-width:400px;" placeholder="Enter part address" class="form-control" 
                             {onchange}    />
                             //onchange={search_text_onchange}  />
                             
@@ -140,18 +140,18 @@ pub fn address_search_page() -> Html {
                         html! {
                             <>
                                 <div class="row" style="border-top: 1px solid gray;">
-                                    <div class="col-1">
+                                    <div class="col-2 col-md-1">
                                         {address.territory_number.clone()}
                                     </div>
-                                    <div class="col" style="font-weight:bold;">
+                                    <div class="col-10 col-md-11" style="font-weight:bold;">
                                         {address.name.clone()}
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-1">
+                                    <div class="col-2 col-md-1">
                                         <small>{address.alba_address_id}</small>
                                     </div>
-                                    <div class="col">
+                                    <div class="col-10 col-md-11">
                                         {address.street.clone()}
                                         {", "}
                                         {address.city.clone()}
