@@ -4,6 +4,7 @@ use crate::components::territory_edit_page_example::*;
 use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
 use crate::components::link_page::TerritoryLinkPage;
+use crate::components::address_search_page::AddressSearch;
 use gloo_console::log;
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::prelude::*;
@@ -68,6 +69,7 @@ fn switch(route: Route) -> Html {
                             territory_number={territory_number}
                         /> },                
         Route::Map => html! { <TerritoryMap /> },
+        Route::AddressSearch => html! { <AddressSearch /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },

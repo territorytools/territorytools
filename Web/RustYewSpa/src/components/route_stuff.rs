@@ -30,6 +30,8 @@ pub enum Route {
     EditExample {
         territory_number: String,
     },
+    #[at("/app/address-search")]
+    AddressSearch,
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
