@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone)]
 pub struct Territories {
@@ -17,6 +17,7 @@ pub struct Territory {
     pub signed_out_to: Option<String>,
     pub group_id: Option<String>,
     pub sub_group_id: Option<String>,
+    #[serde(default)]
     pub is_active: bool,
     pub border: Vec<Vec<f32>>,
 }
