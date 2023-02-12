@@ -28,37 +28,21 @@ pub fn address_edit_page() -> Html {
         <div class="container">
             <span>{"Edit Address"}</span>
             <form {onsubmit} >
-            // <div class="d-flex flex-row">
-            //     <div class="m-1 d-flex flex-colum">
-            <div class="mb-3">
-                    <label for="street" class="form-label">{"Street"}</label>
-                    <input id="street" type="text" value="" style="max-width:400px;" placeholder="123 Some St" class="form-control" />
-                    </div>
-                    <div class="mb-3">
-            //     </div>
-            // </div>
-            // <div class="d-flex flex-row">
-            //     <div class="m-1 d-flex flex-colum">
+                <div class="mb-3">
+                        <label for="street" class="form-label">{"Street"}</label>
+                        <input id="street" type="text" value="" style="max-width:400px;" placeholder="123 Some St" class="form-control" />
+                </div>
+                <div class="mb-3">
                     <label for="city" class="form-label">{"City"}</label>
                     <input id="city" type="text" value="" style="max-width:400px;" placeholder="City" class="form-control" />
-                    </div>
-                    <div class="mb-3">
-            //     </div>
-            // </div>
-            // <div class="d-flex flex-row">
-            //     <div class="m-1 d-flex flex-colum">
+                </div>
+                <div class="mb-3">
                     <label for="postal-code" class="form-label">{"Postal Code"}</label>
                     <input id="post-code" type="text" value="" style="max-width:400px;" placeholder="Postal Code" class="form-control" />
-                    </div>
-                    <div class="mb-3">
-            //     </div>
-            // </div>
-            // <div class="d-flex flex-row">
-            //     <div class="m-1 d-flex flex-colum">
+                </div>
+                <div class="mb-3">
                     <button type="submit" class={"btn btn-primary"}>{"Save"}</button>
-                    </div>
-            //     </div>
-            // </div>
+                </div>
             </form>
         </div>
         </>
