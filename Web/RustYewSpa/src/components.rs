@@ -17,3 +17,4 @@ pub mod territory_edit_form_example;
 pub mod territory_edit_page_example;
 pub mod link_page;
 pub mod address_search_page;
+pub mod address_edit_page;

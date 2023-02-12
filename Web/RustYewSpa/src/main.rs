@@ -1,10 +1,11 @@
+use crate::components::address_edit_page::AddressEditPage;
+use crate::components::address_search_page::AddressSearch;
 use crate::components::assign_page::AssignPage;
+use crate::components::link_page::TerritoryLinkPage;
+use crate::components::route_stuff::Route;
 use crate::components::territory_edit_page::*;
 use crate::components::territory_edit_page_example::*;
-use crate::components::route_stuff::Route;
 use crate::components::territory_map::TerritoryMap;
-use crate::components::link_page::TerritoryLinkPage;
-use crate::components::address_search_page::AddressSearch;
 use gloo_console::log;
 use wasm_bindgen::prelude::wasm_bindgen;
 use yew::prelude::*;
@@ -56,20 +57,21 @@ fn switch(route: Route) -> Html {
             territory_number,
             //description,
             //group_id,
-        } => //territory_edit_page(TerritoryEditPageProps { territory_number: territory_number}),
-            html! { 
-                <TerritoryEditPage 
-                    territory_number={territory_number}
-                /> },
-        Route::EditExample {
-                    territory_number,
-                } => 
-                    html! { 
-                        <TerritoryEditPageExample
-                            territory_number={territory_number}
-                        /> },                
+        } =>
+        //territory_edit_page(TerritoryEditPageProps { territory_number: territory_number}),
+        {
+            html! {
+            <TerritoryEditPage
+                territory_number={territory_number}
+            /> }
+        }
+        Route::EditExample { territory_number } => html! {
+        <TerritoryEditPageExample
+            territory_number={territory_number}
+        /> },
         Route::Map => html! { <TerritoryMap /> },
         Route::AddressSearch => html! { <AddressSearch /> },
+        Route::AddressEdit => html! { <AddressEditPage /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },
@@ -77,9 +79,8 @@ fn switch(route: Route) -> Html {
         //Route::NotFound => html! {<Redirect<Route> to={"/"}/>}
         Route::TerritoryView { id } => {
             html! {<p>{format!("You are looking at Territory {}", id)}</p>}
-        },
-        Route::Links => 
-            html! { <TerritoryLinkPage /> },
+        }
+        Route::Links => html! { <TerritoryLinkPage /> },
         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
 }
@@ -107,7 +108,7 @@ pub fn test_log() {
 //     }
 // }
 
-#[wasm_bindgen]           
+#[wasm_bindgen]
 pub fn try_it() {
     // do something
     log!("tried it");
@@ -115,6 +116,6 @@ pub fn try_it() {
 
 // // export a Rust function called `bar`
 // #[no_mangle]
-// pub extern fn bar() { 
+// pub extern fn bar() {
 //     log!("tried bar");
 // }

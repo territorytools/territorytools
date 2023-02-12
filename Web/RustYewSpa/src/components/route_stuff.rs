@@ -27,11 +27,11 @@ pub enum Route {
         //group_id: String,
     },
     #[at("/app/territories/:territory_number/example")]
-    EditExample {
-        territory_number: String,
-    },
+    EditExample { territory_number: String },
     #[at("/app/address-search")]
     AddressSearch,
+    #[at("/app/address-edit")]
+    AddressEdit,
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
