@@ -101,7 +101,7 @@ pub fn address_search_page() -> Html {
                 {
                     state.addresses.iter().map(|address| {   
                         html! {
-                            <>
+                            <a href={"/app/address-edit?alba_address_id=111111"} style="text-decoration:none;color:black;">
                                 <div class="row" style="border-top: 1px solid gray;">
                                     <div class="col-2 col-md-1">
                                         {address.territory_number.clone()}
@@ -122,7 +122,7 @@ pub fn address_search_page() -> Html {
                                         {address.postal_code.clone()}
                                     </div>
                                 </div>
-                            </>
+                            </a>
                         }
                     }).collect::<Html>()
                 }
