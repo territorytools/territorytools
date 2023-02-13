@@ -69,8 +69,7 @@ pub fn user_selector(props: &Props) -> Html {
     html! {
         <select id={"user-menu"} name={"albaUserId"} class={"custom-select"} {onchange}>
             <option value={"0"}>{"Select User"}</option>
-            {
-                
+            {                
                 users.iter().map(|user| {   
                     let user_full_name: String = {
                         match user.alba_full_name {

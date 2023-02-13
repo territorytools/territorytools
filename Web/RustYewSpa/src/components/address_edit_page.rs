@@ -46,6 +46,43 @@ pub fn address_edit_page() -> Html {
     let state = use_state(|| AddressEditModel::default());
     let cloned_state = state.clone();
 
+    
+    let language_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.language = Some(value);
+
+            log!(format!("Address language set to {name:?}", name = modification.address.language.clone()));
+
+            state.set(modification);
+        })
+    };
+
+    let status_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.status = Some(value);
+
+            log!(format!("Address status set to {name:?}", name = modification.address.status.clone()));
+
+            state.set(modification);
+        })
+    };
+
     let name_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
@@ -58,7 +95,7 @@ pub fn address_edit_page() -> Html {
 
             modification.address.name = Some(value);
 
-            log!(format!("Address Name set to {name:?}", name = modification.address.name.clone()));
+            log!(format!("Address name set to {name:?}", name = modification.address.name.clone()));
 
             state.set(modification);
         })
@@ -77,6 +114,151 @@ pub fn address_edit_page() -> Html {
             modification.address.street = Some(value);
 
             log!(format!("Address Address set to {street:?}", street = modification.address.street));
+
+            state.set(modification);
+        })
+    };
+
+    let unit_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.unit = Some(value);
+
+            log!(format!("Address unit set to {street:?}", street = modification.address.unit));
+
+            state.set(modification);
+        })
+    };
+
+    let city_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.city = Some(value);
+
+            log!(format!("Address City set to {name:?}", name = modification.address.city.clone()));
+
+            state.set(modification);
+        })
+    };
+ 
+    let state_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.state = Some(value);
+
+            log!(format!("Address State set to {name:?}", name = modification.address.state.clone()));
+
+            state.set(modification);
+        })
+    };
+ 
+    let postal_code_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.postal_code = Some(value);
+
+            log!(format!("Address Postal Code set to {name:?}", name = modification.address.postal_code.clone()));
+
+            state.set(modification);
+        })
+    };
+    
+    let phone_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.phone = Some(value);
+
+            log!(format!("Address phone set to {name:?}", name = modification.address.phone.clone()));
+
+            state.set(modification);
+        })
+    };
+
+    let longitude_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.longitude = value.parse().unwrap();
+
+            log!(format!("Address longitude set to {name:?}", name = modification.address.longitude.clone()));
+
+            state.set(modification);
+        })
+    };
+
+    let latitude_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.latitude = value.parse().unwrap();
+
+            log!(format!("Address latitude set to {name:?}", name = modification.address.latitude.clone()));
+
+            state.set(modification);
+        })
+    };
+   
+    
+    let notes_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.notes = Some(value);
+
+            log!(format!("Address notes set to {name:?}", name = modification.address.notes.clone()));
 
             state.set(modification);
         })
@@ -157,7 +339,7 @@ pub fn address_edit_page() -> Html {
             <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <select id="input-language" class="form-select">
+                    <select onchange={language_onchange} id="input-language" class="form-select">
                         <option selected={true} value="0">{"Select language"}</option>
                         <option value="83">{"中文 Chinese"}</option>
                         <option value="5">{"广东话 Cantonese"}</option>
@@ -173,7 +355,7 @@ pub fn address_edit_page() -> Html {
                     </div>
                         <div class="col-12 col-sm-6 col-md-4">
                             <label for="input-status" class="form-label">{"Status"}</label>
-                            <select id="input-status" class="form-select">
+                            <select onchange={status_onchange} id="input-status" class="form-select">
                                 <option selected={true} value="New">{"不确定 New"}</option>
                                 <option value="Valid">{"确定 Valid"}</option>
                                 <option value="Do not call">{"不要拜访 Do not call"}</option>
@@ -192,34 +374,34 @@ pub fn address_edit_page() -> Html {
                         </div>
                         <div class="col-12 col-md-3">
                             <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
-                            <input type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
+                            <input onchange={unit_onchange} type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
                         </div>
                         <div class="col-md-6">
                             <label for="inputCity" class="form-label">{"城市 City"}</label>
-                            <input type="text" class="form-control" id="inputCity"/>
+                            <input onchange={city_onchange} type="text" class="form-control" id="inputCity"/>
                         </div>
                         <div class="col-md-4">
                             <SelectAddressState />
                         </div>
                         <div class="col-md-2">
-                            <label for="inputZip" class="form-label">{"邮政编码 Zip"}</label>
-                            <input type="text" class="form-control" id="inputZip"/>
+                            <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
+                            <input onchange={postal_code_onchange} type="text" class="form-control" id="input-postal-code"/>
                         </div>
                         <div class="col-12 col-sm-4 col-md-4">
                             <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
-                            <input type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
+                            <input onchange={latitude_onchange} type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
                         </div>
                         <div class="col-12 col-sm-4 col-md-4">
                             <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
-                            <input type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
+                            <input onchange={longitude_onchange} type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
                         </div>
                         <div class="col-12">
                             <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                            <input type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
+                            <input onchange={phone_onchange} type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
                         </div>
                         <div class="col-12">
                             <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                            <textarea type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
+                            <textarea onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
                         </div>
                         // <div class="col-12">
                         //     <div class="form-check">
@@ -234,7 +416,7 @@ pub fn address_edit_page() -> Html {
                             <button class="me-1 btn btn-secondary">{"Close"}</button>
                         </div>
                         <div class="col-12">
-                            <span><small>{"AAID: 123456789"}</small></span>
+                            <span><small>{"AAID: "}{&state.alba_address_id.clone()}</small></span>
                         </div>
             </form>
         </div>
