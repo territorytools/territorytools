@@ -1,12 +1,36 @@
 use crate::components::menu_bar::MenuBar;
 use crate::models::addresses::Address;
+use std::ops::Deref;
 //use crate::models::territories::Territory;
 //use serde::{Deserialize, Serialize};
+use gloo_console::log;
+use wasm_bindgen::JsCast;
+use web_sys::HtmlInputElement;
+use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use reqwasm::http::{Request, Method};
+
+#[cfg(debug_assertions)]
+const DATA_API_PATH: &str = "/data/put_address.json";
+
+#[cfg(not(debug_assertions))]
+const DATA_API_PATH: &str = "/api/addresses/save";
+
+#[cfg(debug_assertions)]
+const ASSIGN_METHOD: &str = "GET";
+
+#[cfg(not(debug_assertions))]
+const ASSIGN_METHOD: &str = "PUT";
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct AddressEditModel {
-    pub addresses: Address,
+    pub address: Address,
+    pub alba_address_id: i32,
+    pub territory_number: Option<String>,
+    pub name: Option<String>,
+    pub street: Option<String>,
+    pub city: Option<String>,
+    pub postal_code: Option<String>,
 }
 
 #[derive(Properties, PartialEq, Clone, Default)]
@@ -18,98 +42,195 @@ pub struct AddressEditProps {
 pub fn address_edit_page() -> Html {
     let state = use_state(|| AddressEditModel::default());
     let cloned_state = state.clone();
-    let onsubmit = Callback::from(move |event: SubmitEvent| {
-        event.prevent_default();
+
+    let name_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.name = Some(value);
+
+            log!(format!("Address Name set to {name:?}", name = modification.address.name.clone()));
+
+            state.set(modification);
+        })
+    };
+
+    let street_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.street = Some(value);
+
+            log!(format!("Address Address set to {street:?}", street = modification.address.street));
+
+            state.set(modification);
+        })
+    };
+
+    // let onsubmit = Callback::from(move |event: SubmitEvent| {
+    //     event.prevent_default();
+    // });
+    let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
+        let cloned_state = cloned_state.clone();
+        //let navigator = navigator.clone();
+        spawn_local(async move {
+            log!("Spawing request for address change...");
+            let model = cloned_state.clone();
+            let uri_string: String = format!("{path}", 
+                path = DATA_API_PATH);
+
+            let uri: &str = uri_string.as_str();
+            
+            let method: Method = match ASSIGN_METHOD {
+                "PUT" => Method::PUT,
+                "GET" => Method::GET,
+                &_ =>  Method::GET,
+            };
+
+            let name = match &model.name {
+                Some(v) => v.to_string(),
+                _ => "".to_string(),
+            };
+
+            log!(format!("Name would have been: {:?}", &model.name.clone()));
+
+            let street = match &model.street {
+                Some(v) => v.to_string(),
+                _ => "".to_string(),
+            };
+            let body = format!("{{ \"name\": \"{n}\", \"street\": \"{s:?}\" }}", n = name, s = street);
+
+            log!(format!("Body would have been: {body}"));
+
+            let resp = Request::new(uri)
+                .method(method)
+                .header("Content-Type", "application/json")
+                //.body(body)
+                .send()
+                .await
+                .expect("A result from the endpoint");
+
+            // let link_contract: TerritoryLinkContract = if resp.status() == 200 {
+            //     resp.json().await.unwrap()
+            // } else {
+            //     TerritoryLinkContract::default()
+            // };
+            
+            // let result = TerritoryEditResult {
+            //     success: (resp.status() == 200),
+            //     status: resp.status(),
+            //     completed: true,
+            // };
+
+            // // // //cloned_state.set(result);
+            
+            // TODO: Check for errors
+            // if resp.status() == 200 {
+            //     navigator.push(&Route::Map);
+            // }
+        });
     });
 
     html! {
         <>
         <MenuBar/>
-        <div {onsubmit} class="container">
+        <div class="container">
             <span><strong>{"Edit 地址 Address"}</strong></span>
             <hr/>
-            <form class="row g-3">
-            <div class="col-12 col-sm-6 col-md-4">
-                <label for="input-language" class="form-label">{"Language"}</label>
-                <select id="input-language" class="form-select">
-                    <option selected={true} value="0">{"Select language"}</option>
-                    <option value="83">{"中文 Chinese"}</option>
-                    <option value="5">{"广东话 Cantonese"}</option>
-                    <option value="188">{"福建话 Fukien"}</option>
-                    <option value="258">{"福州话 Fuzhounese"}</option>
-                    <option value="190">{"客家话 Hakka"}</option>
-                    <option value="4">{"普通话 Mandarin"}</option>
-                    <option value="189">{"潮州话 Teochew"}</option>
-                    <option value="73">{"台山话 Toisan"}</option>
-                    <option value="259">{"温州话 Wenzhounese"}</option>
-
-                </select>
-            </div>
+            <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
-                    <label for="input-status" class="form-label">{"Status"}</label>
-                    <select id="input-status" class="form-select">
-                        <option selected={true} value="New">{"不确定 New"}</option>
-                        <option value="Valid">{"确定 Valid"}</option>
-                        <option value="Do not call">{"不要拜访 Do not call"}</option>
-                        <option value="Moved">{"搬家 Moved"}</option>
-                        <option value="Duplicate">{"地址重复 Duplicate"}</option>
-                        <option value="Not valid">{"不说中文 Not valid"}</option>
+                    <label for="input-language" class="form-label">{"Language"}</label>
+                    <select id="input-language" class="form-select">
+                        <option selected={true} value="0">{"Select language"}</option>
+                        <option value="83">{"中文 Chinese"}</option>
+                        <option value="5">{"广东话 Cantonese"}</option>
+                        <option value="188">{"福建话 Fukien"}</option>
+                        <option value="258">{"福州话 Fuzhounese"}</option>
+                        <option value="190">{"客家话 Hakka"}</option>
+                        <option value="4">{"普通话 Mandarin"}</option>
+                        <option value="189">{"潮州话 Teochew"}</option>
+                        <option value="73">{"台山话 Toisan"}</option>
+                        <option value="259">{"温州话 Wenzhounese"}</option>
+
                     </select>
-                </div>
-                <div class="col-12">
-                    <label for="inputName" class="form-label">{"姓名 Name"}</label>
-                    <input type="text" class="form-control" id="inputName" placeholder="Name"/>
-                </div>
-                <div class="col-12 col-md-9">
-                    <label for="inputAddress" class="form-label">{"地址 Address"}</label>
-                    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
-                </div>
-                <div class="col-12 col-md-3">
-                    <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
-                    <input type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
-                </div>
-                <div class="col-md-6">
-                    <label for="inputCity" class="form-label">{"城市 City"}</label>
-                    <input type="text" class="form-control" id="inputCity"/>
-                </div>
-                <div class="col-md-4">
-                   <SelectAddressState />
-                </div>
-                <div class="col-md-2">
-                    <label for="inputZip" class="form-label">{"邮政编码 Zip"}</label>
-                    <input type="text" class="form-control" id="inputZip"/>
-                </div>
-                <div class="col-12 col-sm-4 col-md-4">
-                    <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
-                    <input type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
-                </div>
-                <div class="col-12 col-sm-4 col-md-4">
-                    <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
-                    <input type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
-                </div>
-                <div class="col-12">
-                    <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                    <input type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
-                </div>
-                <div class="col-12">
-                    <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                    <textarea type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
-                </div>
-                // <div class="col-12">
-                //     <div class="form-check">
-                //     <input class="form-check-input" type="checkbox" id="gridCheck"/>
-                //     <label class="form-check-label" for="gridCheck">
-                //         {"Check me out"}
-                //     </label>
-                //     </div>
-                // </div>
-                <div class="col-12">
-                    <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
-                    <button class="me-1 btn btn-secondary">{"Close"}</button>
-                </div>
-                <div class="col-12">
-                    <span><small>{"AAID: 123456789"}</small></span>
-                </div>
+                    </div>
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <label for="input-status" class="form-label">{"Status"}</label>
+                            <select id="input-status" class="form-select">
+                                <option selected={true} value="New">{"不确定 New"}</option>
+                                <option value="Valid">{"确定 Valid"}</option>
+                                <option value="Do not call">{"不要拜访 Do not call"}</option>
+                                <option value="Moved">{"搬家 Moved"}</option>
+                                <option value="Duplicate">{"地址重复 Duplicate"}</option>
+                                <option value="Not valid">{"不说中文 Not valid"}</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="inputName" class="form-label">{"姓名 Name"}</label>
+                            <input onchange={name_onchange} type="text" class="form-control" id="inputName" placeholder="Name"/>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <label for="inputAddress" class="form-label">{"地址 Address"}</label>
+                            <input onchange={street_onchange} type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
+                            <input type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputCity" class="form-label">{"城市 City"}</label>
+                            <input type="text" class="form-control" id="inputCity"/>
+                        </div>
+                        <div class="col-md-4">
+                            <SelectAddressState />
+                        </div>
+                        <div class="col-md-2">
+                            <label for="inputZip" class="form-label">{"邮政编码 Zip"}</label>
+                            <input type="text" class="form-control" id="inputZip"/>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-4">
+                            <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
+                            <input type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-4">
+                            <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
+                            <input type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
+                        </div>
+                        <div class="col-12">
+                            <label for="input-phone" class="form-label">{"电话 Phone"}</label>
+                            <input type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
+                        </div>
+                        <div class="col-12">
+                            <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
+                            <textarea type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
+                        </div>
+                        // <div class="col-12">
+                        //     <div class="form-check">
+                        //     <input class="form-check-input" type="checkbox" id="gridCheck"/>
+                        //     <label class="form-check-label" for="gridCheck">
+                        //         {"Check me out"}
+                        //     </label>
+                        //     </div>
+                        // </div>
+                        <div class="col-12">
+                            <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
+                            <button class="me-1 btn btn-secondary">{"Close"}</button>
+                        </div>
+                        <div class="col-12">
+                            <span><small>{"AAID: 123456789"}</small></span>
+                        </div>
             </form>
         </div>
         </>

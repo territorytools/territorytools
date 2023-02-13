@@ -67,15 +67,6 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
         spawn_local(async move {
-        //     let fetched_territory: Territory = Request::get("/data/territory_modification.json")
-        //         .send()
-        //         .await
-        //         .unwrap()
-        //         .json()
-        //         .await
-        //         .unwrap();
-            
-
             let uri_string: String = format!("{path}", 
                 path = DATA_API_PATH);
 
