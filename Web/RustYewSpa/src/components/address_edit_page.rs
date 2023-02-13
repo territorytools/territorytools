@@ -1,14 +1,17 @@
 use crate::components::menu_bar::MenuBar;
 use crate::models::addresses::Address;
 use std::ops::Deref;
+use std::fmt::Display;
 //use crate::models::territories::Territory;
 //use serde::{Deserialize, Serialize};
 use gloo_console::log;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlInputElement;
-use wasm_bindgen_futures::spawn_local;
-use yew::prelude::*;
 use reqwasm::http::{Request, Method};
+use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
+use web_sys::HtmlInputElement;
+use yew::prelude::*;
+use serde::{Serialize, Deserialize};
+use serde_json::ser::to_string;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/put_address.json";
@@ -22,7 +25,7 @@ const ASSIGN_METHOD: &str = "GET";
 #[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "PUT";
 
-#[derive(Properties, PartialEq, Clone, Default)]
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct AddressEditModel {
     pub address: Address,
     pub alba_address_id: i32,
@@ -95,29 +98,31 @@ pub fn address_edit_page() -> Html {
             
             let method: Method = match ASSIGN_METHOD {
                 "PUT" => Method::PUT,
-                "GET" => Method::GET,
+                "GET" => Method::PUT,
                 &_ =>  Method::GET,
             };
 
-            let name = match &model.name {
-                Some(v) => v.to_string(),
-                _ => "".to_string(),
-            };
+            // let name = match &model.name {
+            //     Some(v) => v.to_string(),
+            //     _ => "".to_string(),
+            // };
 
-            log!(format!("Name would have been: {:?}", &model.name.clone()));
+            // let street = match &model.street {
+            //     Some(v) => v.to_string(),
+            //     _ => "".to_string(),
+            // };
 
-            let street = match &model.street {
-                Some(v) => v.to_string(),
-                _ => "".to_string(),
-            };
-            let body = format!("{{ \"name\": \"{n}\", \"street\": \"{s:?}\" }}", n = name, s = street);
+            let body_model = &model.deref();
 
-            log!(format!("Body would have been: {body}"));
+            let data_serialized = serde_json::to_string_pretty(&body_model)
+                .expect("Should be able to serialize address edit form into JSON");
 
+            // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
+            // https://yew.rs/docs/0.18.0/concepts/services/fetch
             let resp = Request::new(uri)
-                .method(method)
+                .method(Method::PUT)
                 .header("Content-Type", "application/json")
-                //.body(body)
+                .body(data_serialized)
                 .send()
                 .await
                 .expect("A result from the endpoint");

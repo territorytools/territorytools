@@ -51,6 +51,8 @@ pub fn territory_map() -> Html {
     
     add_tile_layer2(&leaflet_map);
     
+    // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
+    // https://yew.rs/docs/0.18.0/concepts/services/fetch
     let territories = use_state(|| vec![]);
     {
         let territories = territories.clone();
