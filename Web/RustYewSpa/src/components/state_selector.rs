@@ -27,8 +27,8 @@ pub fn SelectAddressState(props: &SelectAddressStateProps) -> Html {
     html! {
         <>
         <label for="inputState" class="form-label">{"省份 State"}</label>
-        <select {onchange} id="inputState" name="state" class="form-select" autocomplete="address-level1">
-            <option value="--">{"Unknown --"}</option>
+        <select {onchange} value="WA" id="inputState" name="state" class="form-select" autocomplete="address-level1">
+            <option value="">{"Unknown --"}</option>
             <option value="AL">{"阿拉巴马州 Alabama (AL)"}</option>
             <option value="AK">{"阿拉斯加州 Alaska (AK)"}</option>
             <option value="AZ">{"亚利桑那 Arizona (AZ)"}</option>

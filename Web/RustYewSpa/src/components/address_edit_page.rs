@@ -279,7 +279,7 @@ pub fn address_edit_page() -> Html {
     // let onsubmit = Callback::from(move |event: SubmitEvent| {
     //     event.prevent_default();
     // });
-    let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
+    let onsubmit = Callback::from(move |_event: SubmitEvent| {   //model: AddressEditModel| { //
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
         spawn_local(async move {
@@ -290,7 +290,7 @@ pub fn address_edit_page() -> Html {
 
             let uri: &str = uri_string.as_str();
             
-            let method: Method = match ASSIGN_METHOD {
+            let _method: Method = match ASSIGN_METHOD {
                 "PUT" => Method::PUT,
                 "GET" => Method::PUT,
                 &_ =>  Method::GET,
@@ -313,7 +313,7 @@ pub fn address_edit_page() -> Html {
 
             // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
             // https://yew.rs/docs/0.18.0/concepts/services/fetch
-            let resp = Request::new(uri)
+            let _resp = Request::new(uri)
                 .method(Method::PUT)
                 .header("Content-Type", "application/json")
                 .body(data_serialized)
