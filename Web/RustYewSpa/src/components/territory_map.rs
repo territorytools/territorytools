@@ -74,6 +74,7 @@ pub fn territory_map() -> Html {
                     .json()
                     .await
                     .unwrap();
+
                 territories.set(fetched_territories);
             });
             || ()

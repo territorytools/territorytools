@@ -1,17 +1,18 @@
 use crate::components::menu_bar::MenuBar;
 use crate::components::state_selector::SelectAddressState;
 use crate::models::addresses::Address;
-use std::ops::Deref;
 //use std::fmt::Display;
 //use crate::models::territories::Territory;
 //use serde::{Deserialize, Serialize};
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
+use serde::{Serialize, Deserialize};
+use std::ops::Deref;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use serde::{Serialize};
+use yew_router::hooks::use_location;
 //use serde_json::ser::to_string;
 
 #[cfg(debug_assertions)]
@@ -19,6 +20,12 @@ const DATA_API_PATH: &str = "/data/put_address.json";
 
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/addresses/save";
+
+#[cfg(debug_assertions)]
+const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json";
+
+#[cfg(not(debug_assertions))]
+const GET_ADDRESSES_API_PATH: &str = "/api/addresses";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
@@ -37,17 +44,27 @@ pub struct AddressEditModel {
     pub postal_code: Option<String>,
 }
 
-#[derive(Properties, PartialEq, Clone, Default)]
-pub struct AddressEditProps {
-    pub alba_address_id: i32,
+// #[derive(Properties, PartialEq, Clone, Default)]
+// pub struct AddressEditProps {
+//     pub alba_address_id: i32,
+// }
+
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct AddressEditParameters {
+    pub alba_address_id: Option<i32>,
 }
 
 #[function_component(AddressEditPage)]
 pub fn address_edit_page() -> Html {
     let state = use_state(|| AddressEditModel::default());
     let cloned_state = state.clone();
+    let location = use_location().expect("Should be a location to get query string");
+    let parameters: AddressEditParameters = location.query().expect("An object");
+    let alba_address_id: i32 = match parameters.alba_address_id {
+        Some(v) => v,
+        _ => 0,
+    };
 
-    
     let language_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
@@ -276,9 +293,54 @@ pub fn address_edit_page() -> Html {
         })
     };
 
+    //let territories = use_state(|| vec![]);    
+    let cloned_state = state.clone();
+    use_effect_with_deps(move |_| {
+        let cloned_state = cloned_state.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let alba_address_id: i32 = alba_address_id;
+            let uri: String = format!(
+                "{base_path}?alba_address_id={alba_address_id}", 
+                base_path = GET_ADDRESSES_API_PATH);
+
+            let fetched_address: Address = Request::get(uri.as_str())
+                .send()
+                .await
+                .unwrap()
+                .json()
+                .await
+                .unwrap();
+
+            log!(format!(
+                "Fetched address 1, street: {street:?}",
+                street = fetched_address.street
+            ));
+
+            let model: AddressEditModel = AddressEditModel {
+                address: fetched_address,
+                alba_address_id: alba_address_id,
+                city: None,
+                name: None,
+                postal_code: None,
+                street: None,
+                territory_number: None,
+            };
+
+            log!(format!(
+                "Fetched address 2, street: {street:?}",
+                street = model.address.street
+            ));
+
+            cloned_state.set(model);
+        });
+        || ()
+    }, ());
+    
+
     // let onsubmit = Callback::from(move |event: SubmitEvent| {
     //     event.prevent_default();
     // });
+    let cloned_state = state.clone();
     let onsubmit = Callback::from(move |_event: SubmitEvent| {   //model: AddressEditModel| { //
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
@@ -342,6 +404,9 @@ pub fn address_edit_page() -> Html {
         });
     });
 
+    let selected_language: String = state.address.language.clone().unwrap_or_default();
+    let selected_status: String = state.address.status.clone().unwrap_or_default();
+
     html! {
         <>
         <MenuBar/>
@@ -352,86 +417,104 @@ pub fn address_edit_page() -> Html {
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
                     <select onchange={language_onchange} id="input-language" class="form-select">
-                        <option selected={true} value="0">{"Select language"}</option>
-                        <option value="83">{"中文 Chinese"}</option>
-                        <option value="5">{"广东话 Cantonese"}</option>
-                        <option value="188">{"福建话 Fukien"}</option>
-                        <option value="258">{"福州话 Fuzhounese"}</option>
-                        <option value="190">{"客家话 Hakka"}</option>
-                        <option value="4">{"普通话 Mandarin"}</option>
-                        <option value="189">{"潮州话 Teochew"}</option>
-                        <option value="73">{"台山话 Toisan"}</option>
-                        <option value="259">{"温州话 Wenzhounese"}</option>
-
+                        <option value="0">{"Select language"}</option>
+                        //selected={true} 
+                        <EnglishChineseOption english="Chinese" chinese="中文" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Cantonese" chinese="广东话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Fukien" chinese="福建话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Fuzhounese" chinese="福州话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Hakka" chinese="客家话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Mandarin" chinese="普通话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Teochew" chinese="潮州话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Toisan" chinese="台山话" selected={selected_language.clone()} /> 
+                        <EnglishChineseOption english="Wenzhounese" chinese="温州话" selected={selected_language.clone()} />
                     </select>
-                    </div>
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <label for="input-status" class="form-label">{"Status"}</label>
-                            <select onchange={status_onchange} id="input-status" class="form-select">
-                                <option selected={true} value="New">{"不确定 New"}</option>
-                                <option value="Valid">{"确定 Valid"}</option>
-                                <option value="Do not call">{"不要拜访 Do not call"}</option>
-                                <option value="Moved">{"搬家 Moved"}</option>
-                                <option value="Duplicate">{"地址重复 Duplicate"}</option>
-                                <option value="Not valid">{"不说中文 Not valid"}</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label for="inputName" class="form-label">{"姓名 Name"}</label>
-                            <input onchange={name_onchange} type="text" class="form-control" id="inputName" placeholder="Name"/>
-                        </div>
-                        <div class="col-12 col-md-9">
-                            <label for="inputAddress" class="form-label">{"地址 Address"}</label>
-                            <input onchange={street_onchange} type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
-                        </div>
-                        <div class="col-12 col-md-3">
-                            <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
-                            <input onchange={unit_onchange} type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="inputCity" class="form-label">{"城市 City"}</label>
-                            <input onchange={city_onchange} type="text" class="form-control" id="inputCity"/>
-                        </div>
-                        <div class="col-md-4">
-                            <SelectAddressState onchange={state_onchange}/>
-                        </div>
-                        <div class="col-md-2">
-                            <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
-                            <input onchange={postal_code_onchange} type="text" class="form-control" id="input-postal-code"/>
-                        </div>
-                        <div class="col-12 col-sm-4 col-md-4">
-                            <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
-                            <input onchange={latitude_onchange} type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
-                        </div>
-                        <div class="col-12 col-sm-4 col-md-4">
-                            <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
-                            <input onchange={longitude_onchange} type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
-                        </div>
-                        <div class="col-12">
-                            <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                            <input onchange={phone_onchange} type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
-                        </div>
-                        <div class="col-12">
-                            <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                            <textarea onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
-                        </div>
-                        // <div class="col-12">
-                        //     <div class="form-check">
-                        //     <input class="form-check-input" type="checkbox" id="gridCheck"/>
-                        //     <label class="form-check-label" for="gridCheck">
-                        //         {"Check me out"}
-                        //     </label>
-                        //     </div>
-                        // </div>
-                        <div class="col-12">
-                            <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
-                            <button class="me-1 btn btn-secondary">{"Close"}</button>
-                        </div>
-                        <div class="col-12">
-                            <span><small>{"AAID: "}{&state.alba_address_id.clone()}</small></span>
-                        </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <label for="input-status" class="form-label">{"Status"}</label>
+                    <select onchange={status_onchange} id="input-status" class="form-select">
+                        <option value="New">{"不确定 New"}</option>
+                        //selected={true} 
+                        <EnglishChineseOption english="Valid" chinese="确定" selected={selected_status.clone()} />
+                        <EnglishChineseOption english="Do not call" chinese="不要拜访" selected={selected_status.clone()} />
+                        <EnglishChineseOption english="Moved" chinese="搬家" selected={selected_status.clone()} />
+                        <EnglishChineseOption english="Duplicate" chinese="地址重复" selected={selected_status.clone()} />
+                        <EnglishChineseOption english="Not valid" chinese="不说中文" selected={selected_status.clone()} />
+                        
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label for="inputName" class="form-label">{"姓名 Name"}</label>
+                    <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control" id="inputName" placeholder="Name"/>
+                </div>
+                <div class="col-12 col-md-9">
+                    <label for="inputAddress" class="form-label">{"地址 Address"}</label>
+                    <input value={state.address.street.clone()} onchange={street_onchange} type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
+                    <input value={state.address.unit.clone()} onchange={unit_onchange} type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputCity" class="form-label">{"城市 City"}</label>
+                    <input value={state.address.city.clone()} onchange={city_onchange} type="text" class="form-control" id="inputCity"/>
+                </div>
+                <div class="col-md-4">
+                    <SelectAddressState onchange={state_onchange}/>
+                </div>
+                <div class="col-md-2">
+                    <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
+                    <input value={state.address.postal_code.clone()} onchange={postal_code_onchange} type="text" class="form-control" id="input-postal-code"/>
+                </div>
+                <div class="col-6 col-sm-4 col-md-4">
+                    <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
+                    <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
+                </div>
+                <div class="col-6 col-sm-4 col-md-4">
+                    <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
+                    <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
+                </div>
+                <div class="col-12">
+                    <label for="input-phone" class="form-label">{"电话 Phone"}</label>
+                    <input value={state.address.phone.clone()} onchange={phone_onchange} type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
+                </div>
+                <div class="col-12">
+                    <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
+                    <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
+                </div>
+                // <div class="col-12">
+                //     <div class="form-check">
+                //     <input class="form-check-input" type="checkbox" id="gridCheck"/>
+                //     <label class="form-check-label" for="gridCheck">
+                //         {"Check me out"}
+                //     </label>
+                //     </div>
+                // </div>
+                <div class="col-12">
+                    <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
+                    <button class="me-1 btn btn-secondary">{"Close"}</button>
+                </div>
+                <div class="col-12">
+                    <span><small>{"AAID: "}{state.address.alba_address_id}</small></span>
+                </div>
             </form>
         </div>
         </>
+    }
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct EnglishChineseOptionProps {
+    pub english: String,
+    pub chinese: String,
+    pub selected: String,
+}
+
+#[function_component]
+pub fn EnglishChineseOption(props: &EnglishChineseOptionProps) -> Html {
+    html!{
+        <option value={props.english.clone()} selected={props.english.clone() == props.selected.clone()}>
+            {props.chinese.clone()}{" "}{props.english.clone()}
+        </option>
     }
 }
