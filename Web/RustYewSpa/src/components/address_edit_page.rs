@@ -381,7 +381,7 @@ pub fn address_edit_page() -> Html {
 
             let body_model = &model.deref();
 
-            let data_serialized = serde_json::to_string_pretty(&body_model)
+            let data_serialized = serde_json::to_string_pretty(&body_model.address)
                 .expect("Should be able to serialize address edit form into JSON");
 
             // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
@@ -524,7 +524,7 @@ pub struct EnglishChineseOptionProps {
 
 #[function_component]
 pub fn EnglishChineseOption(props: &EnglishChineseOptionProps) -> Html {
-    html!{
+    html! {
         <option value={props.english.clone()} selected={props.english.clone() == props.selected.clone()}>
             {props.chinese.clone()}{" "}{props.english.clone()}
         </option>
@@ -541,7 +541,7 @@ pub struct EnglishChineseIdOptionProps {
 
 #[function_component]
 pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
-    html!{
+    html! {
         <option value={props.id.to_string()} selected={props.id == props.selected}>
             {props.chinese.clone()}{" "}{props.english.clone()}
         </option>
