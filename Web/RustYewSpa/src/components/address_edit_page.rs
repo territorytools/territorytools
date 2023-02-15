@@ -43,6 +43,7 @@ pub struct AddressEditModel {
     pub street: Option<String>,
     pub city: Option<String>,
     pub postal_code: Option<String>,
+    pub save_success: bool,
 }
 
 
@@ -352,7 +353,8 @@ pub fn address_edit_page() -> Html {
     //     event.prevent_default();
     // });
     let cloned_state = state.clone();
-    let onsubmit = Callback::from(move |_event: SubmitEvent| {   //model: AddressEditModel| { //
+    let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
+        event.prevent_default();
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
         spawn_local(async move {
@@ -504,7 +506,7 @@ pub fn address_edit_page() -> Html {
                 // </div>
                 <div class="col-12">
                     <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
-                    <button class="me-1 btn btn-secondary">{"Close"}</button>
+                    <a href="/app/address-search" class="me-1 btn btn-secondary">{"Close"}</a>
                 </div>
                 <div class="col-12">
                     <span><small>{"AAID: "}{state.address.alba_address_id}</small></span>
