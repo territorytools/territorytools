@@ -25,7 +25,7 @@ const DATA_API_PATH: &str = "/api/addresses/save";
 const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?id=";
 
 #[cfg(not(debug_assertions))]
-const GET_ADDRESSES_API_PATH: &str = "/api/addresses/addresses/alba-address-id";
+const GET_ADDRESSES_API_PATH: &str = "/api/addresses/addressSes/alba-address-id";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
@@ -38,12 +38,14 @@ pub struct AddressEditModel {
     pub address: Address,
     // TODO: OriginalAddress (Used to compare by server)
     pub alba_address_id: i32,
-    pub territory_number: Option<String>,
-    pub name: Option<String>,
-    pub street: Option<String>,
-    pub city: Option<String>,
-    pub postal_code: Option<String>,
+    // pub territory_number: Option<String>,
+    // pub name: Option<String>,
+    // pub street: Option<String>,
+    // pub city: Option<String>,
+    // pub postal_code: Option<String>,
     pub save_success: bool,
+    pub save_error: bool,
+    pub error_message: String,
 }
 
 
@@ -310,6 +312,7 @@ pub fn address_edit_page() -> Html {
     use_effect_with_deps(move |_| {
         let cloned_state = cloned_state.clone();
         wasm_bindgen_futures::spawn_local(async move {
+            log!("Loading address...");
             let alba_address_id: i32 = alba_address_id;
             let uri: String = format!(
                 "{base_path}/{alba_address_id}", 
@@ -328,14 +331,19 @@ pub fn address_edit_page() -> Html {
                 street = fetched_address.street
             ));
 
+            //let fetched_address_clone = fetched_address.clone();
+
             let model: AddressEditModel = AddressEditModel {
                 address: fetched_address,
                 alba_address_id: alba_address_id,
-                city: None,
-                name: None,
-                postal_code: None,
-                street: None,
-                territory_number: None,
+                // city: None,
+                // name: fetched_address_clone.name,
+                // postal_code: None,
+                // street: None,
+                // territory_number: None,
+                save_success: false,
+                save_error: false,
+                error_message: "".to_string(),
             };
 
             log!(format!(
@@ -371,30 +379,24 @@ pub fn address_edit_page() -> Html {
                 &_ =>  Method::GET,
             };
 
-            // let name = match &model.name {
-            //     Some(v) => v.to_string(),
-            //     _ => "".to_string(),
-            // };
-
-            // let street = match &model.street {
-            //     Some(v) => v.to_string(),
-            //     _ => "".to_string(),
-            // };
-
             let body_model = &model.deref();
-
             let data_serialized = serde_json::to_string_pretty(&body_model.address)
                 .expect("Should be able to serialize address edit form into JSON");
 
             // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
             // https://yew.rs/docs/0.18.0/concepts/services/fetch
-            let _resp = Request::new(uri)
+            let resp = Request::new(uri)
                 .method(Method::PUT)
                 .header("Content-Type", "application/json")
                 .body(data_serialized)
                 .send()
                 .await
                 .expect("A result from the endpoint");
+
+         
+
+            // TODO: Can I just set this? make it mut?
+            //&model.saved_success = true;
 
             // let link_contract: TerritoryLinkContract = if resp.status() == 200 {
             //     resp.json().await.unwrap()
@@ -411,9 +413,27 @@ pub fn address_edit_page() -> Html {
             // // // //cloned_state.set(result);
             
             // TODO: Check for errors
-            // if resp.status() == 200 {
-            //     navigator.push(&Route::Map);
-            // }
+            if resp.status() == 200 {
+                let model: AddressEditModel = AddressEditModel {
+                    address: cloned_state.address.clone(), //Address::default(),
+                    alba_address_id: alba_address_id,
+                    save_success: true,
+                    save_error: false,
+                    error_message: "".to_string(),
+                };
+    
+                cloned_state.set(model);
+            } else {
+                let model: AddressEditModel = AddressEditModel {
+                    address: cloned_state.address.clone(), //Address::default(),
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: true,
+                    error_message: format!("{}", resp.status()),
+                };
+    
+                cloned_state.set(model);
+            }
         });
     });
 
@@ -429,6 +449,13 @@ pub fn address_edit_page() -> Html {
         <div class="container">
             <span><strong>{"Edit 地址 Address"}</strong></span>
             <a class="mx-3 btn btn-outline-primary" href="/app/address-search">{"Search"}</a>
+            if state.save_success { 
+                <span class="mx-1 badge bg-success">{"Saved"}</span> 
+            }
+            if state.save_error { 
+                <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
+                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+            }           
             <hr/>
             <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
@@ -506,7 +533,14 @@ pub fn address_edit_page() -> Html {
                 // </div>
                 <div class="col-12">
                     <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
-                    <a href="/app/address-search" class="me-1 btn btn-secondary">{"Close"}</a>
+                    <a href="/app/address-search" class="mx-1 btn btn-secondary">{"Close"}</a>
+                    if state.save_success { 
+                        <span class="mx-1 badge bg-success">{"Saved"}</span> 
+                    }
+                    if state.save_error { 
+                        <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
+                        <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+                    }
                 </div>
                 <div class="col-12">
                     <span><small>{"AAID: "}{state.address.alba_address_id}</small></span>
