@@ -59,7 +59,8 @@ pub fn address_search_page() -> Html {
                     addresses: address_result.addresses,
                     search_text: "something".to_string(),
                 };
-
+                // TODO: Clear search results if nothing is returned
+                // TODO: Leave search text in the search box?
                 cloned_state.set(result);
             }
         });
@@ -114,7 +115,7 @@ pub fn address_search_page() -> Html {
                                 </div>
                                 <div class="row">
                                     <div class="col-2 col-md-1">
-                                        <small>{address.alba_address_id}</small>
+                                        <small style="color:lightgray;">{address.alba_address_id}</small>
                                     </div>
                                     <div class="col-10 col-md-11">
                                         {address.street.clone()}

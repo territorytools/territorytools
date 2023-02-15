@@ -22,10 +22,10 @@ const DATA_API_PATH: &str = "/data/put_address.json";
 const DATA_API_PATH: &str = "/api/addresses/save";
 
 #[cfg(debug_assertions)]
-const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json";
+const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?id=";
 
 #[cfg(not(debug_assertions))]
-const GET_ADDRESSES_API_PATH: &str = "/api/addresses";
+const GET_ADDRESSES_API_PATH: &str = "/api/addresses/addresses/alba-address-id";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
@@ -36,6 +36,7 @@ const ASSIGN_METHOD: &str = "PUT";
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct AddressEditModel {
     pub address: Address,
+    // TODO: OriginalAddress (Used to compare by server)
     pub alba_address_id: i32,
     pub territory_number: Option<String>,
     pub name: Option<String>,
@@ -43,6 +44,12 @@ pub struct AddressEditModel {
     pub city: Option<String>,
     pub postal_code: Option<String>,
 }
+
+
+// #[derive(Properties, PartialEq, Clone, Default, Deserialize, Serialize)]
+// pub struct AddressResponse {
+//     pub addresses: Vec<Address>,
+// }
 
 // #[derive(Properties, PartialEq, Clone, Default)]
 // pub struct AddressEditProps {
@@ -75,9 +82,10 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.language = Some(value);
+            modification.address.language_id = value.parse().unwrap();
+            modification.address.language = Some("".to_string());
 
-            log!(format!("Address language set to {name:?}", name = modification.address.language.clone()));
+            log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
 
             state.set(modification);
         })
@@ -93,9 +101,10 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.status = Some(value);
+            modification.address.status_id = value.parse().unwrap();
+            modification.address.status = Some("".to_string());
 
-            log!(format!("Address status set to {name:?}", name = modification.address.status.clone()));
+            log!(format!("Address status id set to {name:?}", name = modification.address.status_id));
 
             state.set(modification);
         })
@@ -300,16 +309,16 @@ pub fn address_edit_page() -> Html {
         wasm_bindgen_futures::spawn_local(async move {
             let alba_address_id: i32 = alba_address_id;
             let uri: String = format!(
-                "{base_path}?alba_address_id={alba_address_id}", 
+                "{base_path}/{alba_address_id}", 
                 base_path = GET_ADDRESSES_API_PATH);
 
             let fetched_address: Address = Request::get(uri.as_str())
                 .send()
                 .await
-                .unwrap()
+                .expect("Address JSON from API")
                 .json()
                 .await
-                .unwrap();
+                .expect("Valid address JSON from API");
 
             log!(format!(
                 "Fetched address 1, street: {street:?}",
@@ -407,40 +416,41 @@ pub fn address_edit_page() -> Html {
     let selected_language: String = state.address.language.clone().unwrap_or_default();
     let selected_status: String = state.address.status.clone().unwrap_or_default();
 
+    let selected_language_id: i32 = state.address.language_id;
+    let selected_status_id: i32 = state.address.status_id;
+
     html! {
         <>
         <MenuBar/>
         <div class="container">
             <span><strong>{"Edit 地址 Address"}</strong></span>
+            <a class="mx-3 btn btn-outline-primary" href="/app/address-search">{"Search"}</a>
             <hr/>
             <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
                     <select onchange={language_onchange} id="input-language" class="form-select">
                         <option value="0">{"Select language"}</option>
-                        //selected={true} 
-                        <EnglishChineseOption english="Chinese" chinese="中文" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Cantonese" chinese="广东话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Fukien" chinese="福建话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Fuzhounese" chinese="福州话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Hakka" chinese="客家话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Mandarin" chinese="普通话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Teochew" chinese="潮州话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Toisan" chinese="台山话" selected={selected_language.clone()} /> 
-                        <EnglishChineseOption english="Wenzhounese" chinese="温州话" selected={selected_language.clone()} />
+                        <EnglishChineseIdOption id={83} english="Chinese" chinese="中文" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={5} english="Cantonese" chinese="广东话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={188} english="Fukien" chinese="福建话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={258} english="Fuzhounese" chinese="福州话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={190} english="Hakka" chinese="客家话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={4} english="Mandarin" chinese="普通话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={189} english="Teochew" chinese="潮州话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={73} english="Toisan" chinese="台山话" selected={selected_language_id} />
+                        <EnglishChineseIdOption id={259} english="Wenzhounese" chinese="温州话" selected={selected_language_id} />
                     </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-status" class="form-label">{"Status"}</label>
                     <select onchange={status_onchange} id="input-status" class="form-select">
-                        <option value="New">{"不确定 New"}</option>
-                        //selected={true} 
-                        <EnglishChineseOption english="Valid" chinese="确定" selected={selected_status.clone()} />
-                        <EnglishChineseOption english="Do not call" chinese="不要拜访" selected={selected_status.clone()} />
-                        <EnglishChineseOption english="Moved" chinese="搬家" selected={selected_status.clone()} />
-                        <EnglishChineseOption english="Duplicate" chinese="地址重复" selected={selected_status.clone()} />
-                        <EnglishChineseOption english="Not valid" chinese="不说中文" selected={selected_status.clone()} />
-                        
+                        <EnglishChineseIdOption id={1} english="New" chinese="不确定" selected={selected_status_id} />
+                        <EnglishChineseIdOption id={2} english="Valid" chinese="确定" selected={selected_status_id} />
+                        <EnglishChineseIdOption id={3} english="Do not call" chinese="不要拜访" selected={selected_status_id} />
+                        <EnglishChineseIdOption id={4} english="Moved" chinese="搬家" selected={selected_status_id} />
+                        <EnglishChineseIdOption id={5} english="Duplicate" chinese="地址重复" selected={selected_status_id} />
+                        <EnglishChineseIdOption id={6} english="Not valid" chinese="不说中文" selected={selected_status_id} />
                     </select>
                 </div>
                 <div class="col-12">
@@ -514,6 +524,23 @@ pub struct EnglishChineseOptionProps {
 pub fn EnglishChineseOption(props: &EnglishChineseOptionProps) -> Html {
     html!{
         <option value={props.english.clone()} selected={props.english.clone() == props.selected.clone()}>
+            {props.chinese.clone()}{" "}{props.english.clone()}
+        </option>
+    }
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct EnglishChineseIdOptionProps {
+    pub id: i32,
+    pub english: String,
+    pub chinese: String,
+    pub selected: i32,
+}
+
+#[function_component]
+pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
+    html!{
+        <option value={props.id.to_string()} selected={props.id == props.selected}>
             {props.chinese.clone()}{" "}{props.english.clone()}
         </option>
     }
