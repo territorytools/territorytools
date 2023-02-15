@@ -83,6 +83,7 @@ pub fn address_edit_page() -> Html {
                 .value();
 
             modification.address.language_id = value.parse().unwrap();
+            // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
             log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
@@ -102,6 +103,7 @@ pub fn address_edit_page() -> Html {
                 .value();
 
             modification.address.status_id = value.parse().unwrap();
+            // Clear the status string to prevent confusion about which one is right
             modification.address.status = Some("".to_string());
 
             log!(format!("Address status id set to {name:?}", name = modification.address.status_id));
@@ -413,8 +415,8 @@ pub fn address_edit_page() -> Html {
         });
     });
 
-    let selected_language: String = state.address.language.clone().unwrap_or_default();
-    let selected_status: String = state.address.status.clone().unwrap_or_default();
+    // let selected_language: String = state.address.language.clone().unwrap_or_default();
+    // let selected_status: String = state.address.status.clone().unwrap_or_default();
 
     let selected_language_id: i32 = state.address.language_id;
     let selected_status_id: i32 = state.address.status_id;
