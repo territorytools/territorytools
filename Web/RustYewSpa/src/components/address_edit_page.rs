@@ -25,7 +25,7 @@ const DATA_API_PATH: &str = "/api/addresses/save";
 const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?id=";
 
 #[cfg(not(debug_assertions))]
-const GET_ADDRESSES_API_PATH: &str = "/api/addresses/addressSes/alba-address-id";
+const GET_ADDRESSES_API_PATH: &str = "/api/addresses/alba-address-id";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
@@ -336,11 +336,6 @@ pub fn address_edit_page() -> Html {
             let model: AddressEditModel = AddressEditModel {
                 address: fetched_address,
                 alba_address_id: alba_address_id,
-                // city: None,
-                // name: fetched_address_clone.name,
-                // postal_code: None,
-                // street: None,
-                // territory_number: None,
                 save_success: false,
                 save_error: false,
                 error_message: "".to_string(),
@@ -420,6 +415,26 @@ pub fn address_edit_page() -> Html {
                     save_success: true,
                     save_error: false,
                     error_message: "".to_string(),
+                };
+    
+                cloned_state.set(model);
+            } else if resp.status() == 401 {
+                let model: AddressEditModel = AddressEditModel {
+                    address: cloned_state.address.clone(), //Address::default(),
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: true,
+                    error_message: "Unauthorized".to_string(),
+                };
+    
+                cloned_state.set(model);
+            } else if resp.status() == 403 {
+                let model: AddressEditModel = AddressEditModel {
+                    address: cloned_state.address.clone(), //Address::default(),
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: true,
+                    error_message: "Forbidden".to_string(),
                 };
     
                 cloned_state.set(model);
