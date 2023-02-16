@@ -19,6 +19,8 @@ pub struct Territory {
     pub sub_group_id: Option<String>,
     #[serde(default)]
     pub is_active: bool,
+    #[serde(default)]
+    pub is_hidden: bool,
     pub border: Vec<Vec<f32>>,
 }
 
