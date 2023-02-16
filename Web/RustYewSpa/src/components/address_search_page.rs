@@ -129,7 +129,7 @@ pub fn address_search_page() -> Html {
                 <form {onsubmit} >
                 <div class="d-flex flex-row">
                     <div class="d-flex flex-colum mb-2 shadow-sm">
-                        <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter part address" class="form-control" />
+                        <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
                         <button type="submit" class="btn btn-primary">{"Search"}</button>
                         if state.load_error { 
                             <span class="mx-1 badge bg-danger">{"Error"}</span> 

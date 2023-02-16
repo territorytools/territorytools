@@ -31,9 +31,16 @@ pub struct TerritoryMapParameters {
     pub group_id: Option<String>,
 }
 
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct TerritoryMapModel {
+    pub territories: Vec<Territory>,
+}
+
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
+    
+    let state = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
     let parameters: TerritoryMapParameters = location.query().expect("An object");
@@ -57,34 +64,34 @@ pub fn territory_map() -> Html {
     // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
     // https://yew.rs/docs/0.18.0/concepts/services/fetch
     let territories = use_state(|| vec![]);
-    {
-        let territories = territories.clone();
-        use_effect_with_deps(move |_| {
-            let territories = territories.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                
-                //let uri: &str = "/data/territory-borders-all.json";
-                //let uri: &str = "/api/territories/borders";
+    
+    let territories_clone = territories.clone();
+    use_effect_with_deps(move |_| {
+        let territories_clone = territories_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            
+            //let uri: &str = "/data/territory-borders-all.json";
+            //let uri: &str = "/api/territories/borders";
 
-                let group_id: String = group_id;
-                // TODO: Try activeGroupId instead of groupId, needs to be set up in the API too
-                let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+            let group_id: String = group_id;
+            // TODO: Try activeGroupId instead of groupId, needs to be set up in the API too
+            let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
 
-                let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
-                    .send()
-                    .await
-                    .unwrap()
-                    .json()
-                    .await
-                    .unwrap();
+            let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+                .send()
+                .await
+                .unwrap()
+                .json()
+                .await
+                .unwrap();
 
-                territories.set(fetched_territories);
-            });
-            || ()
-        }, ());
-    }
+                territories_clone.set(fetched_territories);
+        });
+        || ()
+    }, ());
 
-    let tcount: usize = territories.len();
+    let territories_clone = territories.clone();
+    let tcount: usize = territories_clone.len();
     log!("Map Comp Loaded Territories 2: ", tcount);
     // Figure out how to show when there is no data
     if tcount == 0 {
@@ -243,6 +250,7 @@ pub fn territory_map() -> Html {
                 bottom_vh={1}
                 svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
                 <div>
+                // TODO: Try saving the JSON locally, even just in memory, and filtering it here in the browser
                     <a href={"/app/map?group_id=core"} class={"btn btn-primary"}>{"0"}</a>
                     <a href={"/app/map?group_id=1"} class={"btn btn-primary"}>{"1"}</a>
                     <a href={"/app/map?group_id=2"} class={"btn btn-primary"}>{"2"}</a>
