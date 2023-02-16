@@ -5,7 +5,7 @@ use crate::functions::document_functions::set_document_title;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
+use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, Layer};
 use reqwasm::http::{Request};
 use yew::prelude::*;
 use gloo_utils::document;
@@ -260,7 +260,26 @@ pub fn territory_map() -> Html {
     //     move || {
     //         let _ = &leaflet_map.invalidateSize(false); // Parameter name: animate
     //     }).forget();
-    
+
+
+    // TODO: Work on this later
+    // let leaflet_map_clone = leaflet_map.clone();
+    // let group_4_onclick = {
+    //     //let props_onclick = props.onclick.clone();
+    //     let model_clone = model.clone();
+    //     Callback::from(move |_event: MouseEvent| {
+    //         // if let Some(props_onclick) = props_onclick.clone() {
+    //         //     props_onclick.emit(event);
+    //         // }
+    //         log!("Popup click works");
+           
+    //         let popupLatLng = &LatLng::new(47.66,  -122.20);
+    //         let newLayer = Layer::default();
+    //         newLayer.addTo(&leaflet_map);
+    //         newLayer.openPopup_with_latlng(popupLatLng);
+    //     })
+    // };
+
     let _model_clone = model.clone();
     let leaflet_map_clone = leaflet_map.clone();
     let trick_onclick = {
