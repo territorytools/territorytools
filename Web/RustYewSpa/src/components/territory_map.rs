@@ -40,7 +40,7 @@ pub struct TerritoryMapModel {
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
     
-    let state = use_state(|| TerritoryMapModel::default());
+    let model = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
     let parameters: TerritoryMapParameters = location.query().expect("An object");
@@ -63,11 +63,11 @@ pub fn territory_map() -> Html {
     
     // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
     // https://yew.rs/docs/0.18.0/concepts/services/fetch
-    let territories = use_state(|| vec![]);
+    //let territories = use_state(|| vec![]);
     
-    let territories_clone = territories.clone();
+    let model_clone = model.clone();
     use_effect_with_deps(move |_| {
-        let territories_clone = territories_clone.clone();
+        let model_clone = model_clone.clone();
         wasm_bindgen_futures::spawn_local(async move {
             
             //let uri: &str = "/data/territory-borders-all.json";
@@ -85,13 +85,17 @@ pub fn territory_map() -> Html {
                 .await
                 .unwrap();
 
-                territories_clone.set(fetched_territories);
+                let m = TerritoryMapModel {
+                    territories: fetched_territories
+                };
+
+                model_clone.set(m);
         });
         || ()
     }, ());
 
-    let territories_clone = territories.clone();
-    let tcount: usize = territories_clone.len();
+    let model_clone = model.clone();
+    let tcount: usize = model_clone.territories.len();
     log!("Map Comp Loaded Territories 2: ", tcount);
     // Figure out how to show when there is no data
     if tcount == 0 {
@@ -110,7 +114,7 @@ pub fn territory_map() -> Html {
     // TerritorySummary // let mut total_count = 0;
     // TerritorySummary // let mut hidden_count = 0;
 
-    for t in territories.iter() {      
+    for t in model.territories.iter() {      
         // TerritorySummary // total_count += 1;
 
         let mut polygon: Vec<LatLng> = Vec::new();
