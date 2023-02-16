@@ -15,7 +15,10 @@ const ASSIGN_METHOD: &str = "PUT";
 
 use crate::components::territory_edit_form::*;
 use crate::components::menu_bar::MenuBar;
+use crate::components::menu_bar_v2::MenuBarV2;
+use crate::components::menu_bar::MapPageLink;
 use crate::components::territory_edit_form::TerritoryEditForm;
+use crate::functions::document_functions::set_document_title;
 //use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
@@ -47,7 +50,8 @@ pub struct TerritoryEditPageProps {
 }
 
 #[function_component(TerritoryEditPage)]
-pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {        
+pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html { 
+    set_document_title("Territory Edit");       
     let state = use_state(|| TerritoryEditResult::default());
     //let navigator = use_navigator().unwrap();
 
@@ -113,7 +117,13 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
 
     html! {
         <>
-            <MenuBar/>
+            <MenuBarV2>
+                <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                    <li class={"nav-item"}>
+                        <MapPageLink />
+                    </li>  
+                </ul>
+            </MenuBarV2>
             // <Alert style={Color::Primary}>
             //     {"This is a primary alert!"}
             // </Alert>

@@ -1,6 +1,8 @@
-use crate::components::menu_bar::MenuBar;
+//use crate::components::menu_bar::MenuBar;
+use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
 use crate::models::addresses::Address;
+use crate::functions::document_functions::set_document_title;
 //use std::fmt::Display;
 //use crate::models::territories::Territory;
 //use serde::{Deserialize, Serialize};
@@ -38,11 +40,6 @@ pub struct AddressEditModel {
     pub address: Address,
     // TODO: OriginalAddress (Used to compare by server)
     pub alba_address_id: i32,
-    // pub territory_number: Option<String>,
-    // pub name: Option<String>,
-    // pub street: Option<String>,
-    // pub city: Option<String>,
-    // pub postal_code: Option<String>,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -68,6 +65,8 @@ pub struct AddressEditParameters {
 
 #[function_component(AddressEditPage)]
 pub fn address_edit_page() -> Html {
+    set_document_title("Address Edit");
+
     let state = use_state(|| AddressEditModel::default());
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
@@ -482,10 +481,20 @@ pub fn address_edit_page() -> Html {
 
     html! {
         <>
-        <MenuBar/>
+        <MenuBarV2>
+            <ul class="navbar-nav ms-2 me-auto mb-05 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/app/address-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                        <span class="ms-1">{"Search"}</span>
+                    </a>
+                </li> 
+            </ul>
+        </MenuBarV2>
         <div class="container">
             <span><strong>{"Edit 地址 Address"}</strong></span>
-            <a class="mx-3 btn btn-outline-primary" href="/app/address-search">{"Search"}</a>
             if state.save_success { 
                 <span class="mx-1 badge bg-success">{"Saved"}</span> 
             }
@@ -501,7 +510,7 @@ pub fn address_edit_page() -> Html {
             <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <select onchange={language_onchange} id="input-language" class="form-select">
+                    <select onchange={language_onchange} id="input-language" class="form-select shadow-sm">
                         <option value="0">{"Select language"}</option>
                         <EnglishChineseIdOption id={83} english="Chinese" chinese="中文" selected={selected_language_id} />
                         <EnglishChineseIdOption id={5} english="Cantonese" chinese="广东话" selected={selected_language_id} />
@@ -516,7 +525,7 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-status" class="form-label">{"Status"}</label>
-                    <select onchange={status_onchange} id="input-status" class="form-select">
+                    <select onchange={status_onchange} id="input-status" class="form-select shadow-sm">
                         <EnglishChineseIdOption id={1} english="New" chinese="不确定" selected={selected_status_id} />
                         <EnglishChineseIdOption id={2} english="Valid" chinese="确定" selected={selected_status_id} />
                         <EnglishChineseIdOption id={3} english="Do not call" chinese="不要拜访" selected={selected_status_id} />
@@ -527,42 +536,42 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">{"姓名 Name"}</label>
-                    <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control" id="inputName" placeholder="Name"/>
+                    <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control shadow-sm" id="inputName" placeholder="Name"/>
                 </div>
                 <div class="col-12 col-md-9">
                     <label for="inputAddress" class="form-label">{"地址 Address"}</label>
-                    <input value={state.address.street.clone()} onchange={street_onchange} type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"/>
+                    <input value={state.address.street.clone()} onchange={street_onchange} type="text" class="form-control shadow-sm" id="inputAddress" placeholder="1234 Main St"/>
                 </div>
                 <div class="col-12 col-md-3">
                     <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
-                    <input value={state.address.unit.clone()} onchange={unit_onchange} type="text" class="form-control" id="inputUnit" placeholder="Apartment, studio, or floor"/>
+                    <input value={state.address.unit.clone()} onchange={unit_onchange} type="text" class="form-control shadow-sm" id="inputUnit" placeholder="Apartment, studio, or floor"/>
                 </div>
                 <div class="col-md-6">
                     <label for="inputCity" class="form-label">{"城市 City"}</label>
-                    <input value={state.address.city.clone()} onchange={city_onchange} type="text" class="form-control" id="inputCity"/>
+                    <input value={state.address.city.clone()} onchange={city_onchange} type="text" class="form-control shadow-sm" id="inputCity"/>
                 </div>
                 <div class="col-md-4">
                     <SelectAddressState onchange={state_onchange}/>
                 </div>
                 <div class="col-md-2">
                     <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
-                    <input value={state.address.postal_code.clone()} onchange={postal_code_onchange} type="text" class="form-control" id="input-postal-code"/>
+                    <input value={state.address.postal_code.clone()} onchange={postal_code_onchange} type="text" class="form-control shadow-sm" id="input-postal-code"/>
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
-                    <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control" id="input-latitude" placeholder="纬度 Latitude"/>
+                    <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
-                    <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control" id="input-longitude" placeholder="经度 Longitude"/>
+                    <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                 </div>
                 <div class="col-12">
                     <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                    <input value={state.address.phone.clone()} onchange={phone_onchange} type="text" class="form-control" id="input-phone" placeholder="000-000-0000"/>
+                    <input value={state.address.phone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
                 </div>
                 <div class="col-12">
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                    <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control" id="input-notes" placeholder="Notes"/>
+                    <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
                 </div>
                 // <div class="col-12">
                 //     <div class="form-check">
@@ -573,8 +582,8 @@ pub fn address_edit_page() -> Html {
                 //     </div>
                 // </div>
                 <div class="col-12">
-                    <button type="submit" class="me-1 btn btn-primary">{"Save"}</button>
-                    <a href="/app/address-search" class="mx-1 btn btn-secondary">{"Close"}</a>
+                    <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                    <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
                     if state.save_success { 
                         <span class="mx-1 badge bg-success">{"Saved"}</span> 
                     }

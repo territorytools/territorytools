@@ -8,6 +8,7 @@ pub mod email_section;
 pub mod link_page;
 pub mod map_menu;
 pub mod menu_bar;
+pub mod menu_bar_v2;
 pub mod popup_content;
 pub mod route_stuff;
 pub mod sms_section;

@@ -24,6 +24,7 @@ pub struct TerritoryModification {
 
 #[function_component(TerritoryEditForm)]
 pub fn territory_edit_form(props: &Props) -> Html {
+
     let state = use_state(||TerritoryModification {
         territory_number: props.territory_number.clone(),
         description: props.description.clone(),

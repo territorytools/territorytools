@@ -4,8 +4,12 @@ const DATA_API_PATH: &str = "/data/addresses_search.json";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/addresses/search";
 
-use crate::components::menu_bar::MenuBar;
+//use crate::components::menu_bar::MenuBar;
+use crate::components::menu_bar_v2::MenuBarV2;
+use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
+use crate::functions::document_functions::set_document_title;
+use gloo_console::log;
 use std::ops::Deref;
 use reqwasm::http::{Request};
 use serde::Deserialize;
@@ -27,11 +31,16 @@ pub struct AddressSearchPage {
     pub count: i32,
     pub search_text: String,
     pub addresses: Vec<Address>,
+    pub load_error: bool,
+    pub load_error_message: String,
 }
 
 #[function_component(AddressSearch)]
 pub fn address_search_page() -> Html {        
     let state = use_state(|| AddressSearchPage::default());
+
+    set_document_title("Address Search");
+
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |event: SubmitEvent| {
         event.prevent_default();
@@ -48,16 +57,39 @@ pub fn address_search_page() -> Html {
                     .await
                     .expect("A result from the /api/addresses/search endpoint");
                 
-                let address_result: AddressSearchResults = resp
+                log!(format!("load address from search result code: {}", resp.status().to_string()));
+
+                let address_result: AddressSearchResults = if resp.status() == 200 {
+                    resp
                     .json()
                     .await
-                    .unwrap();
+                    .expect("Valid address search result in JSON format")
+                } else {
+                    AddressSearchResults {
+                        count: 0,
+                        addresses: vec![],
+                        
+                    }
+                };
                 
                 let result = AddressSearchPage {
                     success: (resp.status() == 200),
                     count: address_result.count,
                     addresses: address_result.addresses,
-                    search_text: "something".to_string(),
+                    search_text: "".to_string(),
+                    load_error: resp.status() != 200,
+                    load_error_message: if resp.status() == 401 {
+                            "Unauthorized".to_string()
+                        } else if resp.status() == 403 {
+                            "Forbidden".to_string()
+                        } else {
+                            format!("Error {:?}", resp.status())
+                        }
+                    // search_text: "something".to_string(),
+                    // load_error: (resp.status() != 200),
+                    // load_error_message: c == 401 {
+                    //     "Unauthorized".to_string()
+                    // } else { "".to_string() },
                 };
                 // TODO: Clear search results if nothing is returned
                 // TODO: Leave search text in the search box?
@@ -83,14 +115,26 @@ pub fn address_search_page() -> Html {
 
     html! {
         <>
-            <MenuBar/>
+            <MenuBarV2>
+                <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                    <li class={"nav-item"}>
+                        <MapPageLink />
+                    </li>  
+                </ul>
+            </MenuBarV2>
             <div class="container">
-                <span>{"Search for an Address"}</span>
+                <span><strong>{"Address Search"}</strong></span>
+      
+                <hr/>
                 <form {onsubmit} >
                 <div class="d-flex flex-row">
-                    <div class="d-flex flex-colum">
+                    <div class="d-flex flex-colum mb-2 shadow-sm">
                         <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter part address" class="form-control" />
-                        <button type="submit" class={"btn btn-primary"}>{"Search"}</button>
+                        <button type="submit" class="btn btn-primary">{"Search"}</button>
+                        if state.load_error { 
+                            <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                            <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
+                        }    
                     </div>
                 </div>
                 </form>

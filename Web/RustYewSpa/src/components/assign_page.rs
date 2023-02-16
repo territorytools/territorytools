@@ -16,8 +16,11 @@ const ASSIGN_METHOD: &str = "POST";
 use crate::components::assign_form::*;
 use crate::components::email_section::EmailSection;
 use crate::components::menu_bar::MenuBar;
+use crate::components::menu_bar::MapPageLink;
+use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::sms_section::SmsSection;
 use crate::models::territory_links::TerritoryLinkContract;
+use crate::functions::document_functions::set_document_title;
 use reqwasm::http::{Request, Method};
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -38,7 +41,8 @@ pub struct AssignPageProps {
 }
 
 #[function_component(AssignPage)]
-pub fn assign_form(props: &AssignPageProps) -> Html {        
+pub fn assign_form(props: &AssignPageProps) -> Html {   
+    set_document_title("Territory Assign");     
     let state = use_state(|| AssignmentResult::default());
 
     let cloned_state = state.clone();
@@ -100,7 +104,13 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
 
     html! {
         <>
-            <MenuBar/>
+            <MenuBarV2>
+                <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                    <li class={"nav-item"}>
+                        <MapPageLink />
+                    </li>  
+                </ul>
+            </MenuBarV2>
             <AssignForm {onsubmit} 
                 territory_number={props.territory_number.clone()}
                 description={props.description.clone()}

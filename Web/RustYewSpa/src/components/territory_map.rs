@@ -1,6 +1,8 @@
 use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
 use crate::models::territories::{Territory};
+use crate::functions::document_functions::set_document_title;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
@@ -31,6 +33,7 @@ pub struct TerritoryMapParameters {
 
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
+    set_document_title("Territory Map");
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
     let parameters: TerritoryMapParameters = location.query().expect("An object");
