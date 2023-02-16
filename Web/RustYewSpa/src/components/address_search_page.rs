@@ -155,6 +155,18 @@ pub fn address_search_page() -> Html {
                                     </div>
                                     <div class="col-10 col-md-11" style="font-weight:bold;">
                                         {address.name.clone()}
+                                        <span class="ms-2 badge bg-secondary">{address.language.clone()}</span> 
+                                        if address.status.clone() == Some("New".to_string()) {
+                                            <span class="ms-2 badge bg-info">{address.status.clone()}</span> 
+                                        } else if address.status.clone() == Some("Valid".to_string()) {
+                                            <span class="ms-2 badge bg-success">{address.status.clone()}</span> 
+                                        } else if address.status.clone() == Some("Do not call".to_string()) {
+                                            <span class="ms-2 badge bg-danger">{address.status.clone()}</span> 
+                                        } else if address.status.clone() == Some("Moved".to_string()) {
+                                            <span class="ms-2 badge bg-warning">{address.status.clone()}</span> 
+                                        } else {
+                                            <span class="ms-2 badge bg-dark">{address.status.clone()}</span> 
+                                        }
                                     </div>
                                 </div>
                                 <div class="row">
