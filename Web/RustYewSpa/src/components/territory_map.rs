@@ -39,6 +39,7 @@ pub struct TerritoryMapModel {
     pub zoom: f64,
     pub lat: f64,
     pub lon: f64,
+    pub group_visible: String,
 }
 
 #[function_component(TerritoryMap)]
@@ -97,7 +98,8 @@ pub fn territory_map() -> Html {
                         local_load: false,
                         lat: 47.66,
                         lon: -122.20,
-                        zoom: 11.0
+                        zoom: 11.0,
+                        group_visible: String::from("*"),
                     };
 
                     model_clone.set(m);
@@ -308,7 +310,8 @@ pub fn territory_map() -> Html {
                     group_id: t.group_id.clone(),
                     sub_group_id: t.sub_group_id.clone(),
                     is_active: t.is_active.clone(),
-                    is_hidden: if t.status.clone() == "Available".to_string() {
+                    is_hidden: if t.group_id.clone() == Some(model_clone.group_visible.clone())
+                        || t.group_id.clone() == Some(String::from("*")) {
                         true
                     } else { false },
                     border: t.border.clone(),
@@ -323,6 +326,7 @@ pub fn territory_map() -> Html {
                 lat: model_clone.lat,
                 lon: model_clone.lon,
                 zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+                group_visible: model_clone.group_visible.clone(),
             };
 
             model_clone.set(m);
@@ -371,6 +375,57 @@ pub fn territory_map() -> Html {
                 lat: model_clone.lat,
                 lon: model_clone.lon,
                 zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+                group_visible: String::from("2")
+            };
+
+            model_clone.set(m);
+        })
+    };
+
+
+    let leaflet_map_clone = leaflet_map.clone();
+    let filter_onclick = {
+        //let props_onclick = props.onclick.clone();
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            // if let Some(props_onclick) = props_onclick.clone() {
+            //     props_onclick.emit(event);
+            // }
+            log!("Click works");
+            
+            let territories = model_clone.territories.clone();
+            let tcount: usize = territories.len();
+            log!(format!("Territories already loaded: {}", tcount));
+            let mut new_territories: Vec<Territory> = vec![];
+            for t in territories.iter() {     
+                //t.is_visible = false;
+                let nt = Territory {
+                    number: t.number.clone(),
+                    status: t.status.clone(),
+                    description: t.description.clone(),
+                    address_count: t.address_count.clone(),
+                    area_code: t.area_code.clone(),
+                    last_completed_by: t.last_completed_by.clone(),
+                    signed_out_to: t.signed_out_to.clone(),
+                    group_id: t.group_id.clone(),
+                    sub_group_id: t.sub_group_id.clone(),
+                    is_active: t.is_active.clone(),
+                    is_hidden: if t.group_id.clone() != Some("2".to_string()) {
+                        true
+                    } else { false },
+                    border: t.border.clone(),
+                };
+                new_territories.push(nt);
+            }
+
+            let m = TerritoryMapModel {
+                territories: new_territories, //model_clone.territories.clone(),
+                territories_is_loaded: false,
+                local_load: true,
+                lat: model_clone.lat,
+                lon: model_clone.lon,
+                zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+                group_visible: String::from("2"),
             };
 
             model_clone.set(m);
