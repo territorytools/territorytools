@@ -45,6 +45,8 @@ pub struct AddressEditModel {
     // pub postal_code: Option<String>,
     pub save_success: bool,
     pub save_error: bool,
+    #[prop_or_default]
+    pub load_error: bool,
     pub error_message: String,
 }
 
@@ -318,35 +320,51 @@ pub fn address_edit_page() -> Html {
                 "{base_path}/{alba_address_id}", 
                 base_path = GET_ADDRESSES_API_PATH);
 
-            let fetched_address: Address = Request::get(uri.as_str())
+            let address_response = Request::get(uri.as_str())
                 .send()
                 .await
-                .expect("Address JSON from API")
-                .json()
-                .await
-                .expect("Valid address JSON from API");
+                .expect("Address response (raw) from API");
+            
+            if address_response.status() == 200 {
+                let fetched_address: Address = address_response
+                    .json()
+                    .await
+                    .expect("Valid address JSON from API");
 
-            log!(format!(
-                "Fetched address 1, street: {street:?}",
-                street = fetched_address.street
-            ));
+                log!(format!(
+                    "Fetched address 1, street: {street:?}",
+                    street = fetched_address.street
+                ));
 
-            //let fetched_address_clone = fetched_address.clone();
+                //let fetched_address_clone = fetched_address.clone();
 
-            let model: AddressEditModel = AddressEditModel {
-                address: fetched_address,
-                alba_address_id: alba_address_id,
-                save_success: false,
-                save_error: false,
-                error_message: "".to_string(),
-            };
+                let model: AddressEditModel = AddressEditModel {
+                    address: fetched_address,
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: false,
+                    load_error: false,
+                    error_message: "".to_string(),
+                };
 
-            log!(format!(
-                "Fetched address 2, street: {street:?}",
-                street = model.address.street
-            ));
+                log!(format!(
+                    "Fetched address 2, street: {street:?}",
+                    street = model.address.street
+                ));
 
-            cloned_state.set(model);
+                cloned_state.set(model);
+            } else if address_response.status() == 401 {
+                let model: AddressEditModel = AddressEditModel {
+                    address: Address::default(),
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: false,
+                    load_error: true,
+                    error_message: "Unauthorized".to_string(),
+                };
+
+                cloned_state.set(model);
+            }
         });
         || ()
     }, ());
@@ -414,6 +432,7 @@ pub fn address_edit_page() -> Html {
                     alba_address_id: alba_address_id,
                     save_success: true,
                     save_error: false,
+                    load_error: false,
                     error_message: "".to_string(),
                 };
     
@@ -424,6 +443,7 @@ pub fn address_edit_page() -> Html {
                     alba_address_id: alba_address_id,
                     save_success: false,
                     save_error: true,
+                    load_error: false,
                     error_message: "Unauthorized".to_string(),
                 };
     
@@ -434,6 +454,7 @@ pub fn address_edit_page() -> Html {
                     alba_address_id: alba_address_id,
                     save_success: false,
                     save_error: true,
+                    load_error: false,
                     error_message: "Forbidden".to_string(),
                 };
     
@@ -444,6 +465,7 @@ pub fn address_edit_page() -> Html {
                     alba_address_id: alba_address_id,
                     save_success: false,
                     save_error: true,
+                    load_error: false,
                     error_message: format!("{}", resp.status()),
                 };
     
@@ -470,7 +492,11 @@ pub fn address_edit_page() -> Html {
             if state.save_error { 
                 <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                 <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-            }           
+            }      
+            if state.load_error { 
+                <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+            }        
             <hr/>
             <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
