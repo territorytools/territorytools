@@ -1,5 +1,5 @@
-use crate::components::route_stuff::Route;
-use yew_router::prelude::use_navigator;
+//use crate::components::route_stuff::Route;
+//use yew_router::prelude::use_navigator;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone)]
