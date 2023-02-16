@@ -46,7 +46,7 @@ pub struct TerritoryMapModel {
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
     
-    let model = use_state(|| TerritoryMapModel::default());
+    let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
     let parameters: TerritoryMapParameters = location.query().expect("An object");
@@ -334,51 +334,69 @@ pub fn territory_map() -> Html {
     };
 
     let leaflet_map_clone = leaflet_map.clone();
-    let group_2_onclick = {
-        //let props_onclick = props.onclick.clone();
+    let group_all_onclick = {
         let model_clone = model.clone();
         Callback::from(move |_event: MouseEvent| {
-            // if let Some(props_onclick) = props_onclick.clone() {
-            //     props_onclick.emit(event);
-            // }
-            log!("Click works");
-            
-            let territories = model_clone.territories.clone();
-            let tcount: usize = territories.len();
-            log!(format!("Territories already loaded: {}", tcount));
-            let mut new_territories: Vec<Territory> = vec![];
-            for t in territories.iter() {     
-                //t.is_visible = false;
-                let nt = Territory {
-                    number: t.number.clone(),
-                    status: t.status.clone(),
-                    description: t.description.clone(),
-                    address_count: t.address_count.clone(),
-                    area_code: t.area_code.clone(),
-                    last_completed_by: t.last_completed_by.clone(),
-                    signed_out_to: t.signed_out_to.clone(),
-                    group_id: t.group_id.clone(),
-                    sub_group_id: t.sub_group_id.clone(),
-                    is_active: t.is_active.clone(),
-                    is_hidden: if t.group_id.clone() != Some("2".to_string()) {
-                        true
-                    } else { false },
-                    border: t.border.clone(),
-                };
-                new_territories.push(nt);
-            }
+            setup_filter(model_clone.clone(), "*");
+        })
+    };
 
-            let m = TerritoryMapModel {
-                territories: new_territories, //model_clone.territories.clone(),
-                territories_is_loaded: false,
-                local_load: true,
-                lat: model_clone.lat,
-                lon: model_clone.lon,
-                zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
-                group_visible: String::from("2")
-            };
+    let group_core_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "core");
+        })
+    };
 
-            model_clone.set(m);
+    let group_1_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "1");
+        })
+    };
+
+    let group_2_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "2");
+        })
+    };
+
+    let group_3_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "3");
+        })
+    };
+
+    let group_4_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "4");
+        })
+    };
+
+    
+    let group_5_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "5");
+        })
+    };
+
+    
+    let group_6_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "6");
+        })
+    };
+
+    
+    let group_7_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "7");
         })
     };
 
@@ -452,17 +470,15 @@ pub fn territory_map() -> Html {
                 svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
                 <div>
                 // TODO: Try saving the JSON locally, even just in memory, and filtering it here in the browser
-                    <button onclick={trick_onclick} class="btn btn-primary">{"#"}</button>
-                    <a href={"/app/map?group_id=core"} class={"btn btn-primary"}>{"0"}</a>
-                    <a href={"/app/map?group_id=1"} class={"btn btn-primary"}>{"1"}</a>
-                    //<a href={"/app/map?group_id=2"} class={"btn btn-primary"}>{"2"}</a>
+                    <button onclick={group_core_onclick} class="btn btn-primary">{"core"}</button>
+                    <button onclick={group_1_onclick} class="btn btn-primary">{"1"}</button>
                     <button onclick={group_2_onclick} class="btn btn-primary">{"2"}</button>
-                    <a href={"/app/map?group_id=3"} class={"btn btn-primary"}>{"3"}</a>
-                    <a href={"/app/map?group_id=4"} class={"btn btn-primary"}>{"4"}</a>
-                    <a href={"/app/map?group_id=5"} class={"btn btn-primary"}>{"5"}</a>
-                    <a href={"/app/map?group_id=6"} class={"btn btn-primary"}>{"6"}</a>
-                    <a href={"/app/map?group_id=7"} class={"btn btn-primary"}>{"7"}</a>
-                    <a href={"/app/map"} class={"btn btn-primary"}>{"*"}</a>
+                    <button onclick={group_3_onclick} class="btn btn-primary">{"3"}</button>
+                    <button onclick={group_4_onclick} class="btn btn-primary">{"4"}</button>
+                    <button onclick={group_5_onclick} class="btn btn-primary">{"5"}</button>
+                    <button onclick={group_6_onclick} class="btn btn-primary">{"6"}</button>
+                    <button onclick={group_7_onclick} class="btn btn-primary">{"7"}</button>
+                    <button onclick={group_all_onclick} class="btn btn-primary">{"*"}</button>
                 </div>
             </MapMenu>       
             // <MapMenu 
@@ -479,6 +495,46 @@ pub fn territory_map() -> Html {
     }
 }
 
+fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
+    let model_clone = model.clone();
+    let territories = model_clone.territories.clone();
+    let tcount: usize = territories.len();
+    log!(format!("Territories already loaded: {}", tcount));
+    let mut new_territories: Vec<Territory> = vec![];
+    for t in territories.iter() {     
+        //t.is_visible = false;
+        let nt = Territory {
+            number: t.number.clone(),
+            status: t.status.clone(),
+            description: t.description.clone(),
+            address_count: t.address_count.clone(),
+            area_code: t.area_code.clone(),
+            last_completed_by: t.last_completed_by.clone(),
+            signed_out_to: t.signed_out_to.clone(),
+            group_id: t.group_id.clone(),
+            sub_group_id: t.sub_group_id.clone(),
+            is_active: true, //t.is_active.clone(),
+            is_hidden: if t.group_id.clone().unwrap() != group.to_string()
+                && group != "*" {
+                true
+            } else { false },
+            border: t.border.clone(),
+        };
+        new_territories.push(nt);
+    }
+
+    let m = TerritoryMapModel {
+        territories: new_territories, //model_clone.territories.clone(),
+        territories_is_loaded: false,
+        local_load: true,
+        lat: model_clone.lat,
+        lon: model_clone.lon,
+        zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+        group_visible: model_clone.group_visible.clone(),
+    };
+
+    model.set(m);
+}
 
 #[function_component(HomeButton)]
 fn home_button() -> Html {
