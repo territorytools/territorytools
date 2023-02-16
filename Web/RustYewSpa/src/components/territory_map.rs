@@ -31,9 +31,21 @@ pub struct TerritoryMapParameters {
     pub group_id: Option<String>,
 }
 
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct TerritoryMapModel {
+    pub territories: Vec<Territory>,
+    pub territories_is_loaded: bool,
+    pub local_load: bool,
+    pub zoom: f64,
+    pub lat: f64,
+    pub lon: f64,
+}
+
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
+    
+    let model = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
     let parameters: TerritoryMapParameters = location.query().expect("An object");
@@ -50,26 +62,27 @@ pub fn territory_map() -> Html {
     //let node: &Node = container.clone().into();
     // from create
     container.set_class_name("map");
-    let leaflet_map = Map::new_with_element(&container, &JsValue::NULL);
+    let leaflet_map: Map = Map::new_with_element(&container, &JsValue::NULL);
     
     add_tile_layer2(&leaflet_map);
     
     // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
     // https://yew.rs/docs/0.18.0/concepts/services/fetch
-    let territories = use_state(|| vec![]);
-    {
-        let territories = territories.clone();
-        use_effect_with_deps(move |_| {
-            let territories = territories.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                
-                //let uri: &str = "/data/territory-borders-all.json";
-                //let uri: &str = "/api/territories/borders";
+    //let territories = use_state(|| vec![]);
+    
+    let model_clone = model.clone();
+    use_effect_with_deps(move |_| {
+        let model_clone = model_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            
+            //let uri: &str = "/data/territory-borders-all.json";
+            //let uri: &str = "/api/territories/borders";
 
-                let group_id: String = group_id;
-                // TODO: Try activeGroupId instead of groupId, needs to be set up in the API too
-                let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+            let group_id: String = group_id;
+            // TODO: Try activeGroupId instead of groupId, needs to be set up in the API too
+            let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
 
+            if !model_clone.territories_is_loaded {
                 let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
                     .send()
                     .await
@@ -78,13 +91,24 @@ pub fn territory_map() -> Html {
                     .await
                     .unwrap();
 
-                territories.set(fetched_territories);
-            });
-            || ()
-        }, ());
-    }
+                    let m = TerritoryMapModel {
+                        territories: fetched_territories,
+                        territories_is_loaded: true,
+                        local_load: false,
+                        lat: 47.66,
+                        lon: -122.20,
+                        zoom: 11.0
+                    };
 
-    let tcount: usize = territories.len();
+                    model_clone.set(m);
+            }
+        });
+        || ()
+    }, ());
+
+
+    let model_clone = model.clone();
+    let tcount: usize = model_clone.territories.len();
     log!("Map Comp Loaded Territories 2: ", tcount);
     // Figure out how to show when there is no data
     if tcount == 0 {
@@ -103,7 +127,7 @@ pub fn territory_map() -> Html {
     // TerritorySummary // let mut total_count = 0;
     // TerritorySummary // let mut hidden_count = 0;
 
-    for t in territories.iter() {      
+    for t in model.territories.iter() {      
         // TerritorySummary // total_count += 1;
 
         let mut polygon: Vec<LatLng> = Vec::new();
@@ -166,7 +190,7 @@ pub fn territory_map() -> Html {
             );
             
             let bounds = polyline.getBounds();
-            leaflet_map.fitBounds(&bounds);
+            // this might be the bad one// leaflet_map.fitBounds(&bounds);
 
             polyline.addTo(&leaflet_map);
             // TerritorySummary // hidden_count += 1;
@@ -203,12 +227,17 @@ pub fn territory_map() -> Html {
                 }).expect("Unable to serialize popup options")
             );
         
-            poly.addTo(&leaflet_map);
+            if !t.is_hidden {
+                poly.addTo(&leaflet_map);
+            }
         }
     }
 
     // from rendered
-    leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    //if !model_clone.local_load {
+        //leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+        leaflet_map.setView(&LatLng::new(model_clone.lat, model_clone.lon), model_clone.zoom);
+    //}
     ////leaflet_map.on("onclick", clicked_map);
     
     // move |event: MouseEvent| {
@@ -225,12 +254,117 @@ pub fn territory_map() -> Html {
     // legendBox.addTo(&leaflet_map);
 
     // We must wait for 1/10th of a second for the browser to be ready
+    // let leaflet_map_clone = leaflet_map.clone();
+    // Timeout::new(
+    //     100,
+    //     move || {
+    //         let _ = &leaflet_map.invalidateSize(false); // Parameter name: animate
+    //     }).forget();
+    
+    let _model_clone = model.clone();
+    let leaflet_map_clone = leaflet_map.clone();
+    let trick_onclick = {
+        //let props_onclick = props.onclick.clone();
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            // if let Some(props_onclick) = props_onclick.clone() {
+            //     props_onclick.emit(event);
+            // }
+            log!("Click works");
+            
+            let territories = model_clone.territories.clone();
+            let tcount: usize = territories.len();
+            log!(format!("Territories already loaded: {}", tcount));
+            let mut new_territories: Vec<Territory> = vec![];
+            for t in territories.iter() {     
+                //t.is_visible = false;
+                let nt = Territory {
+                    number: t.number.clone(),
+                    status: t.status.clone(),
+                    description: t.description.clone(),
+                    address_count: t.address_count.clone(),
+                    area_code: t.area_code.clone(),
+                    last_completed_by: t.last_completed_by.clone(),
+                    signed_out_to: t.signed_out_to.clone(),
+                    group_id: t.group_id.clone(),
+                    sub_group_id: t.sub_group_id.clone(),
+                    is_active: t.is_active.clone(),
+                    is_hidden: if t.status.clone() == "Available".to_string() {
+                        true
+                    } else { false },
+                    border: t.border.clone(),
+                };
+                new_territories.push(nt);
+            }
+
+            let m = TerritoryMapModel {
+                territories: new_territories, //model_clone.territories.clone(),
+                territories_is_loaded: false,
+                local_load: true,
+                lat: model_clone.lat,
+                lon: model_clone.lon,
+                zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+            };
+
+            model_clone.set(m);
+        })
+    };
+
+    let leaflet_map_clone = leaflet_map.clone();
+    let group_2_onclick = {
+        //let props_onclick = props.onclick.clone();
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            // if let Some(props_onclick) = props_onclick.clone() {
+            //     props_onclick.emit(event);
+            // }
+            log!("Click works");
+            
+            let territories = model_clone.territories.clone();
+            let tcount: usize = territories.len();
+            log!(format!("Territories already loaded: {}", tcount));
+            let mut new_territories: Vec<Territory> = vec![];
+            for t in territories.iter() {     
+                //t.is_visible = false;
+                let nt = Territory {
+                    number: t.number.clone(),
+                    status: t.status.clone(),
+                    description: t.description.clone(),
+                    address_count: t.address_count.clone(),
+                    area_code: t.area_code.clone(),
+                    last_completed_by: t.last_completed_by.clone(),
+                    signed_out_to: t.signed_out_to.clone(),
+                    group_id: t.group_id.clone(),
+                    sub_group_id: t.sub_group_id.clone(),
+                    is_active: t.is_active.clone(),
+                    is_hidden: if t.group_id.clone() != Some("2".to_string()) {
+                        true
+                    } else { false },
+                    border: t.border.clone(),
+                };
+                new_territories.push(nt);
+            }
+
+            let m = TerritoryMapModel {
+                territories: new_territories, //model_clone.territories.clone(),
+                territories_is_loaded: false,
+                local_load: true,
+                lat: model_clone.lat,
+                lon: model_clone.lon,
+                zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+            };
+
+            model_clone.set(m);
+        })
+    };
+
+    // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(
         100,
         move || {
             let _ = &leaflet_map.invalidateSize(false); // Parameter name: animate
         }).forget();
-  
+
     html!{
         <div style={"width:100%;"}>        
             {
@@ -243,9 +377,12 @@ pub fn territory_map() -> Html {
                 bottom_vh={1}
                 svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
                 <div>
+                // TODO: Try saving the JSON locally, even just in memory, and filtering it here in the browser
+                    <button onclick={trick_onclick} class="btn btn-primary">{"#"}</button>
                     <a href={"/app/map?group_id=core"} class={"btn btn-primary"}>{"0"}</a>
                     <a href={"/app/map?group_id=1"} class={"btn btn-primary"}>{"1"}</a>
-                    <a href={"/app/map?group_id=2"} class={"btn btn-primary"}>{"2"}</a>
+                    //<a href={"/app/map?group_id=2"} class={"btn btn-primary"}>{"2"}</a>
+                    <button onclick={group_2_onclick} class="btn btn-primary">{"2"}</button>
                     <a href={"/app/map?group_id=3"} class={"btn btn-primary"}>{"3"}</a>
                     <a href={"/app/map?group_id=4"} class={"btn btn-primary"}>{"4"}</a>
                     <a href={"/app/map?group_id=5"} class={"btn btn-primary"}>{"5"}</a>
