@@ -42,10 +42,19 @@ pub struct TerritoryMapModel {
     pub group_visible: String,
 }
 
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct MouseClickModel {
+    pub mouse_click_x: i32,
+    pub mouse_click_y: i32,
+}
+
+
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
     
+    let mouse_click_model: UseStateHandle<MouseClickModel> = use_state(|| MouseClickModel::default());
+
     let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
@@ -340,7 +349,6 @@ pub fn territory_map() -> Html {
             setup_filter(model_clone.clone(), "4");
         })
     };
-
     
     let group_5_onclick = {
         let model_clone = model.clone();
@@ -348,7 +356,6 @@ pub fn territory_map() -> Html {
             setup_filter(model_clone.clone(), "5");
         })
     };
-
     
     let group_6_onclick = {
         let model_clone = model.clone();
@@ -356,7 +363,6 @@ pub fn territory_map() -> Html {
             setup_filter(model_clone.clone(), "6");
         })
     };
-
     
     let group_7_onclick = {
         let model_clone = model.clone();
@@ -390,6 +396,27 @@ pub fn territory_map() -> Html {
         bnds.getSouthWest().lng()
     ));
 
+    //let map_clone = &leaflet_map.clone();
+    let mouse_click_model = mouse_click_model.clone();
+    let map_box_click = {
+        //let model_clone = model.clone();
+        //let map_clone = map_clone.clone();
+        let mouse_click_model = mouse_click_model.clone();
+        Callback::from(move |event: MouseEvent| {
+            // let nelat = map_clone.getBounds().getNorthEast().lat();
+            // let swlat = map_clone.getBounds().getSouthWest().lat();
+            let x = event.client_x();
+            let y = event.client_y();
+            let mcm = MouseClickModel {
+                mouse_click_x: x,
+                mouse_click_y: y,
+            };
+            mouse_click_model.set(mcm);
+            //log!(format!("Mouse click x,y: {},{} nelat: {} swlat: {}", x, y, nelat, swlat));
+            log!(format!("Mouse click x,y: {},{}", x, y));
+        })
+    };
+
     // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(
         100,
@@ -398,7 +425,7 @@ pub fn territory_map() -> Html {
         }).forget();
 
     html!{
-        <div style={"width:100%;"}>        
+        <div style={"width:100%;"} onclick={map_box_click}>        
             {
                 {map_container}
             }
@@ -471,6 +498,11 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
         lon: model_clone.lon,
         zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
         group_visible: model_clone.group_visible.clone(),
+    };
+
+    let _mcm = MouseClickModel {
+        mouse_click_x: 0,
+        mouse_click_y: 0,
     };
 
     model.set(m);
