@@ -40,7 +40,7 @@ fn secure() -> Html {
     }
 }
 
-fn switch(route: Route) -> Html {
+pub fn switch(route: Route) -> Html {
     match route {
         //Route::Home => html! { <Redirect<Route> to={"/"} },
         Route::Home => html! { <h3>{"Home"}</h3> },
