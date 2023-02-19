@@ -3,12 +3,15 @@ use crate::components::state_selector::SelectAddressState;
 use crate::models::addresses::Address;
 use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
+use gloo_utils::document;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
 use std::ops::Deref;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
-use web_sys::HtmlInputElement;
+use web_sys::{EventTarget, HtmlImageElement, MouseEvent, HtmlInputElement, Element, HtmlElement};
+use web_sys::Node;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
 
@@ -47,6 +50,8 @@ pub fn test_map() -> Html {
         })
     };
 
+    drag_image("my-image");
+
     html! {
         <>
         <MenuBarV2>
@@ -61,69 +66,96 @@ pub fn test_map() -> Html {
                 </li> 
             </ul>
         </MenuBarV2>
-       <div {onmousedown}>
-        <span>{"Test Map"}</span>
-            <div style="width:200px;height:200px;margin-left:-100px;">
-            <img src="/data/test.png" />
+        <div {onmousedown}>
+            <span>{"Test Map"}</span>
+            <div style="width:200px;height:200px;margin-left:-100px;">        
+                //<img id="my-image" width="100" height="100" src="/data/test.png" />
+            </div>
         </div>
-       </div>
         </>
     }
 }
 
+#[wasm_bindgen]
+pub fn drag_image(image_id: &str) {
+    let image = get_image_element(image_id);
+    let parent = image.parent_element().unwrap();
+    let offset_x = image.offset_left() as f64;
+    let offset_y = image.offset_top() as f64;
+    let mut is_dragging = false;
+    let mut mouse_x = 0.0;
+    let mut mouse_y = 0.0;
 
-#[wasm_bindgen(start)]
-fn start() -> Result<(), JsValue> {
-    let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document
-        .create_element("canvas")?
-        .dyn_into::<web_sys::HtmlCanvasElement>()?;
-    document.body().unwrap().append_child(&canvas)?;
-    canvas.set_width(640);
-    canvas.set_height(480);
-    canvas.style().set_property("border", "solid")?;
-    let context = canvas
-        .get_context("2d")?
-        .unwrap()
-        .dyn_into::<web_sys::CanvasRenderingContext2d>()?;
-    let context = Rc::new(context);
-    let pressed = Rc::new(Cell::new(false));
-    {
-        let context = context.clone();
-        let pressed = pressed.clone();
-        let closure = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MouseEvent| {
-            context.begin_path();
-            context.move_to(event.offset_x() as f64, event.offset_y() as f64);
-            pressed.set(true);
-        });
-        canvas.add_event_listener_with_callback("mousedown", closure.as_ref().unchecked_ref())?;
-        closure.forget();
-    }
-    {
-        let context = context.clone();
-        let pressed = pressed.clone();
-        let closure = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MouseEvent| {
-            if pressed.get() {
-                context.line_to(event.offset_x() as f64, event.offset_y() as f64);
-                context.stroke();
-                context.begin_path();
-                context.move_to(event.offset_x() as f64, event.offset_y() as f64);
-            }
-        });
-        canvas.add_event_listener_with_callback("mousemove", closure.as_ref().unchecked_ref())?;
-        closure.forget();
-    }
-    {
-        let context = context.clone();
-        let pressed = pressed.clone();
-        let closure = Closure::<dyn FnMut(_)>::new(move |event: web_sys::MouseEvent| {
-            pressed.set(false);
-            context.line_to(event.offset_x() as f64, event.offset_y() as f64);
-            context.stroke();
-        });
-        canvas.add_event_listener_with_callback("mouseup", closure.as_ref().unchecked_ref())?;
-        closure.forget();
-    }
+    let image_clone = image.clone();
+    let handle_mouse_move = Closure::wrap(Box::new(move |event: MouseEvent| {
+        if is_dragging {
+            let dx = event.client_x() as f64 - mouse_x;
+            let dy = event.client_y() as f64 - mouse_y;
+            let left = offset_x + dx;
+            let top = offset_y + dy;
+            image_clone.style().set_property("left", &format!("{}px", left)).unwrap();
+            image_clone.style().set_property("top", &format!("{}px", top)).unwrap();
+            mouse_x = event.client_x() as f64;
+            mouse_y = event.client_y() as f64;
+        }
+    }) as Box<dyn FnMut(_)>);
 
-    Ok(())
+    let handle_mouse_down = Closure::wrap(Box::new(move |event: MouseEvent| {
+        is_dragging = true;
+        mouse_x = event.client_x() as f64;
+        mouse_y = event.client_y() as f64;
+    }) as Box<dyn FnMut(_)>);
+
+    let handle_mouse_up = Closure::wrap(Box::new(move |_event: MouseEvent| {
+        is_dragging = false;
+    }) as Box<dyn FnMut(_)>);
+
+    image.style().set_property("position", "absolute").unwrap();
+    image.style().set_property("left", &format!("{}px", offset_x)).unwrap();
+    image.style().set_property("top", &format!("{}px", offset_y)).unwrap();
+
+    let parent_clone = parent.clone();
+    EventTarget::from(parent_clone)
+        .add_event_listener_with_callback("mousemove", handle_mouse_move.as_ref().unchecked_ref())
+        .unwrap();
+    let parent_clone = parent.clone();
+    EventTarget::from(parent_clone)
+        .add_event_listener_with_callback("mousedown", handle_mouse_down.as_ref().unchecked_ref())
+        .unwrap();
+    let parent_clone = parent.clone();
+    EventTarget::from(parent_clone)
+        .add_event_listener_with_callback("mouseup", handle_mouse_up.as_ref().unchecked_ref())
+        .unwrap();
+
+    handle_mouse_move.forget();
+    handle_mouse_down.forget();
+    handle_mouse_up.forget();
+}
+
+fn get_image_element(id: &str) -> HtmlElement { //HtmlImageElement {
+    //let document = web_sys::window().unwrap().
+    //let document = document().expect("A document");    
+
+    ////let yew = document().get_element_by_id("yew").expect("An element named 'yew'");
+    
+    let div: Element = document().create_element("div").expect("Created a div");
+    //yew.append_child(&div);
+    
+    let image: Element = document().create_element("img").expect("Created an img");
+
+    image.set_attribute("src", "/data/data-test.png");
+
+    let image_clone = image.clone();
+    div.append_child(&image_clone);
+    let image_clone = image.clone();
+    //image_clone.dyn_into::<HtmlImageElement>().expect("Converted it to an HtmlImageElement")
+    div.dyn_into::<HtmlElement>().expect("Converted into HtmlElement")
+
+    
+}
+
+fn render_map_test(element: &HtmlElement) -> Html {
+    // Element must be passed as an address I guess
+        let node: &Node = &element.clone().into();
+        Html::VRef(node.clone())
 }
