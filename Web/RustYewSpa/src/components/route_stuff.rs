@@ -6,6 +6,8 @@ use crate::TerritoryEditPage;
 use crate::TerritoryEditPageExample;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
+//use crate::TestMap;
+use crate::components::test_map::TestMap;
 
 use yew_router::prelude::*;
 use yew::html;
@@ -45,6 +47,8 @@ pub enum Route {
     Secure,
     #[at("/app/territory/:id")]
     TerritoryView { id: String },
+    #[at("/app/testmap")]
+    TestMap,
     #[at("/app/links")]
     Links,
     #[at("/app/*path")]
@@ -94,7 +98,8 @@ pub fn switch(route: Route) -> Html {
         //Route::NotFound => html! {<Redirect<Route> to={"/"}/>}
         Route::TerritoryView { id } => {
             html! {<p>{format!("You are looking at Territory {}", id)}</p>}
-        }
+        },
+        Route::TestMap => html! { <TestMap /> },
         Route::Links => html! { <TerritoryLinkPage /> },
         Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
     }
