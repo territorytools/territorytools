@@ -3,6 +3,7 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
 use crate::models::addresses::Address;
 use crate::functions::document_functions::set_document_title;
+use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
 //use std::fmt::Display;
 //use crate::models::territories::Territory;
 //use serde::{Deserialize, Serialize};
@@ -112,6 +113,15 @@ pub fn address_edit_page() -> Html {
 
             log!(format!("Address status id set to {name:?}", name = modification.address.status_id));
 
+            state.set(modification);
+        })
+    };
+   
+    let delivery_status_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |id: String| {
+            let mut modification = state.deref().clone();
+            modification.address.delivery_status_id = id.parse().unwrap();
             state.set(modification);
         })
     };
@@ -533,6 +543,12 @@ pub fn address_edit_page() -> Html {
                         <EnglishChineseIdOption id={5} english="Duplicate" chinese="地址重复" selected={selected_status_id} />
                         <EnglishChineseIdOption id={6} english="Not valid" chinese="不说中文" selected={selected_status_id} />
                     </select>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
+                    <AddressDeliveryStatusSelector 
+                        onchange={delivery_status_onchange} 
+                        id={state.address.delivery_status_id} />
                 </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">{"姓名 Name"}</label>

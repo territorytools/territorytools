@@ -49,16 +49,19 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
             <MenuBar/>
             <div class={"container"}>
             { 
-                links.iter().map(|link| html! {
+                links.iter().map(|link| 
+                    {let uri = format!("https://mobile.territorytools.org/mtk/{id}", id = link.id.clone());
+                    html! {
                     <div class={"row"}>
-                        <div class={"col col-lg-1"}>{link.territory_number.clone()}</div>
-                        <div class={"col col-lg-2"}>{link.territory_description.clone()}</div>
-                        <div class={"col col-lg-2"}>{link.assignee_name.clone()}</div>
-                        <div class={"col"}><a href={"mailto:you@gmail.com"}>{link.assignee_email.clone()}</a></div>
-                        <div class={"col"}>{link.assignee_phone.clone()}</div>
-                        <div class={"col"}>{link.territory_uri.clone()}</div>
+                        <div class={"col-6 col-lg-1"}>{link.territory_number.clone()}</div>
+                        <div class={"col-6 col-lg-2"}><a href={uri}>{link.id.clone()}</a></div>
+                        <div class={"col-12 col-lg-2"}>{link.territory_description.clone()}</div>
+                        <div class={"col-12 col-lg-2"}>{link.assignee_name.clone()}</div>
+                        <div class={"col col-lg-2"}><a href={"mailto:you@gmail.com"}>{link.assignee_email.clone()}</a></div>
+                        <div class={"col col-lg-2"}>{link.assignee_phone.clone()}</div>
+                        <div class={"col col-lg-2"}>{link.territory_uri.clone()}</div>
                     </div>
-                }).collect::<Html>()
+                }}).collect::<Html>()
             }
             </div>
         </>

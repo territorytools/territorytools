@@ -9,7 +9,8 @@ pub struct Address {
     pub language: Option<String>,
     pub language_id : i32,
     pub status: Option<String>,
-    pub status_id : i32,
+    pub status_id: i32,
+    pub delivery_status_id: i32,
     pub name: Option<String>,
     pub street: Option<String>,
     pub unit: Option<String>,
@@ -20,6 +21,15 @@ pub struct Address {
     pub longitude: f32,
     pub phone: Option<String>,
     pub notes: Option<String>,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AddressDeliveryStatus {
+    pub id: i32,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub is_active: bool,
 }
 
 // #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize)]
