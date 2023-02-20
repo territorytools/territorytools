@@ -53,7 +53,7 @@ pub struct MouseClickModel {
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
     
-    let mouse_click_model: UseStateHandle<MouseClickModel> = use_state(|| MouseClickModel::default());
+    let _mouse_click_model: UseStateHandle<MouseClickModel> = use_state(|| MouseClickModel::default());
 
     let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");

@@ -41,8 +41,8 @@ pub fn territory_edit_form(props: &Props) -> Html {
             onsubmit_prop.emit(modification);
         })
     };
-    let row_onclick = {
-        Callback::from(move |event: MouseEvent| {
+    let _row_onclick = {
+        Callback::from(move |_event: MouseEvent| {
             
         })
     };
@@ -181,7 +181,7 @@ pub fn territory_edit_form_address_row(props: &AddressRowProps) -> Html {
     });
     let row_onclick = {
         let state_clone = state.clone();
-        Callback::from(move |event: MouseEvent| {
+        Callback::from(move |_event: MouseEvent| {
             
             let s = TerritoryEditFormExampleAddressRowModel {
                 menu_is_visible: true
