@@ -396,26 +396,20 @@ pub fn territory_map() -> Html {
         bnds.getSouthWest().lng()
     ));
 
-    //let map_clone = &leaflet_map.clone();
-    let mouse_click_model = mouse_click_model.clone();
-    let map_box_click = {
-        //let model_clone = model.clone();
-        //let map_clone = map_clone.clone();
-        let mouse_click_model = mouse_click_model.clone();
-        Callback::from(move |event: MouseEvent| {
-            // let nelat = map_clone.getBounds().getNorthEast().lat();
-            // let swlat = map_clone.getBounds().getSouthWest().lat();
-            let x = event.client_x();
-            let y = event.client_y();
-            let mcm = MouseClickModel {
-                mouse_click_x: x,
-                mouse_click_y: y,
-            };
-            mouse_click_model.set(mcm);
-            //log!(format!("Mouse click x,y: {},{} nelat: {} swlat: {}", x, y, nelat, swlat));
-            log!(format!("Mouse click x,y: {},{}", x, y));
-        })
-    };
+    // let mouse_click_model = mouse_click_model.clone();
+    // let map_box_click = {
+    //     let mouse_click_model = mouse_click_model.clone();
+    //     Callback::from(move |event: MouseEvent| {
+    //         let x = event.client_x();
+    //         let y = event.client_y();
+    //         let mcm = MouseClickModel {
+    //             mouse_click_x: x,
+    //             mouse_click_y: y,
+    //         };
+    //         mouse_click_model.set(mcm);
+    //         log!(format!("Mouse click x,y: {},{}", x, y));
+    //     })
+    // };
 
     // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(
@@ -425,7 +419,7 @@ pub fn territory_map() -> Html {
         }).forget();
 
     html!{
-        <div style={"width:100%;"} onclick={map_box_click}>        
+        <div style={"width:100%;"}>        
             {
                 {map_container}
             }

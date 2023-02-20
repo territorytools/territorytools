@@ -59,10 +59,23 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
             <option value={"0"}>{"Select Delivery Status"}</option>
             {      
                 statuses.iter().map(|status| {   
-                    let status = status.clone();     
+                    let status_clone = status.clone();
+                    let status_description = status_clone.description.unwrap_or_default();
+                    let status_text = format!("{name}{description}",
+                        name = status_clone.name.unwrap_or_default(),
+                        description = 
+                            if status_description == "".to_string()
+                            { 
+                                "".to_string() 
+                            } else {
+                                format!(" ({})", status_description)
+                            }
+                    );
+
+                    let status_clone = status.clone(); 
                     html!{
-                        <option value={status.id.to_string()} selected={status.id == props.id}>
-                            <span>{status.name.unwrap_or_default().to_string()}</span>
+                        <option value={status_clone.id.to_string()} selected={status_clone.id == props.id}>
+                            {status_text}
                         </option>
                     }
                 }).collect::<Html>()
