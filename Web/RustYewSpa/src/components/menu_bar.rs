@@ -71,7 +71,7 @@ pub fn map_page_link() -> Html {
     html! {
         <>
             
-            <a {onclick} class={"nav-link text-dark"} style={"cursor:pointer;"}>
+            <a {onclick} class={"nav-link text-dark"} style="cursor:pointer;">
                 <div>
                     <svg style={" width: 20px; height: auto; "} xmlns={"http://www.w3.org/2000/svg"} fill={"currentColor"} viewBox={"0 0 576 512"}>
                         //0 0 576 512

@@ -41,7 +41,11 @@ pub fn territory_edit_form(props: &Props) -> Html {
             onsubmit_prop.emit(modification);
         })
     };
-
+    let row_onclick = {
+        Callback::from(move |event: MouseEvent| {
+            
+        })
+    };
     html! {
         <>
         <div class={"container"}>
@@ -83,21 +87,8 @@ pub fn territory_edit_form(props: &Props) -> Html {
         <div class={"container"}>
           
             <h5>{"地址 Addresses"}</h5>
-            <div class={"row border-top py-2"}>
-                <div class={"col-xs-3 col-1"}>
-                    <svg class={"d-none d-md-block"} xmlns={"http://www.w3.org/2000/svg"} width={"48"} height={"48"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
-                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
-                    </svg>                    
-                    <svg class={"d-block d-md-none"} xmlns={"http://www.w3.org/2000/svg"} width={"32"} height={"32"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
-                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
-                    </svg>
-                </div>           
-                <div class={"col-xs-9 col-11 pl-4"}>
-                    <strong>{"An, Ping"}</strong>
-                    <br/>
-                    <span style={"width:10px;margin-top:0;"}>{"333 Yeah Right St, Lynnwood, WA 98087"}</span>
-                </div>
-            </div>
+           <TerritoryEditFormExampleAddressRow delivery_status_id={1} name="Alpha, Andy" address="33 Yeah Right St, Lynnwood, WA 98087"/>
+           <TerritoryEditFormExampleAddressRow delivery_status_id={10} name="Bravo, Ben" address="31434 Ash Way, #701-B Lynnwood, WA 98087"/>
             <div class={"row border-top py-2"}>
                 <div class={"col-xs-3 col-1"}>
                     <svg class={"d-none d-md-block"} xmlns={"http://www.w3.org/2000/svg"} width={"48"} height={"48"} fill={"currentColor"} class={"bi bi-envelope-check"} viewBox={"0 0 16 16"}>
@@ -167,6 +158,87 @@ pub fn territory_edit_form(props: &Props) -> Html {
         <br/>
         <BBButton label={"完成了 Complete"} class={"btn btn-primary"} data_test="submit" />
         </div>
+        </>
+    }
+}
+
+#[derive(Properties, Clone, PartialEq)]
+pub struct AddressRowProps {
+    pub name: Option<String>,
+    pub address: Option<String>,
+    pub delivery_status_id: i32,
+}
+
+#[derive(Default, Clone)]
+pub struct TerritoryEditFormExampleAddressRowModel {
+    pub menu_is_visible: bool,
+}
+
+#[function_component(TerritoryEditFormExampleAddressRow)]
+pub fn territory_edit_form_address_row(props: &AddressRowProps) -> Html {
+    let state = use_state(||TerritoryEditFormExampleAddressRowModel {
+        menu_is_visible: false,
+    });
+    let row_onclick = {
+        let state_clone = state.clone();
+        Callback::from(move |event: MouseEvent| {
+            
+            let s = TerritoryEditFormExampleAddressRowModel {
+                menu_is_visible: true
+            };
+            state_clone.set(s);
+        })
+    };
+
+    let close_onclick = {
+        let state_clone = state.clone();
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
+            let s = TerritoryEditFormExampleAddressRowModel {
+                menu_is_visible: false
+            };
+            state_clone.set(s);
+        })
+    };
+
+    let state_clone = state.clone();
+    let props_clone = props.clone();
+    
+    html! {
+        <>
+        <div class={"row border-top py-2"} onclick={row_onclick} style="cursor:pointer;">
+            <div class={"col-xs-3 col-1"}>
+                <svg class={"d-none d-md-block"} xmlns={"http://www.w3.org/2000/svg"} width={"48"} height={"48"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                </svg>                    
+                <svg class={"d-block d-md-none"} xmlns={"http://www.w3.org/2000/svg"} width={"32"} height={"32"} fill={"currentColor"} class={"bi bi-envelope-paper"} viewBox={"0 0 16 16"}>
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                </svg>
+            </div>           
+            <div class={"col-xs-9 col-11 pl-4"}>
+                //<strong>{props_clone.name.clone().unwrap_or_default().to_string()}</strong>
+                <strong>{props_clone.name}</strong>
+                <br/>
+                <span style={"width:10px;margin-top:0;"}>{props_clone.address}</span>
+            </div>
+        </div>
+        if state_clone.menu_is_visible {
+            <div class="row">
+                <div class="row">
+                    <div class="col-12 pb-1">
+                        <button class="btn me-1 btn-secondary" onclick={close_onclick}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                            </svg>
+                            //{" Hide"}
+                        </button>
+                        <button class="btn me-1 btn-primary">{"Skipped"}</button>
+                        <button class="btn me-1 btn-primary">{"Sent"}</button>
+                        <button class="btn me-1 btn-primary">{"Returned"}</button>
+                    </div>
+                </div>
+            </div>
+        }
         </>
     }
 }
