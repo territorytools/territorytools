@@ -232,9 +232,18 @@ pub fn territory_edit_form_address_row(props: &AddressRowProps) -> Html {
                             </svg>
                             //{" Hide"}
                         </button>
-                        <button class="btn me-1 btn-primary">{"Skipped"}</button>
-                        <button class="btn me-1 btn-primary">{"Sent"}</button>
-                        <button class="btn me-1 btn-primary">{"Returned"}</button>
+                        <div class="form-check form-check-inline ms-3">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"/>
+                            <label class="form-check-label" for="inlineRadio1">{"Sent"}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"/>
+                            <label class="form-check-label" for="inlineRadio2">{"Returned"}</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3" />
+                            <label class="form-check-label" for="inlineRadio3">{"Undeliverable"}</label>
+                        </div>
                     </div>
                 </div>
             </div>
