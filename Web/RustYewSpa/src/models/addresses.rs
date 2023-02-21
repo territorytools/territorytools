@@ -11,6 +11,7 @@ pub struct Address {
     pub status: Option<String>,
     pub status_id: i32,
     pub delivery_status_id: i32,
+    pub delivery_status: Option<String>,
     pub name: Option<String>,
     pub street: Option<String>,
     pub unit: Option<String>,

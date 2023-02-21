@@ -56,7 +56,7 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
 
     html! {
         <select id={"deliver-status-menu"} name={"delivery-status-id"} class={"form-select shadow-sm"} {onchange}>
-            <option value={"0"}>{"Select Delivery Status"}</option>
+            <option value={"0"}>{"Select Mail Delivery Status"}</option>
             {      
                 statuses.iter().map(|status| {   
                     let status_clone = status.clone();

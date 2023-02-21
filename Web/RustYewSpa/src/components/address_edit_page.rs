@@ -534,7 +534,7 @@ pub fn address_edit_page() -> Html {
                     </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
-                    <label for="input-status" class="form-label">{"Status"}</label>
+                    <label for="input-status" class="form-label">{"Visit Status"}</label>
                     <select onchange={status_onchange} id="input-status" class="form-select shadow-sm">
                         <EnglishChineseIdOption id={1} english="New" chinese="不确定" selected={selected_status_id} />
                         <EnglishChineseIdOption id={2} english="Valid" chinese="确定" selected={selected_status_id} />
