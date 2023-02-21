@@ -1,10 +1,11 @@
-use crate::components::territory_summary::TerritorySummary;
 use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
 use crate::models::territories::{Territory};
+use crate::functions::document_functions::set_document_title;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline};
+use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, LatLngBounds};
 use reqwasm::http::{Request};
 use yew::prelude::*;
 use gloo_utils::document;
@@ -17,6 +18,7 @@ use web_sys::{
     HtmlElement,
     Node
 };
+use yew_router::hooks::use_location;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
@@ -24,9 +26,45 @@ const DATA_API_PATH: &str = "/data/territory-borders-all.json";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/borders";
 
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct TerritoryMapParameters {
+    pub group_id: Option<String>,
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct TerritoryMapModel {
+    pub territories: Vec<Territory>,
+    pub territories_is_loaded: bool,
+    pub local_load: bool,
+    pub zoom: f64,
+    pub lat: f64,
+    pub lon: f64,
+    pub group_visible: String,
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct MouseClickModel {
+    pub mouse_click_x: i32,
+    pub mouse_click_y: i32,
+}
+
+
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
-    // from create
+    set_document_title("Territory Map");
+    
+    let _mouse_click_model: UseStateHandle<MouseClickModel> = use_state(|| MouseClickModel::default());
+
+    let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
+    let location = use_location().expect("Should be a location to get query string");
+    //log!("territory_map Query: {}", location.query_str());
+    let parameters: TerritoryMapParameters = location.query().expect("An object");
+    let group_id: String = match &parameters.group_id {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+    log!("territory_map Query.group_id: {}", group_id.clone());
+
     let container: Element = document().create_element("div").unwrap();
     let container: HtmlElement = container.dyn_into().unwrap();
     let map_container = render_map(&container);
@@ -34,35 +72,54 @@ pub fn territory_map() -> Html {
     //let node: &Node = container.clone().into();
     // from create
     container.set_class_name("map");
-    let leaflet_map = Map::new_with_element(&container, &JsValue::NULL);
+    let leaflet_map: Map = Map::new_with_element(&container, &JsValue::NULL);
     
     add_tile_layer2(&leaflet_map);
     
-    let territories = use_state(|| vec![]);
-    {
-        let territories = territories.clone();
-        use_effect_with_deps(move |_| {
-            let territories = territories.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                
-                //let uri: &str = "/data/territory-borders-all.json";
-                //let uri: &str = "/api/territories/borders";
-                let uri: &str = DATA_API_PATH;
+    // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
+    // https://yew.rs/docs/0.18.0/concepts/services/fetch
+    //let territories = use_state(|| vec![]);
+    
+    let model_clone = model.clone();
+    use_effect_with_deps(move |_| {
+        let model_clone = model_clone.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            
+            //let uri: &str = "/data/territory-borders-all.json";
+            //let uri: &str = "/api/territories/borders";
 
-                let fetched_territories: Vec<Territory> = Request::get(uri)
+            let group_id: String = group_id;
+            // TODO: Try activeGroupId instead of groupId, needs to be set up in the API too
+            let uri: String = format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+            if !model_clone.territories_is_loaded {
+                let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
                     .send()
                     .await
                     .unwrap()
                     .json()
                     .await
                     .unwrap();
-                territories.set(fetched_territories);
-            });
-            || ()
-        }, ());
-    }
 
-    let tcount: usize = territories.len();
+                    let m = TerritoryMapModel {
+                        territories: fetched_territories,
+                        territories_is_loaded: true,
+                        local_load: false,
+                        lat: 47.66,
+                        lon: -122.20,
+                        zoom: 10.0,
+                        group_visible: String::from("*"),
+                    };
+
+                    model_clone.set(m);
+            }
+        });
+        || ()
+    }, ());
+
+
+    let model_clone = model.clone();
+    let tcount: usize = model_clone.territories.len();
     log!("Map Comp Loaded Territories 2: ", tcount);
     // Figure out how to show when there is no data
     if tcount == 0 {
@@ -75,18 +132,18 @@ pub fn territory_map() -> Html {
         }
     }
     
-    let mut available_count = 0;
-    let mut signed_out_count = 0;
-    let mut completed_count = 0;
-    let mut total_count = 0;
-    let mut hidden_count = 0;
+    // TerritorySummary // let mut available_count = 0;
+    // TerritorySummary // let mut signed_out_count = 0;
+    // TerritorySummary // let mut completed_count = 0;
+    // TerritorySummary // let mut total_count = 0;
+    // TerritorySummary // let mut hidden_count = 0;
 
-    //leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
-    //let mut bounds: LatLngBounds = leaflet_map.getBounds();
-    //log!("Bounds: {}", bounds.clone());
+    let _bounds: LatLngBounds = LatLngBounds::new(
+        &LatLng::new(47.66, -122.20),
+        &LatLng::new(47.76, -122.30));
 
-    for t in territories.iter() {      
-        total_count += 1;
+    for t in model.territories.iter() {      
+        // TerritorySummary // total_count += 1;
 
         let mut polygon: Vec<LatLng> = Vec::new();
             
@@ -104,25 +161,12 @@ pub fn territory_map() -> Html {
             }
         };
 
-        let hidden: bool = match &t.group_id {
-            Some(v) => v == "outer",
-            _ => false,
+        let group_id: String = {
+            match &t.group_id {
+                Some(v) => v.to_string(),
+                None => "".to_string()
+            }
         };
-
-        // let description: String = {
-        //     match t.description {
-        //         Some(_) => t.description.clone().unwrap(),
-        //         None => "".to_string()
-        //     }
-        // };
-
-        // let status: String = {
-        //     if t.status == "Available" && completed_by == "yes" {
-        //         "Completed".to_string()
-        //     } else {
-        //         t.status.clone()
-        //     }
-        // };
         
         let area_code: String = {
             match t.area_code {
@@ -132,23 +176,16 @@ pub fn territory_map() -> Html {
         };
   
         let territory_color: String = {
-            if hidden && t.status != "Signed-out" {
-                //"#009".to_string()
-                hidden_count += 1;
-                "gray".to_string()
-            } else if area_code == "TER" {
+            if area_code == "TER" {
                 "red".to_string()
             } else if t.status == "Signed-out" {
-                //"#b00".to_string()
-                signed_out_count += 1;
+                // TerritorySummary // signed_out_count += 1;
                 "magenta".to_string()
             } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
-                //"#b0b".to_string() // Completed
-                completed_count += 1;   
+                // TerritorySummary // completed_count += 1;   
                 "blue".to_string() // Completed
             } else if t.status == "Available" {
-                //"#009".to_string()
-                available_count += 1;
+                // TerritorySummary // available_count += 1;
                 "black".to_string()
             } else {
                 "#090".to_string()
@@ -156,24 +193,22 @@ pub fn territory_map() -> Html {
         };
 
         let opacity: f32 = {
-            if hidden { 0.2 } else { 0.8 }
+            if t.is_active { 1.0 } else { 0.1 }
         };
 
         if area_code == "TER" {
             let polyline = Polyline::new_with_options(polygon.iter().map(JsValue::from).collect(),
             &serde_wasm_bindgen::to_value(&PolylineOptions { 
                 color: territory_color.into(),
-                opacity: opacity.into(),
+                opacity: 1.0,
             }).expect("Unable to serialize polygon options")
             );
             
-            let bounds = polyline.getBounds();
-            leaflet_map.fitBounds(&bounds);
+            // bounds = polyline.getBounds();
+            // leaflet_map.fitBounds(&bounds);
 
             polyline.addTo(&leaflet_map);
-            hidden_count += 1;
-        // } else if hidden {
-        //     hidden_count += 1;
+            // TerritorySummary // hidden_count += 1;
         } else {
             
             let poly = Polygon::new_with_options(polygon.iter().map(JsValue::from).collect(),
@@ -183,9 +218,13 @@ pub fn territory_map() -> Html {
             }).expect("Unable to serialize polygon options")
             );
             
+            if t.number == "10001".to_string() {
+                let bounds = poly.getBounds();
+                leaflet_map.fitBounds(&bounds);
+            }
+
             let tooltip_text: String = format!(
-                "{} : {}", 
-                area_code,
+                "{group_id}: {area_code}: {}", 
                 t.number);
 
             let popup_text = popup_content(&t);
@@ -196,8 +235,6 @@ pub fn territory_map() -> Html {
                     &serde_wasm_bindgen::to_value(&TooltipOptions {
                         sticky: true,
                         permanent: false,
-                        //direction: "center".to_string(),
-                        //className: "tool-tip".to_string(),
                         opacity: 0.9
                     }).expect("Unable to serialize tooltip options")
                 );
@@ -210,13 +247,23 @@ pub fn territory_map() -> Html {
                 }).expect("Unable to serialize popup options")
             );
         
-            poly.addTo(&leaflet_map);
+            if !t.is_hidden {
+                poly.addTo(&leaflet_map);
+            }
         }
     }
 
+     
     // from rendered
-    leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    //if !model_clone.local_load {
+        leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+        // // // //leaflet_map.setView(&LatLng::new(model_clone.lat, model_clone.lon), model_clone.zoom);
+    //}
+    ////leaflet_map.on("onclick", clicked_map);
     
+    // move |event: MouseEvent| {
+    //     println!("Map clicked at {:?}", event.latlng());
+    // });
 
     // let legendBoxProps = leaflet::Control::extend(
     //     &serde_wasm_bindgen::to_value(&LegendBoxOptions { 
@@ -228,12 +275,149 @@ pub fn territory_map() -> Html {
     // legendBox.addTo(&leaflet_map);
 
     // We must wait for 1/10th of a second for the browser to be ready
+    // let leaflet_map_clone = leaflet_map.clone();
+    // Timeout::new(
+    //     100,
+    //     move || {
+    //         let _ = &leaflet_map.invalidateSize(false); // Parameter name: animate
+    //     }).forget();
+
+
+    // TODO: Work on this later
+    // let leaflet_map_clone = leaflet_map.clone();
+    // let group_4_onclick = {
+    //     //let props_onclick = props.onclick.clone();
+    //     let model_clone = model.clone();
+    //     Callback::from(move |_event: MouseEvent| {
+    //         // if let Some(props_onclick) = props_onclick.clone() {
+    //         //     props_onclick.emit(event);
+    //         // }
+    //         log!("Popup click works");
+           
+    //         let popupLatLng = &LatLng::new(47.66,  -122.20);
+    //         let newLayer = Layer::default();
+    //         newLayer.addTo(&leaflet_map);
+    //         newLayer.openPopup_with_latlng(popupLatLng);
+    //     })
+    // };
+
+    let group_inner_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "*");
+        })
+    };
+
+    let group_all_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "all");
+        })
+    };
+
+    let group_core_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "core");
+        })
+    };
+
+    let group_1_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "1");
+        })
+    };
+
+    let group_2_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "2");
+        })
+    };
+
+    let group_3_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "3");
+        })
+    };
+
+    let group_4_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "4");
+        })
+    };
+    
+    let group_5_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "5");
+        })
+    };
+    
+    let group_6_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "6");
+        })
+    };
+    
+    let group_7_onclick = {
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            setup_filter(model_clone.clone(), "7");
+        })
+    };
+
+    let bnds = LatLngBounds::new(
+        &LatLng::new(47.66, -122.00),
+        &LatLng::new(47.46, -122.20));
+
+    // leaflet_map.fitBounds(
+    //     &LatLngBounds::new(
+    //         &LatLng::new(47.66, -122.00),
+    //         &LatLng::new(47.46, -122.20)));
+
+    let bounds_lat_ne = leaflet_map.getBounds().getNorthEast().lat();
+    let bounds_lng_ne = leaflet_map.getBounds().getNorthEast().lng();
+    let bounds_lat_sw = leaflet_map.getBounds().getSouthWest().lat();
+    let bounds_lng_sw = leaflet_map.getBounds().getSouthWest().lng();
+
+    log!(format!("Bounds Last {},{}  {},{} -- {},{} {},{}", 
+        bounds_lat_ne.to_string(),
+        bounds_lng_ne.to_string(),
+        bounds_lat_sw.to_string(),
+        bounds_lng_sw.to_string(),
+        bnds.getNorthEast().lat(),
+        bnds.getNorthEast().lng(),
+        bnds.getSouthWest().lat(),
+        bnds.getSouthWest().lng()
+    ));
+
+    // let mouse_click_model = mouse_click_model.clone();
+    // let map_box_click = {
+    //     let mouse_click_model = mouse_click_model.clone();
+    //     Callback::from(move |event: MouseEvent| {
+    //         let x = event.client_x();
+    //         let y = event.client_y();
+    //         let mcm = MouseClickModel {
+    //             mouse_click_x: x,
+    //             mouse_click_y: y,
+    //         };
+    //         mouse_click_model.set(mcm);
+    //         log!(format!("Mouse click x,y: {},{}", x, y));
+    //     })
+    // };
+
+    // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(
         100,
         move || {
             let _ = &leaflet_map.invalidateSize(false); // Parameter name: animate
         }).forget();
-  
+
     html!{
         <div style={"width:100%;"}>        
             {
@@ -241,19 +425,82 @@ pub fn territory_map() -> Html {
             }
             <HomeButton />
             // <AssignPageLink />
-            <MapMenu>        
-                <TerritorySummary 
-                    available={available_count}
-                    signed_out={signed_out_count}
-                    completed={completed_count}
-                    total={total_count}
-                    hidden={hidden_count} />      
-            </MapMenu>            
+            <MapMenu
+
+                bottom_vh={1}
+                svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
+                <div>
+                // TODO: Try saving the JSON locally, even just in memory, and filtering it here in the browser
+                    <button onclick={group_core_onclick} class="btn btn-primary">{"0"}</button>
+                    <button onclick={group_1_onclick} class="btn btn-primary">{"1"}</button>
+                    <button onclick={group_2_onclick} class="btn btn-primary">{"2"}</button>
+                    <button onclick={group_3_onclick} class="btn btn-primary">{"3"}</button>
+                    <button onclick={group_4_onclick} class="btn btn-primary">{"4"}</button>
+                    <button onclick={group_5_onclick} class="btn btn-primary">{"5"}</button>
+                    <button onclick={group_6_onclick} class="btn btn-primary">{"6"}</button>
+                    <button onclick={group_7_onclick} class="btn btn-primary">{"7"}</button>
+                    <button onclick={group_inner_onclick} class="btn btn-primary">{"*"}</button>
+                    <button onclick={group_all_onclick} class="btn btn-primary">{"A"}</button>
+                </div>
+            </MapMenu>       
+            // <MapMenu 
+            //     bottom_vh={1}
+            //     svg_path_d={"M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"}>        
+            //     <TerritorySummary 
+            //         available={available_count}
+            //         signed_out={signed_out_count}
+            //         completed={completed_count}
+            //         total={total_count}
+            //         hidden={hidden_count} />      
+            // </MapMenu>            
         </div>
     }
 }
 
+fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
+    let model_clone = model.clone();
+    let territories = model_clone.territories.clone();
+    let tcount: usize = territories.len();
+    log!(format!("Territories already loaded: {}", tcount));
+    let mut new_territories: Vec<Territory> = vec![];
+    for t in territories.iter() {     
+        //t.is_visible = false;
+        let nt = Territory {
+            number: t.number.clone(),
+            status: t.status.clone(),
+            description: t.description.clone(),
+            address_count: t.address_count.clone(),
+            area_code: t.area_code.clone(),
+            last_completed_by: t.last_completed_by.clone(),
+            signed_out_to: t.signed_out_to.clone(),
+            group_id: t.group_id.clone(),
+            sub_group_id: t.sub_group_id.clone(),
+            is_active: true, //t.is_active.clone(),
+            is_hidden: !(t.group_id.clone().unwrap() == group.to_string()
+                || (group == "*" && t.group_id.clone().unwrap() != "outer".to_string())
+                || (group == "all")),
+            border: t.border.clone(),
+        };
+        new_territories.push(nt);
+    }
 
+    let m = TerritoryMapModel {
+        territories: new_territories, //model_clone.territories.clone(),
+        territories_is_loaded: false,
+        local_load: true,
+        lat: model_clone.lat,
+        lon: model_clone.lon,
+        zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+        group_visible: model_clone.group_visible.clone(),
+    };
+
+    let _mcm = MouseClickModel {
+        mouse_click_x: 0,
+        mouse_click_y: 0,
+    };
+
+    model.set(m);
+}
 
 #[function_component(HomeButton)]
 fn home_button() -> Html {
@@ -366,3 +613,7 @@ fn render_map(element: &HtmlElement) -> Html {
 }
 
 //use yew::{Component, Context, html, Html};
+
+// pub fn clicked_map(event: &MouseEvent) -> JsValue {
+//     log!("You clicked the map!")
+// }

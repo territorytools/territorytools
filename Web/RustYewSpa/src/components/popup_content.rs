@@ -23,6 +23,9 @@ pub fn popup_content(territory: &Territory) -> String  {
             None => "(empty)".to_string()
         };
 
+        // format!(
+        //     "<br/><button data-territory-number={territory_number} onclick=\"wasm.try_it();alert('tested 3');\">Test</button>",
+        //     territory_number = territory.number)
         format!("<br/><a 
                     style='margin-top:5px;color:white;'
                     class='btn btn-primary btn-sm'
@@ -59,7 +62,8 @@ pub fn popup_content(territory: &Territory) -> String  {
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>
             <br/><span>{description}</span>
-            <br/><span>Addresses: {address_count}</span>
+            <br/><span>Group {group_id}</span>
+            <!--br/><span>Addresses: {address_count}</span-->
             <br/><span>{status}</span>
             {assignee_line}
             {assign_button_html}

@@ -71,18 +71,35 @@ pub fn assign_form(props: &Props) -> Html {
     };
 
     html! {
-        <div class={"container"}>
-            <form {onsubmit}>
-                <div class={"form-group"}>
-                    <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="区域号码 Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} />
-                    <BBTextInput value={description} data_test="description" label="区域名称 Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
-                    <label>{"委派给 Assign to"}</label>
-                    <div class={"input-group-append"}>
-                    <UserSelector onchange={assignee_onchange} />
-                    <BBButton label={"Assign"} data_test="submit" />
+        <>
+            <div class={"container"}>
+                <form {onsubmit}>
+                    <div class={"form-group"}>
+                        <BBTextInput 
+                            value={props.territory_number.clone()} 
+                            data_test="territory_number" 
+                            label="区域号码 Territory Number" 
+                            placeholder="Number" 
+                            class="form-control" 
+                            input_type={InputType::Text}
+                            onchange={territory_number_onchange} />
+                        <BBTextInput 
+                            value={description} 
+                            data_test="description" 
+                            label="区域名称 Description" 
+                            placeholder="What description do you want?" 
+                            class="form-control" 
+                            input_type={InputType::Text} 
+                            onchange={description_onchange} />
+                        <label>{"委派给 Assign to"}</label>
+                        <div class={"input-group-append"}>
+                        <UserSelector onchange={assignee_onchange} />
+                        <BBButton label={"Assign"} data_test="submit" class={"btn btn-primary"} />
+                        </div>
                     </div>
+                </form>
                 </div>
-            </form>
-        </div>
+
+        </>
     }
 }

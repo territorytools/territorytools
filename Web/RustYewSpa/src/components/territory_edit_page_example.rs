@@ -13,20 +13,17 @@ const ASSIGN_METHOD: &str = "PUT";
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js
 // This is the GitHub repo: https://github.com/brooks-builds/full-stack-todo-rust-course/blob/1d8acb28951d0a019558b2afc43650ae5a0e718c/frontend/rust/yew/solution/src/api/patch_task.rs
 
-use crate::components::territory_edit_form::*;
-//use crate::components::menu_bar::MenuBar;
-use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::menu_bar::MapPageLink;
-use crate::components::territory_edit_form::TerritoryEditForm;
-use crate::functions::document_functions::set_document_title;
-//use crate::components::route_stuff::Route;
+use crate::components::territory_edit_form_example::*;
+use crate::components::menu_bar::MenuBar;
+use crate::components::territory_edit_form_example::TerritoryEditFormExample;
+use crate::components::route_stuff::Route;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::Deserialize;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
-//use yew_router::prelude::use_navigator;
+use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritoryEditResult {
@@ -49,11 +46,10 @@ pub struct TerritoryEditPageProps {
     // pub group_id: String,
 }
 
-#[function_component(TerritoryEditPage)]
-pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html { 
-    set_document_title("Territory Edit");       
+#[function_component(TerritoryEditPageExample)]
+pub fn territory_edit_page_example(props: &TerritoryEditPageProps) -> Html {        
     let state = use_state(|| TerritoryEditResult::default());
-    //let navigator = use_navigator().unwrap();
+    let navigator = use_navigator().unwrap();
 
     //let parameters = use_context::<TerritoryEditPageParameters>().expect("no ctx found");
     let location = use_location().expect("Should be a location");
@@ -66,11 +62,20 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
     // log!("group_id: {}", parameters.group_id);
 
     let cloned_state = state.clone();
-    //let navigator = navigator.clone();
+    let navigator = navigator.clone();
     let onsubmit = Callback::from(move |_modification: TerritoryModification| {
         let cloned_state = cloned_state.clone();
-        //let navigator = navigator.clone();
+        let navigator = navigator.clone();
         spawn_local(async move {
+        //     let fetched_territory: Territory = Request::get("/data/territory_modification.json")
+        //         .send()
+        //         .await
+        //         .unwrap()
+        //         .json()
+        //         .await
+        //         .unwrap();
+            
+
             let uri_string: String = format!("{path}", 
                 path = DATA_API_PATH);
 
@@ -108,26 +113,17 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
 
             cloned_state.set(result);
             
-            // TODO: Check for errors
-            // if resp.status() == 200 {
-            //     navigator.push(&Route::Map);
-            // }
+            // TODO: Just mark as saved, add close button
+            if resp.status() == 200 {
+                navigator.push(&Route::Map);
+            }
         });
     });
 
     html! {
         <>
-            <MenuBarV2>
-                <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
-                    <li class={"nav-item"}>
-                        <MapPageLink />
-                    </li>  
-                </ul>
-            </MenuBarV2>
-            // <Alert style={Color::Primary}>
-            //     {"This is a primary alert!"}
-            // </Alert>
-            <TerritoryEditForm {onsubmit} 
+            <MenuBar/>
+            <TerritoryEditFormExample {onsubmit} 
                 territory_number={props.territory_number.clone()}
                 description={parameters.description}
                 group_id={parameters.group_id}

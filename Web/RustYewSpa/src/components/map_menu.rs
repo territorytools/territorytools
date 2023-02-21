@@ -3,7 +3,8 @@ use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct MapMenuProps {
-    //id: String,
+    pub bottom_vh: i32,
+    pub svg_path_d: String,
     #[prop_or_default]
     pub children: Children,
 }
@@ -87,24 +88,27 @@ impl Component for MapMenu {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let click_callback = ctx.link().callback(|_| MapMenuMsg::Click);
+        let style = format!("
+            background-color: white;
+            font-family: arial;
+            border-radius: 5px;
+            display: block;
+            border-style: solid;
+            border-color: blue;
+            border-width: 1px;
+            position: absolute;
+            height: auto;
+            max-height: 60px;
+            bottom: {bottom}vh;
+            right: 1vh;
+            margin-right: 1vh; 
+            width: auto; 
+            z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
+            ",
+            bottom = ctx.props().bottom_vh);
+
         html! {
-            <div style={"
-                background-color: white;
-                font-family: arial;
-                border-radius: 5px;
-                display: block;
-                border-style: solid;
-                border-color: blue;
-                border-width: 1px;
-                position: absolute;
-                height: auto;
-                max-height: 60px;
-                bottom: 1vh;
-                right: 1vh;
-                margin-right: 1vh; 
-                width: auto; 
-                z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
-                "}>
+            <div style={style}>
                 <div style={"width:auto;z-index:1001;display:flex;flex-direction:row;"}>
                     <div id={"to-be-hidden"} style={"display: none;"} data-visible={"false"}>
                         { for &mut ctx.props().children.iter() }
@@ -119,7 +123,8 @@ impl Component for MapMenu {
                         <div id={"show-legend-button-icon"}>
                             // bi-palette-fill
                             <svg xmlns={"http://www.w3.org/2000/svg"} width={"16"} height={"16"} fill={"currentColor"} class={"bi bi-palette-fill"} viewBox={"0 0 16 16"}>
-                                <path d={"M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"}/>
+                                //<path d={"M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"}/>
+                                <path d={ctx.props().svg_path_d.clone()}/>
                             </svg>
                         </div>
                     </button>

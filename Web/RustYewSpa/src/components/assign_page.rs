@@ -1,11 +1,11 @@
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/post_assignments.json";
+const API_ASSIGN_URL: &str = "/data/post_assignments.json";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/assignments";
+const API_ASSIGN_URL: &str = "/api/territory-assignment/assignments";
 
 #[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "POST";
@@ -15,9 +15,12 @@ const ASSIGN_METHOD: &str = "POST";
 
 use crate::components::assign_form::*;
 use crate::components::email_section::EmailSection;
-use crate::components::menu_bar::MenuBar;
+//use crate::components::menu_bar::MenuBar;
+use crate::components::menu_bar::MapPageLink;
+use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::sms_section::SmsSection;
 use crate::models::territory_links::TerritoryLinkContract;
+use crate::functions::document_functions::set_document_title;
 use reqwasm::http::{Request, Method};
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -38,15 +41,16 @@ pub struct AssignPageProps {
 }
 
 #[function_component(AssignPage)]
-pub fn assign_form(props: &AssignPageProps) -> Html {        
+pub fn assign_form(props: &AssignPageProps) -> Html {   
+    set_document_title("Territory Assign");     
     let state = use_state(|| AssignmentResult::default());
 
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |assignment: TerritoryAssignment| {
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
-            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}", 
-                path = DATA_API_PATH,
+            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}&assigner=not-available", 
+                path = API_ASSIGN_URL,
                 number = assignment.territory_number,
                 assignee = assignment.assignee);
 
@@ -83,9 +87,30 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
         });
     });
 
+    let assignee_phone = match &state.link_contract.assignee_phone {
+        Some(v) => v.to_string(),
+        _ => "None".to_string(),
+    };
+
+    let assignee_email = match &state.link_contract.assignee_email {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+
+    let territory_uri = match &state.link_contract.territory_uri {
+        Some(v) => v.to_string(),
+        _ => "".to_string(),
+    };
+
     html! {
         <>
-            <MenuBar/>
+            <MenuBarV2>
+                <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                    <li class={"nav-item"}>
+                        <MapPageLink />
+                    </li>  
+                </ul>
+            </MenuBarV2>
             <AssignForm {onsubmit} 
                 territory_number={props.territory_number.clone()}
                 description={props.description.clone()}
@@ -104,13 +129,13 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                             </a>
                             <SmsSection
                                 territory_number={state.link_contract.territory_number.clone()}
-                                assignee_phone={state.link_contract.assignee_phone.clone()}
-                                territory_uri={state.link_contract.territory_uri.clone()}
+                                assignee_phone={assignee_phone.clone()}
+                                territory_uri={territory_uri.clone()}
                             />
                             <EmailSection 
                                 territory_number={state.link_contract.territory_number.clone()}
-                                assignee_email={state.link_contract.assignee_email.clone()}
-                                territory_uri={state.link_contract.territory_uri.clone()}
+                                assignee_email={assignee_email.clone()}
+                                territory_uri={territory_uri.clone()}
                             />
                         </div>
                     } else {

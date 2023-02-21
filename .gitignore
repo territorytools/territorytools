@@ -348,3 +348,4 @@ data/nginx.conf
 /.vscode-remote/
 
 *.secrets.json
+test.png
