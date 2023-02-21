@@ -31,7 +31,7 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
             return ExportAddresses(accountId);
         }
-
+ 
         public static string SearchAddresses(int accountId, int addressesPerPage, string searchText)
         {
             return ExportAddresses(
@@ -46,7 +46,9 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             bool export = true,
             int addressesPerPage = 10,
             int lid = 0,
-            string searchText = "")
+            string searchText = "",
+            int currentPage = 1,
+            bool onlyUnassigned = false)
         {
             if (accountId == 0)
             {
@@ -56,10 +58,12 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
             return $"/ts?mod=addresses&cmd=search" + 
                 $"&acids={accountId}" + 
                 $"&exp={export.ToString().ToLower()}" +
-                $"&npp={addressesPerPage}&cp=1" + 
+                $"&npp={addressesPerPage}" + 
+                $"&cp={currentPage}" + 
                 $"&tid={territoryId}" +
                 $"&lid={lid}&display=1%2C2%2C3%2C4%2C5%2C6" +
-                $"&onlyun=false&q={HttpUtility.UrlEncode(searchText)}" +
+                $"&onlyun={onlyUnassigned.ToString().ToLower()}" +
+                $"&q={HttpUtility.UrlEncode(searchText)}" +
                 $"&sort=id&order=desc&lat=&lng=";
         }
 
