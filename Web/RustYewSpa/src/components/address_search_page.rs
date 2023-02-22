@@ -141,6 +141,9 @@ pub fn address_search_page() -> Html {
                 <div class="row">
                     <div class="col">
                         <span>{"Count: "}{state.count}</span>
+                        <span class="ms-2 badge mb-2 bg-secondary">{"Language"}</span> 
+                        <span class="ms-2 badge mb-2 bg-secondary">{"Visit Status"}</span> 
+                        <span class="ms-2 badge mb-2 bg-secondary">{"Mail Status"}</span> 
                     </div>
                 </div>
                 {
@@ -166,6 +169,19 @@ pub fn address_search_page() -> Html {
                                             <span class="ms-2 badge bg-warning">{address.status.clone()}</span> 
                                         } else {
                                             <span class="ms-2 badge bg-dark">{address.status.clone()}</span> 
+                                        }
+                                        if address.delivery_status.clone() == Some("None".to_string()) {
+                                            <span class="ms-2 badge bg-secondary">{address.delivery_status.clone()}</span> 
+                                        } else if address.delivery_status.clone() == Some("Assigned".to_string()) {
+                                            <span class="ms-2 badge bg-info">{address.delivery_status.clone()}</span> 
+                                        } else if address.delivery_status.clone() == Some("Sent".to_string()) {
+                                            <span class="ms-2 badge bg-success">{address.delivery_status.clone()}</span> 
+                                        } else if address.delivery_status.clone() == Some("Returned".to_string()) {
+                                            <span class="ms-2 badge bg-warning">{address.delivery_status.clone()}</span> 
+                                        } else if address.delivery_status.clone() == Some("Undeliverable".to_string()) {
+                                            <span class="ms-2 badge bg-warning">{address.delivery_status.clone()}</span> 
+                                        } else {
+                                            <span class="ms-2 badge bg-dark">{address.delivery_status.clone()}</span> 
                                         }
                                     </div>
                                 </div>
