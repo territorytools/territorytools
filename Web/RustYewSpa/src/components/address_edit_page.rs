@@ -64,11 +64,15 @@ pub struct AddressEditParameters {
     pub alba_address_id: Option<i32>,
 }
 
+// pub fn add_field(state: yew::UseStateHandle<AddressEditModel>, field: &str) {
+//     state.
+// }
+
 #[function_component(AddressEditPage)]
 pub fn address_edit_page() -> Html {
     set_document_title("Address Edit");
 
-    let state = use_state(|| AddressEditModel::default());
+    let state: yew::UseStateHandle<AddressEditModel> = use_state(|| AddressEditModel::default());
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: AddressEditParameters = location.query().expect("An object");
@@ -119,9 +123,9 @@ pub fn address_edit_page() -> Html {
    
     let delivery_status_onchange = {
         let state = cloned_state.clone();
-        Callback::from(move |id: String| {
+        Callback::from(move |value: String| {
             let mut modification = state.deref().clone();
-            modification.address.delivery_status_id = id.parse().unwrap();
+            modification.address.delivery_status_id = value.parse().unwrap();
             state.set(modification);
         })
     };

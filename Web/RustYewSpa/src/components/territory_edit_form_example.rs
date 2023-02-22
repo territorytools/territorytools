@@ -1,10 +1,17 @@
 use crate::components::{
     bb_button::BBButton,
 };
+use crate::models::addresses::Address; 
 
 use std::ops::Deref;
 use yew::prelude::*;
 use urlencoding::decode;
+
+#[cfg(debug_assertions)]
+const GET_TERRITORY_API_PATH: &str = "/data/get_territory.json";
+
+#[cfg(not(debug_assertions))]
+const GET_TERRITORY_API_PATH: &str = "/api/territories/open";
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
@@ -12,6 +19,11 @@ pub struct Props {
     pub territory_number: String,
     pub description: String,
     pub group_id: String,
+}
+
+#[derive(Properties, Clone, PartialEq)]
+pub struct TerritoryEditFormExampleParameters {
+    pub territory_number: String,
 }
 
 #[derive(Default, Clone)]
@@ -23,12 +35,67 @@ pub struct TerritoryModification {
 
 #[function_component(TerritoryEditFormExample)]
 pub fn territory_edit_form(props: &Props) -> Html {
+    set_document_title("Letter Writing Territory");
+
+    let location = use_location().expect("Should be a location to get query string");
+    let parameters: TerritoryEditFormExampleParameters = location.query().expect("An object");
+    let territory_number: String = match parameters.territory_number {
+        Some(v) => v,
+        _ => "",
+    };
+
     let state = use_state(||TerritoryModification {
         territory_number: props.territory_number.clone(),
         description: props.description.clone(),
         group_id: props.group_id.clone(),
     });
 
+    let cloned_state = state.clone();
+    use_effect_with_deps(move |_| {
+        let cloned_state = cloned_state.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let territory_number: String = territory_number;
+            let uri: String = format!(
+                "{base_path}/{territory_number}", 
+                base_path = GET_TERRITORY_API_PATH);
+
+            let territory_response = Request::get(uri.as_str())
+                .send()
+                .await
+                .expect("Territory response (raw) from API");
+            
+            if territory_response.status() == 200 {
+                let fetched_territory: Territory = territory_response
+                    .json()
+                    .await
+                    .expect("Valid address JSON from API");
+
+                let model: AddressEditModel = AddressEditModel {
+                    address: fetched_address,
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: false,
+                    load_error: false,
+                    error_message: "".to_string(),
+                };
+
+                cloned_state.set(model);
+            } else if address_response.status() == 401 {
+                let model: AddressEditModel = AddressEditModel {
+                    address: Address::default(),
+                    alba_address_id: alba_address_id,
+                    save_success: false,
+                    save_error: false,
+                    load_error: true,
+                    error_message: "Unauthorized".to_string(),
+                };
+
+                cloned_state.set(model);
+            }
+        });
+        || ()
+    }, ());
+    
     let _territory_number: String = format!("{}", decode(&props.territory_number).expect("UTF-8"));
     let description: String = format!("{}", decode(&props.description).expect("UTF-8"));
     
