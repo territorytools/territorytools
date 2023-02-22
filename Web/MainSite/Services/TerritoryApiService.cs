@@ -8,7 +8,6 @@ namespace TerritoryTools.Web.MainSite.Services
 {
     public interface ITerritoryApiService
     {
-        List<TerritoryContract> TerritoriesCheckedOutTo(string userFullName);
         List<TerritoryContract> AllTerritories();
         List<AreaContract> AllAreas();
         TerritoryContract TerritoryByNumber(string territoryNumber);
@@ -29,28 +28,6 @@ namespace TerritoryTools.Web.MainSite.Services
             _apiService = apiService;
             _logger = logger;
             _configuration = configuration;
-        }
-
-        public List<TerritoryContract> TerritoriesCheckedOutTo(string userFullName)
-        {
-            string mobileBaseUrl = _configuration.GetValue<string>("MobileBaseUrl");
-            if (string.IsNullOrWhiteSpace(mobileBaseUrl))
-            {
-                throw new ArgumentNullException(nameof(mobileBaseUrl));
-            }
-
-            List<TerritoryContract> contracts = _apiService.Get<List<TerritoryContract>>(
-                "territories/checked-out", $"?userFullName={userFullName}");
-
-            if(contracts == null)
-                return new List<TerritoryContract>();
-
-            foreach (var contract in contracts)
-            {
-                contract.AssigneeMobileLink = $"{mobileBaseUrl}/mtk/{contract.AssigneeLinkKey}";
-            }
-
-            return contracts;
         }
 
         public List<TerritoryContract> AllTerritories()
