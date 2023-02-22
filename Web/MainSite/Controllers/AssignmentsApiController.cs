@@ -98,12 +98,6 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 return BadRequest(result);
         }
 
-        [HttpGet("checked-out-to")]
-        public ActionResult<List<TerritoryContract>> CheckedOutTo(string userFullName)
-        {
-            return _territoryApiService.TerritoriesCheckedOutTo(userFullName);
-        }
-
         [HttpGet("[action]")]
         public IActionResult Unassign(int territoryId)
         {

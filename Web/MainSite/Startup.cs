@@ -312,45 +312,6 @@ namespace TerritoryTools.Web.MainSite
             }
         }
 
-        void ConfigureLetsEncryptServices(IServiceCollection services)
-        {
-            // Configuration code copied from: 
-            // https://github.com/ffMathy/FluffySpoon.AspNet.LetsEncrypt/blob/master/README.md
-            // The following line adds the automatic renewal service.
-            services.AddFluffySpoonLetsEncryptRenewalService(
-                new LetsEncryptOptions()
-                {
-                    // LetsEncrypt will send you an e-mail here when the 
-                    // certificate is about to expire
-                    Email = Configuration["LetsEncrypt:Email"],
-                    UseStaging = bool.Parse(Configuration["LetsEncrypt:UseStaging"]), //switch to true for testing
-                    Domains = Configuration["LetsEncrypt:Domains"]
-                        .ToString()
-                        .Split(',', StringSplitOptions.RemoveEmptyEntries),
-                    // Renew automatically 30 days before expiry
-                    TimeUntilExpiryBeforeRenewal = TimeSpan.FromDays(30),
-                    //these are your certificate details
-                    CertificateSigningRequest = new CsrInfo()
-                    {
-                        CountryName = Configuration["LetsEncrypt:CountryName"],
-                        Locality = Configuration["LetsEncrypt:Locality"],
-                        Organization = Configuration["LetsEncrypt:Organization"],
-                        OrganizationUnit = Configuration["LetsEncrypt:OrganizationUnit"],
-                        State = Configuration["LetsEncrypt:State"]
-                    }
-                });
-
-            // The following line tells the library to persist the certificate
-            // to a file, so that if the server restarts, the certificate can 
-            // be re-used without generating a new one.
-            //services.AddFluffySpoonLetsEncryptFileCertificatePersistence("/data/certificate");
-
-            // The following line tells the library to persist challenges 
-            // in-memory. challenges are the "/.well-known" URL codes that 
-            // LetsEncrypt will call.
-            //services.AddFluffySpoonLetsEncryptMemoryChallengePersistence();
-        }
-
         private void CheckSameSite(HttpContext httpContext, CookieOptions options)
         {
             // Error Message: An error was encountered while handling the remote login. Correlation failed.
