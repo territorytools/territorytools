@@ -1,3 +1,4 @@
+use crate::models::addresses::Address;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone)]
@@ -22,6 +23,7 @@ pub struct Territory {
     #[serde(default)]
     pub is_hidden: bool,
     pub border: Vec<Vec<f32>>,
+    pub addresses: Vec<Address>,
 }
 
 // TODO: This is good: https://yew.rs/docs/0.18.0/concepts/wasm-bindgen/web-sys
