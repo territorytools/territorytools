@@ -1,22 +1,32 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
+using TerritoryTools.Web.MainSite.Models;
+using TerritoryTools.Web.MainSite.Services;
 
 namespace TerritoryTools.Web.MainSite
 {
+
     // From https://github.com/andychiare/netcore2-reverse-proxy
     public class ReverseProxyMiddleware
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+       // private static readonly HttpClient _httpClient = new HttpClient();
+        private readonly IHttpClientWrapper _httpClientWrapper;
+        private readonly IApiService _apiService;
         private readonly RequestDelegate _nextMiddleware;
         private readonly ILogger<ReverseProxyMiddleware> _logger;
         private readonly string _baseUrl;
 
         public ReverseProxyMiddleware(
+            IHttpClientWrapper httpClientWrapper,
+            IApiService apiService,
             RequestDelegate nextMiddleware, 
             IConfiguration configuration,
             ILogger<ReverseProxyMiddleware> logger)
@@ -26,7 +36,8 @@ namespace TerritoryTools.Web.MainSite
             {
                 throw new ArgumentNullException("baseUrl");
             }
-
+            _httpClientWrapper = httpClientWrapper;
+            _apiService = apiService;
             _nextMiddleware = nextMiddleware;
             _logger = logger;
         }
@@ -39,7 +50,30 @@ namespace TerritoryTools.Web.MainSite
             if (targetUri != null)
             {
                 _logger.LogTrace($"ReverseProxy: Forwarded to: {targetUri}");
-                if (!context.User.Identity.IsAuthenticated)
+                if(context.Request.Query.TryGetValue("mtk", out StringValues value))
+                {
+                    _logger.LogTrace($"MTK query param detected: {value}");
+                    if(!string.IsNullOrWhiteSpace(value))
+                    {
+                        TerritoryLinkContract link = _apiService.Get<TerritoryLinkContract>($"territory-links/{value}", "");
+                        if (link == null)
+                        {
+                            context.Response.StatusCode = 401;
+                            _logger.LogTrace($"ReverseProxy: Territory key does not exist");
+                            return;
+                        }
+                        else if (link.Expires != null && link.Expires < DateTime.UtcNow)
+                        {
+                            context.Response.StatusCode = 401;
+                            _logger.LogTrace($"ReverseProxy: Territory key expired {link.Expires}");
+                            return;
+                        }
+                        // TODO: Check from tt-api
+                        // It worked
+                        // TODO: Add more middle where to detect the header, or this mtk, or allow certain anonymous things in
+                    }
+                }
+                else if (!context.User.Identity.IsAuthenticated)
                 {
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
                     //HttpContext isn't thread safe
@@ -48,9 +82,9 @@ namespace TerritoryTools.Web.MainSite
                     return;
                 }
 
-                var targetRequestMessage = CreateTargetMessage(context, targetUri);
+                HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
 
-                using (var responseMessage = await _httpClient.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
+                using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
                 {
                     context.Response.StatusCode = (int)responseMessage.StatusCode;
                     CopyFromTargetResponseHeaders(context, responseMessage);
@@ -95,7 +129,11 @@ namespace TerritoryTools.Web.MainSite
 
             foreach (var header in context.Request.Headers)
             {
-                requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                // Don't allow this header to be added by the client
+                if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
+                {
+                    requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                }
             }
 
             requestMessage.Headers.Add("x-territory-tools-user", context.User.Identity.Name);
@@ -139,6 +177,15 @@ namespace TerritoryTools.Web.MainSite
             }
 
             return targetUri;
+        }
+    }
+
+    public static class ReverseProxyMiddlewareExtensions
+    {
+        public static IApplicationBuilder AddReverseProxy(
+            this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<ReverseProxyMiddleware>();
         }
     }
 }

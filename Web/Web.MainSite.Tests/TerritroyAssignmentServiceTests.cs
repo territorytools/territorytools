@@ -3,17 +3,13 @@ using Microsoft.Extensions.Options;
 using Moq;
 using TerritoryTools.Web.MainSite;
 using TerritoryTools.Web.MainSite.Services;
+using Xunit;
 
 namespace Web.MainSite.Tests;
 
 public class TerritoryAssignmentServiceTests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
-    [Test]
+    [Fact]
     public void PassCorrectUri()
     {
         Mock<ICombinedAssignmentService> combinedAssignmentService = new();
@@ -44,8 +40,8 @@ public class TerritoryAssignmentServiceTests
 
         service.Assign(111, 222, "some_user");
 
-        Assert.IsTrue(downloadWasCalled);
-        Assert.AreEqual("/ts?mod=assigned&cmd=assign&id=111&date=2022-06-16&user=222", actualUri);
-        Assert.AreEqual("some_user", actualUser);
+        Assert.True(downloadWasCalled);
+        Assert.Equal("/ts?mod=assigned&cmd=assign&id=111&date=2022-06-16&user=222", actualUri);
+        Assert.Equal("some_user", actualUser);
     }
 }

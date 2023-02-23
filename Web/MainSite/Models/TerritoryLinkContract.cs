@@ -18,5 +18,6 @@ namespace TerritoryTools.Web.MainSite.Models
         public string AssigneePhone { get; set; }
         public string GroupId { get; set; }
         public bool Successful { get; set; }
+        public string? Grants { get; set; }
     }
 }
