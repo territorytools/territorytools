@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using TerritoryTools.Web.MainSite;
 using TerritoryTools.Web.MainSite.Services;
-using Xunit;
 
 namespace Web.MainSite.Tests;
 
@@ -40,8 +39,10 @@ public class TerritoryAssignmentServiceTests
 
         service.Assign(111, 222, "some_user");
 
+        string today = DateTime.Now.ToString("yyyy-MM-dd");
+
         Assert.True(downloadWasCalled);
-        Assert.Equal("/ts?mod=assigned&cmd=assign&id=111&date=2022-06-16&user=222", actualUri);
+        Assert.Equal($"/ts?mod=assigned&cmd=assign&id=111&date={today}&user=222", actualUri);
         Assert.Equal("some_user", actualUser);
     }
 }

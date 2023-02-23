@@ -53,7 +53,13 @@ namespace TerritoryTools.Web.MainSite
                 if(context.Request.Query.TryGetValue("mtk", out StringValues value))
                 {
                     _logger.LogTrace($"MTK query param detected: {value}");
-                    if(!string.IsNullOrWhiteSpace(value))
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        context.Response.StatusCode = 401;
+                        _logger.LogTrace($"ReverseProxy: Territory key is missing");
+                        return;
+                    }
+                    else
                     {
                         TerritoryLinkContract link = _apiService.Get<TerritoryLinkContract>($"territory-links/{value}", "");
                         if (link == null)
@@ -62,9 +68,9 @@ namespace TerritoryTools.Web.MainSite
                             _logger.LogTrace($"ReverseProxy: Territory key does not exist");
                             return;
                         }
-                        else if (link.Expires != null && link.Expires < DateTime.UtcNow)
+                        else if (!link.Successful || link.Expires != null && link.Expires < DateTime.UtcNow)
                         {
-                            context.Response.StatusCode = 401;
+                            context.Response.StatusCode = 403;
                             _logger.LogTrace($"ReverseProxy: Territory key expired {link.Expires}");
                             return;
                         }
@@ -137,6 +143,7 @@ namespace TerritoryTools.Web.MainSite
             }
 
             requestMessage.Headers.Add("x-territory-tools-user", context.User.Identity.Name);
+            //requestMessage.Content?.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
         }
 
         private void CopyFromTargetResponseHeaders(HttpContext context, HttpResponseMessage responseMessage)
