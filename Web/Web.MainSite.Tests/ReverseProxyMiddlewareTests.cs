@@ -100,7 +100,7 @@ namespace Web.MainSite.Tests
         }
 
         [Fact]
-        public async Task GivenNonApiPath_ShouldNotSend()
+        public async Task GivenNonApiPath_ShouldNotForward()
         {
             HttpContext? context = await _server!.SendAsync(c =>
             {
@@ -123,12 +123,27 @@ namespace Web.MainSite.Tests
             });
 
             Assert.True(context.Request.Headers.ContainsKey("x-territory-tools-user"));
-            Assert.Equal("authenticated@user", _actualRequest.Headers.GetValues("x-territory-tools-user").Single());
+            Assert.Equal("authenticated@user", _actualRequest!.Headers.GetValues("x-territory-tools-user").Single());
+        }
+
+        [Fact]
+        public async Task GivenApiPath_ShouldForward_TrimmedPath()
+        {
+            HttpContext? context = await _server!.SendAsync(c =>
+            {
+                c.Request.Path = "/api/example";
+                c.Request.QueryString = new QueryString("?thing=what");
+                c.Request.Headers.Add("x-territory-tools-user", "hacker@user");
+                c.User = FakeUser(isAuthenticated: true, "authenticated@user").Object;
+            });
+
+            Assert.Equal("/example", _actualRequest!.RequestUri.LocalPath);
+            Assert.Equal("?thing=what", _actualRequest.RequestUri.Query);
         }
 
         [Theory]
-        [InlineData("good-code", true, 3, true, 200)]
-        [InlineData("expired-code", true, -3, false, 403)] // Forbidden
+        [InlineData("good-mtk", true, 3, true, 200)]
+        [InlineData("expired-mtk", true, -3, false, 403)] // Forbidden
         [InlineData(null, false, -3, false, 401)] // Unauthenticated
         public async Task GivenMtkParameter_NotAuthenticated_ShouldCheckExpiration(
             string mtk,
