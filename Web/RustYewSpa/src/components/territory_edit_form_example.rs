@@ -1,10 +1,14 @@
 use crate::components::{
     bb_button::BBButton,
 };
-use crate::models::addresses::Address; 
+use crate::models::territories::Territory;
+use crate::functions::document_functions::set_document_title;
 
+use reqwasm::http::{Request};
+use serde::Deserialize;
 use std::ops::Deref;
 use yew::prelude::*;
+use yew_router::hooks::use_location;
 use urlencoding::decode;
 
 #[cfg(debug_assertions)]
@@ -21,7 +25,7 @@ pub struct Props {
     pub group_id: String,
 }
 
-#[derive(Properties, Clone, PartialEq)]
+#[derive(Properties, Clone, PartialEq, Deserialize)]
 pub struct TerritoryEditFormExampleParameters {
     pub territory_number: String,
 }
@@ -39,10 +43,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
 
     let location = use_location().expect("Should be a location to get query string");
     let parameters: TerritoryEditFormExampleParameters = location.query().expect("An object");
-    let territory_number: String = match parameters.territory_number {
-        Some(v) => v,
-        _ => "",
-    };
+    let territory_number: String = parameters.territory_number.to_string();
 
     let state = use_state(||TerritoryModification {
         territory_number: props.territory_number.clone(),
@@ -52,7 +53,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
 
     let cloned_state = state.clone();
     use_effect_with_deps(move |_| {
-        let cloned_state = cloned_state.clone();
+        let _cloned_state = cloned_state.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let territory_number: String = territory_number;
             let uri: String = format!(
@@ -65,32 +66,32 @@ pub fn territory_edit_form(props: &Props) -> Html {
                 .expect("Territory response (raw) from API");
             
             if territory_response.status() == 200 {
-                let fetched_territory: Territory = territory_response
+                let _fetched_territory: Territory = territory_response
                     .json()
                     .await
                     .expect("Valid address JSON from API");
 
-                let model: AddressEditModel = AddressEditModel {
-                    address: fetched_address,
-                    alba_address_id: alba_address_id,
-                    save_success: false,
-                    save_error: false,
-                    load_error: false,
-                    error_message: "".to_string(),
-                };
+                // let model: AddressEditModel = AddressEditModel {
+                //     address: fetched_address,
+                //     alba_address_id: alba_address_id,
+                //     save_success: false,
+                //     save_error: false,
+                //     load_error: false,
+                //     error_message: "".to_string(),
+                // };
 
-                cloned_state.set(model);
-            } else if address_response.status() == 401 {
-                let model: AddressEditModel = AddressEditModel {
-                    address: Address::default(),
-                    alba_address_id: alba_address_id,
-                    save_success: false,
-                    save_error: false,
-                    load_error: true,
-                    error_message: "Unauthorized".to_string(),
-                };
+                //cloned_state.set(model);
+            } else if territory_response.status() == 401 {
+                // let model: AddressEditModel = AddressEditModel {
+                //     address: Address::default(),
+                //     alba_address_id: alba_address_id,
+                //     save_success: false,
+                //     save_error: false,
+                //     load_error: true,
+                //     error_message: "Unauthorized".to_string(),
+                // };
 
-                cloned_state.set(model);
+                //cloned_state.set(model);
             }
         });
         || ()

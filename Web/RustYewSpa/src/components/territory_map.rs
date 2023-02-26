@@ -480,6 +480,7 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
                 || (group == "*" && t.group_id.clone().unwrap() != "outer".to_string())
                 || (group == "all")),
             border: t.border.clone(),
+            addresses: t.addresses.clone(),
         };
         new_territories.push(nt);
     }

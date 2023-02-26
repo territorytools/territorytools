@@ -12,7 +12,7 @@ pub struct TerritoryLinkContract
     pub territory_description: Option<String>,
     pub created: Option<String>, // Date
     // pub CreatedById: String,
-    // pub Expires: Option<String>, // Date
+    pub expires: Option<String>, // Date
     // pub AssigneeId: String,
     pub assignee_name: String,
     pub assignee_email: Option<String>,
