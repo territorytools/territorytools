@@ -67,8 +67,13 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
 
                         html! {
                         <div class={"row border-bottom"}>
-                            <div class={"col-6 col-sm-4 col-lg-2"}>{format_date(link.created.clone())}</div>
-                            <div class={"col-6 col-sm-4 col-lg-2"}>{format_date(link.expires.clone())}</div>
+                            <div class={"col-6 col-sm-4 col-lg-2"}>
+                                {format_date(link.created.clone())}
+                            </div>
+                            <div class={"col-6 col-sm-4 col-lg-2"}>
+                            <span class={if link.expired { "text-decoration-line-through"} else {""}}>
+                                 {format_date(link.expires.clone())}</span>
+                            </div>
                             <div class={"col-6 col-sm-4 col-lg-2"}><a href={uri}>{link.id.clone()}</a></div>
                             <div class={"col-6 col-sm-4 col-lg-1"}>
                                 {link.territory_number.clone()}

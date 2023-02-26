@@ -13,6 +13,8 @@ pub struct TerritoryLinkContract
     pub created: Option<String>, // Date
     // pub CreatedById: String,
     pub expires: Option<String>, // Date
+    #[serde(default)]
+    pub expired: bool,
     // pub AssigneeId: String,
     pub assignee_name: String,
     pub assignee_email: Option<String>,
