@@ -23,6 +23,7 @@ pub struct Territory {
     #[serde(default)]
     pub is_hidden: bool,
     pub border: Vec<Vec<f32>>,
+    #[serde(default)]
     pub addresses: Vec<Address>,
 }
 
