@@ -206,7 +206,7 @@
             var territoryNumber = $('#modal-header-number').text();
              $.ajax({
                 type: 'DELETE',
-                url: `/api/assignments/v2?territoryNumber=${territoryNumber}`,
+                url: `/api/territory-assignments?territoryNumber=${territoryNumber}&assignerEmail=missing@territorytools.org`,
                 //dataType: 'json',
                 processData: false,
                 contentType: false,
@@ -231,7 +231,7 @@
             var userName = $('#user-menu .selected').text();
              $.ajax({
                 type: 'POST',
-                url: `/api/assignments?territoryNumber=${territoryNumber}&albaUserId=${albaUserId}`,
+                url: `/api/territory-assignments?territoryNumber=${territoryNumber}&albaUserId=${albaUserId}`,
                 //dataType: 'json',
                 processData: false,
                 contentType: false,
