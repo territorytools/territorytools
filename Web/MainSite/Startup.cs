@@ -137,6 +137,8 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<KmlFileService>();
             services.AddScoped<AssignmentsCsvFileService>();
 
+            services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
+
             services.Configure<WebUIOptions>(Configuration);
 
             string commitPath = "wwwroot/commit.txt";
@@ -286,7 +288,7 @@ namespace TerritoryTools.Web.MainSite
 
             //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
             app.UseAuthentication();
-            app.UseMiddleware<ReverseProxyMiddleware>();
+            app.AddReverseProxy();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
