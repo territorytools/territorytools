@@ -179,7 +179,7 @@ namespace TerritoryTools.Web.MainSite
 
             if (request.Path.StartsWithSegments("/api", out var remainingPath) 
                 && !request.Path.StartsWithSegments("/api/personal-territories")
-                && !request.Path.StartsWithSegments("/api/ phoneterritory"))
+                && !request.Path.StartsWithSegments("/api/phoneterritory"))
             {
                 targetUri = new Uri($"{_baseUrl}{remainingPath}{request.QueryString}");
             }
