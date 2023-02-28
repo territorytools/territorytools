@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use yew::prelude::*;
 
-#[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize)]
+#[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Address {
     pub alba_address_id: i32,

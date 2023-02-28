@@ -426,33 +426,22 @@ pub fn territory_map() -> Html {
             <HomeButton />
             // <AssignPageLink />
             <MapMenu
-
                 bottom_vh={1}
-                svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}>
+                svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}
+            >
                 <div>
-                // TODO: Try saving the JSON locally, even just in memory, and filtering it here in the browser
-                    <button onclick={group_core_onclick} class="btn btn-primary">{"0"}</button>
-                    <button onclick={group_1_onclick} class="btn btn-primary">{"1"}</button>
-                    <button onclick={group_2_onclick} class="btn btn-primary">{"2"}</button>
-                    <button onclick={group_3_onclick} class="btn btn-primary">{"3"}</button>
-                    <button onclick={group_4_onclick} class="btn btn-primary">{"4"}</button>
-                    <button onclick={group_5_onclick} class="btn btn-primary">{"5"}</button>
-                    <button onclick={group_6_onclick} class="btn btn-primary">{"6"}</button>
-                    <button onclick={group_7_onclick} class="btn btn-primary">{"7"}</button>
-                    <button onclick={group_inner_onclick} class="btn btn-primary">{"*"}</button>
-                    <button onclick={group_all_onclick} class="btn btn-primary">{"A"}</button>
+                    <button onclick={group_core_onclick} class="btn btn-primary" aria-label="Core">{"C"}</button>
+                    <button onclick={group_1_onclick} class="btn btn-primary" aria-label="1">{"1"}</button>
+                    <button onclick={group_2_onclick} class="btn btn-primary" aria-label="2">{"2"}</button>
+                    <button onclick={group_3_onclick} class="btn btn-primary" aria-label="3">{"3"}</button>
+                    <button onclick={group_4_onclick} class="btn btn-primary" aria-label="4">{"4"}</button>
+                    <button onclick={group_5_onclick} class="btn btn-primary" aria-label="5">{"5"}</button>
+                    <button onclick={group_6_onclick} class="btn btn-primary" aria-label="6">{"6"}</button>
+                    <button onclick={group_7_onclick} class="btn btn-primary" aria-label="7">{"7"}</button>
+                    <button onclick={group_inner_onclick} class="btn btn-primary" aria-label="Inner">{"*"}</button>
+                    //<button onclick={group_all_onclick} class="btn btn-primary" aria-label="All">{"A"}</button>
                 </div>
-            </MapMenu>       
-            // <MapMenu 
-            //     bottom_vh={1}
-            //     svg_path_d={"M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07zM8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"}>        
-            //     <TerritorySummary 
-            //         available={available_count}
-            //         signed_out={signed_out_count}
-            //         completed={completed_count}
-            //         total={total_count}
-            //         hidden={hidden_count} />      
-            // </MapMenu>            
+            </MapMenu>                
         </div>
     }
 }
@@ -480,6 +469,7 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
                 || (group == "*" && t.group_id.clone().unwrap() != "outer".to_string())
                 || (group == "all")),
             border: t.border.clone(),
+            addresses: t.addresses.clone(),
         };
         new_territories.push(nt);
     }
