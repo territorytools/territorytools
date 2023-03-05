@@ -16,11 +16,11 @@ namespace TerritoryTools.Web.MainSite.Services
 
     public class ApiService : IApiService
     {
-        private readonly ILogger<AssignLatestService> _logger;
+        private readonly ILogger<ApiService> _logger;
         private readonly IConfiguration _configuration;
 
         public ApiService(
-            ILogger<AssignLatestService> logger,
+            ILogger<ApiService> logger,
             IConfiguration configuration)
         {
             _logger = logger;
