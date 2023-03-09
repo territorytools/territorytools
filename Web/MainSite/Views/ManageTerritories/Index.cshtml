@@ -269,7 +269,7 @@
           $.each(array, function () {
             json[this.name] = this.value || "";
           });
-          return json;
+          return JSON.stringify(json);
         }
 
         function submitFromAreaFormV2(form)
