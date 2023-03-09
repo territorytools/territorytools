@@ -117,8 +117,9 @@
             </select>
             <input type="button" class="btn btn-primary" value="Assign"  onclick="submitFromAreaFormV2(document.getElementById('assign-from-area-form-v2'))" />
         </div>
-        <label  style="visibility:hidden;" for="count">Count:</label>
+        <label style="visibility:hidden;" for="count">Count:</label>
         <input style="visibility:hidden;" type="number" id="count-v2" name="count" min="1" max="99" value="1" />
+        <input type="hidden" id="user-name" name="userName" value="@Model.UserName" />
         <div id="assign-from-area-form-loading-v2" style="color:blue;display:none;">
             <i class='fa fa-spinner fa-spin'></i>
             Assigning territories from area...
@@ -262,23 +263,6 @@
             //$('#phone-number').val('');
         }
 
-        function convertFormToJSON(form) {
-          // Encodes the set of form elements as an array of names and values.
-          const array = $(form).serializeArray(); 
-          console.log("Serialized Form:");
-          console.log(array);
-          const json = {};
-          $.each(array, function () {
-            json[this.name] = this.value || "";
-          });
-          console.log("After:")
-          console.log(json);
-          var sjson = JSON.stringify(json);
-          console.log("After after:")
-          console.log(sjson);
-          return sjson;
-        }
-
         function submitFromAreaFormV2(form)
         {
             $('#assign-from-area-form-loading-v2')
@@ -288,14 +272,21 @@
             $('#assign-from-area-territories-container-v2')
                 .html('');
 
-             var frm = $("#assign-from-area-form-v2");
-             var form_data = new FormData(form);
+            var frm = $("#assign-from-area-form-v2");
+            var form_data = new FormData(form);
+            
+            var payload = {};
+            payload.area = $("#input[name='area']").val();
+            payload.userId = $("#input[name='userId']").val();
+            payload.count = $("#input[name='count']").val();
+            payload.userName = $("#input[name='userName']").val();
+
             $.ajax({
                 type: 'POST',
                 url: '/api/territory-assignment/assignments/oldest/alba?debug=test1',
                 dataType: 'json',
                 //data: form_data,
-                data: convertFormToJSON(form_data),
+                data: JSON.stringify(payload),
                 processData: false,
                 contentType: false,
                 error: function (xhr, status) {
