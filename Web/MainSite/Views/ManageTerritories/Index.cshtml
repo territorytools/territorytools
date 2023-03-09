@@ -262,6 +262,16 @@
             //$('#phone-number').val('');
         }
 
+        function convertFormToJSON(form) {
+          // Encodes the set of form elements as an array of names and values.
+          const array = $(form).serializeArray(); 
+          const json = {};
+          $.each(array, function () {
+            json[this.name] = this.value || "";
+          });
+          return json;
+        }
+
         function submitFromAreaFormV2(form)
         {
             $('#assign-from-area-form-loading-v2')
@@ -277,7 +287,8 @@
                 type: 'POST',
                 url: '/api/territory-assignment/assignments/oldest/alba',
                 dataType: 'json',
-                data: form_data,
+                //data: form_data,
+                data: convertFormToJSON(form),
                 processData: false,
                 contentType: false,
                 error: function (xhr, status) {
