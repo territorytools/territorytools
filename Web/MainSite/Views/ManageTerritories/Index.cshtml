@@ -281,6 +281,10 @@
             payload.count = $("#input[name='count']").val();
             payload.userName = $("#input[name='userName']").val();
 
+            console.log("Raw payload: " + payload);
+            var text = JSON.stringify(payload);
+            console.log("JSON text: " + text);
+
             $.ajax({
                 type: 'POST',
                 url: '/api/territory-assignment/assignments/oldest/alba?debug=test1',
