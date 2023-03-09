@@ -76,11 +76,11 @@ namespace TerritoryTools.Web.MainSite.Controllers
 
         [HttpPost("oldest/alba")]
         public ActionResult<TerritoryLinkContract> AssignOldest(
-            string userName,
             int userId,
             [Range(1, 99)]
             int count = 1,
-            string area = "*")
+            string? area = "*",
+            string? userName = null)
         {
             var request = new AssignmentLatestRequest
             {
