@@ -275,11 +275,12 @@
             var frm = $("#assign-from-area-form-v2");
             var form_data = new FormData(form);
             
-            var payload = {};
-            payload.area = $("input[name='area']").val();
-            payload.userId = $("input[name='userId']").val();
-            payload.count = $("input[name='count']").val();
-            payload.userName = $("input[name='userName']").val();
+            var payload = {
+                area: $("input[name='area']").val(),
+                userId:$("input[name='userId']").val(),
+                count: $("input[name='count']").val(),
+                userName: $("input[name='userName']").val()
+            };
             
             console.log("area: " + $("input[name='area']").val());
             console.log("userId: " + $("input[name='userId']").val());
