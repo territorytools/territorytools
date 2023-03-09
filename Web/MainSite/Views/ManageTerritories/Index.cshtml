@@ -265,11 +265,18 @@
         function convertFormToJSON(form) {
           // Encodes the set of form elements as an array of names and values.
           const array = $(form).serializeArray(); 
+          console.log("Serialized Form:");
+          console.log(array);
           const json = {};
           $.each(array, function () {
             json[this.name] = this.value || "";
           });
-          return JSON.stringify(json);
+          console.log("After:")
+          console.log(json);
+          var sjson = JSON.stringify(json);
+          console.log("After after:")
+          console.log(sjson);
+          return sjson;
         }
 
         function submitFromAreaFormV2(form)
