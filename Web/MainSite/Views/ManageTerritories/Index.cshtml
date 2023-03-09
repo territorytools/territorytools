@@ -285,7 +285,7 @@
              var form_data = new FormData(form);
             $.ajax({
                 type: 'POST',
-                url: '/api/territory-assignment/assignments/oldest/alba',
+                url: '/api/territory-assignment/assignments/oldest/alba?debug=test1',
                 dataType: 'json',
                 //data: form_data,
                 data: convertFormToJSON(form_data),
