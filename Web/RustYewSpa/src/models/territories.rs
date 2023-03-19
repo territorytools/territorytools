@@ -6,11 +6,14 @@ pub struct Territories {
     pub list: Vec<Territory>,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize,  Default, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Territory {
+    #[serde(default)]
+    pub id: i32,
     pub number: String,
     pub status: String,
+    pub stage_id: i32,
     pub description: Option<String>,
     pub address_count: i32,
     pub area_code: Option<String>,

@@ -17,11 +17,13 @@ pub struct Address {
     pub unit: Option<String>,
     pub city: Option<String>,
     pub state: Option<String>,
+    pub country: Option<String>,
     pub postal_code: Option<String>,
     pub latitude: f32,
     pub longitude: f32,
-    pub phone: Option<String>,
+    pub telephone: Option<String>,
     pub notes: Option<String>,
+    pub notes_private: Option<String>,
 }
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize)]
@@ -32,25 +34,3 @@ pub struct AddressDeliveryStatus {
     pub description: Option<String>,
     pub is_active: bool,
 }
-
-// #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize)]
-// #[serde(rename_all = "camelCase")]
-// pub struct AddressSaveRequest {
-//     pub albaTerritoryKey: Option<String>,
-//     pub albaAddressId: Option<String>,
-//     pub latitude: Option<String>,
-//     pub longitude: Option<String>,
-//     pub albaTerritoryId: Option<String>,
-//     pub albaStatusId: Option<String>,
-//     pub albaLanguageId: Option<String>,
-//     pub fullName: Option<String>,
-//     pub unit: Option<String>,
-//     pub street: Option<String>,
-//     pub city: Option<String>,
-//     pub state: Option<String>,
-//     pub country: Option<String>,
-//     pub postalCode: Option<String>,
-//     pub telephone: Option<String>,
-//     pub notes: Option<String>,
-//     pub notesPrivate: Option<String>,
-// }

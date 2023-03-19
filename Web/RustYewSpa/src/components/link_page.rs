@@ -8,9 +8,7 @@ use crate::components::menu_bar::MenuBar;
 use crate::models::territory_links::TerritoryLinkContract;
 
 use chrono::DateTime;
-use chrono::prelude::*;
 use reqwasm::http::{Request};
-use substring::Substring;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone)]
