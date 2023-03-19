@@ -137,6 +137,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<KmlFileService>();
             services.AddScoped<AssignmentsCsvFileService>();
 
+            services.AddSingleton<IDatabaseInfoService, DatabaseInfoService>();
             services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
 
             services.Configure<WebUIOptions>(Configuration);

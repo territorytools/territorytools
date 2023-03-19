@@ -9,5 +9,6 @@ namespace TerritoryTools.Web.MainSite.Models
             = new List<User>();
         public List<Area> Areas { get; set; } = new List<Area>();
         public string GoogleMyMapLink { get; set; }
+        public string UserName { get; set; }
     }
 }

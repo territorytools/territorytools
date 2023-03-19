@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace TerritoryTools.Web.MainSite
 {
+    // There is another copy of this in TerritoryTools.Mobile/TerritoryTools.Mobile
     public interface IHttpClientWrapper
     {
         Task<HttpResponseMessage> SendAsync(

@@ -71,7 +71,8 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 var report = new ReportIndexPage()
                 {
                     GoogleMyMapLink = _configuration.GetValue<string>("GoogleMyMapLink"),
-                    Areas = _areaService.All()
+                    Areas = _areaService.All(),
+                    UserName = User.Identity.Name,
                 };
 
                 return View(report);
