@@ -10,10 +10,10 @@ pub struct Territories {
 #[serde(rename_all = "camelCase")]
 pub struct Territory {
     #[serde(default)]
-    pub id: i32,
+    pub id: Option<i32>,
     pub number: String,
     pub status: String,
-    pub stage_id: i32,
+    pub stage_id: Option<i32>,
     pub description: Option<String>,
     pub notes: Option<String>,
     pub address_count: i32,

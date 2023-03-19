@@ -77,7 +77,7 @@ pub fn territory_editor_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.territory.stage_id = value.parse().unwrap();
+            modification.territory.stage_id = Some(value.parse().unwrap_or_default());
             
             log!(format!("Territory stage id set to {stage_id:?}", stage_id = modification.territory.stage_id));
 
@@ -236,12 +236,12 @@ pub fn territory_editor_page() -> Html {
 
             let body_model = &model.deref();
             let edit_request = TerritoryEditRequest {
-                id: body_model.territory.id,
+                id: body_model.territory.id.unwrap_or_default(),
                 territory_number: body_model.territory.number.clone(),
                 description: body_model.territory.description.clone(),
                 notes: body_model.territory.notes.clone(),
                 group_id: body_model.territory.group_id.clone(),
-                stage_id: body_model.territory.stage_id,
+                stage_id: body_model.territory.stage_id.unwrap_or_default(),
             };
 
             let data_serialized = serde_json::to_string_pretty(&edit_request)
@@ -301,7 +301,7 @@ pub fn territory_editor_page() -> Html {
         });
     });
 
-    let selected_stage_id: i32 = state.territory.stage_id;
+    let selected_stage_id: i32 = state.territory.stage_id.unwrap_or_default();
     //let selected_status_id: i32 = state.territory.status_id;
 
     html! {
@@ -364,7 +364,7 @@ pub fn territory_editor_page() -> Html {
                 // </div>
                 <div class="col-12">
                     <label for="inputNumber" class="form-label">{"Number"}</label>
-                    <input value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
+                    <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
                 </div>
                 <div class="col-12">
                     <label for="inputDescription" class="form-label">{"Description"}</label>

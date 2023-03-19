@@ -35,27 +35,25 @@ pub fn popup_content(territory: &Territory) -> String  {
                 territory_number = territory.number,
                 )
     } else { "".to_string() };
-    
-    let description: String = match &territory.description {
-        Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
-        None => "(empty)".to_string()
-    };
 
     let group_id: String = match &territory.group_id {
         Some(v) => if v == "" { "".to_string() } else { v.clone() },
         None => "".to_string()
+    };
+    
+    let territory_id: i32 = match territory.id {
+        Some(v) => v,
+        None => 0
     };
 
     let edit_button_html = 
         format!("<br/><a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
-            href='/app/territories/{territory_number}/edit?description={description}&group_id={group_id}'>
+            href='/app/territory-edit?id={id}'>
             Edit
         </a>",
-        territory_number = territory.number,
-        //description = description,
-        group_id = group_id
+        id = territory.id.unwrap_or_default()
         );
 
     format!(
@@ -68,7 +66,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             {assignee_line}
             {assign_button_html}
             {edit_button_html}
-            <br/>
+            <br/><span><small><small>TID: {territory_id}</small></small></span>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap(),
