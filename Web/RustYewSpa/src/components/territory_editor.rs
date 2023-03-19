@@ -1,6 +1,6 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::models::territories::Territory;
+use crate::models::territories::{Territory, TerritoryEditRequest};
 use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
@@ -121,6 +121,24 @@ pub fn territory_editor_page() -> Html {
         })
     };
    
+    let notes_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.territory.notes = Some(value);
+            
+            log!(format!("Territory notes set to {notes:?}", notes = modification.territory.notes));
+
+            state.set(modification);
+        })
+    };
+   
     // let delivery_status_onchange = {
     //     let state = cloned_state.clone();
     //     Callback::from(move |value: String| {
@@ -198,14 +216,10 @@ pub fn territory_editor_page() -> Html {
     }, ());
     
 
-    // let onsubmit = Callback::from(move |event: SubmitEvent| {
-    //     event.prevent_default();
-    // });
     let cloned_state = state.clone();
-    let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
+    let onsubmit = Callback::from(move |event: SubmitEvent| { 
         event.prevent_default();
         let cloned_state = cloned_state.clone();
-        //let navigator = navigator.clone();
         spawn_local(async move {
             log!("Spawing request for territory change...");
             let model = cloned_state.clone();
@@ -221,8 +235,17 @@ pub fn territory_editor_page() -> Html {
             };
 
             let body_model = &model.deref();
-            let data_serialized = serde_json::to_string_pretty(&body_model.territory)
-                .expect("Should be able to serialize address edit form into JSON");
+            let edit_request = TerritoryEditRequest {
+                id: body_model.territory.id,
+                territory_number: body_model.territory.number.clone(),
+                description: body_model.territory.description.clone(),
+                notes: body_model.territory.notes.clone(),
+                group_id: body_model.territory.group_id.clone(),
+                stage_id: body_model.territory.stage_id,
+            };
+
+            let data_serialized = serde_json::to_string_pretty(&edit_request)
+                .expect("Should be able to serialize territory edit request form into JSON");
 
             // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
             // https://yew.rs/docs/0.18.0/concepts/services/fetch
@@ -321,15 +344,15 @@ pub fn territory_editor_page() -> Html {
                     <label for="input-stage" class="form-label">{"Stage"}</label>
                     <select onchange={stage_id_onchange} id="input-stage" class="form-select shadow-sm">
                         <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={10} english="Available" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={20} english="Writing Letters" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={21} english="Letters Sent" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={22} english="Letters Returned" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={30} english="Calling" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={31} english="Called" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={40} english="Visiting" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={41} english="Done" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={50} english="Cooling Off" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={10} english="Available for Check Out" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={20} english="Letter: Writing" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={21} english="Letter: Sent" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={22} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={30} english="Phone: Calling" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={31} english="Phone: Done" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={40} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={41} english="Door-to-Door: Done" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={50} english="Door-to-Door: Cooling Off" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={60} english="Reserved" chinese="" selected={selected_stage_id} />
                     </select>
                 </div>
@@ -347,10 +370,10 @@ pub fn territory_editor_page() -> Html {
                     <label for="inputDescription" class="form-label">{"Description"}</label>
                     <input value={state.territory.description.clone()} onchange={description_onchange} type="text" class="form-control shadow-sm" id="inputDescription" placeholder="Description"/>
                 </div>
-                // <div class="col-12">
-                //     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                //     <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
-                // </div>
+                <div class="col-12">
+                    <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
+                    <textarea value={state.territory.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
+                </div>
 
                 <div class="col-12">
                     <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
@@ -365,7 +388,7 @@ pub fn territory_editor_page() -> Html {
                 </div>
                 <div class="col-12">
                     <span><small>{"TID: "}{state.territory.id}</small></span>
-                    <span><small>{"ATID: "}{state.territory.id}</small></span>
+                    <span><small>{" ATID: "}{state.territory.id}</small></span>
                 </div>
             </form>
         </div>

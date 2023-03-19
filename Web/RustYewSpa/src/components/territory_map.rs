@@ -460,6 +460,7 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
             status: t.status.clone(),
             stage_id: t.stage_id.clone(),
             description: t.description.clone(),
+            notes: t.notes.clone(),
             address_count: t.address_count.clone(),
             area_code: t.area_code.clone(),
             last_completed_by: t.last_completed_by.clone(),
