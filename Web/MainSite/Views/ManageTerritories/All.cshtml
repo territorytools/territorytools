@@ -112,6 +112,7 @@
         <!-- Modal footer -->
         <div class="modal-footer">
           <a id="view-territory-button" type="button" class="btn btn-primary" target="_blank">View</a>
+          <a id="edit-territory-button" type="button" class="btn btn-outline-primary" target="_blank" href="/app/territories?id=@x">Edit</a>
           @*<button id="edit-territory-button" type="button" class="btn btn-outline-primary">Edit</button>*@
           @*<button id="territory-assignment-button" type="button" class="btn btn-outline-primary">Assign</button>*@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -176,6 +177,7 @@
                         `
                         <tr class="openSingleTerritoryManage"
                             style="cursor:pointer;"
+                            data-id="${item.id}" 
                             data-number="${item.number}" 
                             data-area-code="${item.areaCode}"
                             data-area-description="${item.areaDescription}"
@@ -299,10 +301,13 @@
              document.getElementById("phone-number-section").style.display = 'none';
              $('#assigned-link').attr('href', '').text('');
 
+             var territory_id = $(this).data('id');
+
              setTerritoryAssignmentTabAsCurrent();
 
              // Load fields
              $("#modal-header-number").text( $(this).data('number') );
+             $("#edit-territory-button").attr('href', `/app/territory-edit?id=${territory_id}`);
              $("#modal-territory-number").val( $(this).data('number'));
              $("#modal-header-area-code").text( $(this).data('area-code') );
              $("#modal-header-area-description").text( $(this).data('area-description') );
