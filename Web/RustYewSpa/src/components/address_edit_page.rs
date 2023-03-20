@@ -260,9 +260,9 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.phone = Some(value);
+            modification.address.telephone = Some(value);
 
-            log!(format!("Address phone set to {name:?}", name = modification.address.phone.clone()));
+            log!(format!("Address phone set to {name:?}", name = modification.address.telephone.clone()));
 
             state.set(modification);
         })
@@ -587,7 +587,7 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12">
                     <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                    <input value={state.address.phone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
+                    <input value={state.address.telephone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
                 </div>
                 <div class="col-12">
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>

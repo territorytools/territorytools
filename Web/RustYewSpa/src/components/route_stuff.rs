@@ -3,6 +3,7 @@ use crate::AddressSearch;
 use crate::AssignPage;
 use crate::Secure;
 use crate::TerritoryEditPage;
+use crate::TerritoryEditorPage;
 use crate::TerritoryEditPageExample;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
@@ -43,6 +44,8 @@ pub enum Route {
     AddressSearch,
     #[at("/app/address-edit")]
     AddressEdit,
+    #[at("/app/territory-edit")]
+    TerritoryEditor,
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
@@ -91,6 +94,7 @@ pub fn switch(route: Route) -> Html {
         Route::Map => html! { <TerritoryMap /> },
         Route::AddressSearch => html! { <AddressSearch /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
+        Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },

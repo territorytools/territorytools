@@ -308,7 +308,7 @@ pub fn territory_map() -> Html {
         })
     };
 
-    let group_all_onclick = {
+    let _group_all_onclick = {
         let model_clone = model.clone();
         Callback::from(move |_event: MouseEvent| {
             setup_filter(model_clone.clone(), "all");
@@ -455,9 +455,12 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
     for t in territories.iter() {     
         //t.is_visible = false;
         let nt = Territory {
+            id: t.id.clone(),
             number: t.number.clone(),
             status: t.status.clone(),
+            stage_id: t.stage_id.clone(),
             description: t.description.clone(),
+            notes: t.notes.clone(),
             address_count: t.address_count.clone(),
             area_code: t.area_code.clone(),
             last_completed_by: t.last_completed_by.clone(),

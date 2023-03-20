@@ -104,7 +104,7 @@ pub fn address_search_page() -> Html {
             let mut modification = state.deref().clone();
             let value = event
                 .target()
-                .unwrap()
+                .expect("An input value for an HtmlInputElement")
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
@@ -150,6 +150,11 @@ pub fn address_search_page() -> Html {
                     state.addresses.iter().map(|address| {   
                         let alba_address_id = address.alba_address_id;
                         let edit_uri = format!("/app/address-edit?alba_address_id={alba_address_id}");
+                        let unit_text: String = match &address.unit {
+                            Some(v) => if v == "" { "".to_string() } else { format!(", {}", v.clone()) },
+                            None => "".to_string()
+                        };
+    
                         html! {
                             <a href={edit_uri} style="text-decoration:none;color:black;">
                                 <div class="row" style="border-top: 1px solid gray;">
@@ -191,6 +196,7 @@ pub fn address_search_page() -> Html {
                                     </div>
                                     <div class="col-10 col-md-11">
                                         {address.street.clone()}
+                                        {unit_text}
                                         {", "}
                                         {address.city.clone()}
                                         {", "}
