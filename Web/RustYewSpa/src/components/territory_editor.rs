@@ -121,6 +121,24 @@ pub fn territory_editor_page() -> Html {
         })
     };
    
+    let group_id_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.territory.group_id = Some(value);
+            
+            log!(format!("Territory group_id set to {group_id:?}", group_id = modification.territory.group_id));
+
+            state.set(modification);
+        })
+    };
+   
     let notes_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
@@ -366,9 +384,13 @@ pub fn territory_editor_page() -> Html {
                     <label for="inputNumber" class="form-label">{"Number"}</label>
                     <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
                 </div>
-                <div class="col-12">
+                <div class="col-6">
                     <label for="inputDescription" class="form-label">{"Description"}</label>
                     <input value={state.territory.description.clone()} onchange={description_onchange} type="text" class="form-control shadow-sm" id="inputDescription" placeholder="Description"/>
+                </div>
+                <div class="col-6">
+                    <label for="input-group-id" class="form-label">{"Group ID"}</label>
+                    <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
                 </div>
                 <div class="col-12">
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
