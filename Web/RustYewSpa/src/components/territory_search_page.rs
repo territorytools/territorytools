@@ -19,7 +19,7 @@ use web_sys::HtmlInputElement;
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritorySearchPage {
     pub success: bool,
-    //pub count: i32,
+    pub count: i32,
     pub search_text: String,
     pub territories: Vec<TerritorySummary>,
     pub load_error: bool,
@@ -63,6 +63,17 @@ pub fn address_search_page() -> Html {
         })
     };
 
+    let cloned_state = state.clone();
+    use_effect_with_deps(move |_| {
+        let cloned_state = cloned_state.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let search_text = cloned_state.search_text.clone();
+            let result = get_territories(search_text).await;
+            cloned_state.set(result);
+        });
+        || ()
+    }, ());
+
     html! {
         <>
             <MenuBarV2>
@@ -90,10 +101,14 @@ pub fn address_search_page() -> Html {
                 </form>
                 <div class="row">
                     <div class="col">
-                        <span class="ms-2 badge mb-2 bg-secondary">{"Number"}</span> 
-                        <span class="ms-2 badge mb-2 bg-secondary">{"Description"}</span> 
-                        <span class="ms-2 badge mb-2 bg-secondary">{"Status"}</span> 
+                        <span><strong>{state.count}</strong>{" Territories Found"}</span>
                     </div>
+                </div>
+                <div class="row py-1" style="border-top: 1px solid gray;">
+                    <div class="col-2 col-md-1"><strong>{"#"}</strong></div>
+                    <div class="col-5 col-md-3"><strong>{"Description"}</strong></div>
+                    <div class="col-2 col-md-2"><strong>{"Status"}</strong></div>
+                    <div class="col-5 col-md-3"><strong>{"Publisher"}</strong></div>
                 </div>
                 {
                     state.territories.iter().map(|territory| {   
@@ -102,7 +117,7 @@ pub fn address_search_page() -> Html {
     
                         html! {
                             <a href={edit_uri} style="text-decoration:none;color:black;">
-                                <div class="row" style="border-top: 1px solid gray;">
+                                <div class="row py-1" style="border-top: 1px solid lightgray;">
                                     <div class="col-2 col-md-1" style="font-weight:bold;">
                                         {territory.number.clone()}
                                     </div>
@@ -111,15 +126,15 @@ pub fn address_search_page() -> Html {
                                     </div>
                                     <div class="col-2 col-md-2">
                                         if territory.status.clone() == Some("Available".to_string()) {
-                                            <span class="ms-2 badge bg-success">{territory.status.clone()}</span> 
+                                            <span class="badge" style="background-color:green">{territory.status.clone()}</span> 
                                         } else if territory.status.clone() == Some("Out".to_string()) {
-                                            <span class="ms-2 badge bg-warning">{territory.status.clone()}</span> 
+                                            <span class="badge" style="background-color:magenta">{territory.status.clone()}</span> 
                                         } else if territory.status.clone() == Some("Removed".to_string()) {
-                                            <span class="ms-2 badge bg-danger">{territory.status.clone()}</span> 
+                                            <span class="badge" style="background-color:black">{territory.status.clone()}</span> 
                                         } else if territory.status.clone() == Some("Done".to_string()) {
-                                            <span class="ms-2 badge bg-info">{territory.status.clone()}</span> 
+                                            <span class="badge" style="background-color:blue">{territory.status.clone()}</span> 
                                         } else {
-                                            <span class="ms-2 badge bg-dark">{territory.status.clone()}</span> 
+                                            <span class="badge" style="background-color:gray">{territory.status.clone()}</span> 
                                         }
                                     </div>
                                     <div class="col-5 col-md-3">
@@ -157,6 +172,7 @@ async fn get_territories(search_text: String) -> TerritorySearchPage {
     
     let result = TerritorySearchPage {
         success: (resp.status() == 200),
+        count: territory_result.len() as i32,
         territories: territory_result,
         search_text: "".to_string(),
         load_error: resp.status() != 200,
