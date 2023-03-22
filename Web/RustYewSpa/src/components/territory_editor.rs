@@ -29,11 +29,18 @@ const GET_TERRITORY_API_PATH: &str = "/data/territories_id_1020.json";
 #[cfg(not(debug_assertions))]
 const GET_TERRITORY_API_PATH: &str = "/api/territories";
 
+#[cfg(not(debug_assertions))]
+const ASSIGN_METHOD: &str = "POST";
+
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "GET";
 
 #[cfg(not(debug_assertions))]
-const ASSIGN_METHOD: &str = "PUT";
+const EDIT_METHOD: &str = "PUT";
+
+#[cfg(debug_assertions)]
+const EDIT_METHOD: &str = "GET";
+
 
 #[cfg(debug_assertions)]
 const API_ASSIGN_URL: &str = "/data/post_assignments.json";
@@ -278,7 +285,7 @@ pub fn territory_editor_page() -> Html {
 
             let uri: &str = uri_string.as_str();
             
-            let _method: Method = match ASSIGN_METHOD {
+            let _method: Method = match EDIT_METHOD {
                 "PUT" => Method::PUT,
                 "GET" => Method::PUT,
                 &_ =>  Method::GET,
