@@ -109,6 +109,6 @@ pub fn switch(route: Route) -> Html {
         },
         //Route::TestMap => html! { <TestMap /> },
         Route::Links => html! { <TerritoryLinkPage /> },
-        Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
+        Route::Misc { path } => html! {<p>{format!("Cannot find path: {}", path)}</p>},
     }
 }

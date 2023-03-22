@@ -1,5 +1,6 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
+use crate::components::menu_bar::TerritorySearchLink;
 use crate::models::territories::{Territory, TerritoryEditRequest};
 use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
@@ -325,15 +326,10 @@ pub fn territory_editor_page() -> Html {
     html! {
         <>
         <MenuBarV2>
-            <ul class="navbar-nav ms-2 me-auto mb-05 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/app/address-search">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                        </svg>
-                        <span class="ms-1">{"Search"}</span>
-                    </a>
-                </li> 
+            <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                <li class={"nav-item"}>
+                    <TerritorySearchLink />
+                </li>  
             </ul>
         </MenuBarV2>
         <div class="container">
