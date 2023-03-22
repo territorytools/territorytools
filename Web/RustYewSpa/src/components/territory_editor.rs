@@ -358,6 +358,14 @@ pub fn territory_editor_page() -> Html {
                 //         <EnglishChineseIdOption id={2} english="Signed-out" chinese="" selected={selected_status_id} />
                 //     </select>
                 // </div>
+                <div class="col-6 col-sm-6 col-md-4">
+                    <label for="inputNumber" class="form-label">{"Number"}</label>
+                    <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
+                </div>
+                <div class="col-6 col-sm-6 col-md-4">
+                    <label for="input-group-id" class="form-label">{"Group ID"}</label>
+                    <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
+                </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-stage" class="form-label">{"Stage"}</label>
                     <select onchange={stage_id_onchange} id="input-stage" class="form-select shadow-sm">
@@ -380,17 +388,9 @@ pub fn territory_editor_page() -> Html {
                 //         onchange={delivery_status_onchange} 
                 //         id={state.address.delivery_status_id} />
                 // </div>
-                <div class="col-12">
-                    <label for="inputNumber" class="form-label">{"Number"}</label>
-                    <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
-                </div>
-                <div class="col-6">
+                <div class="col-12 col-sm-9 col-md-6">
                     <label for="inputDescription" class="form-label">{"Description"}</label>
                     <input value={state.territory.description.clone()} onchange={description_onchange} type="text" class="form-control shadow-sm" id="inputDescription" placeholder="Description"/>
-                </div>
-                <div class="col-6">
-                    <label for="input-group-id" class="form-label">{"Group ID"}</label>
-                    <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
                 </div>
                 <div class="col-12">
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>

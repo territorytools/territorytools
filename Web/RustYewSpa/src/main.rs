@@ -7,6 +7,7 @@ use crate::components::route_stuff::switch;
 use crate::components::territory_editor::*;
 use crate::components::territory_edit_page::*;
 use crate::components::territory_edit_page_example::*;
+use crate::components::territory_search_page::*;
 use crate::components::territory_map::TerritoryMap;
 use yew::prelude::*;
 use yew_router::prelude::*;
