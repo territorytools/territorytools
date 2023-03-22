@@ -1,8 +1,11 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::TerritorySearchLink;
+use crate::components::user_selector::UserSelector;
 use crate::models::territories::{Territory, TerritoryEditRequest};
+use crate::models::territory_links::TerritoryLinkContract;
 use crate::functions::document_functions::set_document_title;
+
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
@@ -32,6 +35,12 @@ const ASSIGN_METHOD: &str = "GET";
 #[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "PUT";
 
+#[cfg(debug_assertions)]
+const API_ASSIGN_URL: &str = "/data/post_assignments.json";
+
+#[cfg(not(debug_assertions))]
+const API_ASSIGN_URL: &str = "/api/territory-assignment/assignments";
+
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct TerritoryEditorModel {
     pub territory: Territory,
@@ -46,9 +55,30 @@ pub struct TerritoryEditorModel {
     pub error_message: String,
 }
 
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+pub struct TerritoryAssignerModel {
+    //pub territory: Territory,
+    pub assignee: String,
+    // pub save_success: bool,
+    // pub save_error: bool,
+    // #[prop_or_default]
+    // pub load_error: bool,
+    // pub error_message: String,
+}
+
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct TerritoryEditorParameters {
     pub id: Option<i32>,
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct AssignmentResult {
+    pub link_contract: TerritoryLinkContract,
+    pub success: bool,
+    pub load_failed: bool,
+    pub load_failed_message: String,
+    pub status: u16,
+    pub completed: bool,
 }
 
 // pub fn add_field(state: yew::UseStateHandle<AddressEditModel>, field: &str) {
@@ -60,6 +90,8 @@ pub fn territory_editor_page() -> Html {
     set_document_title("Territory Editor");
 
     let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(|| TerritoryEditorModel::default());
+    let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(|| TerritoryAssignerModel::default());
+    let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: TerritoryEditorParameters = location.query().expect("An object");
@@ -234,7 +266,6 @@ pub fn territory_editor_page() -> Html {
         || ()
     }, ());
     
-
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |event: SubmitEvent| { 
         event.prevent_default();
@@ -322,6 +353,75 @@ pub fn territory_editor_page() -> Html {
 
     let selected_stage_id: i32 = state.territory.stage_id.unwrap_or_default();
     //let selected_status_id: i32 = state.territory.status_id;
+    
+    let assigner_state = assigner_state.clone();
+    let assignee_onchange = {
+        let assigner_state = assigner_state.clone();
+        Callback::from(move |assignee: String| {
+            let mut assigner = assigner_state.deref().clone();
+            assigner.assignee = assignee;
+            assigner_state.set(assigner);
+        })
+    };
+    
+   
+    let cloned_state = state.clone();
+    let assigner_state = assigner_state.clone();
+    let assignment_result_state_clone = assignment_result_state.clone();
+    let assigner_onsubmit = Callback::from(move |event: SubmitEvent| { 
+        event.prevent_default();
+        
+        let cloned_state = cloned_state.clone();
+        let assigner_state = assigner_state.clone();
+        let assignment_result_state_clone = assignment_result_state_clone.clone();
+        spawn_local(async move {
+            let _model = assigner_state.clone();
+            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}&assigner=not-available", 
+                path = API_ASSIGN_URL,
+                number = cloned_state.territory.number.clone(),
+                assignee = assigner_state.assignee.clone()
+            );
+
+            let uri: &str = uri_string.as_str();
+            
+            let method: Method = match ASSIGN_METHOD {
+                "PUT" => Method::PUT,
+                "GET" => Method::PUT,
+                &_ =>  Method::GET,
+            };
+          
+            let resp = Request::new(uri)
+                .method(method)
+                .header("Content-Type", "application/json")
+                .send()
+                .await
+                .expect("A result from the endpoint");
+
+           
+            let link_contract: TerritoryLinkContract = if resp.status() == 200 {
+                resp.json().await.unwrap()
+            } else {
+                TerritoryLinkContract::default()
+            };
+            
+            let result = AssignmentResult {
+                success: (resp.status() == 200),
+                load_failed: (resp.status() != 200),
+                load_failed_message: match resp.status() {
+                    405 => "Bad Method".to_string(),
+                    _ => "Error".to_string(),
+                },
+                link_contract: link_contract,
+                status: resp.status(),
+                completed: true,
+            };
+
+            assignment_result_state_clone.set(result);
+        });
+    });
+
+    let assignment_result_state = assignment_result_state.clone();
+    let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
 
     html! {
         <>
@@ -333,6 +433,34 @@ pub fn territory_editor_page() -> Html {
             </ul>
         </MenuBarV2>
         <div class="container">
+            <span><strong>{"委派给 Assign Territory"}</strong></span>
+            <hr/>
+            if is_assigned {
+                <div class="row">
+                    <div class="col">
+                        <span class="mx-1">{"Assigned to: "}{state.territory.signed_out_to.clone()}</span>
+                        //<span class="mx-1">{" "}{state.territory.signed_out.clone()}</span>
+                    </div>
+                </div>
+            }
+            <form onsubmit={assigner_onsubmit} class="row g-3">
+                <div class="col-12 col-sm-9 col-md-6 d-flex ">
+                    <UserSelector onchange={assignee_onchange} />
+                    <button type="submit" class="btn btn-primary">
+                        {if is_assigned { "Reassign" } else { "Assign" }}
+                    </button>
+                </div>
+            </form>
+            if assignment_result_state.load_failed { 
+                <div class="row">
+                    <div class="col">
+                        <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                        <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+                        <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                    </div>
+                </div>
+            }
+            <hr/>
             <span><strong>{"Edit Territory"}</strong></span>
             if state.save_success { 
                 <span class="mx-1 badge bg-success">{"Saved"}</span> 
@@ -355,7 +483,7 @@ pub fn territory_editor_page() -> Html {
                 //     </select>
                 // </div>
                 <div class="col-6 col-sm-6 col-md-4">
-                    <label for="inputNumber" class="form-label">{"Number"}</label>
+                    <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
                     <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
                 </div>
                 <div class="col-6 col-sm-6 col-md-4">
@@ -385,7 +513,7 @@ pub fn territory_editor_page() -> Html {
                 //         id={state.address.delivery_status_id} />
                 // </div>
                 <div class="col-12 col-sm-9 col-md-6">
-                    <label for="inputDescription" class="form-label">{"Description"}</label>
+                    <label for="inputDescription" class="form-label">{"区域名称 Description"}</label>
                     <input value={state.territory.description.clone()} onchange={description_onchange} type="text" class="form-control shadow-sm" id="inputDescription" placeholder="Description"/>
                 </div>
                 <div class="col-12">
@@ -403,8 +531,8 @@ pub fn territory_editor_page() -> Html {
                         <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                     }
-                </div>
-                <div class="col-12">
+                // </div>
+                // <div class="col-12">
                     <span><small>{"TID: "}{state.territory.id}</small></span>
                     <span><small>{" ATID: "}{state.territory.id}</small></span>
                 </div>

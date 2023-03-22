@@ -88,16 +88,16 @@ pub fn address_search_page() -> Html {
       
                 <hr/>
                 <form {onsubmit} >
-                <div class="d-flex flex-row">
-                    <div class="d-flex flex-colum mb-2 shadow-sm">
-                        <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter search text" class="form-control" />
-                        <button type="submit" class="btn btn-primary">{"Search"}</button>
-                        if state.load_error { 
-                            <span class="mx-1 badge bg-danger">{"Error"}</span> 
-                            <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
-                        }    
+                    <div class="d-flex flex-row">
+                        <div class="d-flex flex-colum mb-2 shadow-sm">
+                            <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter search text" class="form-control" />
+                            <button type="submit" class="btn btn-primary">{"Search"}</button>
+                            if state.load_error { 
+                                <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                                <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
+                            }    
+                        </div>
                     </div>
-                </div>
                 </form>
                 <div class="row">
                     <div class="col">

@@ -65,10 +65,9 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
             let resp = Request::new(uri)
                 .method(method)
                 .header("Content-Type", "application/json")
-                //.body(format!("{{ 'description': '{description}' }}"))
                 .send()
                 .await
-                .unwrap();
+                .expect("A result from the territory assignment endpoint");
 
             let link_contract: TerritoryLinkContract = if resp.status() == 200 {
                 resp.json().await.unwrap()
