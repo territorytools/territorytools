@@ -22,18 +22,22 @@ pub fn popup_content(territory: &Territory) -> String  {
             Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
             None => "(empty)".to_string()
         };
-    
-        // format!(
-        //     "<br/><button data-territory-number={territory_number} onclick=\"wasm.try_it();alert('tested 3');\">Test</button>",
-        //     territory_number = territory.number)
-        format!("<br/><a 
-                    style='margin-top:5px;color:white;'
-                    class='btn btn-primary btn-sm'
-                    href='/app/assign/{territory_number}/{description}/Current+Assignee'>
-                    Assign
+        
+        let id = territory.id.unwrap_or_default();
+        if id == 0 {
+            format!("<br/><a 
+                style='margin-top:5px;color:white;'
+                class='btn btn-primary btn-sm'
+                href='/app/assign/{territory_number}/{description}/Current+Assignee'>
+                Assign
                 </a>",
                 territory_number = territory.number,
-                )
+            )
+        } else { 
+            "".to_string()
+        }
+
+ 
     } else { "".to_string() };
 
     let group_id: String = match &territory.group_id {
@@ -51,6 +55,7 @@ pub fn popup_content(territory: &Territory) -> String  {
         Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
         None => "(empty)".to_string()
     };
+
     let edit_button_html = if id == 0 {
         format!("<br/><a 
             style='margin-top:5px;color:white;'

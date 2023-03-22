@@ -392,8 +392,8 @@ pub fn territory_editor_page() -> Html {
             let uri: &str = uri_string.as_str();
             
             let method: Method = match ASSIGN_METHOD {
-                "PUT" => Method::PUT,
-                "GET" => Method::PUT,
+                "POST" => Method::POST,
+                "GET" => Method::GET,
                 &_ =>  Method::GET,
             };
           
