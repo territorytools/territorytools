@@ -2,7 +2,7 @@
 const DATA_API_PATH: &str = "/data/territory-list.json";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/territories/search";
+const DATA_API_PATH: &str = "/api/territories/list";
 
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
@@ -15,13 +15,6 @@ use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
-
-// #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
-// #[serde(rename_all = "camelCase")]
-// pub struct TerritorySearchResults {
-//     pub count: i32,
-//     pub territories: Vec<TerritorySummary>,
-// }
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritorySearchPage {
@@ -47,40 +40,9 @@ pub fn address_search_page() -> Html {
             let cloned_state = cloned_state.clone();
             let search_text = cloned_state.search_text.clone();
             //if !search_text.is_empty() {
-                let uri_string: String = format!("{path}?filter={search_text}", path = DATA_API_PATH);
-                let uri: &str = uri_string.as_str();
-                let resp = Request::get(uri)
-                    .header("Content-Type", "application/json")
-                    .send()
-                    .await
-                    .expect("A result from the /api/territories/list endpoint");
-                
-                log!(format!("load territory from search result code: {}", resp.status().to_string()));
-
-                let territory_result: Vec<TerritorySummary> = if resp.status() == 200 {
-                    resp
-                    .json()
-                    .await
-                    .expect("Valid territory search result in JSON format")
-                } else {
-                    vec![]
-                };
-                
-                let result = TerritorySearchPage {
-                    success: (resp.status() == 200),
-                    territories: territory_result,
-                    search_text: "".to_string(),
-                    load_error: resp.status() != 200,
-                    load_error_message: if resp.status() == 401 {
-                            "Unauthorized".to_string()
-                        } else if resp.status() == 403 {
-                            "Forbidden".to_string()
-                        } else {
-                            format!("Error {:?}", resp.status())
-                        }
-                };
                 // TODO: Clear search results if nothing is returned
                 // TODO: Leave search text in the search box?
+                let result = get_territories(search_text).await;
                 cloned_state.set(result);
            // }
         });
@@ -171,4 +133,41 @@ pub fn address_search_page() -> Html {
             </div>
         </>
     }
+}
+
+async fn get_territories(search_text: String) -> TerritorySearchPage {
+    let uri_string: String = format!("{path}?filter={search_text}", path = DATA_API_PATH);
+    let uri: &str = uri_string.as_str();
+    let resp = Request::get(uri)
+        .header("Content-Type", "application/json")
+        .send()
+        .await
+        .expect("A result from the /api/territories/list endpoint");
+    
+    log!(format!("load territory from search result code: {}", resp.status().to_string()));
+
+    let territory_result: Vec<TerritorySummary> = if resp.status() == 200 {
+        resp
+        .json()
+        .await
+        .expect("Valid territory search result in JSON format")
+    } else {
+        vec![]
+    };
+    
+    let result = TerritorySearchPage {
+        success: (resp.status() == 200),
+        territories: territory_result,
+        search_text: "".to_string(),
+        load_error: resp.status() != 200,
+        load_error_message: if resp.status() == 401 {
+                "Unauthorized".to_string()
+            } else if resp.status() == 403 {
+                "Forbidden".to_string()
+            } else {
+                format!("Error {:?}", resp.status())
+            }
+    };
+
+    result
 }
