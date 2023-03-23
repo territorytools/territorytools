@@ -79,12 +79,12 @@ namespace TerritoryTools.Web.MainSite
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                {
-                    options.ExpireTimeSpan = TimeSpan.FromDays(90);
-                    options.SlidingExpiration = true;
-                });
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(options =>
+            //    {
+            //        options.ExpireTimeSpan = TimeSpan.FromDays(90);
+            //        options.SlidingExpiration = true;
+            //    });
 
             services.AddAuthentication()
                 .AddGoogle(options =>
