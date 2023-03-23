@@ -1,5 +1,6 @@
 ﻿using Certes;
 using FluffySpoon.AspNet.LetsEncrypt;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -65,7 +66,7 @@ namespace TerritoryTools.Web.MainSite
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-
+               
                 // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
                 options.OnAppendCookie = cookieContext =>
@@ -77,6 +78,13 @@ namespace TerritoryTools.Web.MainSite
             string connectionString = Configuration.GetConnectionString("MainDbContextConnection");
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromDays(90);
+                    options.SlidingExpiration = true;
+                });
 
             services.AddAuthentication()
                 .AddGoogle(options =>
