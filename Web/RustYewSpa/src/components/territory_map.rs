@@ -2,6 +2,8 @@ use crate::components::popup_content::popup_content;
 use crate::components::map_menu::MapMenu;
 use crate::models::territories::{Territory};
 use crate::functions::document_functions::set_document_title;
+use crate::components::menu_bar_v2::MenuBarV2;
+use crate::components::menu_bar::TerritorySearchLink;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -419,7 +421,16 @@ pub fn territory_map() -> Html {
         }).forget();
 
     html!{
-        <div style={"width:100%;"}>        
+        <>
+        <MenuBarV2>
+            <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                <li class={"nav-item"}>
+                    <TerritorySearchLink />
+                </li>  
+            </ul>
+        </MenuBarV2>
+        <div style="width:100%;margin-top:-16px;">  
+            //<div style="height:max(100px,40%);">{"Testing"}</div>
             {
                 {map_container}
             }
@@ -427,7 +438,7 @@ pub fn territory_map() -> Html {
             // <AssignPageLink />
             <MapMenu
                 bottom_vh={1}
-                svg_path_d={"M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"}
+                svg_path_d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"
             >
                 <div>
                     <button onclick={group_core_onclick} class="btn btn-primary" aria-label="Core">{"C"}</button>
@@ -443,6 +454,7 @@ pub fn territory_map() -> Html {
                 </div>
             </MapMenu>                
         </div>
+        </>
     }
 }
 
@@ -499,27 +511,28 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
 fn home_button() -> Html {
     html! {
         <a 
-        style={"
+        style="
             position: absolute;
             height: auto;
             max-height: 60px;
-            top: 1vh;
+            /*top: calc(max(100px, 40%) + 2vh);*/
+            top: calc(56px + 1vh);
             right: 1vh;
             margin-right: 1vh; 
             width: auto; 
             z-index: 1000; /*Just above 'Leaflet' in the bottom right corner*/
-        "}
-        class={"btn btn-primary"}
-        href={"/"}>
+        "
+        class="btn btn-primary"
+        href="/">
         <svg 
-            xmlns={"http://www.w3.org/2000/svg"}
-            width={"16"}
-            height={"16"}
-            fill={"currentColor"}
-            class={"bi bi-house-fill"}
-            viewBox={"0 0 16 16"}>
-            <path d={"M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"}/>
-            <path d={"m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"}/>
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-house-fill"
+            viewBox="0 0 16 16">
+            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+            <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"/>
         </svg>
     </a>
     }

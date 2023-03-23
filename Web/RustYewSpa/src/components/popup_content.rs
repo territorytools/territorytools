@@ -15,38 +15,48 @@ pub fn popup_content(territory: &Territory) -> String  {
             "Completed"
         }
     };
-
+    
     let assign_button_html = 
         if territory.status == "Available".to_string() && status != "Completed".to_string() {
         let description: String = match &territory.description {
             Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
             None => "(empty)".to_string()
         };
-
-        // format!(
-        //     "<br/><button data-territory-number={territory_number} onclick=\"wasm.try_it();alert('tested 3');\">Test</button>",
-        //     territory_number = territory.number)
-        format!("<br/><a 
-                    style='margin-top:5px;color:white;'
-                    class='btn btn-primary btn-sm'
-                    href='/app/assign/{territory_number}/{description}/Current+Assignee'>
-                    Assign
+        
+        let id = territory.id.unwrap_or_default();
+        if id == 0 {
+            format!("<br/><a 
+                style='margin-top:5px;color:white;'
+                class='btn btn-primary btn-sm'
+                href='/app/assign/{territory_number}/{description}/Current+Assignee'>
+                Assign
                 </a>",
                 territory_number = territory.number,
-                )
+            )
+        } else { 
+            "".to_string()
+        }
+
+ 
     } else { "".to_string() };
-    
-    let description: String = match &territory.description {
-        Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
-        None => "(empty)".to_string()
-    };
 
     let group_id: String = match &territory.group_id {
         Some(v) => if v == "" { "".to_string() } else { v.clone() },
         None => "".to_string()
     };
+    
+    let territory_id: i32 = match territory.id {
+        Some(v) => v,
+        None => 0
+    };
+ 
+    let id = territory.id.unwrap_or_default();
+    let description: String = match &territory.description {
+        Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
+        None => "(empty)".to_string()
+    };
 
-    let edit_button_html = 
+    let edit_button_html = if id == 0 {
         format!("<br/><a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
@@ -54,9 +64,17 @@ pub fn popup_content(territory: &Territory) -> String  {
             Edit
         </a>",
         territory_number = territory.number,
-        //description = description,
-        group_id = group_id
-        );
+        description = &description,
+        group_id = group_id)
+    } else { 
+        format!("<br/><a 
+            style='margin-top:5px;color:white;'
+            class='btn btn-primary btn-sm'
+            href='/app/territory-edit?id={id}'>
+            Edit
+        </a>")
+    };
+        
 
     format!(
         "<div style='font-size:15px;'>
@@ -68,7 +86,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             {assignee_line}
             {assign_button_html}
             {edit_button_html}
-            <br/>
+            <br/><span><small><small>TID: {territory_id}</small></small></span>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap(),

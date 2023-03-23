@@ -5,6 +5,7 @@ use crate::Secure;
 use crate::TerritoryEditPage;
 use crate::TerritoryEditorPage;
 use crate::TerritoryEditPageExample;
+use crate::TerritorySearch;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
 //use crate::TestMap;
@@ -46,6 +47,8 @@ pub enum Route {
     AddressEdit,
     #[at("/app/territory-edit")]
     TerritoryEditor,
+    #[at("/app/territory-search")]
+    TerritorySearch,    
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
@@ -95,6 +98,7 @@ pub fn switch(route: Route) -> Html {
         Route::AddressSearch => html! { <AddressSearch /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
+        Route::TerritorySearch => html! { <TerritorySearch /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },
@@ -105,6 +109,6 @@ pub fn switch(route: Route) -> Html {
         },
         //Route::TestMap => html! { <TestMap /> },
         Route::Links => html! { <TerritoryLinkPage /> },
-        Route::Misc { path } => html! {<p>{format!("Matched some other path: {}", path)}</p>},
+        Route::Misc { path } => html! {<p>{format!("Cannot find path: {}", path)}</p>},
     }
 }
