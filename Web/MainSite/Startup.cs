@@ -1,5 +1,6 @@
 ﻿using Certes;
 using FluffySpoon.AspNet.LetsEncrypt;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -65,7 +66,7 @@ namespace TerritoryTools.Web.MainSite
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-
+               
                 // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
                 options.OnAppendCookie = cookieContext =>
@@ -77,6 +78,13 @@ namespace TerritoryTools.Web.MainSite
             string connectionString = Configuration.GetConnectionString("MainDbContextConnection");
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(options =>
+            //    {
+            //        options.ExpireTimeSpan = TimeSpan.FromDays(90);
+            //        options.SlidingExpiration = true;
+            //    });
 
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -317,6 +325,8 @@ namespace TerritoryTools.Web.MainSite
 
         private void CheckSameSite(HttpContext httpContext, CookieOptions options)
         {
+            options.Expires = DateTime.Now.AddDays(90);
+         
             // Error Message: An error was encountered while handling the remote login. Correlation failed.
             // Error here: https://portal.azure.com/#blade/AppInsightsExtension/DetailsV2Blade/DataModel/%7B%22eventId%22:%227160fcae-281b-11ed-97dd-000d3a3f8942%22,%22timestamp%22:%222022-08-30T04:22:33.945Z%22%7D/ComponentId/%7B%22Name%22:%22territorytools%22,%22ResourceGroup%22:%22Experiments%22,%22SubscriptionId%22:%22410c5468-58aa-403b-b82b-a2ed191fdfb3%22%7D
             // This is a fix for old browsers:

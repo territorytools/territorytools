@@ -1,15 +1,12 @@
-using System;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TerritoryTools.Web.Data;
-using TerritoryTools.Entities;
-using TerritoryTools.Web.MainSite.Areas.UrlShortener.Models;
-using Microsoft.AspNetCore.DataProtection;
+using System;
 using System.IO;
+using TerritoryTools.Web.Data;
 
 [assembly: HostingStartup(typeof(TerritoryTools.Web.MainSite.Areas.Identity.IdentityHostingStartup))]
 namespace TerritoryTools.Web.MainSite.Areas.Identity
@@ -30,6 +27,8 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity
                 //services.AddDataProtection()
                 //    .PersistKeysToDbContext<MainDbContext>();
                 services.AddDataProtection()
+                    .SetDefaultKeyLifetime(TimeSpan.FromDays(366))
+                    .SetApplicationName("Territory Tools Web")
                     .PersistKeysToFileSystem(new DirectoryInfo(@"/data/keys"));
 
                 //services.AddDefaultIdentity<IdentityUser>(
