@@ -430,6 +430,10 @@ pub fn territory_editor_page() -> Html {
     let assignment_result_state = assignment_result_state.clone();
     let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
 
+    let assign_uri = format!("/app/assign/{territory_number}/{description}/Current+Assignee", 
+        territory_number = state.territory.number.clone(),
+        description = state.territory.description.clone().unwrap_or("".to_string()));
+
     html! {
         <>
         <MenuBarV2>
@@ -450,23 +454,29 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 </div>
             }
-            <form onsubmit={assigner_onsubmit} class="row g-3">
-                <div class="col-12 col-sm-9 col-md-6 d-flex ">
-                    <UserSelector onchange={assignee_onchange} />
-                    <button type="submit" class="btn btn-primary">
-                        {if is_assigned { "Reassign" } else { "Assign" }}
-                    </button>
-                </div>
-            </form>
-            if assignment_result_state.load_failed { 
-                <div class="row">
-                    <div class="col">
-                        <span class="mx-1 badge bg-danger">{"Error"}</span> 
-                        <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
-                        <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
-                    </div>
-                </div>
-            }
+            <a 
+                style="margin-top:5px;color:white;"
+                class="btn btn-primary btn-sm"
+                href={assign_uri}>
+                {"Open Territory Assign Page"}
+            </a>
+            // <form onsubmit={assigner_onsubmit} class="row g-3">
+            //     <div class="col-12 col-sm-9 col-md-6 d-flex ">
+            //         <UserSelector onchange={assignee_onchange} />
+            //         <button type="submit" class="btn btn-primary">
+            //             {if is_assigned { "Reassign" } else { "Assign" }}
+            //         </button>
+            //     </div>
+            // </form>
+            // if assignment_result_state.load_failed { 
+            //     <div class="row">
+            //         <div class="col">
+            //             <span class="mx-1 badge bg-danger">{"Error"}</span> 
+            //             <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+            //             <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+            //         </div>
+            //     </div>
+            // }
             <hr/>
             <span><strong>{"Edit Territory"}</strong></span>
             if state.save_success { 
