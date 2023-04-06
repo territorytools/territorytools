@@ -518,7 +518,7 @@ pub fn territory_map() -> Html {
                 <li class="nav-item">
                     <div class="d-flex flex-colum shadow-sm">
                         <div class="input-group">
-                            <form onsubmit={search_text_onsubmit} id="search-form">
+                            <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
                                 <input onchange={search_text_onchange} 
                                     value={search_state.search_text.clone()} 
                                     type="text" 
@@ -615,7 +615,9 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
             is_hidden: !(number.to_string().is_empty() 
                 || t.number.clone() == number.to_string() 
                 || t.signed_out_to.clone() == Some(number.to_string())
-                || t.description.clone() == Some(number.to_string())),
+                || t.description.clone().unwrap_or("".to_string()).contains(number)
+                || format!("g{}", t.group_id.clone().unwrap_or("".to_string())) == number.to_string()
+                || t.status.clone() == number.to_string()),
             border: t.border.clone(),
             addresses: t.addresses.clone(),
         };
