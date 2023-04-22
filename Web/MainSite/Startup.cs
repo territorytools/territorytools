@@ -219,6 +219,18 @@ namespace TerritoryTools.Web.MainSite
             }
         }
 
+        IPAddress ParseIPAddress(string ipAddressString)
+        {
+            try
+            {
+                return IPAddress.Parse(ipAddressString);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error parsing IP Address: '{ipAddressString ?? ""}'", ex);
+            }
+        }
+
         // This method gets called by the runtime. Use this method to configure
         // the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -230,7 +242,7 @@ namespace TerritoryTools.Web.MainSite
 
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-For", out StringValues fwdIpAddress))
                 {
-                    ctx.Connection.RemoteIpAddress = IPAddress.Parse(fwdIpAddress.First());
+                    ctx.Connection.RemoteIpAddress = ParseIPAddress(fwdIpAddress.First());
                 }
 
                 if (ctx.Request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues fwdScheme))
