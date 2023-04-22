@@ -4,7 +4,7 @@ use crate::models::territories::{Territory};
 use crate::functions::document_functions::set_document_title;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::TerritorySearchLink;
-
+use std::ops::Deref;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use leaflet::{LatLng, Map, TileLayer, Polygon, Polyline, LatLngBounds};
@@ -14,10 +14,12 @@ use gloo_utils::document;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use serde::{Serialize, Deserialize};
+use wasm_bindgen_futures::spawn_local;
 //use js_sys::{Array, Date};
 use web_sys::{
     Element,
     HtmlElement,
+    HtmlInputElement,
     Node
 };
 use yew_router::hooks::use_location;
@@ -49,12 +51,22 @@ pub struct MouseClickModel {
     pub mouse_click_x: i32,
     pub mouse_click_y: i32,
 }
-
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct TerritorySearchPage {
+    pub success: bool,
+    pub count: i32,
+    pub search_text: String,
+    pub territories: Vec<Territory>,
+    pub load_error: bool,
+    pub load_error_message: String,
+}
 
 #[function_component(TerritoryMap)]
 pub fn territory_map() -> Html {
     set_document_title("Territory Map");
     
+    let search_state = use_state(|| TerritorySearchPage::default());
+
     let _mouse_click_model: UseStateHandle<MouseClickModel> = use_state(|| MouseClickModel::default());
 
     let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
@@ -413,6 +425,82 @@ pub fn territory_map() -> Html {
     //     })
     // };
 
+    let search_state_clone = search_state.clone();
+    let search_text_onchange = {
+        let search_state_clone = search_state_clone.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = search_state_clone.deref().clone();
+            let value = event
+                .target()
+                .expect("An input value for an HtmlInputElement")
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.search_text = value;
+            search_state_clone.set(modification);
+        })
+    };
+
+    let search_state_clone = search_state.clone();
+    let model_clone = model.clone();
+    let search_clear_onclick = {
+        let search_state_clone = search_state_clone.clone();
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            log!("search_clear_onclick");
+            //let mut modification = search_state_clone.deref().clone();
+            // let search_state_clone = search_state_clone.clone();
+            let modification = TerritorySearchPage
+            {
+                count: 0,
+                load_error: false,
+                load_error_message: "".to_string(),
+                search_text: "".to_string(),
+                success: true,
+                territories: vec![],
+            };
+            //modification.search_text = "".into();
+            search_state_clone.set(modification);
+            
+            // let model_clone = model_clone.clone();
+            // setup_number_filter(model_clone.clone(), "");
+
+            //let search_state_clone = search_state_clone.clone();
+            let model_clone = model_clone.clone();
+            spawn_local(async move {
+                //let search_state_clone = search_state_clone.clone();
+                let model_clone = model_clone.clone();
+                //let search_text = search_state_clone.search_text.clone();
+   
+               setup_number_filter(model_clone.clone(), "");
+            });
+        })
+    };
+
+    let search_state_clone = search_state.clone();
+    let model_clone = model.clone();
+    let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
+        event.prevent_default();
+        let search_state_clone = search_state_clone.clone();
+        let model_clone = model_clone.clone();
+        spawn_local(async move {
+            let search_state_clone = search_state_clone.clone();
+            let model_clone = model_clone.clone();
+            let search_text = search_state_clone.search_text.clone();
+            //if !search_text.is_empty() {
+                // TODO: Clear search results if nothing is returned
+                // TODO: Leave search text in the search box?
+                
+                // let result = get_territories(search_text).await;
+                // cloned_state.set(result);
+           // }
+
+           setup_number_filter(model_clone.clone(), &search_text);
+        });
+    });
+
+    let search_state_clone = search_state.clone();
+
     // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(
         100,
@@ -424,9 +512,49 @@ pub fn territory_map() -> Html {
         <>
         <MenuBarV2>
             <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
-                <li class={"nav-item"}>
-                    <TerritorySearchLink />
-                </li>  
+                // <li class="nav-item">
+                //     <TerritorySearchLink />
+                // </li>
+                <li class="nav-item">
+                    <div class="d-flex flex-colum shadow-sm">
+                        <div class="input-group">
+                            <form onsubmit={search_text_onsubmit} id="search-form">
+                                <input onchange={search_text_onchange} 
+                                    value={search_state.search_text.clone()} 
+                                    type="text" 
+                                    class="form-control" 
+                                    placeholder="Search"  />
+                            </form>
+                            <button onclick={search_clear_onclick} class="btn btn-outline-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                </svg>
+                            </button>
+                            <button form="search-form" class="btn btn-primary" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        // <input onchange={search_text_onchange} type="text" value="" style="max-width:150px;" placeholder="Search" class="form-control input-sm" />
+                        // <button type="submit" class="btn btn-primary">
+                        //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        //         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        //     </svg>
+                        // </button>
+
+                        // if state.load_error { 
+                        //     <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                        //     <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
+                        // }    
+                        // <button type="submit" class="btn btn-primary ms-1">
+                        //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection-fill" viewBox="0 0 16 16">
+                        //         <path d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zM2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1z"/>
+                        //     </svg>
+                        // </button>
+                    </div>
+                </li>
             </ul>
         </MenuBarV2>
         <div style="width:100%;margin-top:-16px;">  
@@ -456,6 +584,60 @@ pub fn territory_map() -> Html {
         </div>
         </>
     }
+}
+
+fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
+    log!("setup_number_filter {}", number);
+    if number.to_string().is_empty() {
+        log!("setup_number_filter Empty");
+    }
+    let model_clone = model.clone();
+    let territories = model_clone.territories.clone();
+    let tcount: usize = territories.len();
+    log!(format!("Territories already loaded: {}", tcount));
+    let mut new_territories: Vec<Territory> = vec![];
+    for t in territories.iter() {     
+        //t.is_visible = false;
+        let nt = Territory {
+            id: t.id.clone(),
+            number: t.number.clone(),
+            status: t.status.clone(),
+            stage_id: t.stage_id.clone(),
+            description: t.description.clone(),
+            notes: t.notes.clone(),
+            address_count: t.address_count.clone(),
+            area_code: t.area_code.clone(),
+            last_completed_by: t.last_completed_by.clone(),
+            signed_out_to: t.signed_out_to.clone(),
+            group_id: t.group_id.clone(),
+            sub_group_id: t.sub_group_id.clone(),
+            is_active: true, //t.is_active.clone(),
+            is_hidden: !(number.to_string().is_empty() 
+                || t.number.clone() == number.to_string() 
+                || t.signed_out_to.clone() == Some(number.to_string())
+                || t.description.clone() == Some(number.to_string())),
+            border: t.border.clone(),
+            addresses: t.addresses.clone(),
+        };
+        new_territories.push(nt);
+    }
+
+    let m = TerritoryMapModel {
+        territories: new_territories, //model_clone.territories.clone(),
+        territories_is_loaded: false,
+        local_load: true,
+        lat: model_clone.lat,
+        lon: model_clone.lon,
+        zoom: model_clone.zoom, //leaflet_map_clone.getZoom(),
+        group_visible: model_clone.group_visible.clone(),
+    };
+
+    let _mcm = MouseClickModel {
+        mouse_click_x: 0,
+        mouse_click_y: 0,
+    };
+
+    model.set(m);
 }
 
 fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
