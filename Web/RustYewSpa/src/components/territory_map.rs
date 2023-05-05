@@ -523,80 +523,64 @@ pub fn territory_map() -> Html {
     .forget();
 
     html! {
-        <>
-        <MenuBarV2>
-            <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
-                // <li class="nav-item">
-                //     <TerritorySearchLink />
-                // </li>
-                <li class="nav-item">
-                    <div class="d-flex flex-colum shadow-sm">
-                        <div class="input-group">
-                            <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
-                                <input onchange={search_text_onchange}
-                                    value={search_state.search_text.clone()}
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Search"  />
-                            </form>
-                            <button onclick={search_clear_onclick} class="btn btn-outline-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                                </svg>
-                            </button>
-                            <button form="search-form" class="btn btn-primary" type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        // <input onchange={search_text_onchange} type="text" value="" style="max-width:150px;" placeholder="Search" class="form-control input-sm" />
-                        // <button type="submit" class="btn btn-primary">
-                        //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                        //         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                        //     </svg>
-                        // </button>
-
-                        // if state.load_error {
-                        //     <span class="mx-1 badge bg-danger">{"Error"}</span>
-                        //     <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
-                        // }
-                        // <button type="submit" class="btn btn-primary ms-1">
-                        //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection-fill" viewBox="0 0 16 16">
-                        //         <path d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zM2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1z"/>
-                        //     </svg>
-                        // </button>
+        <div style="background-color:yellow;height:100%;">
+            <div id="menu-bar-header" style="height:57px;background-color:red;">
+                <MenuBarV2>
+                    <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                        // <li class="nav-item">
+                        //     <TerritorySearchLink />
+                        // </li>
+                        <li class="nav-item">
+                            <div class="d-flex flex-colum shadow-sm">
+                                <div class="input-group">
+                                    <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
+                                        <input onchange={search_text_onchange}
+                                            value={search_state.search_text.clone()}
+                                            type="text"
+                                            class="form-control"
+                                            placeholder="Search"  />
+                                    </form>
+                                    <button onclick={search_clear_onclick} class="btn btn-outline-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                        </svg>
+                                    </button>
+                                    <button form="search-form" class="btn btn-primary" type="submit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </MenuBarV2>
+            </div>
+            <div style="height: calc(100% - 57px);background-color:blue;">
+                {
+                    {map_container}
+                }
+                // <HomeButton />
+                // <AssignPageLink />
+                <MapMenu
+                    bottom_vh={1}
+                    svg_path_d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"
+                >
+                    <div>
+                        <button onclick={group_core_onclick} class="btn btn-primary" aria-label="Core">{"C"}</button>
+                        <button onclick={group_1_onclick} class="btn btn-primary" aria-label="1">{"1"}</button>
+                        <button onclick={group_2_onclick} class="btn btn-primary" aria-label="2">{"2"}</button>
+                        <button onclick={group_3_onclick} class="btn btn-primary" aria-label="3">{"3"}</button>
+                        <button onclick={group_4_onclick} class="btn btn-primary" aria-label="4">{"4"}</button>
+                        <button onclick={group_5_onclick} class="btn btn-primary" aria-label="5">{"5"}</button>
+                        <button onclick={group_6_onclick} class="btn btn-primary" aria-label="6">{"6"}</button>
+                        <button onclick={group_7_onclick} class="btn btn-primary" aria-label="7">{"7"}</button>
+                        <button onclick={group_inner_onclick} class="btn btn-primary" aria-label="Inner">{"*"}</button>
+                        //<button onclick={group_all_onclick} class="btn btn-primary" aria-label="All">{"A"}</button>
                     </div>
-                </li>
-            </ul>
-        </MenuBarV2>
-        <div style="width:100%;margin-top:-16px;">
-            //<div style="height:max(100px,40%);">{"Testing"}</div>
-            {
-                {map_container}
-            }
-            <HomeButton />
-            // <AssignPageLink />
-            <MapMenu
-                bottom_vh={1}
-                svg_path_d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z"
-            >
-                <div>
-                    <button onclick={group_core_onclick} class="btn btn-primary" aria-label="Core">{"C"}</button>
-                    <button onclick={group_1_onclick} class="btn btn-primary" aria-label="1">{"1"}</button>
-                    <button onclick={group_2_onclick} class="btn btn-primary" aria-label="2">{"2"}</button>
-                    <button onclick={group_3_onclick} class="btn btn-primary" aria-label="3">{"3"}</button>
-                    <button onclick={group_4_onclick} class="btn btn-primary" aria-label="4">{"4"}</button>
-                    <button onclick={group_5_onclick} class="btn btn-primary" aria-label="5">{"5"}</button>
-                    <button onclick={group_6_onclick} class="btn btn-primary" aria-label="6">{"6"}</button>
-                    <button onclick={group_7_onclick} class="btn btn-primary" aria-label="7">{"7"}</button>
-                    <button onclick={group_inner_onclick} class="btn btn-primary" aria-label="Inner">{"*"}</button>
-                    //<button onclick={group_all_onclick} class="btn btn-primary" aria-label="All">{"A"}</button>
-                </div>
-            </MapMenu>
+                </MapMenu>
+            </div>
         </div>
-        </>
     }
 }
 
