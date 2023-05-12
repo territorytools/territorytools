@@ -509,18 +509,20 @@ pub fn territory_editor_page() -> Html {
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-stage" class="form-label">{"Stage"}</label>
+                    // TODO: Load this dynamically, it has already changed
                     <select onchange={stage_id_onchange} id="input-stage" class="form-select shadow-sm">
                         <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={10} english="Available for Check Out" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={20} english="Letter: Writing" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={21} english="Letter: Sent" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={22} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={30} english="Phone: Calling" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={31} english="Phone: Done" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={40} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={41} english="Door-to-Door: Done" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={50} english="Door-to-Door: Cooling Off" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={60} english="Reserved" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={2100} english="Letter: Sent" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={4000} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={4010} english="Door-to-Door: Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={4100} english="Door-to-Door: Done" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={5000} english="Door-to-Door: Cooling Off" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
                     </select>
                 </div>
                 // <div class="col-12 col-sm-6 col-md-4">
