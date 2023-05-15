@@ -49,6 +49,7 @@ pub struct TerritoryEditRequest {
     // #[serde(default)]
     // pub is_hidden: bool,
     // pub border: Vec<Vec<f32>>,
+    pub modification_type: String,
 }
 
 // TODO: This is good: https://yew.rs/docs/0.18.0/concepts/wasm-bindgen/web-sys

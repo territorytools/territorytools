@@ -299,6 +299,7 @@ pub fn territory_editor_page() -> Html {
                 notes: body_model.territory.notes.clone(),
                 group_id: body_model.territory.group_id.clone(),
                 stage_id: body_model.territory.stage_id.unwrap_or_default(),
+                modification_type: "Edit".to_string(),
             };
 
             let data_serialized = serde_json::to_string_pretty(&edit_request)
@@ -383,7 +384,7 @@ pub fn territory_editor_page() -> Html {
         let assignment_result_state_clone = assignment_result_state_clone.clone();
         spawn_local(async move {
             let _model = assigner_state.clone();
-            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}&assigner=not-available", 
+            let uri_string: String = format!("{path}?territoryNumber={number}&albaUserId={assignee}&assigner=check-session", 
                 path = API_ASSIGN_URL,
                 number = cloned_state.territory.number.clone(),
                 assignee = assigner_state.assignee.clone()
@@ -525,6 +526,17 @@ pub fn territory_editor_page() -> Html {
                         <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
                     </select>
                 </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                <label for="input-status" class="form-label">{"Status"}</label>
+                <select id="input-status" class="form-select shadow-sm">
+                    <option value="Available" selected={state.territory.status.clone() == "Available"}>
+                        {"Available"}
+                    </option>
+                    <option value="Signed-out" selected={state.territory.status.clone() == "Signed-out"}>
+                        {"Signed-out"}
+                    </option>
+                </select>
+            </div>                
                 // <div class="col-12 col-sm-6 col-md-4">
                 //     <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
                 //     <AddressDeliveryStatusSelector 

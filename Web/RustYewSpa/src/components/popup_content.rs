@@ -89,7 +89,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             <br/><span><small><small>TID: {territory_id}</small></small></span>
         </div>",
         territory_number = territory.number,
-        description = territory.description.clone().unwrap(),
+        description = territory.description.clone().unwrap_or("".to_string()),
         address_count = territory.address_count,
     )
 }
