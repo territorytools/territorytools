@@ -500,15 +500,15 @@ pub fn territory_editor_page() -> Html {
                 //         <EnglishChineseIdOption id={2} english="Signed-out" chinese="" selected={selected_status_id} />
                 //     </select>
                 // </div>
-                <div class="col-6 col-sm-6 col-md-4">
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                     <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
                     <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
                 </div>
-                <div class="col-6 col-sm-6 col-md-4">
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                     <label for="input-group-id" class="form-label">{"Group ID"}</label>
                     <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <label for="input-stage" class="form-label">{"Stage"}</label>
                     // TODO: Load this dynamically, it has already changed
                     <select onchange={stage_id_onchange} id="input-stage" class="form-select shadow-sm">
@@ -526,16 +526,17 @@ pub fn territory_editor_page() -> Html {
                         <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
                     </select>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4">
-                <label for="input-status" class="form-label">{"Status"}</label>
-                <select id="input-status" class="form-select shadow-sm">
-                    <option value="Available" selected={state.territory.status.clone() == "Available"}>
-                        {"Available"}
-                    </option>
-                    <option value="Signed-out" selected={state.territory.status.clone() == "Signed-out"}>
-                        {"Signed-out"}
-                    </option>
-                </select>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                // NOT DONE YET
+                //<label for="input-status" class="form-label">{"Status"}</label>
+                // <select id="input-status" class="form-select shadow-sm">
+                //     <option value="Available" selected={state.territory.status.clone() == "Available"}>
+                //         {"Available"}
+                //     </option>
+                //     <option value="Signed-out" selected={state.territory.status.clone() == "Signed-out"}>
+                //         {"Signed-out"}
+                //     </option>
+                // </select>
             </div>                
                 // <div class="col-12 col-sm-6 col-md-4">
                 //     <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
