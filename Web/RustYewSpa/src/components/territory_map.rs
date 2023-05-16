@@ -207,7 +207,7 @@ pub fn territory_map() -> Html {
             if t.is_active {
                 1.0
             } else {
-                0.1
+                0.01
             }
         };
 
@@ -263,7 +263,7 @@ pub fn territory_map() -> Html {
                     .expect("Unable to serialize popup options"),
             );
 
-            if !t.is_hidden {
+            if !t.is_hidden && t.group_id.clone().unwrap_or("".to_string()) != "outer".to_string() {
                 poly.addTo(&leaflet_map);
             }
         }
@@ -609,8 +609,8 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
             signed_out_to: t.signed_out_to.clone(),
             group_id: t.group_id.clone(),
             sub_group_id: t.sub_group_id.clone(),
-            is_active: true, //t.is_active.clone(),
-            is_hidden: !(number.to_string().is_empty()
+            is_hidden: t.group_id.clone().unwrap_or("".to_string()) == "outer".to_string(),
+            is_active: (number.to_string().is_empty()
                 || t.number.clone() == number.to_string()
                 || t.signed_out_to.clone() == Some(number.to_string())
                 || t.description
@@ -664,9 +664,9 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
             last_completed_by: t.last_completed_by.clone(),
             signed_out_to: t.signed_out_to.clone(),
             group_id: t.group_id.clone(),
-            sub_group_id: t.sub_group_id.clone(),
-            is_active: true, //t.is_active.clone(),
-            is_hidden: !(t.group_id.clone().unwrap() == group.to_string()
+            sub_group_id: t.sub_group_id.clone(),            
+            is_hidden: t.group_id.clone().unwrap_or("".to_string()) == "outer".to_string(),
+            is_active: (t.group_id.clone().unwrap() == group.to_string()
                 || (group == "*" && t.group_id.clone().unwrap() != "outer".to_string())
                 || (group == "all")),
             border: t.border.clone(),
