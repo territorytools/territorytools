@@ -23,7 +23,7 @@ pub fn popup_content(territory: &Territory) -> String  {
             None => "(empty)".to_string()
         };
         
-        let id = territory.id.unwrap_or_default();
+        let _id = territory.id.unwrap_or_default();
         if 1 == 1 { //id == 0 {
             format!("<br/><a 
                 style='margin-top:5px;color:white;'

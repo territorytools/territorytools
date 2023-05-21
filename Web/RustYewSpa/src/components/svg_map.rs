@@ -1,16 +1,5 @@
-//use crate::components::menu_bar::MenuBar;
-use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::menu_bar::MapPageLink;
-use crate::models::addresses::Address;
-use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
-use std::ops::Deref;
-use reqwasm::http::{Request};
-use serde::Deserialize;
-use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlInputElement;
 use web_sys::HtmlElement;
 
 #[derive(Properties, PartialEq, Clone, Default)]
@@ -27,6 +16,7 @@ pub struct SvgMapModel {
     pub x_delta: f64,
     pub y_delta: f64,
     pub wheel_delta: f64,
+    pub pinch_width: f64,
     pub zoom: f64,
 }
 
@@ -44,7 +34,8 @@ pub fn svg_map() -> Html {
         start_pan_y: 0.0, 
         x_delta: 0.0, 
         y_delta: 0.0, 
-        wheel_delta: 0.0, 
+        wheel_delta: 0.0,  
+        pinch_width: 0.0,
         zoom: 1.0, 
     });
     let cloned_state = state.clone();
@@ -71,6 +62,7 @@ pub fn svg_map() -> Html {
                     x_delta: x_delta,
                     y_delta: y_delta,
                     wheel_delta: cloned_state.wheel_delta,
+                    pinch_width: 0.0,
                     zoom: cloned_state.zoom,
                 });
             } else {
@@ -87,6 +79,7 @@ pub fn svg_map() -> Html {
                     x_delta: 0.0,
                     y_delta: 0.0,
                     wheel_delta: cloned_state.wheel_delta,
+                    pinch_width: 0.0,
                     zoom: cloned_state.zoom,
                 });
             }
@@ -98,25 +91,32 @@ pub fn svg_map() -> Html {
         let cloned_state = cloned_state.clone();
         if let Some(target) = e.target_dyn_into::<HtmlElement>() {
             let rect = target.get_bounding_client_rect();
-            let x = (e.touches().item(0).expect("One touch object").client_x() as f64) - rect.left();
-            let y = (e.touches().item(0).expect("One touch object").client_y() as f64) - rect.top();
+            let touch_0 = e.touches().item(0).expect("One touch object");
+            let x = (touch_0.client_x() as f64) - rect.left();
+            let y = (touch_0.client_y() as f64) - rect.top();
             //log!(format!("Left? : {} ; Top? : {}", x, y));
-                cloned_state.set(SvgMapModel { 
-                    mx: x, 
-                    my: y,
-                    mouse_down: cloned_state.mouse_down,
-                    pane_x: cloned_state.pane_x,
-                    pane_y: cloned_state.pane_y,                    
-                    pane_start_x: cloned_state.pane_start_x,
-                    pane_start_y: cloned_state.pane_start_y,
-                    start_pan_x: cloned_state.start_pan_x,
-                    start_pan_y: cloned_state.start_pan_y,
-                    x_delta: cloned_state.x_delta,
-                    y_delta: cloned_state.y_delta,
-                    wheel_delta: cloned_state.wheel_delta,
-                    zoom: cloned_state.zoom,
-                });
-            
+            // if e.touches().length == 2 {
+            //     let touch_1 = e.touches().item(1).expect("Second touch object");
+            //     let wide = (touch_0.client_x() - touch_1.client_x()).abs();
+            // }
+
+
+            cloned_state.set(SvgMapModel { 
+                mx: x, 
+                my: y,
+                mouse_down: cloned_state.mouse_down,
+                pane_x: cloned_state.pane_x,
+                pane_y: cloned_state.pane_y,                    
+                pane_start_x: cloned_state.pane_start_x,
+                pane_start_y: cloned_state.pane_start_y,
+                start_pan_x: cloned_state.start_pan_x,
+                start_pan_y: cloned_state.start_pan_y,
+                x_delta: cloned_state.x_delta,
+                y_delta: cloned_state.y_delta,
+                wheel_delta: cloned_state.wheel_delta,
+                pinch_width: 0.0,
+                zoom: cloned_state.zoom,
+            });
         }
     });
 
@@ -125,27 +125,34 @@ pub fn svg_map() -> Html {
         let cloned_state = cloned_state.clone();
         if let Some(target) = e.target_dyn_into::<HtmlElement>() {
             let rect = target.get_bounding_client_rect();
-            let x = (e.touches().item(0).expect("One touch object").client_x() as f64) - rect.left();
-            let y = (e.touches().item(0).expect("One touch object").client_y() as f64) - rect.top();
+            let touch_0 = e.touches().item(0).expect("One touch object");
+            let x = (touch_0.client_x() as f64) - rect.left();
+            let y = (touch_0.client_y() as f64) - rect.top();
+            //log!(format!("Left? : {} ; Top? : {}", x, y));
+            let wide = if e.touches().length() == 2 {
+                let touch_1 = e.touches().item(1).expect("Second touch object");
+                (touch_0.client_x() - touch_1.client_x()).abs() as f64
+            } else { 0.0 };
+
             log!(format!("Left? : {} ; Top? : {}", x, y));
-                let x_delta = cloned_state.mx - x;
-                let y_delta = cloned_state.my - y;
-                cloned_state.set(SvgMapModel { 
-                    mx: x, 
-                    my: y,
-                    mouse_down: cloned_state.mouse_down,
-                    pane_x: cloned_state.pane_x - x_delta,
-                    pane_y: cloned_state.pane_y - y_delta,                    
-                    pane_start_x: cloned_state.pane_start_x,
-                    pane_start_y: cloned_state.pane_start_y,
-                    start_pan_x: cloned_state.start_pan_x,
-                    start_pan_y: cloned_state.start_pan_y,
-                    x_delta: cloned_state.x_delta,
-                    y_delta: cloned_state.y_delta,
-                    wheel_delta: cloned_state.wheel_delta,
-                    zoom: cloned_state.zoom,
-                });
-            
+            let x_delta = cloned_state.mx - x;
+            let y_delta = cloned_state.my - y;
+            cloned_state.set(SvgMapModel { 
+                mx: x, 
+                my: y,
+                mouse_down: cloned_state.mouse_down,
+                pane_x: cloned_state.pane_x - x_delta,
+                pane_y: cloned_state.pane_y - y_delta,                    
+                pane_start_x: cloned_state.pane_start_x,
+                pane_start_y: cloned_state.pane_start_y,
+                start_pan_x: cloned_state.start_pan_x,
+                start_pan_y: cloned_state.start_pan_y,
+                x_delta: cloned_state.x_delta,
+                y_delta: cloned_state.y_delta,
+                wheel_delta: cloned_state.wheel_delta,
+                pinch_width: wide,
+                zoom: cloned_state.zoom,
+            });
         }
     });
 
@@ -156,11 +163,9 @@ pub fn svg_map() -> Html {
             let rect = target.get_bounding_client_rect();
             let x = (e.client_x() as f64) - rect.left();
             let y = (e.client_y() as f64) - rect.top();
-            // let x_delta = cloned_state.start_pan_x - cloned_state.mx;
-            // let y_delta = cloned_state.start_pan_y - cloned_state.my;
             cloned_state.set(SvgMapModel { 
-                mx: x, //cloned_state.mx,
-                my: y, //cloned_state.my, 
+                mx: x,
+                my: y,
                 mouse_down: true,
                 pane_x: cloned_state.pane_x,
                 pane_y: cloned_state.pane_y,
@@ -171,6 +176,7 @@ pub fn svg_map() -> Html {
                 x_delta: 0.0,
                 y_delta: 0.0,
                 wheel_delta: cloned_state.wheel_delta,
+                pinch_width: 0.0,
                 zoom: cloned_state.zoom,
             });
         }
@@ -197,6 +203,7 @@ pub fn svg_map() -> Html {
                 x_delta: 0.0,
                 y_delta: 0.0,
                 wheel_delta: cloned_state.wheel_delta,
+                pinch_width: 0.0,
                 zoom: cloned_state.zoom,
             });
         }
@@ -223,6 +230,7 @@ pub fn svg_map() -> Html {
                 x_delta: 0.0,
                 y_delta: 0.0,
                 wheel_delta: cloned_state.wheel_delta,
+                pinch_width: 0.0,
                 zoom: cloned_state.zoom,
             });
         }
@@ -252,6 +260,7 @@ pub fn svg_map() -> Html {
                 x_delta: cloned_state.x_delta,
                 y_delta: cloned_state.y_delta,
                 wheel_delta: cloned_state.wheel_delta,
+                pinch_width: 0.0,
                 zoom: zoom,
             });
         }
@@ -269,12 +278,13 @@ pub fn svg_map() -> Html {
         <div>
         <span>{cloned_state.mx}{", "}{cloned_state.my}{" Mouse Down:"}{cloned_state.mouse_down}</span><br/>
         <span>{"Pane: "}{cloned_state.pane_x}{", "}{cloned_state.pane_y}</span><br/>
+        <span>{"Pinch: "}{cloned_state.pinch_width}</span><br/>
         <span>{"Start: "}{cloned_state.start_pan_x}{", "}{cloned_state.start_pan_y}</span><br/>
         <span>{"Delta: "}{cloned_state.x_delta}{", "}{cloned_state.y_delta}{" Wheel: "}{cloned_state.wheel_delta}</span>
         
 
         <div {onmousemove} {onmousedown} {onmouseup} {onmouseleave} {onwheel} {ontouchmove} {ontouchstart}
-            style="width:100%;height:100%;background-color:gray;overflow:hidden;">
+            style="touch-action: pinch-zoom;width:100%;height:100%;background-color:gray;overflow:hidden;">
         <div style={format!(" pointer-events: none;width:auto;background-color:red;transform: translate3d({}px, {}px, 0px) scale({}, {});", pane_x, pane_y, cloned_state.zoom, cloned_state.zoom)} >
         
         //<svg width="149" height="147" viewBox="0 0 149 147" fill="none" xmlns="http://www.w3.org/2000/svg">
