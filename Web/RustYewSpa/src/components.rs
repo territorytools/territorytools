@@ -14,6 +14,7 @@ pub mod popup_content;
 pub mod route_stuff;
 pub mod sms_section;
 pub mod state_selector;
+pub mod svg_map;
 pub mod territory_map;
 pub mod territory_search_page;
 pub mod territory_summary;

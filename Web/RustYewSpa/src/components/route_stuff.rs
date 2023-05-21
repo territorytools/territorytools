@@ -8,6 +8,7 @@ use crate::TerritoryEditPageExample;
 use crate::TerritorySearch;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
+use crate::SvgMap;
 //use crate::TestMap;
 //use crate::components::test_map::TestMap;
 
@@ -23,6 +24,8 @@ pub enum Route {
     Start,
     #[at("/app/map")]
     Map,
+    #[at("/app/svg-map")]
+    SvgMap,
     #[at("/app/home")]
     Home,
     // #[at("/other")]
@@ -95,6 +98,7 @@ pub fn switch(route: Route) -> Html {
             territory_number={territory_number}
         /> },
         Route::Map => html! { <TerritoryMap /> },
+        Route::SvgMap => html! { <SvgMap /> },
         Route::AddressSearch => html! { <AddressSearch /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },

@@ -1,7 +1,6 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::TerritorySearchLink;
-use crate::components::user_selector::UserSelector;
 use crate::models::territories::{Territory, TerritoryEditRequest};
 use crate::models::territory_links::TerritoryLinkContract;
 use crate::functions::document_functions::set_document_title;
@@ -363,7 +362,7 @@ pub fn territory_editor_page() -> Html {
     //let selected_status_id: i32 = state.territory.status_id;
     
     let assigner_state = assigner_state.clone();
-    let assignee_onchange = {
+    let _assignee_onchange = {
         let assigner_state = assigner_state.clone();
         Callback::from(move |assignee: String| {
             let mut assigner = assigner_state.deref().clone();
@@ -376,7 +375,7 @@ pub fn territory_editor_page() -> Html {
     let cloned_state = state.clone();
     let assigner_state = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
-    let assigner_onsubmit = Callback::from(move |event: SubmitEvent| { 
+    let _assigner_onsubmit = Callback::from(move |event: SubmitEvent| { 
         event.prevent_default();
         
         let cloned_state = cloned_state.clone();
@@ -428,7 +427,7 @@ pub fn territory_editor_page() -> Html {
         });
     });
 
-    let assignment_result_state = assignment_result_state.clone();
+    let _assignment_result_state = assignment_result_state.clone();
     let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
 
     let assign_uri = format!("/app/assign/{territory_number}/{description}/Current+Assignee", 

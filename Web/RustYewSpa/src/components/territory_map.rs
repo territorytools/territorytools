@@ -441,7 +441,7 @@ pub fn territory_map() -> Html {
     };
 
     let search_state_clone = search_state.clone();
-    let model_clone = model.clone();
+    let _model_clone = model.clone();
     let search_clear_onclick = {
         let search_state_clone = search_state_clone.clone();
         let model_clone = model.clone();
@@ -506,15 +506,15 @@ pub fn territory_map() -> Html {
 
             setup_number_filter(model_clone.clone(), &search_text);
 
-            let bounds =
+            let _bounds =
                 LatLngBounds::new(&LatLng::new(47.66, -122.00), &LatLng::new(47.46, -122.20));
 
             //&leaflet_map.fitBounds(&bounds);
-            let result = cb_clone.emit(String::from("Bob")); 
+            let _result = cb_clone.emit(String::from("Bob")); 
         });
     });
 
-    let search_state_clone = search_state.clone();
+    let _search_state_clone = search_state.clone();
 
     // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(100, move || {
