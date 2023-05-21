@@ -36,6 +36,7 @@ chrono = "0.4.23"
 [dependencies.web-sys]
 version = "0.3"
 features = [
+    "HtmlImageElement",
     "HtmlInputElement", 
     "HtmlSelectElement", 
     "HtmlAnchorElement", 
@@ -45,7 +46,8 @@ features = [
     "console", 
     "Window", 
     "Document", 
-    "HtmlImageElement"
+    "MouseEvent",
+    "DomRect",
 ]
 
 #[lib]
