@@ -157,6 +157,10 @@ pub fn svg_map() -> Html {
                 }
             } else { 1.0 };
 
+            let mut zoom: f64 = cloned_state.zoom * pinch_ratio;
+            if zoom > 12.0 { zoom = 12.0 };
+            if zoom < 0.1 { zoom = 0.1 };
+
             log!(format!("Left? : {} ; Top? : {}", x, y));
             let x_delta = cloned_state.mx - x;
             let y_delta = cloned_state.my - y;
@@ -176,7 +180,7 @@ pub fn svg_map() -> Html {
                 pinch_width_start: wide,
                 pinch_width: wide,
                 pinch_ratio: pinch_ratio,
-                zoom: (cloned_state.zoom * pinch_ratio),
+                zoom: zoom,
             });
         }
     });
@@ -311,8 +315,13 @@ pub fn svg_map() -> Html {
         <div style="height:100%;">
             <div style="height:100px;">
                 <span>{" Mouse: "}{cloned_state.mx}{", "}{cloned_state.my}{" Mouse Down:"}{cloned_state.mouse_down}</span><br/>
-                <span>{" Pane: "}{cloned_state.pane_x}{", "}{cloned_state.pane_y}</span><br/>
-                <span>{" Pinch: start: "}{cloned_state.pinch_width_start}{" to "}{cloned_state.pinch_width}{" ratio: "}{cloned_state.pinch_ratio}</span><br/>
+                
+                <span>{" Pane: "}{cloned_state.pane_x}{", "}{cloned_state.pane_y}</span>
+                <span>{" Zoom: "}{cloned_state.zoom}</span><br/>
+
+                <span>{" Pinch: start: "}{cloned_state.pinch_width_start}
+                    {" to "}{cloned_state.pinch_width}{" ratio: "}{cloned_state.pinch_ratio}</span><br/>
+
                 <span>{" Start: "}{cloned_state.start_pan_x}{", "}{cloned_state.start_pan_y}</span>
                 <span>{" Delta: "}{cloned_state.x_delta}{", "}{cloned_state.y_delta}{" Wheel: "}{cloned_state.wheel_delta}</span>
             </div>
