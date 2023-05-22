@@ -13,9 +13,13 @@ pub struct SvgMapModel {
     pub start_pan_y: f64,
     pub pane_start_x: f64,
     pub pane_start_y: f64,
+    pub pane_origin_x: f64,
+    pub pane_origin_y: f64,
     pub x_delta: f64,
     pub y_delta: f64,
     pub wheel_delta: f64,
+    pub touch_0_x: f64,
+    pub touch_0_y: f64,
     pub pinch_width_start: f64,
     pub pinch_width: f64,
     pub pinch_ratio: f64,
@@ -32,11 +36,15 @@ pub fn svg_map() -> Html {
         pane_y: 0.0,
         pane_start_x: 0.0,
         pane_start_y: 0.0,
+        pane_origin_x: 0.0,
+        pane_origin_y: 0.0,
         start_pan_x: 0.0,
         start_pan_y: 0.0,
         x_delta: 0.0,
         y_delta: 0.0,
         wheel_delta: 0.0,
+        touch_0_x: 0.0,
+        touch_0_y: 0.0,
         pinch_width_start: 0.0,
         pinch_width: 0.0,
         pinch_ratio: 1.0,
@@ -61,11 +69,15 @@ pub fn svg_map() -> Html {
                     pane_y: cloned_state.pane_y - y_delta,
                     pane_start_x: cloned_state.pane_start_x,
                     pane_start_y: cloned_state.pane_start_y,
+                    pane_origin_x: cloned_state.pane_origin_x,
+                    pane_origin_y: cloned_state.pane_origin_y,                    
                     start_pan_x: cloned_state.start_pan_x,
                     start_pan_y: cloned_state.start_pan_y,
                     x_delta: x_delta,
                     y_delta: y_delta,
                     wheel_delta: cloned_state.wheel_delta,
+                    touch_0_x: cloned_state.touch_0_x,
+                    touch_0_y: cloned_state.touch_0_y,
                     pinch_width_start: 0.0,
                     pinch_width: 0.0,
                     pinch_ratio: 1.0,
@@ -80,11 +92,15 @@ pub fn svg_map() -> Html {
                     pane_y: cloned_state.pane_y,
                     pane_start_x: cloned_state.pane_start_x,
                     pane_start_y: cloned_state.pane_start_y,
+                    pane_origin_x: cloned_state.pane_origin_x,
+                    pane_origin_y: cloned_state.pane_origin_y,                    
                     start_pan_x: 0.0,
                     start_pan_y: 0.0,
                     x_delta: 0.0,
                     y_delta: 0.0,
                     wheel_delta: cloned_state.wheel_delta,
+                    touch_0_x: cloned_state.touch_0_x,
+                    touch_0_y: cloned_state.touch_0_y,
                     pinch_width_start: 0.0,
                     pinch_width: 0.0,
                     pinch_ratio: 1.0,
@@ -124,11 +140,15 @@ pub fn svg_map() -> Html {
                 pane_y: cloned_state.pane_y,
                 pane_start_x: cloned_state.pane_start_x,
                 pane_start_y: cloned_state.pane_start_y,
+                pane_origin_x: 0.0, //cloned_state.pane_origin_x,
+                pane_origin_y: 0.0, //cloned_state.pane_origin_y,                    
                 start_pan_x: cloned_state.start_pan_x,
                 start_pan_y: cloned_state.start_pan_y,
                 x_delta: cloned_state.x_delta,
                 y_delta: cloned_state.y_delta,
                 wheel_delta: cloned_state.wheel_delta,
+                touch_0_x: cloned_state.touch_0_x,
+                touch_0_y: cloned_state.touch_0_y,
                 pinch_width_start: wide,
                 pinch_width: wide,
                 pinch_ratio: 1.0,
@@ -191,6 +211,8 @@ pub fn svg_map() -> Html {
                 mouse_down: cloned_state.mouse_down,
                 pane_x: cloned_state.pane_x - x_delta,
                 pane_y: cloned_state.pane_y - y_delta,
+                pane_origin_x: x - cloned_state.pane_x,
+                pane_origin_y: y - cloned_state.pane_y,                 
                 pane_start_x: cloned_state.pane_start_x,
                 pane_start_y: cloned_state.pane_start_y,
                 start_pan_x: cloned_state.start_pan_x,
@@ -198,6 +220,8 @@ pub fn svg_map() -> Html {
                 x_delta: cloned_state.x_delta,
                 y_delta: cloned_state.y_delta,
                 wheel_delta: cloned_state.wheel_delta,
+                touch_0_x: x,
+                touch_0_y: y,
                 pinch_width_start: wide,
                 pinch_width: wide,
                 pinch_ratio: pinch_ratio,
@@ -221,11 +245,15 @@ pub fn svg_map() -> Html {
                 pane_y: cloned_state.pane_y,
                 pane_start_x: cloned_state.pane_start_x,
                 pane_start_y: cloned_state.pane_start_y,
+                pane_origin_x: 0.0, //cloned_state.pane_origin_x,
+                pane_origin_y: 0.0, //cloned_state.pane_origin_y,                    
                 start_pan_x: cloned_state.mx,
                 start_pan_y: cloned_state.my,
                 x_delta: 0.0,
                 y_delta: 0.0,
                 wheel_delta: cloned_state.wheel_delta,
+                touch_0_x: cloned_state.touch_0_x,
+                touch_0_y: cloned_state.touch_0_y,
                 pinch_width_start: cloned_state.pinch_width_start,
                 pinch_width: 0.0,
                 pinch_ratio: 1.0,
@@ -245,8 +273,10 @@ pub fn svg_map() -> Html {
                 mx: cloned_state.mx,
                 my: cloned_state.my,
                 mouse_down: false,
-                pane_x: cloned_state.pane_x, // - x_delta,
-                pane_y: cloned_state.pane_y, // - y_delta,
+                pane_x: cloned_state.pane_x,
+                pane_y: cloned_state.pane_y,
+                pane_origin_x: cloned_state.pane_origin_x,
+                pane_origin_y: cloned_state.pane_origin_y,                    
                 pane_start_x: cloned_state.pane_start_x,
                 pane_start_y: cloned_state.pane_start_y,
                 start_pan_x: 0.0,
@@ -254,6 +284,8 @@ pub fn svg_map() -> Html {
                 x_delta: 0.0,
                 y_delta: 0.0,
                 wheel_delta: cloned_state.wheel_delta,
+                touch_0_x: cloned_state.touch_0_x,
+                touch_0_y: cloned_state.touch_0_y,
                 pinch_width_start: 0.0,
                 pinch_width: 0.0,
                 pinch_ratio: 1.0,
@@ -273,8 +305,10 @@ pub fn svg_map() -> Html {
                 mx: cloned_state.mx,
                 my: cloned_state.my,
                 mouse_down: false,
-                pane_x: cloned_state.pane_x, // - x_delta,
-                pane_y: cloned_state.pane_y, // - y_delta,
+                pane_x: cloned_state.pane_x,
+                pane_y: cloned_state.pane_y,
+                pane_origin_x: cloned_state.pane_origin_x,
+                pane_origin_y: cloned_state.pane_origin_y,                    
                 pane_start_x: cloned_state.pane_start_x,
                 pane_start_y: cloned_state.pane_start_y,
                 start_pan_x: 0.0,
@@ -282,6 +316,8 @@ pub fn svg_map() -> Html {
                 x_delta: 0.0,
                 y_delta: 0.0,
                 wheel_delta: cloned_state.wheel_delta,
+                touch_0_x: cloned_state.touch_0_x,
+                touch_0_y: cloned_state.touch_0_y,
                 pinch_width_start: 0.0,
                 pinch_width: 0.0,
                 pinch_ratio: 1.0,
@@ -308,8 +344,10 @@ pub fn svg_map() -> Html {
                 mx: cloned_state.mx,
                 my: cloned_state.my,
                 mouse_down: false,
-                pane_x: cloned_state.pane_x, // - x_delta,
-                pane_y: cloned_state.pane_y, // - y_delta,
+                pane_x: cloned_state.pane_x,
+                pane_y: cloned_state.pane_y,
+                pane_origin_x: cloned_state.mx - cloned_state.pane_x,
+                pane_origin_y: cloned_state.my - cloned_state.pane_y,
                 pane_start_x: cloned_state.pane_start_x,
                 pane_start_y: cloned_state.pane_start_y,
                 start_pan_x: cloned_state.start_pan_x,
@@ -317,6 +355,8 @@ pub fn svg_map() -> Html {
                 x_delta: cloned_state.x_delta,
                 y_delta: cloned_state.y_delta,
                 wheel_delta: cloned_state.wheel_delta,
+                touch_0_x: cloned_state.touch_0_x,
+                touch_0_y: cloned_state.touch_0_y,
                 pinch_width_start: cloned_state.pinch_width_start,
                 pinch_width: 0.0,
                 pinch_ratio: 1.0,
@@ -337,24 +377,25 @@ pub fn svg_map() -> Html {
 
     html! {
         <div style="height:100%;">
-            <div style="height:100px;">
-                <span>{" Mouse: "}{cloned_state.mx}{", "}{cloned_state.my}{" Mouse Down:"}{cloned_state.mouse_down}</span><br/>
+            <div style="height:150px;">
+                <span>{" Mouse: xy: "}{cloned_state.mx}{", "}{cloned_state.my}{" down:"}{cloned_state.mouse_down}</span><br/>
 
-                <span>{" Pane: "}{cloned_state.pane_x}{", "}{cloned_state.pane_y}{" Cursor: "}{pane_cursor_x}{", "}{pane_cursor_y}</span>
-                <span>{" Zoom: "}{cloned_state.zoom}</span><br/>
+                <span>{" Pane: "}{cloned_state.pane_x}{", "}{cloned_state.pane_y}{" cursor: "}{pane_cursor_x}{", "}{pane_cursor_y}</span>
+                <span>{format!(" zoom: {:.3}", cloned_state.zoom)}</span>
+                <span>{format!(" origin: {}, {}", cloned_state.pane_origin_x, cloned_state.pane_origin_y)}</span><br/>
 
-                <span>{" Pinch: start: "}{cloned_state.pinch_width_start}
-                    {" to "}{cloned_state.pinch_width}{" ratio: "}{cloned_state.pinch_ratio}</span><br/>
+                <span>{format!("Touch: {},{} pinch start: {}", cloned_state.touch_0_x, cloned_state.touch_0_y, cloned_state.pinch_width_start)}
+                    {" to "}{cloned_state.pinch_width}{format!(" ratio: {:.3}", cloned_state.pinch_ratio)}</span><br/>
 
-                <span>{" Start: "}{cloned_state.start_pan_x}{", "}{cloned_state.start_pan_y}</span>
-                <span>{" Delta: "}{cloned_state.x_delta}{", "}{cloned_state.y_delta}{" Wheel: "}{cloned_state.wheel_delta}</span>
+                <span>{" Pan start: "}{cloned_state.start_pan_x}{", "}{cloned_state.start_pan_y}</span>
+                <span>{" delta: "}{cloned_state.x_delta}{", "}{cloned_state.y_delta}{" wheel: "}{cloned_state.wheel_delta}</span>
             </div>
 
             <div {onmousemove} {onmousedown} {onmouseup} {onmouseleave} {onwheel} {ontouchmove} {ontouchstart}
-                style="touch-action: none;width:100%;height:calc(100% - 100px);background-color:gray;overflow:hidden;">
+                style="touch-action: none;width:100%;height:calc(100% - 150px);background-color:gray;overflow:hidden;">
                 <div style={format!(
                     "transform-origin: {}px {}px;pointer-events: none;width:500px;height:500px;background-color:red;transform: translate3d({}px, {}px, 0px) scale({}, {});",
-                    pane_cursor_x, pane_cursor_y, pane_x, pane_y, cloned_state.zoom, cloned_state.zoom)} >
+                    cloned_state.pane_origin_x, cloned_state.pane_origin_y, pane_x, pane_y, cloned_state.zoom, cloned_state.zoom)} >
 
                 //<svg width="149" height="147" viewBox="0 0 149 147" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <svg width="700" height="1024" viewBox="0 0 700 512" fill="none" xmlns="http://www.w3.org/2000/svg">
