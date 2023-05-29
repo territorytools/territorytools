@@ -73,8 +73,8 @@ pub fn svg_map() -> Html {
                     mouse_y: my,
                     touch_0_x: cloned_state.touch_0_x,
                     touch_0_y: cloned_state.touch_0_y,
-                    zoom_cursor_x: cloned_state.zoom_cursor_x,
-                    zoom_cursor_y: cloned_state.zoom_cursor_y,
+                    zoom_cursor_x: zmx,
+                    zoom_cursor_y: zmy,
                     mouse_down: cloned_state.mouse_down,
                     pan_translate_x: cloned_state.pan_translate_x,
                     pan_translate_y: cloned_state.pan_translate_y,
@@ -92,8 +92,8 @@ pub fn svg_map() -> Html {
                         mouse_y: my,
                         touch_0_x: cloned_state.touch_0_x,
                         touch_0_y: cloned_state.touch_0_y,
-                        zoom_cursor_x: cloned_state.zoom_cursor_x,
-                        zoom_cursor_y: cloned_state.zoom_cursor_y,
+                        zoom_cursor_x: zmx,
+                        zoom_cursor_y: zmy,
                         mouse_down: cloned_state.mouse_down,
                         pan_translate_x: cloned_state.pan_translate_x,
                         pan_translate_y: cloned_state.pan_translate_y,
@@ -243,7 +243,7 @@ pub fn svg_map() -> Html {
                 touch_0_y: cloned_state.touch_0_y,
                 zoom_cursor_x: cloned_state.zoom_cursor_x,
                 zoom_cursor_y: cloned_state.zoom_cursor_y,
-                mouse_down: cloned_state.mouse_down,
+                mouse_down: true,
                 pan_translate_x: cloned_state.pan_translate_x,
                 pan_translate_y: cloned_state.pan_translate_y,
                 zoom_origin_x: cloned_state.zoom_origin_x,
@@ -270,7 +270,7 @@ pub fn svg_map() -> Html {
                 touch_0_y: cloned_state.touch_0_y,
                 zoom_cursor_x: cloned_state.zoom_cursor_x,
                 zoom_cursor_y: cloned_state.zoom_cursor_y,
-                mouse_down: cloned_state.mouse_down,
+                mouse_down: false,
                 pan_translate_x: cloned_state.pan_translate_x,
                 pan_translate_y: cloned_state.pan_translate_y,
                 zoom_origin_x: cloned_state.zoom_origin_x,
@@ -340,19 +340,21 @@ pub fn svg_map() -> Html {
                 pan_translate_y: cloned_state.pan_translate_y,
                 zoom_origin_x: cloned_state.zoom_origin_x,
                 zoom_origin_y: cloned_state.zoom_origin_y,
-                wheel_delta: cloned_state.wheel_delta,
+                wheel_delta: wheel_y,
                 pinch_width_start: cloned_state.pinch_width_start,
-                zoom: cloned_state.zoom,
+                zoom: zoom,
             });
         }
     });
 
     let s = state.clone();
     
-    let zoom_translate_x = 0.0;
-    let zoom_translate_y = 0.0;
+    let zoom_translate_x = 40.0; //s.zoom_cursor_x * s.zoom;
+    let zoom_translate_y = 20.0; //s.zoom_cursor_y * s.zoom;
     let zoom_origin_x = 0.0;
     let zoom_origin_y = 0.0;
+    let relative_zoom_cursor_x = s.zoom_cursor_x/s.zoom;
+    let relative_zoom_cursor_y = s.zoom_cursor_y/s.zoom;
 
     html! {
         <div style="height:100%;">
@@ -363,9 +365,10 @@ pub fn svg_map() -> Html {
                     {format!(" wheel delta: {:.1}", s.wheel_delta)}</span><br/>
 
                 <span>
-                    {format!(" Zoom: factor: {:.1} cursor (ZC): {:.1},{:.1} origin (ZO): {:.1},{:.1} ", 
+                    {format!(" Zoom: factor: {:.1} cursor (ZC): {:.1},{:.1} relative cursor (RC): {:.1},{:.1} origin (ZO): {:.1},{:.1} ", 
                     s.zoom,
                     s.zoom_cursor_x, s.zoom_cursor_y,
+                    relative_zoom_cursor_x, relative_zoom_cursor_y,
                     s.zoom_origin_x, s.zoom_origin_y)}
                     </span><br/>
             </div>
@@ -373,23 +376,30 @@ pub fn svg_map() -> Html {
             <div id="mouse-pane" {onmousemove} {onmousedown} {onmouseup} {onmouseleave} {onwheel} {ontouchmove} {ontouchstart}
                 style="touch-action: none;width:100%;height:calc(100% - 150px);background-color:gray;overflow:hidden;">
 
+                // Pan pane
                 <div id="pan-pane" style={format!(
                     "transform-origin: {}px {}px;transform: translate({}px, {}px);touch-action: none;pointer-events: none;width:500px;height:500px;background-color:red;",
                     0.0, 0.0, 
                     zoom_translate_x, zoom_translate_y)} >
+                    
+                    <div style={format!("touch-action: none;pointer-events: none;position:absolute;background-color:green;left:{}px;top:{}px;z-index:1000;", 
+                        s.zoom_cursor_x, s.zoom_cursor_y)}>{"ZC"}</div>
 
                     // Zoom pane
                     <div id="zoom-pane"
-                        style={format!(
-                        "transform-origin: {}px {}px;transform:  scale({});position:absolute;touch-action: none;pointer-events: none;width:500px;height:500px;background-color:blue;",
+                    style={format!(
+                        "transform-origin: {}px {}px;transform: scale({});position:absolute;touch-action: none;pointer-events: none;width:500px;height:500px;background-color:blue;",
                         zoom_origin_x, zoom_origin_y,
                         s.zoom)} >
 
+                     
+                    <div style={format!("touch-action: none;pointer-events: none;position:absolute;background-color:yellow;left:{}px;top:{}px;z-index:100;width:50px;", 
+                        relative_zoom_cursor_x, relative_zoom_cursor_y)}>{"RC"}</div>
+    
+                        
                     <div style={format!("touch-action: none;pointer-events: none;position:absolute;background-color:blue;left:{}px;top:{}px;", 
                         zoom_origin_x, zoom_origin_y)}>{"ZO"}</div>
 
-                    <div style={format!("touch-action: none;pointer-events: none;position:absolute;background-color:green;left:{}px;top:{}px;", 
-                        s.zoom_cursor_x, s.zoom_cursor_y)}>{"ZC"}</div>
                     
                     <svg  style="touch-action: none;" width="700" height="1024" viewBox="0 0 700 512" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <image x="-256" y="-256" width="256" height="256"
