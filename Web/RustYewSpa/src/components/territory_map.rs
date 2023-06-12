@@ -808,3 +808,5 @@ fn render_map(element: &HtmlElement) -> Html {
 // pub fn clicked_map(event: &MouseEvent) -> JsValue {
 //     log!("You clicked the map!")
 // }
+
+
