@@ -102,6 +102,7 @@ pub fn switch(route: Route) -> Html {
         /> },
         Route::Map => html! { <TerritoryMap /> },
         Route::SvgMap => html! { <SvgMap /> },
+        Route::CanvasMap => html! { <CanvasMap /> },
         Route::AddressSearch => html! { <AddressSearch /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
