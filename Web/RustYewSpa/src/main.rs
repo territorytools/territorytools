@@ -6,6 +6,7 @@ use crate::components::route_stuff::Route;
 use crate::components::route_stuff::switch;
 use crate::components::territory_editor::*;
 use crate::components::svg_map::*;
+use crate::components::canvas_map::*;
 use crate::components::territory_edit_page::*;
 use crate::components::territory_edit_page_example::*;
 use crate::components::territory_search_page::*;

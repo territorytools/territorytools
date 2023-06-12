@@ -9,6 +9,7 @@ use crate::TerritorySearch;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
 use crate::SvgMap;
+use crate::CanvasMap;
 //use crate::TestMap;
 //use crate::components::test_map::TestMap;
 
@@ -26,6 +27,8 @@ pub enum Route {
     Map,
     #[at("/app/svg-map")]
     SvgMap,
+    #[at("/app/canvas-map")]
+    CanvasMap,
     #[at("/app/home")]
     Home,
     // #[at("/other")]
