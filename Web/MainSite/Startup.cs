@@ -66,16 +66,22 @@ namespace TerritoryTools.Web.MainSite
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-               
+                
                 // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
                 options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
                 options.OnAppendCookie = cookieContext =>
+                {
+                    cookieContext.CookieOptions.Expires = DateTime.UtcNow.AddDays(90);
                     CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+                };
                 options.OnDeleteCookie = cookieContext =>
                     CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
             });
-
+            
             string connectionString = Configuration.GetConnectionString("MainDbContextConnection");
+            
+            Console.WriteLine($"Connection String: {connectionString}");
+            
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -141,10 +147,11 @@ namespace TerritoryTools.Web.MainSite
             services.AddScoped<IAssignLatestService, AssignLatestService>();
             services.AddScoped<ITerritoryApiService, TerritoryApiService>();
             services.AddScoped<IUserFromApiService, UserFromApiService>();
-            services.AddScoped<IApiService, ApiService>();
             services.AddScoped<KmlFileService>();
             services.AddScoped<AssignmentsCsvFileService>();
 
+            // The ReverseProxyMiddleware can only get Singleton services, it does not work with Scoped services
+            services.AddSingleton<IApiService, ApiService>();
             services.AddSingleton<IDatabaseInfoService, DatabaseInfoService>();
             services.AddSingleton<IHttpClientWrapper, HttpClientWrapper>();
 
