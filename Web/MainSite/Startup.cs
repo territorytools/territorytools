@@ -1,6 +1,4 @@
-﻿using Certes;
-using FluffySpoon.AspNet.LetsEncrypt;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -62,21 +60,22 @@ namespace TerritoryTools.Web.MainSite
             //    options.CheckConsentNeeded = context => true;
             //    options.MinimumSameSitePolicy = SameSiteMode.None;
             //});
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            //    options.CheckConsentNeeded = context => true;
                 
-                // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
-                options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                options.OnAppendCookie = cookieContext =>
-                {
-                    cookieContext.CookieOptions.Expires = DateTime.UtcNow.AddDays(90);
-                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
-                };
-                options.OnDeleteCookie = cookieContext =>
-                    CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
-            });
+            //    // These three lines come from here: https://github.com/dotnet/aspnetcore/issues/14996
+            //    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+            //    options.OnAppendCookie = cookieContext =>
+            //    {
+            //        cookieContext.CookieOptions.Expires = DateTime.UtcNow.AddDays(90);
+            //        cookieContext.CookieOptions.MaxAge = TimeSpan.FromDays(90);
+            //        CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            //    };
+            //    options.OnDeleteCookie = cookieContext =>
+            //        CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
+            //});
             
             string connectionString = Configuration.GetConnectionString("MainDbContextConnection");
             
@@ -85,20 +84,23 @@ namespace TerritoryTools.Web.MainSite
             services.AddDbContext<MainDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //    .AddCookie(options =>
-            //    {
-            //        options.ExpireTimeSpan = TimeSpan.FromDays(90);
-            //        options.SlidingExpiration = true;
-            //    });
 
-            services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.ClientId = Configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-                });
-            
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            })
+            .AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromDays(90);
+                options.Cookie.MaxAge = options.ExpireTimeSpan; // optional
+                options.SlidingExpiration = true;
+            });
+
             //services.AddAuthentication()
             //    .AddMicrosoftAccount(options =>
             //    {
@@ -200,7 +202,12 @@ namespace TerritoryTools.Web.MainSite
 
             services.AddHostedService<TimedHostedService>();
 
-            services.AddAuthentication();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.MaxAge = TimeSpan.FromDays(90);
+            });
+
+            // // // //services.AddAuthentication();
                //.AddJwtBearer("Asymmetric", options => {
                //    SecurityKey rsa = services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
 
@@ -314,7 +321,9 @@ namespace TerritoryTools.Web.MainSite
 
             UpdateDatabase(app);
 
-            //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies. 
+            //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies.
+            ////var cookieOptions = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
+            
             app.UseAuthentication();
             app.AddReverseProxy();
             app.UseMvc(routes =>
