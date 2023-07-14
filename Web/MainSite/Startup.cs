@@ -87,7 +87,7 @@ namespace TerritoryTools.Web.MainSite
 
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddGoogle(options =>
             {
@@ -207,7 +207,7 @@ namespace TerritoryTools.Web.MainSite
                 options.Cookie.MaxAge = TimeSpan.FromDays(90);
             });
 
-            // // // //services.AddAuthentication();
+            //services.AddAuthentication();
                //.AddJwtBearer("Asymmetric", options => {
                //    SecurityKey rsa = services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
 
