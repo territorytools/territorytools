@@ -43,6 +43,8 @@ features = [
     "HtmlElement", 
     "HtmlStyleElement", 
     "CssStyleDeclaration", 
+    "CanvasRenderingContext2d",
+    "HtmlCanvasElement",
     "console", 
     "Window", 
     "Document", 

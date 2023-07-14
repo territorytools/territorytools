@@ -1,6 +1,7 @@
 using FluffySpoon.AspNet.LetsEncrypt;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.ApplicationInsights;
@@ -19,6 +20,15 @@ namespace TerritoryTools.Web.MainSite
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             var builder = WebHost.CreateDefaultBuilder(args);
+            //builder.ConfigureAppConfiguration((hostContext, builder) =>
+            //{
+            //    // Add other providers for JSON, etc.
+            //    if (hostContext.HostingEnvironment.IsDevelopment())
+            //    {
+            //        builder.AddUserSecrets<Program>();
+            //    }
+            //});
+            //builder.Build(); // TODO: ?? Am I trying to build it early?
 
             string noSsl = Environment.GetEnvironmentVariable("NoSsl");
 
