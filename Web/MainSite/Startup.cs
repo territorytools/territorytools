@@ -120,14 +120,12 @@ namespace TerritoryTools.Web.MainSite
                     ValidateAudience = true,
                     ValidateIssuer = true,
                 };
+            })
+            .AddMicrosoftAccount(options =>
+            {
+                options.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                options.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
             });
-
-            //services.AddAuthentication()
-            //    .AddMicrosoftAccount(options =>
-            //    {
-            //        options.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-            //        options.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
-            //    });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             
