@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -94,11 +95,31 @@ namespace TerritoryTools.Web.MainSite
                 options.ClientId = Configuration["Authentication:Google:ClientId"];
                 options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             })
-            .AddCookie(options =>
+            //.AddCookie(options =>
+            //{
+            //    options.ExpireTimeSpan = TimeSpan.FromDays(90);
+            //    options.Cookie.MaxAge = options.ExpireTimeSpan; // optional
+            //    options.SlidingExpiration = true;
+            //})
+            //.AddJwtBearer("Asymmetric", options =>
+            .AddJwtBearer(options =>
             {
-                options.ExpireTimeSpan = TimeSpan.FromDays(90);
-                options.Cookie.MaxAge = options.ExpireTimeSpan; // optional
-                options.SlidingExpiration = true;
+                SecurityKey rsa = services.BuildServiceProvider().GetRequiredService<RsaSecurityKey>();
+
+                options.IncludeErrorDetails = true; // <- great for debugging
+
+                // Configure the actual Bearer validation
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey = rsa,
+                    ValidAudience = "jwt-test",
+                    ValidIssuer = "jwt-test",
+                    RequireSignedTokens = true,
+                    RequireExpirationTime = true, // <- JWTs are required to have "exp" property set
+                    ValidateLifetime = true, // <- the "exp" will be validated
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                };
             });
 
             //services.AddAuthentication()
@@ -204,7 +225,7 @@ namespace TerritoryTools.Web.MainSite
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.MaxAge = TimeSpan.FromDays(90);
+                options.Cookie.MaxAge = TimeSpan.FromDays(180);
             });
 
             //services.AddAuthentication();
@@ -323,7 +344,7 @@ namespace TerritoryTools.Web.MainSite
 
             //app.UseCookiePolicy(); // Before UseAuthentication or anything else that writes cookies.
             ////var cookieOptions = app.ApplicationServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
-            
+
             app.UseAuthentication();
             app.AddReverseProxy();
             app.UseMvc(routes =>
