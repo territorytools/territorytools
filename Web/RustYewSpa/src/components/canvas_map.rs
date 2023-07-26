@@ -1,11 +1,10 @@
 use gloo_console::log;
-use web_sys::HtmlElement;
 use wasm_bindgen::JsCast;
+use web_sys::HtmlElement;
 use yew::prelude::*;
 
 #[function_component(CanvasMap)]
 pub fn canvas_map() -> Html {
-   
     //console_error_panic_hook::set_once();
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
@@ -29,28 +28,28 @@ pub fn canvas_map() -> Html {
     context.stroke();
     context.fill();
 
-    canvas.addEventListener("click", |event| {
-        const boundingRect = canvas.getBoundingClientRect();
-      
-        const scaleX = canvas.width / boundingRect.width;
-        const scaleY = canvas.height / boundingRect.height;
-      
-        const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
-        const canvasTop = (event.clientY - boundingRect.top) * scaleY;
-      
-        const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
-        const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
-      
-        universe.toggle_cell(row, col);
-      
-        // drawGrid();
-        // drawCells();
-      });
+    // canvas.addEventListener("click", |event| {
+    //     const boundingRect = canvas.getBoundingClientRect();
+
+    //     const scaleX = canvas.width / boundingRect.width;
+    //     const scaleY = canvas.height / boundingRect.height;
+
+    //     const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
+    //     const canvasTop = (event.clientY - boundingRect.top) * scaleY;
+
+    //     const row = Math.min(Math.floor(canvasTop / (CELL_SIZE + 1)), height - 1);
+    //     const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE + 1)), width - 1);
+
+    //     universe.toggle_cell(row, col);
+
+    //     // drawGrid();
+    //     // drawCells();
+    //   });
     //Ok(())
     html! {
         <>
         <p>{"Canvas Map Here"}</p>
-        
+
         </>
     }
 }

@@ -106,9 +106,10 @@ pub fn address_search_page() -> Html {
                 </div>
                 <div class="row py-1" style="border-top: 1px solid gray;">
                     <div class="col-2 col-md-1"><strong>{"#"}</strong></div>
-                    <div class="col-5 col-md-3"><strong>{"Description"}</strong></div>
-                    <div class="col-2 col-md-2"><strong>{"Status"}</strong></div>
-                    <div class="col-5 col-md-3"><strong>{"Publisher"}</strong></div>
+                    <div class="col-6 col-md-3"><strong>{"Description"}</strong></div>
+                    <div class="col-4 col-md-2"><strong>{"Status"}</strong></div>
+                    <div class="col-8 col-md-3"><strong>{"Publisher"}</strong></div>
+                    <div class="col-4 col-md-2"><strong>{"Date"}</strong></div>
                 </div>
                 {
                     state.territories.iter().map(|territory| {   
@@ -121,10 +122,10 @@ pub fn address_search_page() -> Html {
                                     <div class="col-2 col-md-1" style="font-weight:bold;">
                                         {territory.number.clone()}
                                     </div>
-                                    <div class="col-5 col-md-3">
+                                    <div class="col-6 col-md-3">
                                         {territory.description.clone()}
                                     </div>
-                                    <div class="col-2 col-md-2">
+                                    <div class="col-4 col-md-2">
                                         if territory.status.clone() == Some("Available".to_string()) {
                                             <span class="badge" style="background-color:green">{territory.status.clone()}</span> 
                                         } else if territory.status.clone() == Some("Out".to_string()) {
@@ -137,8 +138,11 @@ pub fn address_search_page() -> Html {
                                             <span class="badge" style="background-color:gray">{territory.status.clone()}</span> 
                                         }
                                     </div>
-                                    <div class="col-5 col-md-3">
+                                    <div class="col-8 col-md-3">
                                         {territory.publisher.clone()}
+                                    </div>
+                                    <div class="col-4 col-md-2">
+                                        {territory.status_date.clone()}
                                     </div>
                                 </div>
                             </a>

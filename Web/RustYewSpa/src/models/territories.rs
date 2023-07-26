@@ -6,7 +6,7 @@ pub struct Territories {
     pub list: Vec<Territory>,
 }
 
-#[derive(Serialize, Deserialize,  Default, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Territory {
     #[serde(default)]
@@ -31,7 +31,7 @@ pub struct Territory {
     pub addresses: Vec<Address>,
 }
 
-#[derive(Serialize, Deserialize,  Default, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TerritoryEditRequest {
     #[serde(default)]
@@ -54,7 +54,7 @@ pub struct TerritoryEditRequest {
 
 // TODO: This is good: https://yew.rs/docs/0.18.0/concepts/wasm-bindgen/web-sys
 
-#[derive(Serialize, Deserialize,  Default, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TerritorySummary {
     #[serde(default)]
@@ -65,6 +65,7 @@ pub struct TerritorySummary {
     pub area_description: Option<String>,
     pub area_code: Option<String>,
     pub status: Option<String>,
+    pub status_date: Option<String>,
     pub publisher: Option<String>,
     pub view_link: Option<String>,
     // pub stage_id: Option<i32>,
