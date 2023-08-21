@@ -26,7 +26,7 @@ fn app() -> Html {
     html! {
         <BrowserRouter>
             <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
-                <canvas id="canvas" style="width:100%;height:100%;"></canvas>
+                //<canvas id="canvas" style="width:100%;height:100%;"></canvas>
         </BrowserRouter>
     }
 }
