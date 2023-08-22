@@ -3,10 +3,11 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::popup_content::popup_content;
 use crate::functions::document_functions::set_document_title;
 use crate::models::territories::Territory;
+use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use gloo_utils::document;
-use leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer};
+//use leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -270,7 +271,11 @@ pub fn territory_map() -> Html {
 
     // from rendered
     //if !model_clone.local_load {
+        
     leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
+    
+    let clickedLatLng = leaflet_map.layerPointToLatLng(&Point::new(50,50));
+
     // // // //leaflet_map.setView(&LatLng::new(model_clone.lat, model_clone.lon), model_clone.zoom);
     //}
     ////leaflet_map.on("onclick", clicked_map);

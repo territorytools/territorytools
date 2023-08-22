@@ -16,6 +16,7 @@ use yew_router::prelude::*;
 mod components;
 mod models;
 mod functions;
+mod libs;
 
 fn main() {
     yew::Renderer::<App>::new().render();

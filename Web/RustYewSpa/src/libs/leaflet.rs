@@ -205,12 +205,18 @@ extern "C" {
 
     #[derive(Debug)]
     pub type Map;
-
+    
     #[wasm_bindgen(constructor, js_namespace = L)]
     pub fn new(id: &str, options: &JsValue) -> Map;
-
+    
     #[wasm_bindgen(constructor, js_namespace = L)]
     pub fn new_with_element(el: &HtmlElement, options: &JsValue) -> Map;
+   
+    #[wasm_bindgen(method)]
+    pub fn layerPointToLatLng(this: &Map, point: &Point) -> LatLng;
+
+    #[wasm_bindgen(method)]
+    pub fn latLngToLayerPoint(this: &Map, latLng: &LatLng) -> Point;
 
     #[wasm_bindgen(method)]
     pub fn setView(this: &Map, center: &LatLng, zoom: f64);
