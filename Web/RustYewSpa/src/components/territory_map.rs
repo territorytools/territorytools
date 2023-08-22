@@ -274,7 +274,8 @@ pub fn territory_map() -> Html {
         
     leaflet_map.setView(&LatLng::new(47.66, -122.20), 11.0);
     
-    let clickedLatLng = leaflet_map.layerPointToLatLng(&Point::new(50,50));
+    //let clickedLatLng = leaflet_map.layerPointToLatLng(&Point::new(50,50));
+    //log!(format!("clickedLatLng: {},{}", clickedLatLng.lat(), clickedLatLng.lng()));
 
     // // // //leaflet_map.setView(&LatLng::new(model_clone.lat, model_clone.lon), model_clone.zoom);
     //}
@@ -386,6 +387,15 @@ pub fn territory_map() -> Html {
         let model_clone = model.clone();
         Callback::from(move |_event: MouseEvent| {
             setup_filter(model_clone.clone(), "7");
+        })
+    };
+
+    //let leaflet_map_clone = leaflet_map.clone();
+    let map_cover_click = {
+        //let leaflet_map_clone = leaflet_map_clone.clone();
+        let model_clone = model.clone();
+        Callback::from(move |_event: MouseEvent| {
+            print_click_lat_lng(&leaflet_map);
         })
     };
 
@@ -560,7 +570,7 @@ pub fn territory_map() -> Html {
                     </ul>
                 </MenuBarV2>
             </div>
-            <div style="height: calc(100% - 57px);background-color:blue;">
+            <div style="height: calc(100% - 57px);background-color:blue;" onclick={map_cover_click}>
                 {
                     {map_container}
                 }
@@ -646,6 +656,11 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
     };
 
     model.set(m);
+}
+
+fn print_click_lat_lng(map: &Map) {
+    let clickedLatLng = map.layerPointToLatLng(&Point::new(50,50));
+    log!(format!("From Map Cover: clickedLatLng: {},{}", clickedLatLng.lat(), clickedLatLng.lng()));
 }
 
 fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
