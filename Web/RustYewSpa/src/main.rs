@@ -25,6 +25,7 @@ fn main() {
 #[function_component(App)]
 fn app() -> Html {
     html! {
+    // TODO: Use a Model like in the leaflet.rs example: https://github.com/slowtec/leaflet-rs/blob/master/examples/yew-component/src/main.rs
         <BrowserRouter>
             <Switch<Route> render={switch} /> // <- must be child of <BrowserRouter>
                 //<canvas id="canvas" style="width:100%;height:100%;"></canvas>
