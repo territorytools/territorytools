@@ -10,6 +10,8 @@ use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
 use crate::SvgMap;
 use crate::CanvasMap;
+use crate::MapComponent;
+use crate::Model;
 //use crate::TestMap;
 //use crate::components::test_map::TestMap;
 
@@ -25,6 +27,8 @@ pub enum Route {
     Start,
     #[at("/app/map")]
     Map,
+    #[at("/app/map-component")]
+    MapComponent,
     #[at("/app/svg-map")]
     SvgMap,
     #[at("/app/canvas-map")]
@@ -101,6 +105,7 @@ pub fn switch(route: Route) -> Html {
             territory_number={territory_number}
         /> },
         Route::Map => html! { <TerritoryMap /> },
+        Route::MapComponent => html! { <Model /> },
         Route::SvgMap => html! { <SvgMap /> },
         Route::CanvasMap => html! { <CanvasMap /> },
         Route::AddressSearch => html! { <AddressSearch /> },

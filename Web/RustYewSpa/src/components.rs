@@ -25,3 +25,6 @@ pub mod territory_edit_page;
 pub mod territory_edit_page_example;
 pub mod user_selector;
 pub mod canvas_map;
+pub mod control;
+pub mod map_component;
+pub mod model;

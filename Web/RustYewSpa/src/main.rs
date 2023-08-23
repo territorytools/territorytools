@@ -11,12 +11,17 @@ use crate::components::territory_edit_page::*;
 use crate::components::territory_edit_page_example::*;
 use crate::components::territory_search_page::*;
 use crate::components::territory_map::TerritoryMap;
+use crate::components::control::{Cities, Control};
+use crate::components::map_component::{City, MapComponent, Point};
+use crate::components::model::{Model};
+
 use yew::prelude::*;
 use yew_router::prelude::*;
 mod components;
 mod models;
 mod functions;
 mod libs;
+
 
 fn main() {
     yew::Renderer::<App>::new().render();
