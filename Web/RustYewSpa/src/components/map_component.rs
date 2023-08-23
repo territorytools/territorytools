@@ -16,12 +16,15 @@ const DATA_API_PATH: &str = "/data/territory-borders-all.json";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/borders";
 
-pub enum Msg {}
+pub enum Msg {
+    LoadBorders(TerritoryMapModel),
+}
 
 pub struct MapComponent {
     map: Map,
     lat: Point,
     container: HtmlElement,
+    territory_map: TerritoryMapModel,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -38,6 +41,7 @@ impl ImplicitClone for City {}
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
     pub city: City,
+    pub territory_map: TerritoryMapModel,
 }
 
 impl MapComponent {
@@ -62,6 +66,7 @@ impl Component for MapComponent {
             map: leaflet_map,
             container,
             lat: props.city.lat,
+            territory_map: TerritoryMapModel::default(),
         }
     }
 
@@ -69,36 +74,42 @@ impl Component for MapComponent {
         if first_render {
             self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
             add_tile_layer(&self.map);
-
-            wasm_bindgen_futures::spawn_local(async move {
-                let group_id: String = "2".to_string();//group_id;
-                let uri: String =
-                    format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
-
-                let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
-                    .send()
-                    .await
-                    .unwrap()
-                    .json()
-                    .await
-                    .unwrap();
-
-                let m = TerritoryMapModel {
-                    territories: fetched_territories,
-                    territories_is_loaded: true,
-                    local_load: false,
-                    lat: 47.66,
-                    lon: -122.20,
-                    zoom: 10.0,
-                    group_visible: String::from("*"),
-                };
-
-                log!("Map Component got territory borders!");
-            });
         }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
+        // match msg {
+        //     Msg::LoadBorders(territoryMap) => {
+        //         wasm_bindgen_futures::spawn_local(async move {
+        //             let group_id: String = "2".to_string();//group_id;
+        //             let uri: String =
+        //                 format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+        //             let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+        //                 .send()
+        //                 .await
+        //                 .unwrap()
+        //                 .json()
+        //                 .await
+        //                 .unwrap();
+
+        //             let m = TerritoryMapModel {
+        //                 territories: fetched_territories,
+        //                 territories_is_loaded: true,
+        //                 local_load: false,
+        //                 lat: 47.66,
+        //                 lon: -122.20,
+        //                 zoom: 10.0,
+        //                 group_visible: String::from("*"),
+        //             };
+
+        //             log!("Map Component got territory borders!");
+
+        //             self.territoryMap = m;
+        //         });
+        //     }
+        // }
+        // true
         false
     }
 
@@ -110,8 +121,23 @@ impl Component for MapComponent {
         } else {
             self.lat = props.city.lat;
             self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
+            
+            self.territory_map = TerritoryMapModel {
+                territories: props.territory_map.territories.clone(),
+                territories_is_loaded: true,
+                local_load: false,
+                lat:  props.territory_map.lat,
+                lon: props.territory_map.lon,
+                zoom: props.territory_map.zoom,
+                group_visible: props.territory_map.group_visible.clone(),
+            };
+
+            log!("map_component.update: territory_map loaded");
+
+            //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
             true
         }
+
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {

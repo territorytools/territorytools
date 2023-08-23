@@ -2,16 +2,27 @@ use crate::components::{
     control::{Cities, Control},
     map_component::{City, MapComponent, Point},
 };
+use crate::components::territory_map::TerritoryMapModel;
+use crate::models::territories::Territory;
 use gloo_console::log;
 use yew::prelude::*;
+use reqwasm::http::Request;
+
+#[cfg(debug_assertions)]
+const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+
+#[cfg(not(debug_assertions))]
+const DATA_API_PATH: &str = "/api/territories/borders";
 
 pub enum Msg {
     SelectCity(City),
+    LoadBorders(TerritoryMapModel),
 }
 
 pub struct Model {
     city: City,
     cities: Cities,
+    territory_map: TerritoryMapModel
 }
 
 impl Component for Model {
@@ -31,7 +42,8 @@ impl Component for Model {
             list: vec![aachen, stuttgart],
         };
         let city = cities.list[0].clone();
-        Self { city, cities }
+        let territory_map: TerritoryMapModel = TerritoryMapModel::default();
+        Self { city, cities, territory_map }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -44,6 +56,35 @@ impl Component for Model {
                     .find(|c| c.name == city.name)
                     .unwrap()
                     .clone();
+            },
+            Msg::LoadBorders(territoryMap) => {
+                wasm_bindgen_futures::spawn_local(async move {
+                    let group_id: String = "2".to_string();//group_id;
+                    let uri: String =
+                        format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+                    let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+                        .send()
+                        .await
+                        .unwrap()
+                        .json()
+                        .await
+                        .unwrap();
+
+                    let m = TerritoryMapModel {
+                        territories: fetched_territories,
+                        territories_is_loaded: true,
+                        local_load: false,
+                        lat: 47.66,
+                        lon: -122.20,
+                        zoom: 10.0,
+                        group_visible: String::from("*"),
+                    };
+
+                    log!("Map Component got territory borders!");
+
+                    //self.territory_map = m;
+                });
             }
         }
         true
@@ -57,7 +98,7 @@ impl Component for Model {
         let cb = ctx.link().callback(Msg::SelectCity);
         html! {
             <>
-                <MapComponent city={&self.city}  />
+                <MapComponent city={&self.city} territory_map={&self.territory_map} />
                 <Control select_city={cb} cities={&self.cities}/>
             </>
         }

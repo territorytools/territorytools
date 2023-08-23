@@ -4,6 +4,7 @@ use crate::components::popup_content::popup_content;
 use crate::functions::document_functions::set_document_title;
 use crate::models::territories::Territory;
 use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
+use crate::html::ImplicitClone;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use gloo_utils::document;
@@ -41,6 +42,8 @@ pub struct TerritoryMapModel {
     pub lon: f64,
     pub group_visible: String,
 }
+
+impl ImplicitClone for TerritoryMapModel {}
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct MouseClickModel {
