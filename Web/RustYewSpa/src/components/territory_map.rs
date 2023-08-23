@@ -18,6 +18,7 @@ use yew::prelude::*;
 //use js_sys::{Array, Date};
 use web_sys::{Element, HtmlElement, HtmlInputElement, Node};
 use yew_router::hooks::use_location;
+use yew_router::scope_ext::RouterScopeExt;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
@@ -62,6 +63,9 @@ enum Msg {
 
 pub struct TerritoryMap {
     map: Map,
+    //model: UseStateHandle<TerritoryMapModel>,
+    model: TerritoryMapModel,
+    search_state: TerritorySearchPage,
 }
 
 //#[function_component(TerritoryMap)]
@@ -92,20 +96,28 @@ impl Component for TerritoryMap {
         //let node: &Node = container.clone().into();
         // from create
         container.set_class_name("map");
-        let leaflet_map: Map = Map::new_with_element(&container, &JsValue::NULL);
-        Self { map: leaflet_map }
+        let leaflet_map = Map::new_with_element(&container, &JsValue::NULL);
+        //let model = use_state(|| TerritoryMapModel::default());
+        let model = TerritoryMapModel::default();
+        let search_state = TerritorySearchPage::default();
+
+        Self { map: leaflet_map, model: model, search_state: search_state }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         set_document_title("Territory Map");
 
-        let search_state = use_state(|| TerritorySearchPage::default());
+        //let search_state = use_state(|| TerritorySearchPage::default());
+        let search_state = self.search_state;
 
-        let _mouse_click_model: UseStateHandle<MouseClickModel> =
-            use_state(|| MouseClickModel::default());
+        // let _mouse_click_model: UseStateHandle<MouseClickModel> =
+        //     use_state(|| MouseClickModel::default());
 
-        let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
-        let location = use_location().expect("Should be a location to get query string");
+        //let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
+
+        //let location = use_location().expect("Should be a location to get query string");
+        // NOTE: ctx.link().location() replaces use_location()
+        let location = ctx.link().location().expect("Should be a location to get query string");
         //log!("territory_map Query: {}", location.query_str());
         let parameters: TerritoryMapParameters = location.query().expect("An object");
         let group_id: String = match &parameters.group_id {
@@ -129,7 +141,7 @@ impl Component for TerritoryMap {
         // https://yew.rs/docs/0.18.0/concepts/services/fetch
         //let territories = use_state(|| vec![]);
 
-        let model_clone = model.clone();
+        let model_clone = self.model.clone();
         use_effect_with_deps(
             move |_| {
                 let model_clone = model_clone.clone();
@@ -151,7 +163,8 @@ impl Component for TerritoryMap {
                             .await
                             .unwrap();
 
-                        let m = TerritoryMapModel {
+                        //let m = TerritoryMapModel {
+                        self.model = TerritoryMapModel {
                             territories: fetched_territories,
                             territories_is_loaded: true,
                             local_load: false,
@@ -161,7 +174,16 @@ impl Component for TerritoryMap {
                             group_visible: String::from("*"),
                         };
 
-                        model_clone.set(m);
+                        // self.model.territories = fetched_territories;
+                        // self.model.territories_is_loaded = true;
+                        // self.model.local_load = false;
+                        // self.model.lat = 47.66;
+                        // self.model.lon = -122.20;
+                        // self.model.zoom = 10.0;
+                        // self.model.group_visible = String::from("*");
+
+                        //model_clone.set(m);
+                        //self.model = m;
                     }
                 });
                 || ()
@@ -169,7 +191,7 @@ impl Component for TerritoryMap {
             (),
         );
 
-        let model_clone = model.clone();
+        let model_clone = self.model.clone();
         let tcount: usize = model_clone.territories.len();
         log!("Map Comp Loaded Territories 2: ", tcount);
         // Figure out how to show when there is no data
@@ -192,7 +214,7 @@ impl Component for TerritoryMap {
         let _bounds: LatLngBounds =
             LatLngBounds::new(&LatLng::new(47.66, -122.20), &LatLng::new(47.76, -122.30));
 
-        for t in model.territories.iter() {
+        for t in self.model.territories.iter() {
             // TerritorySummary // total_count += 1;
 
             let mut polygon: Vec<LatLng> = Vec::new();
@@ -360,70 +382,70 @@ impl Component for TerritoryMap {
         // };
 
         let group_inner_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "*");
             })
         };
 
         let _group_all_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "all");
             })
         };
 
         let group_core_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "core");
             })
         };
 
         let group_1_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "1");
             })
         };
 
         let group_2_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "2");
             })
         };
 
         let group_3_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "3");
             })
         };
 
         let group_4_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "4");
             })
         };
 
         let group_5_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "5");
             })
         };
 
         let group_6_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "6");
             })
         };
 
         let group_7_onclick = {
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 setup_filter(model_clone.clone(), "7");
             })
@@ -432,7 +454,7 @@ impl Component for TerritoryMap {
         //let leaflet_map_clone = leaflet_map.clone();
         let map_cover_click = {
             //let leaflet_map_clone = leaflet_map_clone.clone();
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 print_click_lat_lng(&leaflet_map);
             })
@@ -481,7 +503,8 @@ impl Component for TerritoryMap {
         let search_text_onchange = {
             let search_state_clone = search_state_clone.clone();
             Callback::from(move |event: Event| {
-                let mut modification = search_state_clone.deref().clone();
+                //let mut modification = search_state_clone.deref().clone();
+                let mut modification = search_state_clone.clone();
                 let value = event
                     .target()
                     .expect("An input value for an HtmlInputElement")
@@ -489,15 +512,16 @@ impl Component for TerritoryMap {
                     .value();
 
                 modification.search_text = value;
-                search_state_clone.set(modification);
+                //search_state_clone.set(modification);
+                ////search_state_clone = modification;
             })
         };
 
         let search_state_clone = search_state.clone();
-        let _model_clone = model.clone();
+        let _model_clone = self.model.clone();
         let search_clear_onclick = {
             let search_state_clone = search_state_clone.clone();
-            let model_clone = model.clone();
+            let model_clone = self.model.clone();
             Callback::from(move |_event: MouseEvent| {
                 log!("search_clear_onclick");
                 //let mut modification = search_state_clone.deref().clone();
@@ -511,7 +535,8 @@ impl Component for TerritoryMap {
                     territories: vec![],
                 };
                 //modification.search_text = "".into();
-                search_state_clone.set(modification);
+                //search_state_clone.set(modification);
+                ////search_state_clone = modification;
 
                 // let model_clone = model_clone.clone();
                 // setup_number_filter(model_clone.clone(), "");
@@ -537,7 +562,7 @@ impl Component for TerritoryMap {
         let cb_clone = cb.clone();
         //let leaflet_map_clone: &Map = &leaflet_map;
         let search_state_clone = search_state.clone();
-        let model_clone = model.clone();
+        let model_clone = self.model.clone();
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
             let cb_clone = cb_clone.clone();
@@ -638,7 +663,8 @@ impl Component for TerritoryMap {
     }
 }
 
-fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
+//fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
+fn setup_number_filter(model: TerritoryMapModel, number: &str) {
     log!("setup_number_filter {}", number);
     if number.to_string().is_empty() {
         log!("setup_number_filter Empty");
@@ -695,7 +721,8 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
         mouse_click_y: 0,
     };
 
-    model.set(m);
+    //model.set(m);
+    model = m;
 }
 
 fn print_click_lat_lng(map: &Map) {
@@ -703,7 +730,8 @@ fn print_click_lat_lng(map: &Map) {
     log!(format!("From Map Cover: clickedLatLng: {},{}", clickedLatLng.lat(), clickedLatLng.lng()));
 }
 
-fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
+//fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
+fn setup_filter(model: TerritoryMapModel, group: &str) {
     let model_clone = model.clone();
     let territories = model_clone.territories.clone();
     let tcount: usize = territories.len();
@@ -749,7 +777,8 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
         mouse_click_y: 0,
     };
 
-    model.set(m);
+    //model.set(m);
+    model = m;
 }
 
 #[function_component(HomeButton)]
