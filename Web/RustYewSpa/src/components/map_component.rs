@@ -4,6 +4,17 @@ use crate::libs::leaflet::{LatLng, Map, TileLayer};
 use wasm_bindgen::{prelude::*, JsCast};
 use web_sys::{Element, HtmlElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
+use crate::components::territory_map::TerritoryMapModel;
+use crate::models::territories::Territory;
+use gloo_console::log;
+use reqwasm::http::Request;
+use yew::prelude::*;
+
+#[cfg(debug_assertions)]
+const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+
+#[cfg(not(debug_assertions))]
+const DATA_API_PATH: &str = "/api/territories/borders";
 
 pub enum Msg {}
 
@@ -58,6 +69,32 @@ impl Component for MapComponent {
         if first_render {
             self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
             add_tile_layer(&self.map);
+
+            wasm_bindgen_futures::spawn_local(async move {
+                let group_id: String = "2".to_string();//group_id;
+                let uri: String =
+                    format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+                let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+                    .send()
+                    .await
+                    .unwrap()
+                    .json()
+                    .await
+                    .unwrap();
+
+                let m = TerritoryMapModel {
+                    territories: fetched_territories,
+                    territories_is_loaded: true,
+                    local_load: false,
+                    lat: 47.66,
+                    lon: -122.20,
+                    zoom: 10.0,
+                    group_visible: String::from("*"),
+                };
+
+                log!("Map Component got territory borders!");
+            });
         }
     }
 
