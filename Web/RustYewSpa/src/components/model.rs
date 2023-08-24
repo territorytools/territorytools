@@ -43,6 +43,37 @@ impl Component for Model {
         };
         let city = cities.list[0].clone();
         let territory_map: TerritoryMapModel = TerritoryMapModel::default();
+
+        wasm_bindgen_futures::spawn_local(async move {
+            let group_id: String = "2".to_string();//group_id;
+            let uri: String =
+                format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+            let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+                .send()
+                .await
+                .unwrap()
+                .json()
+                .await
+                .unwrap();
+
+            let m = TerritoryMapModel {
+                territories: fetched_territories,
+                territories_is_loaded: true,
+                local_load: false,
+                lat: 47.66,
+                lon: -122.20,
+                zoom: 10.0,
+                group_visible: "*".to_string(),
+            };
+
+            log!("Model got territory borders! triggered on create.");
+
+            //self.territory_map = m;
+            //ctx.props().select_city.emit(city);
+            //ctx.link().callback(Msg::LoadBorders)
+        });
+
         Self { city, cities, territory_map }
     }
 
@@ -58,33 +89,8 @@ impl Component for Model {
                     .clone();
             },
             Msg::LoadBorders(territoryMap) => {
-                wasm_bindgen_futures::spawn_local(async move {
-                    let group_id: String = "2".to_string();//group_id;
-                    let uri: String =
-                        format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
-
-                    let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
-                        .send()
-                        .await
-                        .unwrap()
-                        .json()
-                        .await
-                        .unwrap();
-
-                    let m = TerritoryMapModel {
-                        territories: fetched_territories,
-                        territories_is_loaded: true,
-                        local_load: false,
-                        lat: 47.66,
-                        lon: -122.20,
-                        zoom: 10.0,
-                        group_visible: String::from("*"),
-                    };
-
-                    log!("Map Component got territory borders!");
-
-                    //self.territory_map = m;
-                });
+                log!("LoadBorders message is running!");
+                load_data();
             }
         }
         true
@@ -94,13 +100,50 @@ impl Component for Model {
         false
     }
 
+    fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
+        if first_render {
+            
+        }
+    }
+
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let cb = ctx.link().callback(Msg::SelectCity);
+        let cb = ctx.link().callback(Msg::SelectCity); // Call self back with this message
+        let tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
         html! {
             <>
                 <MapComponent city={&self.city} territory_map={&self.territory_map} />
-                <Control select_city={cb} cities={&self.cities}/>
+                <Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </>
         }
     }
+}
+
+pub fn load_data() {
+    wasm_bindgen_futures::spawn_local(async move {
+        let group_id: String = "2".to_string();//group_id;
+        let uri: String =
+            format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+        let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+
+        let m = TerritoryMapModel {
+            territories: fetched_territories,
+            territories_is_loaded: true,
+            local_load: false,
+            lat: 47.66,
+            lon: -122.20,
+            zoom: 10.0,
+            group_visible: "*".to_string(),
+        };
+
+        log!("Model got territory borders! the one you're looking for.");
+
+        //self.territory_map = m;
+    });
 }

@@ -78,38 +78,6 @@ impl Component for MapComponent {
     }
 
     fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        // match msg {
-        //     Msg::LoadBorders(territoryMap) => {
-        //         wasm_bindgen_futures::spawn_local(async move {
-        //             let group_id: String = "2".to_string();//group_id;
-        //             let uri: String =
-        //                 format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
-
-        //             let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
-        //                 .send()
-        //                 .await
-        //                 .unwrap()
-        //                 .json()
-        //                 .await
-        //                 .unwrap();
-
-        //             let m = TerritoryMapModel {
-        //                 territories: fetched_territories,
-        //                 territories_is_loaded: true,
-        //                 local_load: false,
-        //                 lat: 47.66,
-        //                 lon: -122.20,
-        //                 zoom: 10.0,
-        //                 group_visible: String::from("*"),
-        //             };
-
-        //             log!("Map Component got territory borders!");
-
-        //             self.territoryMap = m;
-        //         });
-        //     }
-        // }
-        // true
         false
     }
 
@@ -133,6 +101,7 @@ impl Component for MapComponent {
             };
 
             log!("map_component.update: territory_map loaded");
+            log!(format!("map_component.update: territory_map.lat: {}", self.territory_map.lat));
 
             //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
             true

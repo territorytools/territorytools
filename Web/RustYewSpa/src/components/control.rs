@@ -1,9 +1,11 @@
 use super::map_component::City;
 use gloo_console::log;
 use yew::{html::ImplicitClone, prelude::*};
+use crate::components::territory_map::TerritoryMapModel;
 
 pub enum Msg {
     CityChosen(City),
+    LoadBorders(TerritoryMapModel),
 }
 
 pub struct Control {
@@ -21,14 +23,20 @@ impl ImplicitClone for Cities {}
 pub struct Props {
     pub cities: Cities,
     pub select_city: Callback<City>,
+    //pub territory_map: Callback<TerritoryMapModel>,
+    pub border_loader: Callback<TerritoryMapModel>, 
 }
 
 impl Control {
     fn button(&self, ctx: &Context<Self>, city: City) -> Html {
         let name = city.name.clone();
         let cb = ctx.link().callback(move |_| Msg::CityChosen(city.clone()));
+        let tcb = ctx.link().callback(move |_| Msg::LoadBorders(TerritoryMapModel::default()));
         html! {
-            <button onclick={cb}>{name}</button>
+            <>
+                <button onclick={cb}>{name.clone()}</button>
+                <button onclick={tcb}>{name.clone()}{" map"}</button>
+            </>
         }
     }
 }
@@ -40,6 +48,7 @@ impl Component for Control {
     fn create(ctx: &Context<Self>) -> Self {
         Control {
             cities: ctx.props().cities.list.clone(),
+            //territory_map: TerritoryMapModel::default(),
         }
     }
 
@@ -47,7 +56,13 @@ impl Component for Control {
         match msg {
             Msg::CityChosen(city) => {
                 log!(format!("Update: {:?}", city.name));
+                // This is a relay from the button to ... the map_component?
                 ctx.props().select_city.emit(city);
+            },
+            Msg::LoadBorders(map_model) => {
+                log!("Updated MapModel.");
+                // emit() is for callbacks, this is all wrongf
+                ctx.props().border_loader.emit(map_model);
             }
         }
         true
@@ -63,8 +78,7 @@ impl Component for Control {
                 <h1>{"Choose a city"}</h1>
                 <div>
                     {for self.cities.iter().map(|city| Self::button(self, ctx, city.clone()))}
-                    </div>
-
+                </div>
             </div>
         }
     }
