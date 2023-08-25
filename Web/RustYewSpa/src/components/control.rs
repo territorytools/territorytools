@@ -68,7 +68,7 @@ impl Component for Control {
         true
     }
 
-    fn changed(&mut self, _ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
+    fn changed(&mut self, _ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         false
     }
 

@@ -10,10 +10,7 @@ use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
 use crate::SvgMap;
 use crate::CanvasMap;
-use crate::MapComponent;
 use crate::Model;
-//use crate::TestMap;
-//use crate::components::test_map::TestMap;
 
 use yew_router::prelude::*;
 use yew::html;

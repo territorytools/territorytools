@@ -1,17 +1,13 @@
 use crate::components::{
-    control::{Cities, Control},
+    control::{
+        Cities, 
+        //Control,
+    },
     map_component::{City, MapComponent, PixelPoint, MapModel},
     model_functions::*,
 };
-use crate::models::territories::Territory;
 
-use gloo_console::log;
-use reqwasm::http::Request;
-use reqwasm::http::Response;
-use wasm_bindgen_futures::JsFuture;
 use yew::prelude::*;
-use yew::html::Scope;
-use yew_hooks::use_async;
 
 pub enum Msg {
     SelectCity(City),
@@ -69,7 +65,7 @@ impl Component for Model {
         true
     }
 
-    fn changed(&mut self, _ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
+    fn changed(&mut self, _ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         false
     }
 
@@ -83,8 +79,8 @@ impl Component for Model {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let cb = ctx.link().callback(Msg::SelectCity); // Call self back with this message
-        let tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
+        let _cb = ctx.link().callback(Msg::SelectCity); // Call self back with this message
+        let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
         html! {
             <>
                 <MapComponent city={&self.city} territory_map={&self.territory_map} />

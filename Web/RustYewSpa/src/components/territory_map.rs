@@ -8,7 +8,6 @@ use crate::html::ImplicitClone;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use gloo_utils::document;
-//use leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -16,10 +15,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-//use js_sys::{Array, Date};
 use web_sys::{Element, HtmlElement, HtmlInputElement, Node};
 use yew_router::hooks::use_location;
-use std::convert::TryFrom;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
@@ -549,7 +546,7 @@ pub fn territory_map() -> Html {
 
     let _search_state_clone = search_state.clone();
 
-    let latLng = &leaflet_map.layerPointToLatLng(
+    let _lat_lng = &leaflet_map.layerPointToLatLng(
         &Point::new(
             mouse_click_model.mouse_click_x as u32, 
             mouse_click_model.mouse_click_y as u32));
@@ -684,9 +681,9 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
     model.set(m);
 }
 
-fn print_click_lat_lng(map: &Map) {
-    let clickedLatLng = map.layerPointToLatLng(&Point::new(50,50));
-    log!(format!("From Map Cover: clickedLatLng: {},{}", clickedLatLng.lat(), clickedLatLng.lng()));
+fn _print_click_lat_lng(map: &Map) {
+    let clicked_lat_lon = map.layerPointToLatLng(&Point::new(50,50));
+    log!(format!("From Map Cover: clickedLatLng: {},{}", clicked_lat_lon.lat(), clicked_lat_lon.lng()));
 }
 
 fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {

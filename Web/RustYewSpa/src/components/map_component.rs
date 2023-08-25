@@ -1,4 +1,4 @@
-use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
+use crate::libs::leaflet::{LatLng, Map, Polygon, Polyline, TileLayer};
 use crate::components::popup_content::popup_content;
 use crate::models::territories::Territory;
 use crate::components::menu_bar_v2::MenuBarV2;
@@ -7,16 +7,7 @@ use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
-use gloo_console::log;
-use reqwasm::http::Request;
-use yew::prelude::*;
 use serde::{Deserialize, Serialize};
-
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-borders-all.json";
-
-#[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/territories/borders";
 
 #[derive(Serialize, Deserialize)]
 struct PolylineOptions {
@@ -54,12 +45,11 @@ struct PopupOptions {
 
 
 pub enum Msg {
-    LoadBorders(MapModel),
+    //LoadBorders(MapModel),
 }
 
 pub struct MapComponent {
     map: Map,
-    lat: PixelPoint,
     container: HtmlElement,
     territory_map: MapModel,
 }
@@ -86,21 +76,13 @@ impl MapComponent {
         let node: &Node = &self.container.clone().into();
         Html::VRef(node.clone())
     }
-
-    // fn render_map(element: &HtmlElement) -> Html {
-    //     // Element must be passed as an address I guess
-    //     let node: &Node = &element.clone().into();
-    //     Html::VRef(node.clone())
-    // }
 }
 
 impl Component for MapComponent {
     type Message = Msg;
     type Properties = Props;
 
-    fn create(ctx: &Context<Self>) -> Self {
-        let props = ctx.props();
-
+    fn create(_ctx: &Context<Self>) -> Self {
         let container: Element = document().create_element("div").unwrap();
         let container: HtmlElement = container.dyn_into().unwrap();
         container.set_class_name("map");
@@ -108,14 +90,12 @@ impl Component for MapComponent {
         Self {
             map: leaflet_map,
             container,
-            lat: props.city.lat,
             territory_map: MapModel::default(),
         }
     }
 
     fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            log!(format!("map_component.rendered: self.territory_map.lat,lon: {:.4},{:.4}", self.territory_map.lat, self.territory_map.lon)); 
             //self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lat), 11.0);
             add_tile_layer(&self.map);
         }
@@ -125,7 +105,7 @@ impl Component for MapComponent {
         false
     }
 
-    fn changed(&mut self, ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
+    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         let props = ctx.props();
         if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
             false
@@ -168,7 +148,7 @@ impl Component for MapComponent {
         });
 
         let search_text_onchange = {
-            Callback::from(move |event: Event| {
+            Callback::from(move |_event: Event| {
 
             })
         };

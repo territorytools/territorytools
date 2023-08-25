@@ -67,8 +67,8 @@ pub fn svg_map() -> Html {
             let zmx = (e.client_x() as f64) - prect.left();
             let zmy = (e.client_y() as f64) - prect.top();
         
-            let pan_translate_x = cloned_state.pan_translate_x; // (cloned_state.pan_translate_x - zmx/cloned_state.zoom*cloned_state.zoom)/cloned_state.zoom;
-            let pan_translate_y = cloned_state.pan_translate_y; // (cloned_state.pan_translate_y - zmy/cloned_state.zoom*cloned_state.zoom)/cloned_state.zoom;
+            let _pan_translate_x = cloned_state.pan_translate_x; // (cloned_state.pan_translate_x - zmx/cloned_state.zoom*cloned_state.zoom)/cloned_state.zoom;
+            let _pan_translate_y = cloned_state.pan_translate_y; // (cloned_state.pan_translate_y - zmy/cloned_state.zoom*cloned_state.zoom)/cloned_state.zoom;
 
             if cloned_state.mouse_down {
                 log!(format!("MouseMove (Down) Left: {:.1} ; Top: {:.1}", mx, my));
@@ -128,7 +128,7 @@ pub fn svg_map() -> Html {
             let x = (touch_0.client_x() as f64) - rect.left();
             let y = (touch_0.client_y() as f64) - rect.top();
             log!(format!("TouchStart Left: {} ; Top: {}", x, y));
-            let wide = if e.touches().length() == 2 {
+            let _wide = if e.touches().length() == 2 {
                 let touch_1 = e.touches().item(1).expect("Second touch object");
                 let w = (touch_0.client_x() - touch_1.client_x()).abs() as f64;
                 let h = (touch_0.client_y() - touch_1.client_y()).abs() as f64;
@@ -215,16 +215,16 @@ pub fn svg_map() -> Html {
                 1.0
             };
 
-            let mut zoom: f64 = cloned_state.zoom * pinch_ratio;
-            if zoom > 12.0 {
-                zoom = 12.0
+            let mut _zoom: f64 = cloned_state.zoom * pinch_ratio;
+            if _zoom > 12.0 {
+                _zoom = 12.0
             };
-            if zoom < 0.1 {
-                zoom = 0.1
+            if _zoom < 0.1 {
+                _zoom = 0.1
             };
 
-            let x_delta = cloned_state.mouse_x - x;
-            let y_delta = cloned_state.mouse_y - y;
+            let _x_delta = cloned_state.mouse_x - x;
+            let _y_delta = cloned_state.mouse_y - y;
             cloned_state.set(SvgMapModel {
                 mouse_x: cloned_state.mouse_x,
                 mouse_y: cloned_state.mouse_y,

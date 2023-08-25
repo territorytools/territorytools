@@ -1,16 +1,9 @@
 use crate::components::{
-    control::{Cities, Control},
-    map_component::{City, MapComponent, PixelPoint, MapModel},
+    map_component::{MapModel},
 };
 use crate::models::territories::Territory;
 
-use gloo_console::log;
 use reqwasm::http::Request;
-use reqwasm::http::Response;
-use wasm_bindgen_futures::JsFuture;
-use yew::prelude::*;
-use yew::html::Scope;
-use yew_hooks::use_async;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
