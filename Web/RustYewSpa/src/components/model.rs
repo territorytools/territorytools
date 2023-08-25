@@ -98,7 +98,7 @@ impl Component for Model {
         html! {
             <>
                 <MapComponent city={&self.city} territory_map={&self.territory_map} />
-                <Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
+                //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </>
         }
     }

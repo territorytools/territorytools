@@ -1,10 +1,12 @@
 use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
-use wasm_bindgen::{prelude::*, JsCast};
 use crate::components::popup_content::popup_content;
+use crate::models::territories::Territory;
+use crate::components::menu_bar_v2::MenuBarV2;
+
+use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
-use crate::models::territories::Territory;
 use gloo_console::log;
 use reqwasm::http::Request;
 use yew::prelude::*;
@@ -84,6 +86,12 @@ impl MapComponent {
         let node: &Node = &self.container.clone().into();
         Html::VRef(node.clone())
     }
+
+    // fn render_map(element: &HtmlElement) -> Html {
+    //     // Element must be passed as an address I guess
+    //     let node: &Node = &element.clone().into();
+    //     Html::VRef(node.clone())
+    // }
 }
 
 impl Component for MapComponent {
@@ -302,9 +310,64 @@ impl Component for MapComponent {
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
+        let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
+            event.prevent_default();
+        });
+        let search_text_onchange = {
+            Callback::from(move |event: Event| {
+
+            })
+        };
+        let search_clear_onclick = {
+            Callback::from(move |_event: MouseEvent| {
+                
+            })
+        };
+        // let container: Element = document().create_element("div").unwrap();
+        // let container: HtmlElement = container.dyn_into().unwrap();
+        // let map_container = self.render_map(&container);
+
         html! {
-            <div class="map-container component-container">
-                {self.render_map()}
+            <div style="background-color:yellow;height:100%;">
+                <div id="menu-bar-header" style="height:57px;background-color:red;">
+                    <MenuBarV2>
+                        <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                            // <li class="nav-item">
+                            //     <TerritorySearchLink />
+                            // </li>
+                            <li class="nav-item">
+                                <div class="d-flex flex-colum shadow-sm">
+                                    <div class="input-group">
+                                        <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
+                                            <input onchange={search_text_onchange}
+                                                value="temp" //value={search_state.search_text.clone()}
+                                                type="text"
+                                                class="form-control"
+                                                placeholder="Search"  />
+                                        </form>
+                                        <button onclick={search_clear_onclick} class="btn btn-outline-primary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                            </svg>
+                                        </button>
+                                        <button form="search-form" class="btn btn-primary" type="submit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                            </svg>
+                                        </button>
+                                        // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
+                                        // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </MenuBarV2>
+                </div>
+                <div class="map map-container component-container"  style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;">
+                    //<div style={"width:100%;"}>
+                        {self.render_map()}
+                    //</div>
+                </div>
             </div>
         }
     }
