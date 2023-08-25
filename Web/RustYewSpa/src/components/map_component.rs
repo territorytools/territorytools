@@ -1,14 +1,13 @@
-use gloo_utils::document;
-//use leaflet::{LatLng, Map, TileLayer};
-use crate::libs::leaflet::{LatLng, Map, TileLayer};
+use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
 use wasm_bindgen::{prelude::*, JsCast};
+use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
-use crate::components::territory_map::TerritoryMapModel;
 use crate::models::territories::Territory;
 use gloo_console::log;
 use reqwasm::http::Request;
 use yew::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
@@ -16,24 +15,59 @@ const DATA_API_PATH: &str = "/data/territory-borders-all.json";
 #[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/borders";
 
+#[derive(Serialize, Deserialize)]
+struct PolylineOptions {
+    color: String,
+    opacity: f32,
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct MapModel {
+    pub territories: Vec<Territory>,
+    pub territories_is_loaded: bool,
+    pub local_load: bool,
+    pub zoom: f64,
+    pub lat: f64,
+    pub lon: f64,
+    pub group_visible: String,
+}
+
+impl ImplicitClone for MapModel {}
+
+#[derive(Serialize, Deserialize)]
+struct TooltipOptions {
+    sticky: bool,
+    permanent: bool,
+    //direction: String,
+    opacity: f32,
+    //className: String
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PopupOptions {
+    auto_close: bool,
+}
+
+
 pub enum Msg {
-    LoadBorders(TerritoryMapModel),
+    LoadBorders(MapModel),
 }
 
 pub struct MapComponent {
     map: Map,
-    lat: Point,
+    lat: PixelPoint,
     container: HtmlElement,
-    territory_map: TerritoryMapModel,
+    territory_map: MapModel,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Point(pub f64, pub f64);
+pub struct PixelPoint(pub f64, pub f64);
 
 #[derive(PartialEq, Clone, Debug)]
 pub struct City {
     pub name: String,
-    pub lat: Point,
+    pub lat: PixelPoint,
 }
 
 impl ImplicitClone for City {}
@@ -41,7 +75,7 @@ impl ImplicitClone for City {}
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
     pub city: City,
-    pub territory_map: TerritoryMapModel,
+    pub territory_map: MapModel,
 }
 
 impl MapComponent {
@@ -66,13 +100,14 @@ impl Component for MapComponent {
             map: leaflet_map,
             container,
             lat: props.city.lat,
-            territory_map: TerritoryMapModel::default(),
+            territory_map: MapModel::default(),
         }
     }
 
     fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
+            log!(format!("map_component.rendered: self.territory_map.lat,lon: {:.4},{:.4}", self.territory_map.lat, self.territory_map.lon)); 
+            //self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lat), 11.0);
             add_tile_layer(&self.map);
         }
     }
@@ -84,15 +119,16 @@ impl Component for MapComponent {
     fn changed(&mut self, ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
         let props = ctx.props();
         log!("map_component.changed: running...");
-        if self.lat == props.city.lat && self.territory_map.lat == props.territory_map.lat {
+        log!(format!("map_component.changed: props.territory_map.lat,lon: {:.4},{:.4}", props.territory_map.lat, props.territory_map.lon)); 
+        if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
             false
         } else {
-            self.lat = props.city.lat;
+            //self.lat = props.city.lat;
             //self.lat = LatLng::new(props.territory_map.lat, props.territory_map.lon);
 
             //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
             
-            self.territory_map = TerritoryMapModel {
+            self.territory_map = MapModel {
                 territories: props.territory_map.territories.clone(),
                 territories_is_loaded: true,
                 local_load: false,
@@ -102,11 +138,161 @@ impl Component for MapComponent {
                 group_visible: props.territory_map.group_visible.clone(),
             };
 
-            self.map.setView(&LatLng::new(props.territory_map.lat, props.territory_map.lon), self.territory_map.zoom);
             
             log!("map_component.changed: territory_map loaded");
-            log!(format!("map_component.changed: territory_map.lat: {}", self.territory_map.lat));
+            
+            log!(format!("map_component.changed: territory_map.lat,lon: {:.4},{:.4}", self.territory_map.lat, self.territory_map.lon));            
+            self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0); //self.territory_map.zoom);
+            
+            log!(format!("map_component.territories.len: {}", self.territory_map.territories.len()));
+            
+            // let bounder  = self.territory_map.territories.iter().filter(|t| t.number == "OUTER".to_string()).iter().first().expect("At least one address on the first territory!");
+            // let mut bounder_polygon: Vec<LatLng> = Vec::new();        
+            // for v in &bounder.border {
+            //     if v.len() > 1 {
+            //         bounder_polygon.push(LatLng::new(v[0].into(), v[1].into()));
+            //     }
+            // }
+            // let bounder_poly = Polygon::new_with_options(
+            //     bounder_polygon.iter().map(JsValue::from).collect(),
+            //     &serde_wasm_bindgen::to_value(&PolylineOptions {
+            //         color: "red".to_string(),
+            //         opacity: 1.0,
+            //     })
+            //     .expect("Unable to serialize bonder polygon options"),
+            // );
 
+            // //let bounder = self.territory_map.territories.iter().filter(|t| t.number == "10000".to_string()).first();            
+            // let bounds = bounder_poly.getBounds();
+            // self.map.fitBounds(&bounds);
+            
+
+            for t in self.territory_map.territories.iter() {
+                // TerritorySummary // total_count += 1;
+                //log!("Territory:");
+                //log!(format!("  Number: {}", &t.number));
+
+                //if t.number != "OUTER".to_string() { continue; }
+                let mut polygon: Vec<LatLng> = Vec::new();
+        
+                for v in &t.border {
+                    if v.len() > 1 {
+                        //log!("Vertex: {},{}", v[0],v[1]);
+                        polygon.push(LatLng::new(v[0].into(), v[1].into()));
+                    }
+                }
+        
+                let completed_by: String = {
+                    match t.last_completed_by {
+                        Some(_) => "yes".to_string(),
+                        None => "no".to_string(),
+                    }
+                };
+        
+                let group_id: String = {
+                    match &t.group_id {
+                        Some(v) => v.to_string(),
+                        None => "".to_string(),
+                    }
+                };
+        
+                let area_code: String = {
+                    match t.area_code {
+                        Some(_) => t.area_code.clone().unwrap(),
+                        None => "".to_string(),
+                    }
+                };
+        
+                let territory_color: String = {
+                    if area_code == "TER" {
+                        "red".to_string()
+                    } else if t.status == "Signed-out" {
+                        // TerritorySummary // signed_out_count += 1;
+                        "magenta".to_string()
+                    } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
+                        // TerritorySummary // completed_count += 1;
+                        "blue".to_string() // Completed
+                    } else if t.status == "Available" {
+                        // TerritorySummary // available_count += 1;
+                        "black".to_string()
+                    } else {
+                        "#090".to_string()
+                    }
+                };
+        
+                let opacity: f32 = {
+                    if t.is_active {
+                        1.0
+                    } else {
+                        0.01
+                    }
+                };
+        
+                if area_code == "TER" {
+                    let polyline = Polyline::new_with_options(
+                        polygon.iter().map(JsValue::from).collect(),
+                        &serde_wasm_bindgen::to_value(&PolylineOptions {
+                            color: territory_color.into(),
+                            opacity: 1.0,
+                        })
+                        .expect("Unable to serialize polygon options"),
+                    );
+                 
+                    log!("Fitting bounds 2...");
+                    let bounds = polyline.getBounds();
+                    self.map.fitBounds(&bounds);
+                
+                    // bounds = polyline.getBounds();
+                    // leaflet_map.fitBounds(&bounds);
+        
+                    polyline.addTo(&self.map);
+                    // TerritorySummary // hidden_count += 1;
+                } else {
+                    let poly = Polygon::new_with_options(
+                        polygon.iter().map(JsValue::from).collect(),
+                        &serde_wasm_bindgen::to_value(&PolylineOptions {
+                            color: territory_color.into(),
+                            opacity: opacity.into(),
+                        })
+                        .expect("Unable to serialize polygon options"),
+                    );
+                    
+                    //log!(format!("t.number = {}", t.number));
+
+                    // if t.number == "OUTER".to_string() {
+                    //     log!("Fitting bounds 1...");
+                    //     let bounds = poly.getBounds();
+                    //     self.map.fitBounds(&bounds);
+                    // }
+        
+                    let tooltip_text: String = format!("{group_id}: {area_code}: {}", t.number);
+        
+                    let popup_text = "popup_content(&t);".to_string(); // TODO: implement popup_conent?
+        
+                    if t.border.len() > 2 {
+                        poly.bindTooltip(
+                            &JsValue::from_str(&tooltip_text),
+                            &serde_wasm_bindgen::to_value(&TooltipOptions {
+                                sticky: true,
+                                permanent: false,
+                                opacity: 0.9,
+                            })
+                            .expect("Unable to serialize tooltip options"),
+                        );
+                    }
+        
+                    poly.bindPopup(
+                        &JsValue::from_str(&popup_text),
+                        &serde_wasm_bindgen::to_value(&PopupOptions { auto_close: true })
+                            .expect("Unable to serialize popup options"),
+                    );
+        
+                    if !t.is_hidden && t.group_id.clone().unwrap_or("".to_string()) != "outer".to_string() {
+                        poly.addTo(&self.map);
+                    }
+                }
+            
+            }
             //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
             //self.map.setView(&LatLng::new(self.territory_map.lat.0, self.territory_map.lat.1), 11.0);
             true
