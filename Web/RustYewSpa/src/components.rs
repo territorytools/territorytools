@@ -28,3 +28,4 @@ pub mod canvas_map;
 pub mod control;
 pub mod map_component;
 pub mod model;
+pub mod model_functions;
