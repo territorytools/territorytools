@@ -83,12 +83,15 @@ impl Component for MapComponent {
 
     fn changed(&mut self, ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
         let props = ctx.props();
-
-        if self.lat == props.city.lat {
+        log!("map_component.changed: running...");
+        if self.lat == props.city.lat && self.territory_map.lat == props.territory_map.lat {
             false
         } else {
             self.lat = props.city.lat;
-            self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
+            //self.lat = LatLng::new(props.territory_map.lat, props.territory_map.lon);
+
+            //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
+            self.map.setView(&LatLng::new(props.territory_map.lat, props.territory_map.lon), 11.0);
             
             self.territory_map = TerritoryMapModel {
                 territories: props.territory_map.territories.clone(),
@@ -100,10 +103,11 @@ impl Component for MapComponent {
                 group_visible: props.territory_map.group_visible.clone(),
             };
 
-            log!("map_component.update: territory_map loaded");
-            log!(format!("map_component.update: territory_map.lat: {}", self.territory_map.lat));
+            log!("map_component.changed: territory_map loaded");
+            log!(format!("map_component.changed: territory_map.lat: {}", self.territory_map.lat));
 
             //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
+            //self.map.setView(&LatLng::new(self.territory_map.lat.0, self.territory_map.lat.1), 11.0);
             true
         }
 
