@@ -1,5 +1,6 @@
 use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
 use wasm_bindgen::{prelude::*, JsCast};
+use crate::components::popup_content::popup_content;
 use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
@@ -267,7 +268,7 @@ impl Component for MapComponent {
         
                     let tooltip_text: String = format!("{group_id}: {area_code}: {}", t.number);
         
-                    let popup_text = "popup_content(&t);".to_string(); // TODO: implement popup_conent?
+                    let popup_text = popup_content(&t); //".to_string(); // TODO: implement popup_conent?
         
                     if t.border.len() > 2 {
                         poly.bindTooltip(
