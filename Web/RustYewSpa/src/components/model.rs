@@ -43,19 +43,23 @@ impl Component for Model {
             name: "Stuttgart".to_string(),
             lat: Point(48.7784f64, 9.1742f64),
         };
+        let seattle = City {
+            name: "Seattle".to_string(),
+            lat: Point(47.7784f64, -122.1742f64),
+        };
         let cities: Cities = Cities {
-            list: vec![aachen, stuttgart],
+            list: vec![seattle, aachen, stuttgart],
         };
         let city = cities.list[0].clone();
         let territory_map: TerritoryMapModel = TerritoryMapModel::default();
 
-        wasm_bindgen_futures::spawn_local(async move {
-            let group_id: String = "2".to_string();//group_id;
-            let uri: String =
-                format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+        // wasm_bindgen_futures::spawn_local(async move {
+        //     let group_id: String = "2".to_string();//group_id;
+        //     let uri: String =
+        //         format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
 
-            log!("Model got territory borders! triggered on create.");
-        });
+        //     log!("Model got territory borders! triggered on create.");
+        // });
 
         Self { city, cities, territory_map }
     }
@@ -72,11 +76,21 @@ impl Component for Model {
                     .unwrap()
                     .clone();
             },
-            Msg::LoadBorders(territoryMap) => {
+            Msg::LoadBorders(territory_map) => {
                 log!("model.LoadBorders(TerritoryMapModel) message is running! (from the load_data_3 function maybe?)");
 
-                log!(format!("model.LoadBorders: territoryMap.lat: {}", territoryMap.lat));
+                log!(format!("model.LoadBorders: territoryMap.lat: {}", territory_map.lat));
                 //load_data();
+                if territory_map.territories.len() > 10 && territory_map.territories[9].border.len() > 0 {
+                    let first_territory = territory_map.territories.first().expect("At least one territory!");
+                    let first_border_vertex = first_territory.border.first().expect("At least one address on the first territory!");
+                    
+                    log!(format!("First Territory First Address Lat: {:.4},{:.4}", first_border_vertex[0],   first_border_vertex[1]));
+                    
+                    self.territory_map.lat = first_border_vertex[0] as f64;
+                    self.territory_map.lon = first_border_vertex[1] as f64;
+                    self.territory_map.zoom = 13.0;
+                }
             },
            
         }
@@ -112,7 +126,7 @@ impl Component for Model {
                     .unwrap();
                 
                 let m = TerritoryMapModel {
-                    territories: vec![], //fetched_territories
+                    territories: fetched_territories,
                     territories_is_loaded: true,
                     local_load: false,
                     lat: 47.66,

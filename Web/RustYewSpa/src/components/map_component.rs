@@ -91,7 +91,6 @@ impl Component for MapComponent {
             //self.lat = LatLng::new(props.territory_map.lat, props.territory_map.lon);
 
             //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
-            self.map.setView(&LatLng::new(props.territory_map.lat, props.territory_map.lon), 11.0);
             
             self.territory_map = TerritoryMapModel {
                 territories: props.territory_map.territories.clone(),
@@ -103,6 +102,8 @@ impl Component for MapComponent {
                 group_visible: props.territory_map.group_visible.clone(),
             };
 
+            self.map.setView(&LatLng::new(props.territory_map.lat, props.territory_map.lon), self.territory_map.zoom);
+            
             log!("map_component.changed: territory_map loaded");
             log!(format!("map_component.changed: territory_map.lat: {}", self.territory_map.lat));
 
