@@ -52,14 +52,6 @@ impl Component for Model {
         let city = cities.list[0].clone();
         let territory_map: MapModel = MapModel::default();
 
-        // wasm_bindgen_futures::spawn_local(async move {
-        //     let group_id: String = "2".to_string();//group_id;
-        //     let uri: String =
-        //         format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
-
-        //     log!("Model got territory borders! triggered on create.");
-        // });
-
         Self { city, cities, territory_map }
     }
 
@@ -74,28 +66,13 @@ impl Component for Model {
                     .find(|c| c.name == city.name)
                     .unwrap()
                     .clone();
-
             },
             Msg::LoadBorders(territory_map) => {
                 log!("model.LoadBorders(MapModel) message is running! (from the load_data_3 function maybe?)");
-
-                log!(format!("model.LoadBorders: territoryMap.lat: {:.4},{:.4}", territory_map.lat, territory_map.lon));
-                //load_data();
+               log!(format!("model.LoadBorders: territoryMap.lat: {:.4},{:.4}", territory_map.lat, territory_map.lon));
+ 
                 self.territory_map = territory_map.clone();
-
-                // // Find center of map
-                // if territory_map.territories.len() > 10 && territory_map.territories[9].border.len() > 0 {
-                //     let first_territory = territory_map.territories.first().expect("At least one territory!");
-                //     let first_border_vertex = first_territory.border.first().expect("At least one address on the first territory!");
-                    
-                //     log!(format!("First Territory First Address Lat: {:.4},{:.4}", first_border_vertex[0],   first_border_vertex[1]));
-                    
-                //     self.territory_map.lat = first_border_vertex[0] as f64;
-                //     self.territory_map.lon = first_border_vertex[1] as f64;
-                //     self.territory_map.zoom = 13.0;
-                // }
             },
-           
         }
         true
     }
@@ -107,10 +84,6 @@ impl Component for Model {
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
         if first_render {
             let group_id: String = "23".to_string();
-           
-            log!("model.rendered: Calling fetch_territory_map()...");
-            
-            let group_id: String = group_id;
             ctx.link().send_future(async move {
                 let m = fetch_territory_map(&group_id).await;
                 log!("model:rendered:send_future: Sending load borders message");
