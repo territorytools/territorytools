@@ -74,7 +74,7 @@ impl Component for Model {
                     .find(|c| c.name == city.name)
                     .unwrap()
                     .clone();
-                
+
             },
             Msg::LoadBorders(territory_map) => {
                 log!("model.LoadBorders(MapModel) message is running! (from the load_data_3 function maybe?)");
@@ -106,47 +106,13 @@ impl Component for Model {
 
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            let ctx = ctx.clone();
-            let link: &Scope<Model> = ctx.link();
-            let group_id: String = "23".to_string();//group_id;
-            let uri: String =
-                format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
-            
-            log!("model.rendered: Calling load_data_4()...");
+            let group_id: String = "23".to_string();
+           
+            log!("model.rendered: Calling fetch_territory_map()...");
             
             let group_id: String = group_id;
-            let uri: String =
-                format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
-            
             ctx.link().send_future(async move {
-
-                let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
-                    .send()
-                    .await
-                    .unwrap()
-                    .json()
-                    .await
-                    .unwrap();
-
-                log!(format!("model:rendered: territories.len: {}", fetched_territories.len()));
-                
-                let mut filtered_territories = fetched_territories.iter().filter(|t| t.number > "10000".to_string()).map(|t| t.clone()).collect::<Vec<_>>();                    
-                //filtered_territories.truncate(10);
-                log!(format!("model:rendered: filtered_territories.len: {}", filtered_territories.len()));
-
-                let map_center = find_center(&filtered_territories);
-
-                log!(format!("model: map_center: {:.4}, {:.4}", map_center.0, map_center.1));
-
-                let m = MapModel {
-                    territories: filtered_territories.clone(),
-                    territories_is_loaded: true,
-                    local_load: false,
-                    lat: map_center.0, //47.66,
-                    lon: map_center.1, //-122.20,
-                    zoom: 10.0,
-                    group_visible: String::from("*"),
-                };
+                let m = fetch_territory_map(&group_id).await;
                 log!("model:rendered:send_future: Sending load borders message");
                 Msg::LoadBorders(m)
             });
@@ -193,4 +159,46 @@ fn territory_filter(t: &Territory) -> bool {
     t.border.len() > 2
         // && !t.group_id.is_none() 
         // && t.group_id.clone().expect("Must have a string here").to_string() == "borders".to_string() 
+}
+
+
+pub async fn fetch_territory_map(group_id: &String) -> MapModel {
+    let fetched_territories: Vec<Territory> = fetch_territories(&group_id).await;
+
+        log!(format!("model:rendered: territories.len: {}", fetched_territories.len()));
+        
+        let mut filtered_territories = fetched_territories.iter().filter(|t| t.number > "10000".to_string()).map(|t| t.clone()).collect::<Vec<_>>();                    
+        //filtered_territories.truncate(10);
+        log!(format!("model:rendered: filtered_territories.len: {}", filtered_territories.len()));
+
+        let map_center = find_center(&filtered_territories);
+
+        log!(format!("model: map_center: {:.4}, {:.4}", map_center.0, map_center.1));
+
+        let m = MapModel {
+            territories: filtered_territories.clone(),
+            territories_is_loaded: true,
+            local_load: false,
+            lat: map_center.0,
+            lon: map_center.1,
+            zoom: 10.0,
+            group_visible: String::from("*"),
+        };
+
+        m
+}
+
+pub async fn fetch_territories(group_id: &String) ->  Vec<Territory> {
+    let uri: String =
+                format!("{base_path}?groupId={group_id}", base_path = DATA_API_PATH);
+
+    let fetched_territories: Vec<Territory> = Request::get(uri.as_str())
+        .send()
+        .await
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+
+    fetched_territories
 }
