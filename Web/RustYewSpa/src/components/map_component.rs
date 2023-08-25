@@ -127,16 +127,9 @@ impl Component for MapComponent {
 
     fn changed(&mut self, ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
         let props = ctx.props();
-        log!("map_component.changed: running...");
-        log!(format!("map_component.changed: props.territory_map.lat,lon: {:.4},{:.4}", props.territory_map.lat, props.territory_map.lon)); 
         if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
             false
         } else {
-            //self.lat = props.city.lat;
-            //self.lat = LatLng::new(props.territory_map.lat, props.territory_map.lon);
-
-            //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
-            
             self.territory_map = MapModel {
                 territories: props.territory_map.territories.clone(),
                 territories_is_loaded: true,
@@ -146,9 +139,8 @@ impl Component for MapComponent {
                 zoom: props.territory_map.zoom,
                 group_visible: props.territory_map.group_visible.clone(),
             };
-
             
-            self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0); //self.territory_map.zoom);
+            self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0);
             
             for t in self.territory_map.territories.iter() {
                 if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
@@ -156,39 +148,15 @@ impl Component for MapComponent {
                 }            
             }
 
-            let stuff = self.territory_map.territories
+            let outer_border_territories = self.territory_map.territories
                 .iter()
-                //.filter(|t| t.number == Some("OUTER".to_string()))
                 .filter(|t| t.number == "OUTER".to_string())
                 .collect::<Vec<_>>();
 
-            log!(format!("map_component: outer: {}", stuff.len()));            
-
-            let outer = stuff
-                .first()
-                .unwrap();
-            
-            //let outer_polygon = polygon_from_territory(&outer);
-            let mut polygon: Vec<LatLng> = Vec::new();
-            for v in &outer.border {
-                if v.len() > 1 {
-                    polygon.push(LatLng::new(v[0].into(), v[1].into()));
-                }
-            }
-            let outer_polygon = Polyline::new_with_options(
-                polygon.iter().map(JsValue::from).collect(),
-                &serde_wasm_bindgen::to_value(&PolylineOptions {
-                    color: "red".to_string(),
-                    opacity: 1.0,
-                })
-                .expect("Unable to serialize polygon options"),
-            );
-            let bounds = outer_polygon.getBounds();
-            self.map.fitBounds(&bounds);
+            let outer_polygon = polyline_from_territory(&outer_border_territories.first().unwrap());
+            self.map.fitBounds(&outer_polygon.getBounds());
             outer_polygon.addTo(&self.map);
 
-            //self.map.setView(&LatLng::new(self.lat.0, self.lat.1), 11.0);
-            //self.map.setView(&LatLng::new(self.territory_map.lat.0, self.territory_map.lat.1), 11.0);
             true
         }
 
@@ -198,19 +166,18 @@ impl Component for MapComponent {
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
         });
+
         let search_text_onchange = {
             Callback::from(move |event: Event| {
 
             })
         };
+
         let search_clear_onclick = {
             Callback::from(move |_event: MouseEvent| {
                 
             })
         };
-        // let container: Element = document().create_element("div").unwrap();
-        // let container: HtmlElement = container.dyn_into().unwrap();
-        // let map_container = self.render_map(&container);
 
         html! {
             <div style="background-color:yellow;height:100%;">
@@ -264,6 +231,24 @@ fn add_tile_layer(map: &Map) {
         &JsValue::NULL,
     )
     .addTo(map);
+}
+
+fn polyline_from_territory(t: &Territory) -> Polyline {
+    let mut vertexes: Vec<LatLng> = Vec::new();
+    for v in &t.border {
+        if v.len() > 1 {
+            vertexes.push(LatLng::new(v[0].into(), v[1].into()));
+        }
+    }
+
+    Polyline::new_with_options(
+        vertexes.iter().map(JsValue::from).collect(),
+        &serde_wasm_bindgen::to_value(&PolylineOptions {
+            color: "red".to_string(),
+            opacity: 1.0,
+        })
+        .expect("Unable to serialize polygon options"),
+    )
 }
 
 fn polygon_from_territory(t: &Territory) -> Polygon {
