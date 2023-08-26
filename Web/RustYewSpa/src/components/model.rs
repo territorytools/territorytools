@@ -101,8 +101,11 @@ impl Component for Model {
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
+                      || Some(format!("group{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
+                      || Some(format!("stage{}", t.stage_id.unwrap_or(0))) == Some(self.search.clone())
                       || (t.description.clone() != None && t.description.clone().unwrap().contains(&self.search.clone()))
-                      || t.number == self.search.clone())
+                      || t.number == self.search.clone()
+                      || t.signed_out_to == Some(self.search.clone()))
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
                         let tp = tpoly_from_territory(t);
