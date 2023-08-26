@@ -1,11 +1,11 @@
 use super::map_component::City;
 use gloo_console::log;
 use yew::{html::ImplicitClone, prelude::*};
-use crate::components::territory_map::TerritoryMapModel;
+use crate::components::map_component::MapModel;
 
 pub enum Msg {
     CityChosen(City),
-    LoadBorders(TerritoryMapModel),
+    LoadBorders(MapModel),
 }
 
 pub struct Control {
@@ -24,14 +24,14 @@ pub struct Props {
     pub cities: Cities,
     pub select_city: Callback<City>,
     //pub territory_map: Callback<TerritoryMapModel>,
-    pub border_loader: Callback<TerritoryMapModel>, 
+    pub border_loader: Callback<MapModel>, 
 }
 
 impl Control {
     fn button(&self, ctx: &Context<Self>, city: City) -> Html {
         let name = city.name.clone();
         let cb = ctx.link().callback(move |_| Msg::CityChosen(city.clone()));
-        let tcb = ctx.link().callback(move |_| Msg::LoadBorders(TerritoryMapModel::default()));
+        let tcb = ctx.link().callback(move |_| Msg::LoadBorders(MapModel::default()));
         html! {
             <>
                 <button onclick={cb}>{name.clone()}</button>
@@ -68,7 +68,7 @@ impl Component for Control {
         true
     }
 
-    fn changed(&mut self, _ctx: &Context<Self>, old_props: &Self::Properties) -> bool {
+    fn changed(&mut self, _ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         false
     }
 
