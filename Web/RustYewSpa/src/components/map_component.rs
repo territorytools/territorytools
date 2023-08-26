@@ -139,7 +139,7 @@ impl Component for MapComponent {
 
             self.tpolygons = props.tpolygons.clone();
             
-            self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0);
+            //self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0);
             
             log!(format!("map_component: changed: tpolygons len: {}", self.tpolygons.len()));
 

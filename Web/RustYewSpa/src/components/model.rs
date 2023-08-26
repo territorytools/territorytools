@@ -84,10 +84,27 @@ impl Component for Model {
                 self.search = search;
 
                 self.tpolygons.clear();
-                let mut id_list: Vec<i32> = vec![];
+                //let mut id_list: Vec<i32> = vec![];
                 for t in self.territory_map.territories.iter() {
-                    if t.group_id == Some(self.search.clone()) 
-                      || t.number == self.search.clone() {
+                    if self.search == "ALL".to_string(){
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
+                    } else if (self.search == "*".to_string() || self.search.trim() == "".to_string()) 
+                        && t.group_id != Some("outer".to_string())  
+                        && t.number != "OUTER".to_string() {
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
+                    } else if self.search == "OUTER".to_string() && t.number == "OUTER".to_string() {
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
+                    } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
+                    } else if (t.group_id == Some(self.search.clone())
+                      || (t.description.clone() != None && t.description.clone().unwrap().contains(&self.search.clone()))
+                      || t.number == self.search.clone())
+                      && t.group_id != Some("outer".to_string())
+                      && t.number != "OUTER".to_string()  {
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     }            
