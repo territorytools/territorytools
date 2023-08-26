@@ -68,23 +68,19 @@ impl Component for Model {
             },
             Msg::LoadBorders(territory_map) => {
                 self.territory_map = territory_map.clone();
-
                 self.tpolygons.clear();
-                let mut id_list: Vec<i32> = vec![];
+                
                 for t in self.territory_map.territories.iter() {
                     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     }            
                 }
-
-                log!(format!("model: Msg::LoadBorders: tpolygons len: {}", self.tpolygons.len()));
             },
             Msg::Search(search) => {
                 self.search = search;
-
                 self.tpolygons.clear();
-                //let mut id_list: Vec<i32> = vec![];
+
                 for t in self.territory_map.territories.iter() {
                     if self.search == "ALL".to_string(){
                         let tp = tpoly_from_territory(t);
@@ -100,6 +96,11 @@ impl Component for Model {
                     } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
+                    // } else if self.search.starts_with('<') 
+                    //     && t.signed_out.
+                    //     && t.number != "OUTER".to_string() {
+                    //     let tp = tpoly_from_territory(t);
+                    //     self.tpolygons.push(tp);    
                     } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
                       || Some(format!("group{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
                       || Some(format!("stage{}", t.stage_id.unwrap_or(0))) == Some(self.search.clone())
@@ -112,8 +113,6 @@ impl Component for Model {
                         self.tpolygons.push(tp);
                     }            
                 }
-
-                log!(format!("model: Msg::Search: tpolygons len: {} territories len: {}", self.tpolygons.len(), self.territory_map.territories.len()));
             },
         }
         true

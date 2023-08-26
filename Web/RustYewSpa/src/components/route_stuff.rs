@@ -22,7 +22,7 @@ pub enum Route {
     Root,
     #[at("/wasm/index.html")]
     Start,
-    #[at("/app/map-component")]
+    #[at("/app/map-old")]
     Map,
     #[at("/app/map")]
     MapComponent,

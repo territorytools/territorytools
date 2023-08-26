@@ -3,24 +3,20 @@ use crate::libs::leaflet::{
     LatLngBounds,
     Map,
     Polygon, 
-    Polyline, 
     TileLayer, 
     LayerGroup
 };
 use crate::models::territories::Territory;
-use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::map_component_functions::{
     TerritoryPolygon,
-    polygon_from_territory,
     polygon_from_territory_polygon,
-    tpoly_from_territory,
     get_southwest_corner,
     get_northeast_corner,
 };
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
-use web_sys::{Element, HtmlElement, HtmlInputElement, Node};
+use web_sys::{Element, HtmlElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
 use serde::{Deserialize, Serialize};
 use gloo_console::log;
@@ -45,7 +41,6 @@ pub struct MapModel {
 impl ImplicitClone for MapModel {}
 
 pub enum Msg {
-    Search(String),
 }
 
 pub struct MapComponent {
@@ -111,15 +106,8 @@ impl Component for MapComponent {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::Search(search) => {
-                log!(format!("map_component: Search: {} don't do anything", search));
-                
-                
-            },
-        }
-        true
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
+        false
     }
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
@@ -196,7 +184,7 @@ impl Component for MapComponent {
 
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
        
 
         html! {
@@ -217,22 +205,4 @@ fn add_tile_layer(map: &Map) {
         &JsValue::NULL,
     )
     .addTo(map);
-}
-
-fn polyline_from_territory(t: &Territory) -> Polyline {
-    let mut vertexes: Vec<LatLng> = Vec::new();
-    for v in &t.border {
-        if v.len() > 1 {
-            vertexes.push(LatLng::new(v[0].into(), v[1].into()));
-        }
-    }
-
-    Polyline::new_with_options(
-        vertexes.iter().map(JsValue::from).collect(),
-        &serde_wasm_bindgen::to_value(&PolylineOptions {
-            color: "red".to_string(),
-            opacity: 1.0,
-        })
-        .expect("Unable to serialize polygon options"),
-    )
 }
