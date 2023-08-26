@@ -100,7 +100,7 @@ impl Component for Model {
                     } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
-                    } else if (t.group_id == Some(self.search.clone())
+                    } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
                       || (t.description.clone() != None && t.description.clone().unwrap().contains(&self.search.clone()))
                       || t.number == self.search.clone())
                       && t.group_id != Some("outer".to_string())
@@ -152,9 +152,10 @@ impl Component for Model {
             })
         };
 
+        let link = ctx.link().clone();
         let search_clear_onclick = {
             Callback::from(move |_event: MouseEvent| {
-                
+                link.send_message(Msg::Search("".to_string()));
             })
         };
 
@@ -171,7 +172,7 @@ impl Component for Model {
                                     <div class="input-group">
                                         <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
                                             <input onchange={search_text_onchange}
-                                                value="temp" //value={search_state.search_text.clone()}
+                                                value={self.search.clone()}
                                                 type="text"
                                                 class="form-control"
                                                 placeholder="Search"  />
