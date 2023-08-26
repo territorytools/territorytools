@@ -143,7 +143,7 @@ impl Component for Model {
         };
 
         html! {
-            <>
+           <div style="background-color:yellow;height:100%;">
             <div id="menu-bar-header" style="height:57px;background-color:red;">
                     <MenuBarV2>
                         <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
@@ -180,7 +180,7 @@ impl Component for Model {
                 </div>
                 <MapComponent city={&self.city} territory_map={&self.territory_map} tpolygons={self.tpolygons.clone()} search={self.search.clone()}/>
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
-            </>
+            </div>
         }
     }
 }

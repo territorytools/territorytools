@@ -247,13 +247,13 @@ impl Component for MapComponent {
        
 
         html! {
-            <div style="background-color:yellow;height:100%;">
+            //<div style="background-color:yellow;height:100%;">
             // TODO: Move this whole header thing into the model.rs
               
                 <div class="map map-container component-container"  style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;">
                     {self.render_map()}
                 </div>
-            </div>
+            //</div>
         }
     }
 }
