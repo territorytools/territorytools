@@ -1,7 +1,11 @@
 use crate::libs::leaflet::{LatLng, Map, Polygon, Polyline, TileLayer, LayerGroup};
 use crate::models::territories::Territory;
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::map_component_functions::polygon_from_territory;
+use crate::components::map_component_functions::{
+    TerritoryPolygon,
+    polygon_from_territory,
+    polygon_from_territory_polygon,
+    tpoly_from_territory};
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
@@ -38,6 +42,7 @@ pub struct MapComponent {
     container: HtmlElement,
     territory_map: MapModel,
     polygons: Vec<Polygon>,
+    tpolygons: Vec<TerritoryPolygon>,
     layer_group: LayerGroup,
 }
 
@@ -80,6 +85,7 @@ impl Component for MapComponent {
             container,
             territory_map: MapModel::default(),
             polygons: vec![],
+            tpolygons: vec![],
             layer_group: LayerGroup::new(),
         }
     }
@@ -140,29 +146,35 @@ impl Component for MapComponent {
                 }
 
                 //&self.map.clearLayers();
-
+                
+                self.tpolygons.clear();
                 let mut id_list = vec![];
                 for t in self.territory_map.territories.iter() {
                     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        //polygon_from_territory(t).addTo(&self.map);
-                        let polygon = polygon_from_territory(t);
-                        
-                        polygon.addTo_LayerGroup(&self.layer_group);
-
-                        let layer_id = self.layer_group.getLayerId(&polygon);
-
-                        //log!(format!("LayerID: {}", layer_id));
-                        id_list.push(layer_id);
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
                     }            
+                }
+
+                for tp in self.tpolygons.iter() {
+                    let p = polygon_from_territory_polygon(&tp);
+                    self.polygons.push(p); // TODO: I don't think we need this
+
+                    let p = polygon_from_territory_polygon(&tp);
+                        
+                    p.addTo_LayerGroup(&self.layer_group);
+
+                    let layer_id = self.layer_group.getLayerId(&p);
+                    id_list.push(layer_id);
                 }
 
                 for layer_id in id_list.iter() {
                     //log!(format!("removing Layer.id: {}", layer_id));
-                    let thisLayer = self.layer_group.getLayer(*layer_id);
+                    let this_layer = self.layer_group.getLayer(*layer_id);
                     //search
                     let three = layer_id % 3 == 0;
                     if three {
-                    self.layer_group.removeLayer_byId(*layer_id);
+                        self.layer_group.removeLayer_byId(*layer_id);
                     }
 
                 }
@@ -192,9 +204,16 @@ impl Component for MapComponent {
             
             for t in self.territory_map.territories.iter() {
                 if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                    //polygon_from_territory(t).addTo(&self.map);
-                    self.polygons.push(polygon_from_territory(t));
+                    let tp = tpoly_from_territory(t);
+                    // let p = polygon_from_territory_polygon(&tp);
+                    // self.polygons.push(p);
+                    self.tpolygons.push(tp);
                 }            
+            }
+
+            for tp in self.tpolygons.iter() {
+                let p = polygon_from_territory_polygon(&tp);
+                self.polygons.push(p);
             }
             
             //self.map.clearLayers();
