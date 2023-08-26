@@ -148,14 +148,14 @@ impl Component for MapComponent {
 
                 //&self.map.clearLayers();
                 
-                self.tpolygons.clear();
+                // self.tpolygons.clear();
                 let mut id_list = vec![];
-                for t in self.territory_map.territories.iter() {
-                    if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        let tp = tpoly_from_territory(t);
-                        self.tpolygons.push(tp);
-                    }            
-                }
+                // for t in self.territory_map.territories.iter() {
+                //     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
+                //         let tp = tpoly_from_territory(t);
+                //         self.tpolygons.push(tp);
+                //     }            
+                // }
 
                 for tp in self.tpolygons.iter() {
                     let p = polygon_from_territory_polygon(&tp);
@@ -169,16 +169,16 @@ impl Component for MapComponent {
                     id_list.push(layer_id);
                 }
 
-                for layer_id in id_list.iter() {
-                    //log!(format!("removing Layer.id: {}", layer_id));
-                    let this_layer = self.layer_group.getLayer(*layer_id);
-                    //search
-                    let three = layer_id % 3 == 0;
-                    if three {
-                        self.layer_group.removeLayer_byId(*layer_id);
-                    }
+                // for layer_id in id_list.iter() {
+                //     //log!(format!("removing Layer.id: {}", layer_id));
+                //     let this_layer = self.layer_group.getLayer(*layer_id);
+                //     //search
+                //     let three = layer_id % 3 == 0;
+                //     if three {
+                //         self.layer_group.removeLayer_byId(*layer_id);
+                //     }
 
-                }
+                // }
 
                 self.layer_group.addTo(&self.map);
             },
@@ -200,17 +200,21 @@ impl Component for MapComponent {
                 zoom: props.territory_map.zoom,
                 group_visible: props.territory_map.group_visible.clone(),
             };
+
+            self.tpolygons = props.tpolygons.clone();
             
             self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0);
             
-            for t in self.territory_map.territories.iter() {
-                if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                    let tp = tpoly_from_territory(t);
-                    // let p = polygon_from_territory_polygon(&tp);
-                    // self.polygons.push(p);
-                    self.tpolygons.push(tp);
-                }            
-            }
+            // for t in self.territory_map.territories.iter() {
+            //     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
+            //         let tp = tpoly_from_territory(t);
+            //         // let p = polygon_from_territory_polygon(&tp);
+            //         // self.polygons.push(p);
+            //         self.tpolygons.push(tp);
+            //     }            
+            // }
+            
+            log!(format!("map_component: changed: tpolygons len: {}", self.tpolygons.len()));
 
             for tp in self.tpolygons.iter() {
                 let p = polygon_from_territory_polygon(&tp);
@@ -240,68 +244,12 @@ impl Component for MapComponent {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
-            event.prevent_default();
-        });
-
-        let link = ctx.link().clone();
-        let search_text_onchange = {
-            Callback::from(move |event: Event| {
-                let value = event
-                    .target()
-                    .expect("An input value for an HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .value();
-                
-                log!(format!("map_comp: search_text_onchange: value: {}", value));
-
-                link.send_message(Msg::Search(value));
-            })
-        };
-
-        let search_clear_onclick = {
-            Callback::from(move |_event: MouseEvent| {
-                
-            })
-        };
+       
 
         html! {
             <div style="background-color:yellow;height:100%;">
             // TODO: Move this whole header thing into the model.rs
-                <div id="menu-bar-header" style="height:57px;background-color:red;">
-                    <MenuBarV2>
-                        <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
-                            // <li class="nav-item">
-                            //     <TerritorySearchLink />
-                            // </li>
-                            <li class="nav-item">
-                                <div class="d-flex flex-colum shadow-sm">
-                                    <div class="input-group">
-                                        <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
-                                            <input onchange={search_text_onchange}
-                                                value="temp" //value={search_state.search_text.clone()}
-                                                type="text"
-                                                class="form-control"
-                                                placeholder="Search"  />
-                                        </form>
-                                        <button onclick={search_clear_onclick} class="btn btn-outline-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                                            </svg>
-                                        </button>
-                                        <button form="search-form" class="btn btn-primary" type="submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                            </svg>
-                                        </button>
-                                        // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
-                                        // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </MenuBarV2>
-                </div>
+              
                 <div class="map map-container component-container"  style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;">
                     {self.render_map()}
                 </div>
