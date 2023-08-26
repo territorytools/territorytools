@@ -5,7 +5,8 @@ use crate::components::map_component_functions::{
     TerritoryPolygon,
     polygon_from_territory,
     polygon_from_territory_polygon,
-    tpoly_from_territory};
+    tpoly_from_territory
+};
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
@@ -43,6 +44,7 @@ pub struct MapComponent {
     territory_map: MapModel,
     polygons: Vec<Polygon>,
     tpolygons: Vec<TerritoryPolygon>,
+    id_list: Vec<i32>,
     layer_group: LayerGroup,
 }
 
@@ -87,6 +89,7 @@ impl Component for MapComponent {
             territory_map: MapModel::default(),
             polygons: vec![],
             tpolygons: vec![],
+            id_list: vec![],
             layer_group: LayerGroup::new(),
         }
     }
@@ -101,86 +104,9 @@ impl Component for MapComponent {
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::Search(search) => {
-                log!(format!("map_component: Search: {}", search));
-                let mut new_territories: Vec<Territory> = vec![];
-                for t in self.territory_map.territories.iter() {
-                    //t.is_visible = false;
-                    let nt = Territory {
-                        id: t.id.clone(),
-                        number: t.number.clone(),
-                        status: t.status.clone(),
-                        stage_id: t.stage_id.clone(),
-                        description: t.description.clone(),
-                        notes: t.notes.clone(),
-                        address_count: t.address_count.clone(),
-                        area_code: t.area_code.clone(),
-                        last_completed_by: t.last_completed_by.clone(),
-                        signed_out_to: t.signed_out_to.clone(),
-                        group_id: t.group_id.clone(),
-                        sub_group_id: t.sub_group_id.clone(),
-                        is_hidden: t.group_id.clone().unwrap_or("".to_string()) == "outer".to_string(),
-                        is_active: true,
-                        // is_active: (number.to_string().is_empty()
-                        //     || t.number.clone() == number.to_string()
-                        //     || t.signed_out_to.clone() == Some(number.to_string())
-                        //     || t.description
-                        //         .clone()
-                        //         .unwrap_or("".to_string())
-                        //         .contains(number)
-                        //     || format!("g{}", t.group_id.clone().unwrap_or("".to_string()))
-                        //         == number.to_string()
-                        //     || t.status.clone() == number.to_string()),
-                        border: t.border.clone(),
-                        addresses: t.addresses.clone(),
-                    };
-                    new_territories.push(nt);
-                }
-                self.territory_map.territories = new_territories;
+                log!(format!("map_component: Search: {} don't do anything", search));
                 
-                //let layerGroup = LayerGroup::new();
-                self.layer_group = LayerGroup::new();
                 
-
-                for p in self.polygons.iter() {
-                    p.removeFrom(&self.map);
-                    //&self.map.removeLayer(p);
-                }
-
-                //&self.map.clearLayers();
-                
-                // self.tpolygons.clear();
-                let mut id_list = vec![];
-                // for t in self.territory_map.territories.iter() {
-                //     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                //         let tp = tpoly_from_territory(t);
-                //         self.tpolygons.push(tp);
-                //     }            
-                // }
-
-                for tp in self.tpolygons.iter() {
-                    let p = polygon_from_territory_polygon(&tp);
-                    self.polygons.push(p); // TODO: I don't think we need this
-
-                    let p = polygon_from_territory_polygon(&tp);
-                        
-                    p.addTo_LayerGroup(&self.layer_group);
-
-                    let layer_id = self.layer_group.getLayerId(&p);
-                    id_list.push(layer_id);
-                }
-
-                // for layer_id in id_list.iter() {
-                //     //log!(format!("removing Layer.id: {}", layer_id));
-                //     let this_layer = self.layer_group.getLayer(*layer_id);
-                //     //search
-                //     let three = layer_id % 3 == 0;
-                //     if three {
-                //         self.layer_group.removeLayer_byId(*layer_id);
-                //     }
-
-                // }
-
-                self.layer_group.addTo(&self.map);
             },
         }
         true
@@ -188,9 +114,9 @@ impl Component for MapComponent {
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         let props = ctx.props();
-        if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
-            false
-        } else {
+        // if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
+        //     false
+        // } else {
             self.territory_map = MapModel {
                 territories: props.territory_map.territories.clone(),
                 territories_is_loaded: true,
@@ -216,30 +142,63 @@ impl Component for MapComponent {
             
             log!(format!("map_component: changed: tpolygons len: {}", self.tpolygons.len()));
 
+            
+            // for tp in self.tpolygons.iter() {
+            //     let p = polygon_from_territory_polygon(&tp);
+            //     self.polygons.push(p);
+            // }
+
+            log!("map_component: changed: 1");
+            
+            //let mut id_list = vec![];
+            for id in self.id_list.iter() {
+                self.layer_group.removeLayer_byId(*id);
+            }
+
+            self.polygons.clear();
+            self.id_list.clear();
+            self.layer_group = LayerGroup::new();
             for tp in self.tpolygons.iter() {
                 let p = polygon_from_territory_polygon(&tp);
-                self.polygons.push(p);
-            }
-            
-            //self.map.clearLayers();
-            for p in self.polygons.iter() {
-                p.removeFrom(&self.map);
-            }
-            for p in self.polygons.iter() {
-                p.addTo(&self.map);
+                self.polygons.push(p); // TODO: I don't think we need this
+
+                let p = polygon_from_territory_polygon(&tp);
+                    
+                p.addTo_LayerGroup(&self.layer_group);
+
+                let layer_id = self.layer_group.getLayerId(&p);
+                self.id_list.push(layer_id);
             }
 
-            let outer_border_territories = self.territory_map.territories
-                .iter()
-                .filter(|t| t.number == "OUTER".to_string())
-                .collect::<Vec<_>>();
+            log!("map_component: changed: 2");
+            self.layer_group.addTo(&self.map);
 
-            let outer_polygon = polyline_from_territory(&outer_border_territories.first().unwrap());
-            self.map.fitBounds(&outer_polygon.getBounds());
-            outer_polygon.addTo(&self.map);
+            log!(format!("map_component: changed: polygons len: {}", self.polygons.len()));
+            if self.polygons.len() > 0 {
+                let first_polygon = self.polygons.first().unwrap();
+                self.map.fitBounds(&first_polygon.getBounds());
+            }
 
+
+            // //self.map.clearLayers();
+            // for p in self.polygons.iter() {
+            //     p.removeFrom(&self.map);
+            // }
+            // for p in self.polygons.iter() {
+            //     p.addTo(&self.map);
+            // }
+
+            // let outer_border_territories = self.territory_map.territories
+            //     .iter()
+            //     .filter(|t| t.number == "OUTER".to_string())
+            //     .collect::<Vec<_>>();
+            // log!("map_component: changed: 3");
+            // let outer_polygon = polyline_from_territory(&outer_border_territories.first().unwrap());
+            // self.map.fitBounds(&outer_polygon.getBounds());
+            // outer_polygon.addTo(&self.map);
+            //log!("map_component: changed: 4");
             true
-        }
+        //}
 
     }
 

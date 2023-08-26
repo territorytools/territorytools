@@ -4,6 +4,7 @@ use crate::models::territories::Territory;
 
 use wasm_bindgen::{prelude::*};
 use serde::{Deserialize, Serialize};
+use yew::{html::ImplicitClone};
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -23,11 +24,14 @@ struct PolylineOptions {
     color: String,
     opacity: f32,
 }
+
 #[derive(PartialEq, Clone, Default)]
 pub struct TerritoryLatLng {
     pub lat: f32,
     pub lon: f32,
 }
+
+impl ImplicitClone for TerritoryLatLng {}
 
 #[derive(PartialEq, Clone, Default)]
 pub struct TerritoryPolygon {
@@ -36,6 +40,8 @@ pub struct TerritoryPolygon {
     pub opacity: f32,
     pub border: Vec<TerritoryLatLng>,
 }
+
+impl ImplicitClone for TerritoryPolygon {}
 
 pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
     let mut vertices: Vec<LatLng> = Vec::new();

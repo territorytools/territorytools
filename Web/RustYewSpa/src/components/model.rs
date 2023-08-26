@@ -86,15 +86,14 @@ impl Component for Model {
                 self.tpolygons.clear();
                 let mut id_list: Vec<i32> = vec![];
                 for t in self.territory_map.territories.iter() {
-                    if t.group_id != Some("outer".to_string()) 
-                      && t.number != "OUTER".to_string() 
-                      && t.number == self.search.clone() {
+                    if t.group_id == Some(self.search.clone()) 
+                      || t.number == self.search.clone() {
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     }            
                 }
 
-                log!(format!("model: Msg::Search: tpolygons len: {}", self.tpolygons.len()));
+                log!(format!("model: Msg::Search: tpolygons len: {} territories len: {}", self.tpolygons.len(), self.territory_map.territories.len()));
             },
         }
         true
@@ -130,7 +129,7 @@ impl Component for Model {
                     .unchecked_into::<HtmlInputElement>()
                     .value();
                 
-                log!(format!("map_comp: search_text_onchange: value: {}", value));
+                log!(format!("model: search_text_onchange: value: {}", value));
 
                 link.send_message(Msg::Search(value));
             })
