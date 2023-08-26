@@ -17,7 +17,13 @@ use gloo_console::log;
 pub enum Msg {
     SelectCity(City),
     LoadBorders(MapModel),
+    LoadBordersPath(MapModel, String),
     Search(String),
+}
+
+#[derive(PartialEq, Properties, Clone)]
+pub struct Props {
+    pub path: Option<String>,
 }
 
 pub struct Model {
@@ -30,9 +36,9 @@ pub struct Model {
 
 impl Component for Model {
     type Message = Msg;
-    type Properties = ();
+    type Properties = Props;
 
-    fn create(_ctx: &Context<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
         let aachen = City {
             name: "Aachen".to_string(),
             lat: PixelPoint(50.7597f64, 6.0967f64),
@@ -50,6 +56,36 @@ impl Component for Model {
         };
         let city = cities.list[0].clone();
         let territory_map: MapModel = MapModel::default();
+
+        if ctx.props().path == Some("842FqefDeFe81".to_string()) {
+            log!("Creating campaign");
+            ctx.link().send_future(async move {
+                Msg::LoadBordersPath(fetch_territory_map(&"33".to_string()).await, "[C]".to_string())
+                //Msg::Search("[U]".to_string())
+            });
+            //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
+            return Self { city, cities, territory_map, search: "loading search...".to_string(), tpolygons: vec![] }    
+            
+        } 
+        // else if ctx.props().path == Some("campaign".to_string()) {
+        //     log!("Creating PATH");
+        //     ctx.link().send_future(async move {
+        //         Msg::LoadBordersPath(fetch_territory_map(&"33".to_string()).await, "[C]".to_string())
+        //         //Msg::Search("[U]".to_string())
+        //     });
+        //     //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
+        //     return Self { city, cities, territory_map, search: "[Y]".to_string(), tpolygons: vec![] }    
+            
+        // } 
+        else {
+            log!("Creating normal load...");
+            ctx.link().send_future(async move {
+                Msg::LoadBorders(fetch_territory_map(&"33".to_string()).await)
+                //Msg::Search("[U]".to_string())
+            });
+            //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
+            return Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }    
+        }
 
         Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }
     }
@@ -77,23 +113,45 @@ impl Component for Model {
                     }            
                 }
             },
+            Msg::LoadBordersPath(territory_map, path) => {
+                //log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
+                self.territory_map = territory_map.clone();
+                self.search = path.clone();
+
+                self.tpolygons.clear();
+                //log!(format!("model:update: LoadBorderPath: territories: {}", self.territory_map.territories.len()));
+                for t in self.territory_map.territories.iter() {
+                    //log!("model:update: LoadBorderPath: territory.description: item: {}");
+                    if   t.description.clone() != None && t.description.clone().unwrap().contains(&self.search.clone()) {
+                        //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
+                    }            
+                }
+            },
             Msg::Search(search) => {
                 self.search = search;
                 self.tpolygons.clear();
 
+                // log!(format!("model: update: Msg::Search: ssssearch: {}", self.search.clone()));
+                // log!(format!("model: update: Msg::Search: ssssearch: count {}", self.territory_map.territories.len()));
                 for t in self.territory_map.territories.iter() {
                     if self.search == "ALL".to_string(){
+                        //log!(format!("model: update: Msg::Search: search: (ALL) {}", self.search.clone()));
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     } else if (self.search == "*".to_string() || self.search.trim() == "".to_string()) 
                         && t.group_id != Some("outer".to_string())  
                         && t.number != "OUTER".to_string() {
+                        //log!(format!("model: update: Msg::Search: search: (*) {}", self.search.clone()));
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     } else if self.search == "OUTER".to_string() && t.number == "OUTER".to_string() {
+                        //log!(format!("model: update: Msg::Search: search: (OUTER) {}", self.search.clone()));
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
+                        //log!(format!("model: update: Msg::Search: search: (outer) {}", self.search.clone()));
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
                     // } else if self.search.starts_with('<') 
@@ -109,25 +167,38 @@ impl Component for Model {
                       || t.signed_out_to == Some(self.search.clone()))
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
+                        //log!(format!("model: update: Msg::Search: search: (INNER) {}", self.search.clone()));
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
-                    }            
+                    } 
+                    // else {
+                    //     log!(format!("model: update: Msg::Search: search: (else) {}", self.search.clone()));
+                    // }            
                 }
             },
         }
         true
     }
 
-    fn changed(&mut self, _ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
+    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
+        //if ctx.props().path == Some("campaign".to_string()) {
+        if _old_props.path == Some("campaign".to_string()) {
+            log!("campaign");
+            self.search = "[X]".to_string();
+            ctx.link().send_message(Msg::Search("[C]".to_string()));
+            return true;
+        }
         false
     }
 
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            let group_id: String = "23".to_string();
-            ctx.link().send_future(async move {
-                Msg::LoadBorders(fetch_territory_map(&group_id).await)
-            });
+            // let group_id: String = "23".to_string();
+            // ctx.link().send_future(async move {
+            //     //Msg::LoadBorders(fetch_territory_map(&group_id).await)
+            //     Msg::LoadBordersPath(fetch_territory_map(&group_id).await, "[X]".to_string())
+            //     //Msg::Search("[R]".to_string())
+            // });
         }
     }
 
