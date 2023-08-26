@@ -5,6 +5,7 @@ use crate::models::territories::Territory;
 use wasm_bindgen::{prelude::*};
 use serde::{Deserialize, Serialize};
 use yew::{html::ImplicitClone};
+use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -39,6 +40,8 @@ pub struct TerritoryPolygon {
     pub color: String,
     pub opacity: f32,
     pub border: Vec<TerritoryLatLng>,
+    pub popup_html: String,
+    pub tooltip_text: String,
 }
 
 impl ImplicitClone for TerritoryPolygon {}
@@ -49,14 +52,34 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
         vertices.push(LatLng::new(v.lat.into(), v.lon.into()));
     }
 
-    Polygon::new_with_options(
+    let poly = Polygon::new_with_options(
         vertices.iter().map(JsValue::from).collect(),
         &serde_wasm_bindgen::to_value(&PolylineOptions {
             color: tpoly.color.to_string(),
             opacity: tpoly.opacity,
         })
         .expect("Unable to serialize polygon options"),
-    )
+    );
+
+    if tpoly.border.len() > 2 {
+        poly.bindTooltip(
+            &JsValue::from_str(tpoly.tooltip_text.as_str()),
+            &serde_wasm_bindgen::to_value(&TooltipOptions {
+                sticky: true,
+                permanent: false,
+                opacity: 0.9,
+            })
+            .expect("Unable to serialize tooltip options"),
+        );
+    }
+
+    poly.bindPopup(
+        &JsValue::from_str(tpoly.popup_html.as_str()),
+        &serde_wasm_bindgen::to_value(&PopupOptions { auto_close: true })
+            .expect("Unable to serialize popup options"),
+    );
+
+    poly
 }
 
 
@@ -134,8 +157,9 @@ pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
             color: territory_color.into(),
             opacity: opacity.into(),
             border: polygon, //.iter().map().collect(),
+            tooltip_text: format!("{group_id}: {area_code}: {}", t.number),
+            popup_html: popup_content(&t),
         };
-        
 
         //if !t.is_hidden && t.group_id.clone().unwrap_or("".to_string()) != "outer".to_string() {
             //poly.addTo(&self.map);
@@ -237,6 +261,7 @@ pub fn polygon_from_territory(t: &Territory) -> Polygon {
             );
         }
 
+        log!(format!("BindPopup: {}", popup_text));
         poly.bindPopup(
             &JsValue::from_str(&popup_text),
             &serde_wasm_bindgen::to_value(&PopupOptions { auto_close: true })

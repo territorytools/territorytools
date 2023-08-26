@@ -141,26 +141,8 @@ impl Component for MapComponent {
             
             self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0);
             
-            // for t in self.territory_map.territories.iter() {
-            //     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-            //         let tp = tpoly_from_territory(t);
-            //         // let p = polygon_from_territory_polygon(&tp);
-            //         // self.polygons.push(p);
-            //         self.tpolygons.push(tp);
-            //     }            
-            // }
-            
             log!(format!("map_component: changed: tpolygons len: {}", self.tpolygons.len()));
 
-            
-            // for tp in self.tpolygons.iter() {
-            //     let p = polygon_from_territory_polygon(&tp);
-            //     self.polygons.push(p);
-            // }
-
-            log!("map_component: changed: 1");
-            
-            //let mut id_list = vec![];
             for id in self.id_list.iter() {
                 self.layer_group.removeLayer_byId(*id);
             }
@@ -180,28 +162,16 @@ impl Component for MapComponent {
                 self.id_list.push(layer_id);
             }
 
-            log!("map_component: changed: 2");
             self.layer_group.addTo(&self.map);
 
-            // log!(format!("map_component: changed: polygons len: {}", self.polygons.len()));
-            // if self.polygons.len() > 0 {
-            //     let first_polygon = self.polygons.first().unwrap();
-            //     self.map.fitBounds(&first_polygon.getBounds());
-            // }
-
             let sw = get_southwest_corner(self.tpolygons.clone());
-            log!(format!("SW: {:.4}, {:.4}", sw.lat, sw.lon));
             let ne = get_northeast_corner(self.tpolygons.clone());
-            log!(format!("NE: {:.4}, {:.4}", ne.lat, ne.lon));
             
             let bounds = LatLngBounds::new(
                 &LatLng::new(ne.lat as f64, ne.lon as f64),
                 &LatLng::new(sw.lat as f64, sw.lon as f64)
             );
             
-            log!(format!("Bounds: {:.4}, {:.4} x {:.4}, {:.4}", 
-                bounds.getNorthEast().lat(), bounds.getNorthEast().lng(),
-                bounds.getSouthWest().lat(), bounds.getSouthWest().lng()));
             self.map.fitBounds(&bounds);
 
             // //self.map.clearLayers();
