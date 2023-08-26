@@ -5,6 +5,7 @@ use crate::components::{
     },
     map_component::{City, MapComponent, PixelPoint, MapModel},
     model_functions::*,
+    map_component_functions::{tpoly_from_territory,TerritoryPolygon},
 };
 
 use yew::prelude::*;
@@ -19,6 +20,7 @@ pub struct Model {
     city: City,
     cities: Cities,
     territory_map: MapModel,
+    tpolygons: Vec<TerritoryPolygon>,
     search: String,
 }
 
@@ -45,7 +47,7 @@ impl Component for Model {
         let city = cities.list[0].clone();
         let territory_map: MapModel = MapModel::default();
 
-        Self { city, cities, territory_map, search: "".to_string() }
+        Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -62,6 +64,15 @@ impl Component for Model {
             },
             Msg::LoadBorders(territory_map) => {
                 self.territory_map = territory_map.clone();
+
+                self.tpolygons.clear();
+                let mut id_list: Vec<i32> = vec![];
+                for t in self.territory_map.territories.iter() {
+                    if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
+                        let tp = tpoly_from_territory(t);
+                        self.tpolygons.push(tp);
+                    }            
+                }
             },
             Msg::Search(search) => {
                 self.search = search;
@@ -88,7 +99,7 @@ impl Component for Model {
         let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
         html! {
             <>
-                <MapComponent city={&self.city} territory_map={&self.territory_map} search={self.search.clone()}/>
+                <MapComponent city={&self.city} territory_map={&self.territory_map} tpolygons={self.tpolygons.clone()} search={self.search.clone()}/>
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </>
         }
