@@ -249,3 +249,40 @@ pub fn polygon_from_territory(t: &Territory) -> Polygon {
         //}
     //}
 }
+
+pub fn get_southwest_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng {
+    let mut south: f32 = 0.0;
+    let mut west: f32 = 0.0;
+
+    for tp in tpolygons {
+        for v in tp.border {
+            if south > v.lat || south == 0.0 {
+                south = v.lat;
+            }
+            if west > v.lon  || west  == 0.0 {
+                west = v.lon ;
+            }
+        }
+    }
+
+    TerritoryLatLng { lat: south, lon: west }
+}
+
+
+pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng {
+    let mut north: f32 = 0.0;
+    let mut east: f32 = 0.0;
+
+    for tp in tpolygons {
+        for v in tp.border {
+            if north < v.lat || north == 0.0 {
+                north = v.lat;
+            }          
+            if east < v.lon || east == 0.0 {
+                east = v.lon ;
+            }
+        }
+    }
+
+    TerritoryLatLng { lat: north, lon: east }
+}

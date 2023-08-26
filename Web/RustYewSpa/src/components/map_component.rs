@@ -1,11 +1,21 @@
-use crate::libs::leaflet::{LatLng, Map, Polygon, Polyline, TileLayer, LayerGroup};
+use crate::libs::leaflet::{
+    LatLng, 
+    LatLngBounds,
+    Map,
+    Polygon, 
+    Polyline, 
+    TileLayer, 
+    LayerGroup
+};
 use crate::models::territories::Territory;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::map_component_functions::{
     TerritoryPolygon,
     polygon_from_territory,
     polygon_from_territory_polygon,
-    tpoly_from_territory
+    tpoly_from_territory,
+    get_southwest_corner,
+    get_northeast_corner,
 };
 
 use wasm_bindgen::{prelude::*, JsCast};
@@ -173,12 +183,26 @@ impl Component for MapComponent {
             log!("map_component: changed: 2");
             self.layer_group.addTo(&self.map);
 
-            log!(format!("map_component: changed: polygons len: {}", self.polygons.len()));
-            if self.polygons.len() > 0 {
-                let first_polygon = self.polygons.first().unwrap();
-                self.map.fitBounds(&first_polygon.getBounds());
-            }
+            // log!(format!("map_component: changed: polygons len: {}", self.polygons.len()));
+            // if self.polygons.len() > 0 {
+            //     let first_polygon = self.polygons.first().unwrap();
+            //     self.map.fitBounds(&first_polygon.getBounds());
+            // }
 
+            let sw = get_southwest_corner(self.tpolygons.clone());
+            log!(format!("SW: {:.4}, {:.4}", sw.lat, sw.lon));
+            let ne = get_northeast_corner(self.tpolygons.clone());
+            log!(format!("NE: {:.4}, {:.4}", ne.lat, ne.lon));
+            
+            let bounds = LatLngBounds::new(
+                &LatLng::new(ne.lat as f64, ne.lon as f64),
+                &LatLng::new(sw.lat as f64, sw.lon as f64)
+            );
+            
+            log!(format!("Bounds: {:.4}, {:.4} x {:.4}, {:.4}", 
+                bounds.getNorthEast().lat(), bounds.getNorthEast().lng(),
+                bounds.getSouthWest().lat(), bounds.getSouthWest().lng()));
+            self.map.fitBounds(&bounds);
 
             // //self.map.clearLayers();
             // for p in self.polygons.iter() {
