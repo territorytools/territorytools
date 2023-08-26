@@ -1,13 +1,14 @@
-use crate::libs::leaflet::{LatLng, Map, Polyline, TileLayer};
+use crate::libs::leaflet::{LatLng, Map, Polygon, Polyline, TileLayer, LayerGroup};
 use crate::models::territories::Territory;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::map_component_functions::polygon_from_territory;
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
-use web_sys::{Element, HtmlElement, Node};
+use web_sys::{Element, HtmlElement, HtmlInputElement, Node};
 use yew::{html::ImplicitClone, prelude::*};
 use serde::{Deserialize, Serialize};
+use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
 struct PolylineOptions {
@@ -29,13 +30,15 @@ pub struct MapModel {
 impl ImplicitClone for MapModel {}
 
 pub enum Msg {
-    //LoadBorders(MapModel),
+    Search(String),
 }
 
 pub struct MapComponent {
     map: Map,
     container: HtmlElement,
     territory_map: MapModel,
+    polygons: Vec<Polygon>,
+    layer_group: LayerGroup,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -53,6 +56,7 @@ impl ImplicitClone for City {}
 pub struct Props {
     pub city: City,
     pub territory_map: MapModel,
+    pub search: String,
 }
 
 impl MapComponent {
@@ -75,6 +79,8 @@ impl Component for MapComponent {
             map: leaflet_map,
             container,
             territory_map: MapModel::default(),
+            polygons: vec![],
+            layer_group: LayerGroup::new(),
         }
     }
 
@@ -85,8 +91,86 @@ impl Component for MapComponent {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        false
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            Msg::Search(search) => {
+                log!(format!("map_component: Search: {}", search));
+                let mut new_territories: Vec<Territory> = vec![];
+                for t in self.territory_map.territories.iter() {
+                    //t.is_visible = false;
+                    let nt = Territory {
+                        id: t.id.clone(),
+                        number: t.number.clone(),
+                        status: t.status.clone(),
+                        stage_id: t.stage_id.clone(),
+                        description: t.description.clone(),
+                        notes: t.notes.clone(),
+                        address_count: t.address_count.clone(),
+                        area_code: t.area_code.clone(),
+                        last_completed_by: t.last_completed_by.clone(),
+                        signed_out_to: t.signed_out_to.clone(),
+                        group_id: t.group_id.clone(),
+                        sub_group_id: t.sub_group_id.clone(),
+                        is_hidden: t.group_id.clone().unwrap_or("".to_string()) == "outer".to_string(),
+                        is_active: true,
+                        // is_active: (number.to_string().is_empty()
+                        //     || t.number.clone() == number.to_string()
+                        //     || t.signed_out_to.clone() == Some(number.to_string())
+                        //     || t.description
+                        //         .clone()
+                        //         .unwrap_or("".to_string())
+                        //         .contains(number)
+                        //     || format!("g{}", t.group_id.clone().unwrap_or("".to_string()))
+                        //         == number.to_string()
+                        //     || t.status.clone() == number.to_string()),
+                        border: t.border.clone(),
+                        addresses: t.addresses.clone(),
+                    };
+                    new_territories.push(nt);
+                }
+                self.territory_map.territories = new_territories;
+                
+                //let layerGroup = LayerGroup::new();
+                self.layer_group = LayerGroup::new();
+                
+
+                for p in self.polygons.iter() {
+                    p.removeFrom(&self.map);
+                    //&self.map.removeLayer(p);
+                }
+
+                //&self.map.clearLayers();
+
+                let mut id_list = vec![];
+                for t in self.territory_map.territories.iter() {
+                    if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
+                        //polygon_from_territory(t).addTo(&self.map);
+                        let polygon = polygon_from_territory(t);
+                        
+                        polygon.addTo_LayerGroup(&self.layer_group);
+
+                        let layer_id = self.layer_group.getLayerId(&polygon);
+
+                        //log!(format!("LayerID: {}", layer_id));
+                        id_list.push(layer_id);
+                    }            
+                }
+
+                for layer_id in id_list.iter() {
+                    //log!(format!("removing Layer.id: {}", layer_id));
+                    let thisLayer = self.layer_group.getLayer(*layer_id);
+                    //search
+                    let three = layer_id % 3 == 0;
+                    if three {
+                    self.layer_group.removeLayer_byId(*layer_id);
+                    }
+
+                }
+
+                self.layer_group.addTo(&self.map);
+            },
+        }
+        true
     }
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
@@ -108,8 +192,17 @@ impl Component for MapComponent {
             
             for t in self.territory_map.territories.iter() {
                 if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                    polygon_from_territory(t).addTo(&self.map);
+                    //polygon_from_territory(t).addTo(&self.map);
+                    self.polygons.push(polygon_from_territory(t));
                 }            
+            }
+            
+            //self.map.clearLayers();
+            for p in self.polygons.iter() {
+                p.removeFrom(&self.map);
+            }
+            for p in self.polygons.iter() {
+                p.addTo(&self.map);
             }
 
             let outer_border_territories = self.territory_map.territories
@@ -126,14 +219,23 @@ impl Component for MapComponent {
 
     }
 
-    fn view(&self, _ctx: &Context<Self>) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
         });
 
+        let link = ctx.link().clone();
         let search_text_onchange = {
-            Callback::from(move |_event: Event| {
+            Callback::from(move |event: Event| {
+                let value = event
+                    .target()
+                    .expect("An input value for an HtmlInputElement")
+                    .unchecked_into::<HtmlInputElement>()
+                    .value();
+                
+                log!(format!("map_comp: search_text_onchange: value: {}", value));
 
+                link.send_message(Msg::Search(value));
             })
         };
 
@@ -145,6 +247,7 @@ impl Component for MapComponent {
 
         html! {
             <div style="background-color:yellow;height:100%;">
+            // TODO: Move this whole header thing into the model.rs
                 <div id="menu-bar-header" style="height:57px;background-color:red;">
                     <MenuBarV2>
                         <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
@@ -180,9 +283,7 @@ impl Component for MapComponent {
                     </MenuBarV2>
                 </div>
                 <div class="map map-container component-container"  style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;">
-                    //<div style={"width:100%;"}>
-                        {self.render_map()}
-                    //</div>
+                    {self.render_map()}
                 </div>
             </div>
         }

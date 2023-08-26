@@ -12,12 +12,14 @@ use yew::prelude::*;
 pub enum Msg {
     SelectCity(City),
     LoadBorders(MapModel),
+    Search(String),
 }
 
 pub struct Model {
     city: City,
     cities: Cities,
-    territory_map: MapModel
+    territory_map: MapModel,
+    search: String,
 }
 
 impl Component for Model {
@@ -43,7 +45,7 @@ impl Component for Model {
         let city = cities.list[0].clone();
         let territory_map: MapModel = MapModel::default();
 
-        Self { city, cities, territory_map }
+        Self { city, cities, territory_map, search: "".to_string() }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -60,6 +62,9 @@ impl Component for Model {
             },
             Msg::LoadBorders(territory_map) => {
                 self.territory_map = territory_map.clone();
+            },
+            Msg::Search(search) => {
+                self.search = search;
             },
         }
         true
@@ -83,7 +88,7 @@ impl Component for Model {
         let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
         html! {
             <>
-                <MapComponent city={&self.city} territory_map={&self.territory_map} />
+                <MapComponent city={&self.city} territory_map={&self.territory_map} search={self.search.clone()}/>
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </>
         }
