@@ -49,39 +49,12 @@ impl Component for Model {
         let city = cities.list[0].clone();
         let territory_map: MapModel = MapModel::default();
 
-        //if ctx.props().path == Some("842FqefDeFe81".to_string()) {
-        if ctx.props().path.is_some() {
-            log!("Creating campaign");
-            let path: String = ctx.props().path.clone().unwrap();
-            ctx.link().send_future(async move {
-                Msg::LoadBordersPath(fetch_territory_map_w_key(&"33".to_string(), &path).await, "[C]".to_string())
-                //Msg::Search("[U]".to_string())
-            });
-            //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
-            return Self { city, cities, territory_map, search: "loading search...".to_string(), tpolygons: vec![] }    
-            
-        } 
-        // else if ctx.props().path == Some("campaign".to_string()) {
-        //     log!("Creating PATH");
-        //     ctx.link().send_future(async move {
-        //         Msg::LoadBordersPath(fetch_territory_map(&"33".to_string()).await, "[C]".to_string())
-        //         //Msg::Search("[U]".to_string())
-        //     });
-        //     //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
-        //     return Self { city, cities, territory_map, search: "[Y]".to_string(), tpolygons: vec![] }    
-            
-        // } 
-        else {
-            log!("Creating normal load...");
-            ctx.link().send_future(async move {
-                Msg::LoadBorders(fetch_territory_map(&"33".to_string()).await)
-                //Msg::Search("[U]".to_string())
-            });
-            //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
-            return Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }    
-        }
+        let path: String = ctx.props().path.clone().unwrap_or("".to_string());
+        ctx.link().send_future(async move {
+            Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, "".to_string())
+        });
 
-        //Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }
+        return Self { city, cities, territory_map, search: "loading search...".to_string(), tpolygons: vec![] }                
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
