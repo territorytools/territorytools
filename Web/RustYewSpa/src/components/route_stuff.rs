@@ -22,11 +22,11 @@ pub enum Route {
     Root,
     #[at("/wasm/index.html")]
     Start,
-    #[at("/app/map-old")]
+    #[at("/app/map")]
     Map,
     #[at("/key/:path")]
     MapComponentPath { path: String },
-    #[at("/app/map")]
+    #[at("/app/map-new")]
     MapComponent,
     #[at("/app/svg-map")]
     SvgMap,
