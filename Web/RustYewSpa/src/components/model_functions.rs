@@ -1,16 +1,16 @@
 use crate::components::{
     map_component::{MapModel},
 };
-use crate::models::territories::Territory;
+use crate::models::territories::{Territory,BorderFilteredResult};
 
 use reqwasm::http::Request;
 use gloo_console::log;
 
 #[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+const DATA_API_PATH: &str = "/data/territory-borders-filtered.json";
 
 #[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/territories/borders";
+const DATA_API_PATH: &str = "/api/territories/borders-filtered";
 
 fn find_center(territories: &Vec<Territory>) -> (f64, f64) {    
     let filtered_territories = territories.iter().filter(|&t| territory_filter(t)).collect::<Vec<_>>();
@@ -51,10 +51,11 @@ pub async fn fetch_territory_map(group_id: &String) -> MapModel {
 
 pub async fn fetch_territory_map_w_key(group_id: &String, access_key: &String) -> MapModel {
     log!(format!("fetch_territory_map_w_key: access_key: {access_key}"));
-    let fetched_territories: Vec<Territory> = fetch_territories_w_key(&group_id, &access_key).await;       
-    let map_center = find_center(&fetched_territories);
+    let fetched_result: BorderFilteredResult = fetch_territories_w_key(&group_id, &access_key).await;       
+    let map_center = find_center(&fetched_result.territories);
     MapModel {
-        territories: fetched_territories.clone(),
+        territories: fetched_result.territories.clone(),
+        // TODO: add search enabled
         territories_is_loaded: true,
         local_load: false,
         lat: map_center.0,
@@ -75,8 +76,8 @@ pub async fn fetch_territories(group_id: &String) ->  Vec<Territory> {
         .unwrap()
 }
 
-pub async fn fetch_territories_w_key(group_id: &String, access_key: &String) ->  Vec<Territory> {
-    let uri: String = format!("{DATA_API_PATH}?groupId={group_id}&mtk={access_key}");
+pub async fn fetch_territories_w_key(group_id: &String, access_key: &String) ->  BorderFilteredResult {
+    let uri: String = format!("{DATA_API_PATH}?mtk={access_key}");
     Request::get(uri.as_str())
         .send()
         .await
