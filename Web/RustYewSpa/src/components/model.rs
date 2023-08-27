@@ -39,28 +39,22 @@ impl Component for Model {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
-        let aachen = City {
-            name: "Aachen".to_string(),
-            lat: PixelPoint(50.7597f64, 6.0967f64),
-        };
-        let stuttgart = City {
-            name: "Stuttgart".to_string(),
-            lat: PixelPoint(48.7784f64, 9.1742f64),
-        };
         let seattle = City {
             name: "Seattle".to_string(),
             lat: PixelPoint(47.7784f64, -122.1742f64),
         };
         let cities: Cities = Cities {
-            list: vec![aachen, seattle, stuttgart],
+            list: vec![seattle],
         };
         let city = cities.list[0].clone();
         let territory_map: MapModel = MapModel::default();
 
-        if ctx.props().path == Some("842FqefDeFe81".to_string()) {
+        //if ctx.props().path == Some("842FqefDeFe81".to_string()) {
+        if ctx.props().path.is_some() {
             log!("Creating campaign");
+            let path: String = ctx.props().path.clone().unwrap();
             ctx.link().send_future(async move {
-                Msg::LoadBordersPath(fetch_territory_map(&"33".to_string()).await, "[C]".to_string())
+                Msg::LoadBordersPath(fetch_territory_map_w_key(&"33".to_string(), &path).await, "[C]".to_string())
                 //Msg::Search("[U]".to_string())
             });
             //ctx.link().send_message(Msg::LoadBordersPath("[Z]".to_string()));
@@ -87,7 +81,7 @@ impl Component for Model {
             return Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }    
         }
 
-        Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }
+        //Self { city, cities, territory_map, search: "".to_string(), tpolygons: vec![] }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -191,7 +185,7 @@ impl Component for Model {
         false
     }
 
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+    fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
         if first_render {
             // let group_id: String = "23".to_string();
             // ctx.link().send_future(async move {

@@ -4,6 +4,7 @@ use crate::components::{
 use crate::models::territories::Territory;
 
 use reqwasm::http::Request;
+use gloo_console::log;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-all.json";
@@ -48,8 +49,34 @@ pub async fn fetch_territory_map(group_id: &String) -> MapModel {
     }
 }
 
+pub async fn fetch_territory_map_w_key(group_id: &String, access_key: &String) -> MapModel {
+    log!(format!("fetch_territory_map_w_key: access_key: {access_key}"));
+    let fetched_territories: Vec<Territory> = fetch_territories_w_key(&group_id, &access_key).await;       
+    let map_center = find_center(&fetched_territories);
+    MapModel {
+        territories: fetched_territories.clone(),
+        territories_is_loaded: true,
+        local_load: false,
+        lat: map_center.0,
+        lon: map_center.1,
+        zoom: 10.0,
+        group_visible: String::from("*"),
+    }
+}
+
 pub async fn fetch_territories(group_id: &String) ->  Vec<Territory> {
-    let uri: String = format!("{DATA_API_PATH}?groupId={group_id}");
+    let uri: String = format!("{DATA_API_PATH}?groupId={group_id}&accessKey=");
+    Request::get(uri.as_str())
+        .send()
+        .await
+        .unwrap()
+        .json()
+        .await
+        .unwrap()
+}
+
+pub async fn fetch_territories_w_key(group_id: &String, access_key: &String) ->  Vec<Territory> {
+    let uri: String = format!("{DATA_API_PATH}?groupId={group_id}&mtk={access_key}");
     Request::get(uri.as_str())
         .send()
         .await

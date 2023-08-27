@@ -24,7 +24,7 @@ pub enum Route {
     Start,
     #[at("/app/map-old")]
     Map,
-    #[at("/app/key/:path")]
+    #[at("/key/:path")]
     MapComponentPath { path: String },
     #[at("/app/map")]
     MapComponent,
