@@ -1,6 +1,6 @@
-use gloo_console::log;
+//use gloo_console::log;
 use wasm_bindgen::JsCast;
-use web_sys::HtmlElement;
+//use web_sys::HtmlElement;
 use yew::prelude::*;
 
 #[function_component(CanvasMap)]

@@ -4,10 +4,10 @@ use crate::components::popup_content::popup_content;
 use crate::functions::document_functions::set_document_title;
 use crate::models::territories::Territory;
 use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
+use crate::html::ImplicitClone;
 use gloo_console::log;
 use gloo_timers::callback::Timeout;
 use gloo_utils::document;
-//use leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -15,7 +15,6 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-//use js_sys::{Array, Date};
 use web_sys::{Element, HtmlElement, HtmlInputElement, Node};
 use yew_router::hooks::use_location;
 
@@ -41,6 +40,8 @@ pub struct TerritoryMapModel {
     pub group_visible: String,
 }
 
+impl ImplicitClone for TerritoryMapModel {}
+
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct MouseClickModel {
     pub mouse_click_x: i32,
@@ -62,7 +63,7 @@ pub fn territory_map() -> Html {
 
     let search_state = use_state(|| TerritorySearchPage::default());
 
-    let _mouse_click_model: UseStateHandle<MouseClickModel> =
+    let mouse_click_model: UseStateHandle<MouseClickModel> =
         use_state(|| MouseClickModel::default());
 
     let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
@@ -390,15 +391,30 @@ pub fn territory_map() -> Html {
         })
     };
 
-    //let leaflet_map_clone = leaflet_map.clone();
-    let map_cover_click = {
-        //let leaflet_map_clone = leaflet_map_clone.clone();
-        let model_clone = model.clone();
-        Callback::from(move |_event: MouseEvent| {
-            print_click_lat_lng(&leaflet_map);
-        })
-    };
-
+    
+    // let mouse_click_model_clone = mouse_click_model.clone();
+    // let leaflet_map_clone = leaflet_map.clone();
+    // let map_cover_click = {
+    //     let mouse_click_model_clone = mouse_click_model_clone.clone();
+    //     let leaflet_map_clone = leaflet_map_clone.clone();
+    //     //let model_clone = model.clone();
+    //     Callback::from(move |event: MouseEvent| {
+    //         //print_click_lat_lng(leaflet_map.clone());
+    //         log!(format!("Map cover clicked {}, {}", event.x(), event.y()));
+    //         let mouse_thing = MouseClickModel {
+    //             mouse_click_x: event.x(),
+    //             mouse_click_y: event.y(),
+    //         };
+    //         mouse_click_model_clone.set(mouse_thing);
+            
+    //         // TODO: Figure this out, leafelet_map gets moved here
+    //         // let latLng = &leaflet_map.layerPointToLatLng(
+    //         //     &Point::new(
+    //         //         event.x() as u32, 
+    //         //         event.y() as u32));
+    //     })
+    // };
+    
     let bnds = LatLngBounds::new(&LatLng::new(47.66, -122.00), &LatLng::new(47.46, -122.20));
 
     // leaflet_map.fitBounds(
@@ -530,6 +546,11 @@ pub fn territory_map() -> Html {
 
     let _search_state_clone = search_state.clone();
 
+    let _lat_lng = &leaflet_map.layerPointToLatLng(
+        &Point::new(
+            mouse_click_model.mouse_click_x as u32, 
+            mouse_click_model.mouse_click_y as u32));
+    
     // This seems to only work if it's last, it doesn't like clones of leaflet_map
     Timeout::new(100, move || {
         let _ = &leaflet_map.invalidateSize(false); // Parameter name: animate
@@ -564,13 +585,15 @@ pub fn territory_map() -> Html {
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                         </svg>
                                     </button>
+                                    // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
+                                    // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>
                                 </div>
                             </div>
                         </li>
                     </ul>
                 </MenuBarV2>
             </div>
-            <div style="height: calc(100% - 57px);background-color:blue;" onclick={map_cover_click}>
+            <div style="height: calc(100% - 57px);background-color:blue;" > //onclick={map_cover_click}>
                 {
                     {map_container}
                 }
@@ -621,6 +644,7 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
             area_code: t.area_code.clone(),
             last_completed_by: t.last_completed_by.clone(),
             signed_out_to: t.signed_out_to.clone(),
+            signed_out: t.signed_out.clone(),
             group_id: t.group_id.clone(),
             sub_group_id: t.sub_group_id.clone(),
             is_hidden: t.group_id.clone().unwrap_or("".to_string()) == "outer".to_string(),
@@ -658,9 +682,9 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
     model.set(m);
 }
 
-fn print_click_lat_lng(map: &Map) {
-    let clickedLatLng = map.layerPointToLatLng(&Point::new(50,50));
-    log!(format!("From Map Cover: clickedLatLng: {},{}", clickedLatLng.lat(), clickedLatLng.lng()));
+fn _print_click_lat_lng(map: &Map) {
+    let clicked_lat_lon = map.layerPointToLatLng(&Point::new(50,50));
+    log!(format!("From Map Cover: clickedLatLng: {},{}", clicked_lat_lon.lat(), clicked_lat_lon.lng()));
 }
 
 fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
@@ -682,6 +706,7 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
             area_code: t.area_code.clone(),
             last_completed_by: t.last_completed_by.clone(),
             signed_out_to: t.signed_out_to.clone(),
+            signed_out: t.signed_out.clone(),
             group_id: t.group_id.clone(),
             sub_group_id: t.sub_group_id.clone(),            
             is_hidden: t.group_id.clone().unwrap_or("".to_string()) == "outer".to_string(),

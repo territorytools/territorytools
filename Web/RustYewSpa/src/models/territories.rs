@@ -6,6 +6,15 @@ pub struct Territories {
     pub list: Vec<Territory>,
 }
 
+
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct BorderFilteredResult {
+    pub user_roles: Option<String>,
+    pub link_grants: Option<String>,
+    pub territories: Vec<Territory>,
+}
+
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Territory {
@@ -20,6 +29,7 @@ pub struct Territory {
     pub area_code: Option<String>,
     pub last_completed_by: Option<String>,
     pub signed_out_to: Option<String>,
+    pub signed_out: Option<String>,
     pub group_id: Option<String>,
     pub sub_group_id: Option<String>,
     #[serde(default)]

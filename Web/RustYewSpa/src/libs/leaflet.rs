@@ -90,6 +90,9 @@ extern "C" {
     #[wasm_bindgen(method)]
     pub fn addTo(this: &Layer, map: &Map);
 
+    #[wasm_bindgen(method)]
+    pub fn removeFrom(this: &Layer, map: &Map);
+
     /// [`addTo`](https://leafletjs.com/reference-1.7.1.html#layer-addto)
     #[wasm_bindgen(method)]
     #[wasm_bindgen(js_name = addTo)]
@@ -97,7 +100,7 @@ extern "C" {
 
     #[wasm_bindgen(method)]
     pub fn remove(this: &Layer);
-
+    
     // Layer Popup Methods
 
     /// [`bindPopup`](https://leafletjs.com/reference-1.7.1.html#layer-bindpopup)
@@ -200,6 +203,16 @@ extern "C" {
     /// [`clearLayers`](https://leafletjs.com/reference-1.7.1.html#layergroup-clearlayers)
     #[wasm_bindgen(method)]
     pub fn clearLayers(this: &LayerGroup);
+
+    #[wasm_bindgen(method)]
+    pub fn getLayerId(this: &LayerGroup, polygon: &Polygon) -> i32;
+
+    #[wasm_bindgen(method)]
+    pub fn getLayer(this: &LayerGroup, id: i32) -> Layer;
+
+    #[wasm_bindgen(method)]
+    #[wasm_bindgen(js_name = removeLayer)]
+    pub fn removeLayer_byId(this: &LayerGroup, id: i32);
 
     // Map
 
@@ -343,6 +356,9 @@ extern "C" {
 
     #[wasm_bindgen(method)]
     pub fn stop(this: &Map);
+
+    #[wasm_bindgen(method)]
+    pub fn removeLayer(this: &Map, layer: &Layer);
 
     // Marker
 
