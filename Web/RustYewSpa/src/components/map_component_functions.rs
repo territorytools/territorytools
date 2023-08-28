@@ -1,5 +1,6 @@
 use crate::libs::leaflet::{LatLng, Polygon};
 use crate::components::popup_content::popup_content;
+use crate::components::popup_content::popup_content_w_button;
 use crate::models::territories::Territory;
 
 use wasm_bindgen::{prelude::*};
@@ -81,8 +82,11 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
     poly
 }
 
-
 pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
+    tpoly_from_territory_w_button(t, true)
+}
+
+pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enabled: bool) -> TerritoryPolygon {
     let mut polygon: Vec<TerritoryLatLng> = Vec::new();
 
     for v in &t.border {
@@ -158,7 +162,7 @@ pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
             opacity: opacity.into(),
             border: polygon, //.iter().map().collect(),
             tooltip_text: format!("{group_id}: {area_code}: {}", t.number),
-            popup_html: popup_content(&t),
+            popup_html: popup_content_w_button(&t, false),
         };
 
         //if !t.is_hidden && t.group_id.clone().unwrap_or("".to_string()) != "outer".to_string() {

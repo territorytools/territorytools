@@ -104,18 +104,18 @@ impl Component for Model {
                     self.search = description_contains.clone();
                 }
                 
-                // edit-territory-button-enabled Section
-                let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
-                let link_grants_clone = link_grants.clone();
-                let caps = regex.captures(link_grants_clone.as_str());
-                let mut edit_territory_button_enabled: String = "".to_string();
-                if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
-                    edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
-                    //self.search = description_contains.clone();
-                    self.territory_map.edit_territory_button_enabled 
-                        = edit_territory_button_enabled.parse().unwrap_or(true);
-                }
-                log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.territory_map.edit_territory_button_enabled));
+                // // edit-territory-button-enabled Section
+                // let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
+                // let link_grants_clone = link_grants.clone();
+                // let caps = regex.captures(link_grants_clone.as_str());
+                // let mut edit_territory_button_enabled: String = "".to_string();
+                // if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
+                //     edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
+                //     //self.search = description_contains.clone();
+                //     self.territory_map.edit_territory_button_enabled 
+                //         = edit_territory_button_enabled.parse().unwrap_or(true);
+                // }
+                // log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.territory_map.edit_territory_button_enabled));
 
                 self.tpolygons.clear();
                 //log!(format!("model:update: LoadBorderPath: territories: {}", self.territory_map.territories.len()));

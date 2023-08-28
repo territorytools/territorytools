@@ -5,6 +5,7 @@ use crate::models::territories::{Territory,BorderFilteredResult};
 
 use reqwasm::http::Request;
 use gloo_console::log;
+use regex::Regex;
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/territory-borders-filtered.json";
@@ -37,8 +38,23 @@ fn territory_filter(t: &Territory) -> bool {
 
 pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     log!(format!("fetch_territory_map_w_key: access_key: {access_key}"));
-    let fetched_result: BorderFilteredResult = fetch_territories_w_key(&access_key).await;       
+    let mut fetched_result: BorderFilteredResult = fetch_territories_w_key(&access_key).await;       
     let map_center = find_center(&fetched_result.territories);
+
+ // edit-territory-button-enabled Section
+ let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
+ let link_grants_clone = fetched_result.link_grants.clone().unwrap_or("".to_string());
+ let caps = regex.captures(link_grants_clone.as_str());
+ let mut edit_territory_button_enabled: String = "".to_string();
+ if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
+     edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
+     //self.search = description_contains.clone();
+    //  fetched_result.edit_territory_button_enabled 
+    //      = edit_territory_button_enabled.parse().unwrap_or(true);
+ }
+ log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", edit_territory_button_enabled.parse().unwrap_or(true)));
+
+
     MapModel {
         territories: fetched_result.territories.clone(),
         // TODO: add search enabled
@@ -48,9 +64,9 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
         lon: map_center.1,
         zoom: 10.0,
         group_visible: String::from("*"),
-        link_grants: fetched_result.link_grants,
-        user_roles: fetched_result.user_roles,
-        edit_territory_button_enabled: true,
+        link_grants: fetched_result.link_grants.clone(),
+        user_roles: fetched_result.user_roles.clone(),
+        edit_territory_button_enabled: edit_territory_button_enabled.parse().unwrap_or(true),
     }
 }
 
@@ -62,5 +78,5 @@ pub async fn fetch_territories_w_key(access_key: &String) ->  BorderFilteredResu
         .unwrap()
         .json()
         .await
-        .unwrap()
+        .expect("Valid JSON for a BorderFilteredResult")
 }

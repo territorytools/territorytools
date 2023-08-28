@@ -1,6 +1,10 @@
 use crate::models::territories::{Territory};
 
 pub fn popup_content(territory: &Territory) -> String  {
+    popup_content_w_button(territory, true)
+}
+
+pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabled: bool) -> String  {
     let assignee_line = {
         match &territory.signed_out_to {
             Some(_t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
@@ -24,7 +28,7 @@ pub fn popup_content(territory: &Territory) -> String  {
         };
         
         let _id = territory.id.unwrap_or_default();
-        if 1 == 1 { //id == 0 {
+        if edit_territory_button_enabled { //1 == 1 { //id == 0 {
             format!("<br/><a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
@@ -67,12 +71,14 @@ pub fn popup_content(territory: &Territory) -> String  {
         description = &description,
         group_id = group_id)
     } else { 
-        format!("<br/><a 
-            style='margin-top:5px;color:white;'
-            class='btn btn-primary btn-sm'
-            href='/app/territory-edit?id={id}'>
-            Edit
-        </a>")
+        if edit_territory_button_enabled {
+            format!("<br/><a 
+                style='margin-top:5px;color:white;'
+                class='btn btn-primary btn-sm'
+                href='/app/territory-edit?id={id}'>
+                Edit
+            </a>")
+        } else { "".to_string() }
     };
         
 
