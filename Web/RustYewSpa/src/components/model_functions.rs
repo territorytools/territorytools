@@ -48,6 +48,8 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
         lon: map_center.1,
         zoom: 10.0,
         group_visible: String::from("*"),
+        link_grants: fetched_result.link_grants,
+        user_roles: fetched_result.user_roles,
     }
 }
 

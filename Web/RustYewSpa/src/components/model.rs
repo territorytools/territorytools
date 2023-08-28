@@ -9,6 +9,7 @@ use crate::components::{
 };
 use crate::components::menu_bar_v2::MenuBarV2;
 
+use regex::Regex;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -50,11 +51,13 @@ impl Component for Model {
         let territory_map: MapModel = MapModel::default();
 
         let path: String = ctx.props().path.clone().unwrap_or("".to_string());
+        log!(format!("model: create: ctx.props().path.clone().unwrap_or(\"\".to_string()): {}", path));
         ctx.link().send_future(async move {
-            Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, "".to_string())
+            Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
         });
 
-        return Self { city, cities, territory_map, search: "loading search...".to_string(), tpolygons: vec![] }                
+        return Self { city, cities, territory_map, search: 
+            "loading search...".to_string(), tpolygons: vec![] }                
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -81,15 +84,27 @@ impl Component for Model {
                 }
             },
             Msg::LoadBordersPath(territory_map, path) => {
-                //log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
+                log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
                 self.territory_map = territory_map.clone();
                 self.search = path.clone();
+
+                let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
+
+                log!(format!("model:update: LoadBorderPath: link-grants: {}", link_grants.clone()));
+                log!(format!("model:update: LoadBorderPath: territories.len(): {}", 
+                    self.territory_map.territories.len()));
+
+                let regex = Regex::new(r"description\-contains=([^;]+?);").expect("Valid RegEx");
+                let link_grants_clone = link_grants.clone();
+                let caps = regex.captures(link_grants_clone.as_str());
+                let description_contains = caps.expect("descr-contains").get(1).map_or("", |m| m.as_str());
+                log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
 
                 self.tpolygons.clear();
                 //log!(format!("model:update: LoadBorderPath: territories: {}", self.territory_map.territories.len()));
                 for t in self.territory_map.territories.iter() {
                     //log!("model:update: LoadBorderPath: territory.description: item: {}");
-                    if   t.description.clone() != None && t.description.clone().unwrap().contains(&self.search.clone()) {
+                    if t.description.clone() != None && t.description.clone().unwrap().contains(&description_contains.clone()) {
                         //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
                         let tp = tpoly_from_territory(t);
                         self.tpolygons.push(tp);
@@ -148,7 +163,7 @@ impl Component for Model {
     }
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
-        //if ctx.props().path == Some("campaign".to_string()) {
+        //if ctx.props().path == Some("campaign".to_string()) {        
         if _old_props.path == Some("campaign".to_string()) {
             log!("campaign");
             self.search = "[X]".to_string();

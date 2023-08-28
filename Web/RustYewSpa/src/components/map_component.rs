@@ -36,6 +36,8 @@ pub struct MapModel {
     pub lat: f64,
     pub lon: f64,
     pub group_visible: String,
+    pub user_roles: Option<String>,
+    pub link_grants: Option<String>,
 }
 
 impl ImplicitClone for MapModel {}
@@ -123,6 +125,8 @@ impl Component for MapComponent {
                 lon: props.territory_map.lon,
                 zoom: props.territory_map.zoom,
                 group_visible: props.territory_map.group_visible.clone(),
+                link_grants: Some("".to_string()),
+                user_roles: Some("".to_string()),
             };
 
             self.tpolygons = props.tpolygons.clone();
