@@ -97,9 +97,12 @@ impl Component for Model {
                 let regex = Regex::new(r"description\-contains=([^;]+?);").expect("Valid RegEx");
                 let link_grants_clone = link_grants.clone();
                 let caps = regex.captures(link_grants_clone.as_str());
-                let description_contains = caps.expect("descr-contains").get(1).map_or("", |m| m.as_str());
-                log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
-
+                let mut description_contains: String = "".to_string();
+                if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
+                    description_contains = caps.as_ref().expect("description-contains in link_grants").get(1).map_or("".to_string(), |m| m.as_str().to_string());
+                    log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
+                }
+                
                 self.tpolygons.clear();
                 //log!(format!("model:update: LoadBorderPath: territories: {}", self.territory_map.territories.len()));
                 for t in self.territory_map.territories.iter() {
