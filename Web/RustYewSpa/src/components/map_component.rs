@@ -38,6 +38,7 @@ pub struct MapModel {
     pub group_visible: String,
     pub user_roles: Option<String>,
     pub link_grants: Option<String>,
+    pub edit_territory_button_enabled: bool,
 }
 
 impl ImplicitClone for MapModel {}
@@ -127,6 +128,7 @@ impl Component for MapComponent {
                 group_visible: props.territory_map.group_visible.clone(),
                 link_grants: Some("".to_string()),
                 user_roles: Some("".to_string()),
+                edit_territory_button_enabled: true,
             };
 
             self.tpolygons = props.tpolygons.clone();

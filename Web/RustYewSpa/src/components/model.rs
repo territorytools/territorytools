@@ -86,7 +86,6 @@ impl Component for Model {
             Msg::LoadBordersPath(territory_map, path) => {
                 log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
                 self.territory_map = territory_map.clone();
-                self.search = path.clone();
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -94,6 +93,7 @@ impl Component for Model {
                 log!(format!("model:update: LoadBorderPath: territories.len(): {}", 
                     self.territory_map.territories.len()));
 
+                // Description Contains Section
                 let regex = Regex::new(r"description\-contains=([^;]+?);").expect("Valid RegEx");
                 let link_grants_clone = link_grants.clone();
                 let caps = regex.captures(link_grants_clone.as_str());
@@ -101,8 +101,22 @@ impl Component for Model {
                 if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
                     description_contains = caps.as_ref().expect("description-contains in link_grants").get(1).map_or("".to_string(), |m| m.as_str().to_string());
                     log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
+                    self.search = description_contains.clone();
                 }
                 
+                // edit-territory-button-enabled Section
+                let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
+                let link_grants_clone = link_grants.clone();
+                let caps = regex.captures(link_grants_clone.as_str());
+                let mut edit_territory_button_enabled: String = "".to_string();
+                if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
+                    edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
+                    //self.search = description_contains.clone();
+                    self.territory_map.edit_territory_button_enabled 
+                        = edit_territory_button_enabled.parse().unwrap_or(true);
+                }
+                log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.territory_map.edit_territory_button_enabled));
+
                 self.tpolygons.clear();
                 //log!(format!("model:update: LoadBorderPath: territories: {}", self.territory_map.territories.len()));
                 for t in self.territory_map.territories.iter() {
