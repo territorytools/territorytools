@@ -53,6 +53,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
                 {
                     SharedPhoneTerritoryLink = _configuration.GetValue<string>("SharedPhoneTerritoryLink"),
                     SharedLettersReturnedLink = _configuration.GetValue<string>("SharedLettersReturnedLink"),
+                    SharedCampaignLink = _configuration.GetValue<string>("SharedCampaignLink"),
                     Email = User.Identity.Name,
                     UserSelfCompleteFeatureEnabled = _options.Features.UserSelfComplete,
                     RemoteIpAddress = ControllerContext.HttpContext.Connection.RemoteIpAddress.ToString(),
