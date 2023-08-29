@@ -30,6 +30,7 @@ pub struct Territory {
     pub last_completed_by: Option<String>,
     pub signed_out_to: Option<String>,
     pub signed_out: Option<String>,
+    pub assignee_link_key: Option<String>,
     pub group_id: Option<String>,
     pub sub_group_id: Option<String>,
     #[serde(default)]

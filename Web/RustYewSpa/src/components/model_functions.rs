@@ -41,19 +41,28 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     let mut fetched_result: BorderFilteredResult = fetch_territories_w_key(&access_key).await;       
     let map_center = find_center(&fetched_result.territories);
 
- // edit-territory-button-enabled Section
- let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
- let link_grants_clone = fetched_result.link_grants.clone().unwrap_or("".to_string());
- let caps = regex.captures(link_grants_clone.as_str());
- let mut edit_territory_button_enabled: String = "".to_string();
- if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
-     edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
-     //self.search = description_contains.clone();
-    //  fetched_result.edit_territory_button_enabled 
-    //      = edit_territory_button_enabled.parse().unwrap_or(true);
- }
- log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", edit_territory_button_enabled.parse().unwrap_or(true)));
+    // edit-territory-button-enabled Section
+    let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
+    let link_grants_clone = fetched_result.link_grants.clone().unwrap_or("".to_string());
+    let caps = regex.captures(link_grants_clone.as_str());
+    let mut edit_territory_button_enabled: String = "".to_string();
+    if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
+        edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
+        //self.search = description_contains.clone();
+        //  fetched_result.edit_territory_button_enabled 
+        //      = edit_territory_button_enabled.parse().unwrap_or(true);
+    }
+    log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", edit_territory_button_enabled.parse().unwrap_or(true)));
 
+    //owner big-map-territory-open-enabled=true Section
+    let regex = Regex::new(r"(^|;)big\-map\-territory\-open\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
+    let user_roles_clone = fetched_result.user_roles.clone().unwrap_or("".to_string());
+    let caps = regex.captures(user_roles_clone.as_str());
+    let mut territory_open_enabled: String = "".to_string();
+    if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
+        territory_open_enabled = caps.as_ref().expect("big-map-territory-open-enabled in user_roles").get(2).map_or("".to_string(), |m| m.as_str().to_string());
+    }
+    log!(format!("model:update: LoadBorderPath: territory_open_enabled: {}", territory_open_enabled.parse().unwrap_or(true)));
 
     MapModel {
         territories: fetched_result.territories.clone(),
@@ -67,6 +76,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
         link_grants: fetched_result.link_grants.clone(),
         user_roles: fetched_result.user_roles.clone(),
         edit_territory_button_enabled: edit_territory_button_enabled.parse().unwrap_or(true),
+        territory_open_enabled: territory_open_enabled.parse().unwrap_or(true),
     }
 }
 

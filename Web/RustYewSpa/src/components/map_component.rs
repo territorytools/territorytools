@@ -39,6 +39,7 @@ pub struct MapModel {
     pub user_roles: Option<String>,
     pub link_grants: Option<String>,
     pub edit_territory_button_enabled: bool,
+    pub territory_open_enabled: bool,
 }
 
 impl ImplicitClone for MapModel {}
@@ -129,6 +130,7 @@ impl Component for MapComponent {
                 link_grants: Some("".to_string()),
                 user_roles: Some("".to_string()),
                 edit_territory_button_enabled: true,
+                territory_open_enabled: false,
             };
 
             self.tpolygons = props.tpolygons.clone();
