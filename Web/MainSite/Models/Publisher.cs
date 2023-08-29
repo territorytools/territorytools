@@ -16,6 +16,7 @@ namespace TerritoryTools.Web.MainSite.Models
         public bool UserSelfCompleteFeatureEnabled { get; set; }
         public string SharedPhoneTerritoryLink { get; set; }
         public string SharedLettersReturnedLink {get; set; }
+        public string SharedCampaignLink { get; set; }
         public string RemoteIpAddress { get; set; }
     }
 }
