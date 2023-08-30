@@ -97,24 +97,25 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
 
     let assignee_link_key = territory.assignee_link_key.clone().unwrap_or("".to_string());
     log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
-    let open_button_html = if territory_open_enabled && !assignee_link_key.is_empty() {
-        format!("<br/><a 
-            style='margin-top:5px;color:white;'
-            class='btn btn-primary btn-sm'
-            href='https://mobile.territorytools.org/mtk/{assignee_link_key}'>
-            Open
-        </a>")
-    } else { if territory_open_enabled {
-        format!("<br/><a 
-            style='margin-top:5px;color:white;'
-            class='btn btn-secondary btn-sm'
-            disabled
-            href='#'>
-            Open
-        </a>")
+    let open_button_html = if territory_open_enabled {
+        if assignee_link_key.is_empty() {
+            format!("<br/><a 
+                style='margin-top:5px;color:white;'
+                class='btn btn-secondary btn-sm'
+                disabled
+                href='#'>
+                Open
+            </a>")
         } else {
-        "".to_string()
+            format!("<br/><a 
+                style='margin-top:5px;color:white;'
+                class='btn btn-primary btn-sm'
+                href='https://mobile.territorytools.org/mtk/{assignee_link_key}'>
+                Open
+            </a>")
         }
+    } else { 
+        "".to_string()
     };      
 
     format!(
