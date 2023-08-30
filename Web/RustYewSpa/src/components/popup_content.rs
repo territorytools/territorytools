@@ -61,38 +61,60 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
         None => "(empty)".to_string()
     };
 
-    let edit_button_html = if id == 0 {
-        format!("<br/><a 
-            style='margin-top:5px;color:white;'
-            class='btn btn-primary btn-sm'
-            href='/app/territories/{territory_number}/edit?description={description}&group_id={group_id}'>
-            Edit
-        </a>",
-        territory_number = territory.number,
-        description = &description,
-        group_id = group_id)
-    } else { 
-        if edit_territory_button_enabled {
-            format!("<br/><a 
-                style='margin-top:5px;color:white;'
-                class='btn btn-primary btn-sm'
-                href='/app/territory-edit?id={id}'>
-                Edit
-            </a>")
-        } else { "".to_string() }
-    };
+    // let edit_button_html = if id == 0 {
+    //     format!("<br/><a 
+    //         style='margin-top:5px;color:white;'
+    //         class='btn btn-primary btn-sm'
+    //         href='/app/territories/{territory_number}/edit?description={description}&group_id={group_id}'>
+    //         Edit
+    //     </a>",
+    //     territory_number = territory.number,
+    //     description = &description,
+    //     group_id = group_id)
+    // } else { 
+    //     if edit_territory_button_enabled {
+    //         format!("<br/><a 
+    //             style='margin-top:5px;color:white;'
+    //             class='btn btn-primary btn-sm'
+    //             href='/app/territory-edit?id={id}'>
+    //             Edit
+    //         </a>")
+    //     } else { "".to_string() }
+    //};
 
-    let assignee_link_key = territory.assignee_link_key.clone().unwrap_or("ERROR".to_string());
-    log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
-    let open_button_html = if territory_open_enabled {
+    let edit_button_html = if edit_territory_button_enabled {
+        log!("edit_button_html yes");
         format!("<br/><a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
-            href='https://territorytools.org/mtk/{assignee_link_key}'>
+            href='/app/territory-edit?id={id}'>
             Edit
         </a>")
     } else { 
+        log!("edit_button_html no");
+        "".to_string() 
+    };
+
+    let assignee_link_key = territory.assignee_link_key.clone().unwrap_or("".to_string());
+    log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
+    let open_button_html = if territory_open_enabled && !assignee_link_key.is_empty() {
+        format!("<br/><a 
+            style='margin-top:5px;color:white;'
+            class='btn btn-primary btn-sm'
+            href='https://mobile.territorytools.org/mtk/{assignee_link_key}'>
+            Open
+        </a>")
+    } else { if territory_open_enabled {
+        format!("<br/><a 
+            style='margin-top:5px;color:white;'
+            class='btn btn-secondary btn-sm'
+            disabled
+            href='#'>
+            Open
+        </a>")
+        } else {
         "".to_string()
+        }
     };      
 
     format!(
