@@ -5,7 +5,7 @@ use crate::components::{
     },
     map_component::{City, MapComponent, PixelPoint, MapModel},
     model_functions::*,
-    map_component_functions::{tpoly_from_territory,TerritoryPolygon},
+    map_component_functions::{tpoly_from_territory,TerritoryPolygon,tpoly_from_territory_w_button},
 };
 use crate::components::menu_bar_v2::MenuBarV2;
 
@@ -78,19 +78,26 @@ impl Component for Model {
                 
                 for t in self.territory_map.territories.iter() {
                     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            t, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
                         self.tpolygons.push(tp);
                     }            
                 }
             },
-            Msg::LoadBordersPath(territory_map, path) => {
+            Msg::LoadBordersPath(map_model, path) => {
                 log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
-                self.territory_map = territory_map.clone();
+                self.territory_map = map_model.clone();
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
-                log!(format!("model:update: LoadBorderPath: link-grants: {}", link_grants.clone()));
-                log!(format!("model:update: LoadBorderPath: territories.len(): {}", 
+                log!(format!(
+                    "model:update: LoadBorderPath: link-grants: {}", 
+                    link_grants.clone()));
+
+                log!(format!(
+                    "model:update: LoadBorderPath: territories.len(): {}", 
                     self.territory_map.territories.len()));
 
                 // Description Contains Section
@@ -99,7 +106,12 @@ impl Component for Model {
                 let caps = regex.captures(link_grants_clone.as_str());
                 let mut description_contains: String = "".to_string();
                 if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
-                    description_contains = caps.as_ref().expect("description-contains in link_grants").get(1).map_or("".to_string(), |m| m.as_str().to_string());
+                    description_contains = caps
+                        .as_ref()
+                        .expect("description-contains in link_grants")
+                        .get(1)
+                        .map_or("".to_string(), |m| m.as_str().to_string());
+
                     log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
                     self.search = description_contains.clone();
                 }
@@ -112,18 +124,22 @@ impl Component for Model {
                 // if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
                 //     edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
                 //     //self.search = description_contains.clone();
-                //     self.territory_map.edit_territory_button_enabled 
+                //     self.map_model.edit_territory_button_enabled 
                 //         = edit_territory_button_enabled.parse().unwrap_or(true);
                 // }
-                // log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.territory_map.edit_territory_button_enabled));
+                // log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.map_model.edit_territory_button_enabled));
 
                 self.tpolygons.clear();
-                //log!(format!("model:update: LoadBorderPath: territories: {}", self.territory_map.territories.len()));
-                for t in self.territory_map.territories.iter() {
+                //log!(format!("model:update: LoadBorderPath: territories: {}", self.map_model.territories.len()));
+                for territory in self.territory_map.territories.iter() {
                     //log!("model:update: LoadBorderPath: territory.description: item: {}");
-                    if t.description.clone() != None && t.description.clone().unwrap().contains(&description_contains.clone()) {
+                    if territory.description.clone() != None && territory.description.clone().unwrap().contains(&description_contains.clone()) {
                         //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            territory, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
+
                         self.tpolygons.push(tp);
                     }            
                 }
@@ -137,21 +153,34 @@ impl Component for Model {
                 for t in self.territory_map.territories.iter() {
                     if self.search == "ALL".to_string(){
                         //log!(format!("model: update: Msg::Search: search: (ALL) {}", self.search.clone()));
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            t, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
+
                         self.tpolygons.push(tp);
                     } else if (self.search == "*".to_string() || self.search.trim() == "".to_string()) 
                         && t.group_id != Some("outer".to_string())  
                         && t.number != "OUTER".to_string() {
                         //log!(format!("model: update: Msg::Search: search: (*) {}", self.search.clone()));
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            t, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
                         self.tpolygons.push(tp);
                     } else if self.search == "OUTER".to_string() && t.number == "OUTER".to_string() {
                         //log!(format!("model: update: Msg::Search: search: (OUTER) {}", self.search.clone()));
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            t, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
                         self.tpolygons.push(tp);
                     } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         //log!(format!("model: update: Msg::Search: search: (outer) {}", self.search.clone()));
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            t, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
                         self.tpolygons.push(tp);
                     // } else if self.search.starts_with('<') 
                     //     && t.signed_out.
@@ -167,7 +196,10 @@ impl Component for Model {
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
                         //log!(format!("model: update: Msg::Search: search: (INNER) {}", self.search.clone()));
-                        let tp = tpoly_from_territory(t);
+                        let tp = tpoly_from_territory_w_button(
+                            t, 
+                            self.territory_map.edit_territory_button_enabled, 
+                            self.territory_map.territory_open_enabled);
                         self.tpolygons.push(tp);
                     } 
                     // else {

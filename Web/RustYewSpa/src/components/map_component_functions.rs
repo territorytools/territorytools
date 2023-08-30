@@ -82,7 +82,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
 }
 
 pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
-    tpoly_from_territory_w_button(t, true)
+    tpoly_from_territory_w_button(t, true, false)
 }
 
 pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enabled: bool, territory_open_enabled: bool) -> TerritoryPolygon {
