@@ -55,7 +55,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", edit_territory_button_enabled.parse().unwrap_or(true)));
 
     //owner big-map-territory-open-enabled=true Section
-    let regex = Regex::new(r"(^|;)big\-map\-territory\-open\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
+    let regex = Regex::new(r"(^|;|\s+)big\-map\-territory\-open\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
     let user_roles_clone = fetched_result.user_roles.clone().unwrap_or("".to_string());
     let caps = regex.captures(user_roles_clone.as_str());
     let mut territory_open_enabled: String = "".to_string();

@@ -5,7 +5,10 @@ use crate::components::{
     },
     map_component::{City, MapComponent, PixelPoint, MapModel},
     model_functions::*,
-    map_component_functions::{tpoly_from_territory,TerritoryPolygon,tpoly_from_territory_w_button},
+    map_component_functions::{
+        //tpoly_from_territory,
+        TerritoryPolygon,
+        tpoly_from_territory_w_button},
 };
 use crate::components::menu_bar_v2::MenuBarV2;
 

@@ -1,6 +1,6 @@
 use crate::components::map_menu::MapMenu;
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::popup_content::popup_content;
+use crate::components::popup_content::popup_content_w_button;
 use crate::functions::document_functions::set_document_title;
 use crate::models::territories::Territory;
 use crate::libs::leaflet::{LatLng, LatLngBounds, Map, Polygon, Polyline, TileLayer, Point};
@@ -244,7 +244,7 @@ pub fn territory_map() -> Html {
 
             let tooltip_text: String = format!("{group_id}: {area_code}: {}", t.number);
 
-            let popup_text = popup_content(&t);
+            let popup_text = popup_content_w_button(&t, true, false);
 
             if t.border.len() > 2 {
                 poly.bindTooltip(

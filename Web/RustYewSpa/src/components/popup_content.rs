@@ -1,9 +1,9 @@
 use crate::models::territories::{Territory};
 use gloo_console::log;
 
-pub fn popup_content(territory: &Territory) -> String  {
-    popup_content_w_button(territory, true, false)
-}
+// pub fn popup_content(territory: &Territory) -> String  {
+//     popup_content_w_button(territory, true, false)
+// }
 
 pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabled: bool, territory_open_enabled: bool) -> String  {
     let assignee_line = {
@@ -83,7 +83,7 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
     //};
 
     let edit_button_html = if edit_territory_button_enabled {
-        log!("edit_button_html yes");
+        //log!("edit_button_html yes");
         format!("<br/><a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
@@ -91,12 +91,12 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
             Edit
         </a>")
     } else { 
-        log!("edit_button_html no");
+        //log!("edit_button_html no");
         "".to_string() 
     };
 
     let assignee_link_key = territory.assignee_link_key.clone().unwrap_or("".to_string());
-    log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
+    //log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
     let open_button_html = if territory_open_enabled {
         if assignee_link_key.is_empty() {
             format!("<br/><a 

@@ -81,13 +81,13 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
     poly
 }
 
-pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
-    tpoly_from_territory_w_button(t, true, false)
-}
+// pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
+//     tpoly_from_territory_w_button(t, true, false)
+// }
 
 pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enabled: bool, territory_open_enabled: bool) -> TerritoryPolygon {
     let mut polygon: Vec<TerritoryLatLng> = Vec::new();
-
+    //log!(format!("mcf: tpoly_from_territory_w_button: edit_territory_button_enabled: {edit_territory_button_enabled} territory_open_enabled:{territory_open_enabled}"));
     for v in &t.border {
         if v.len() > 1 {
             polygon.push(TerritoryLatLng { lat: v[0].into(), lon: v[1].into()});
