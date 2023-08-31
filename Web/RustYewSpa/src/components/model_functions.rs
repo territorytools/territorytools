@@ -62,7 +62,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
         territory_open_enabled = caps.as_ref().expect("big-map-territory-open-enabled in user_roles").get(2).map_or("".to_string(), |m| m.as_str().to_string());
     }
-    log!(format!("model:update: LoadBorderPath: territory_open_enabled: {}", territory_open_enabled.parse().unwrap_or(true)));
+    log!(format!("model:update: LoadBorderPath: territory_open_enabled: {}", territory_open_enabled.parse().unwrap_or(false)));
 
     MapModel {
         territories: fetched_result.territories.clone(),
@@ -76,7 +76,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
         link_grants: fetched_result.link_grants.clone(),
         user_roles: fetched_result.user_roles.clone(),
         edit_territory_button_enabled: edit_territory_button_enabled.parse().unwrap_or(true),
-        territory_open_enabled: territory_open_enabled.parse().unwrap_or(true),
+        territory_open_enabled: territory_open_enabled.parse().unwrap_or(false),
     }
 }
 
