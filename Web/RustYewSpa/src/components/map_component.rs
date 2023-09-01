@@ -14,6 +14,9 @@ use crate::components::map_component_functions::{
     get_southwest_corner,
     get_northeast_corner,
 };
+// use geo::{Coordinate, LineString, Polygon as GeoPolygon};
+// use geo::algorithm::contains::Contains;
+// use geo_types::{coord};
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
@@ -49,18 +52,6 @@ pub enum Msg {
     MouseClick(i32, i32),
 }
 
-pub struct MapComponent {
-    map: Map,
-    container: HtmlElement,
-    territory_map: MapModel,
-    polygons: Vec<Polygon>,
-    tpolygons: Vec<TerritoryPolygon>,
-    id_list: Vec<i32>,
-    layer_group: LayerGroup,
-    mouse_click_x: i32,
-    mouse_click_y: i32,
-}
-
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct PixelPoint(pub f64, pub f64);
 
@@ -80,6 +71,18 @@ pub struct Props {
     pub search: String,
     // pub mouse_click_x: i32,
     // pub mouse_click_y: i32,
+}
+
+pub struct MapComponent {
+    map: Map,
+    container: HtmlElement,
+    territory_map: MapModel,
+    polygons: Vec<Polygon>,
+    tpolygons: Vec<TerritoryPolygon>,
+    id_list: Vec<i32>,
+    layer_group: LayerGroup,
+    mouse_click_x: i32,
+    mouse_click_y: i32,
 }
 
 impl MapComponent {
@@ -122,9 +125,61 @@ impl Component for MapComponent {
         match msg{
             Msg::MouseClick(x, y) => {
                 //log!(format!("map_component:update: Map cover clicked {}, {}", x, y));
-                let latLng = &self.map.containerPointToLatLng(
+                let lat_lng = &self.map.containerPointToLatLng(
                     &Point::new(x as u32, y as u32));
-                log!(format!("map_component:update: Map cover clicked LatLng {}, {}", latLng.lat(), latLng.lng()));
+                log!(format!("map_component:update: Map cover clicked LatLng {}, {}", lat_lng.lat(), lat_lng.lng()));
+
+
+                for tp in self.tpolygons.clone().iter() {
+                    let mut vertices: Vec<GeoPoint> = vec![];
+                    for v in tp.border.iter() {
+                        vertices.push(GeoPoint { x: v.lon as f64, y: v.lat as f64});
+                    }
+                    let inside = is_inside_polygon(vertices, &GeoPoint {x: lat_lng.lng() as f64, y: lat_lng.lat() as f64});
+    
+                    if inside { 
+                        log!(format!("map_component:update: Map cover clicked Inside {} HTML: {}", inside, tp.tooltip_text.clone()));
+                        
+                        let mut new_tpolygons: Vec<TerritoryPolygon> = vec![];
+                        for t in self.tpolygons.clone().iter() {
+                            if t.tooltip_text == tp.tooltip_text {
+                                log!(format!("mc:inside: found one tooltip: {}", t.tooltip_text.clone()));
+                                let altered_tpolygon = TerritoryPolygon {
+                                    layer_id: tp.layer_id,
+                                    color: "red".to_string(), //tp.color.clone(),
+                                    opacity: tp.opacity,
+                                    border: tp.border.clone(),
+                                    popup_html: tp.popup_html.clone(), 
+                                    tooltip_text: tp.tooltip_text.clone(),
+                                };
+                                new_tpolygons.push(altered_tpolygon);
+                            } else {
+                                new_tpolygons.push(t.clone());
+                            }
+                        }
+                        self.tpolygons = new_tpolygons.clone();
+
+
+                        // self.territory_map = MapModel {
+                        //     territories: self.territory_map.territories.clone(),
+                        //     territories_is_loaded: self.territory_map.territories_is_loaded,
+                        //     local_load: self.territory_map.local_load,
+                        //     lat:  self.territory_map.lat,
+                        //     lon: self.territory_map.lon,
+                        //     zoom: self.territory_map.zoom,
+                        //     group_visible: self.territory_map.group_visible.clone(),
+                        //     link_grants: self.territory_map.link_grants.clone(),
+                        //     user_roles: self.territory_map.user_roles.clone(),
+                        //     edit_territory_button_enabled: self.territory_map.edit_territory_button_enabled,
+                        //     territory_open_enabled: self.territory_map.territory_open_enabled,
+                        // };
+                        return true;
+                    } 
+                    //return true;
+                }
+
+
+
                 false
             }
         }
@@ -262,3 +317,34 @@ fn add_tile_layer(map: &Map) {
     )
     .addTo(map);
 }
+
+struct GeoPoint {
+    x: f64,
+    y: f64,
+}
+
+fn is_inside_polygon(vertices: Vec<GeoPoint>, point: &GeoPoint) -> bool {
+    let n = vertices.len();
+    if n < 3 {
+        return false; // A polygon must have at least 3 vertices.
+    }
+
+    let mut inside = false;
+    let mut j = n - 1;
+
+    for i in 0..n {
+        let vi = &vertices[i];
+        let vj = &vertices[j];
+
+        if (vi.y > point.y) != (vj.y > point.y)
+            && point.x < (vj.x - vi.x) * (point.y - vi.y) / (vj.y - vi.y) + vi.x
+        {
+            inside = !inside;
+        }
+
+        j = i;
+    }
+
+    inside
+}
+
