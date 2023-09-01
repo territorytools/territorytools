@@ -83,6 +83,7 @@ pub struct MapComponent {
     layer_group: LayerGroup,
     mouse_click_x: i32,
     mouse_click_y: i32,
+    selected: Vec<String>,
 }
 
 impl MapComponent {
@@ -111,6 +112,7 @@ impl Component for MapComponent {
             layer_group: LayerGroup::new(),
             mouse_click_x: 0,
             mouse_click_y: 0,
+            selected: vec![],
         }
     }
 
@@ -139,7 +141,7 @@ impl Component for MapComponent {
     
                     if inside { 
                         log!(format!("map_component:update: Map cover clicked Inside {} HTML: {}", inside, tp.tooltip_text.clone()));
-                        
+                        self.selected.push(tp.tooltip_text.clone());
                         let mut new_tpolygons: Vec<TerritoryPolygon> = vec![];
                         for t in self.tpolygons.clone().iter() {
                             if t.tooltip_text == tp.tooltip_text {
@@ -153,6 +155,7 @@ impl Component for MapComponent {
                                     tooltip_text: tp.tooltip_text.clone(),
                                 };
                                 new_tpolygons.push(altered_tpolygon);
+                                
                             } else {
                                 new_tpolygons.push(t.clone());
                             }
@@ -217,12 +220,15 @@ impl Component for MapComponent {
             self.polygons.clear();
             self.id_list.clear();
             self.layer_group = LayerGroup::new();
+            log!(format!("mc:selected.len(): {}", self.selected.len()));
             for tp in self.tpolygons.iter() {
-                let p = polygon_from_territory_polygon(&tp);
+                
+                let selected: bool = self.selected.contains(&tp.tooltip_text.clone());
+                let p = polygon_from_territory_polygon(&tp, selected);
                 self.polygons.push(p); // TODO: I don't think we need this
 
-                let p = polygon_from_territory_polygon(&tp);
-
+                //tp.color = "red".to_string();
+                let p = polygon_from_territory_polygon(&tp, selected);
                 p.addTo_LayerGroup(&self.layer_group);
 
                 let layer_id = self.layer_group.getLayerId(&p);

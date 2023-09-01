@@ -45,7 +45,7 @@ pub struct TerritoryPolygon {
 
 impl ImplicitClone for TerritoryPolygon {}
 
-pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
+pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) -> Polygon {
     let mut vertices: Vec<LatLng> = Vec::new();
     for v in &tpoly.border {
         vertices.push(LatLng::new(v.lat.into(), v.lon.into()));
@@ -54,7 +54,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon) -> Polygon {
     let poly = Polygon::new_with_options(
         vertices.iter().map(JsValue::from).collect(),
         &serde_wasm_bindgen::to_value(&PolylineOptions {
-            color: tpoly.color.to_string(),
+            color: if selected { "red".to_string() } else { tpoly.color.to_string() },
             opacity: tpoly.opacity,
         })
         .expect("Unable to serialize polygon options"),
