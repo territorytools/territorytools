@@ -2,6 +2,7 @@ use crate::libs::leaflet::{
     LatLng, 
     LatLngBounds,
     Map,
+    Point,
     Polygon, 
     TileLayer, 
     LayerGroup
@@ -45,6 +46,7 @@ pub struct MapModel {
 impl ImplicitClone for MapModel {}
 
 pub enum Msg {
+    MouseClick(i32, i32),
 }
 
 pub struct MapComponent {
@@ -55,6 +57,8 @@ pub struct MapComponent {
     tpolygons: Vec<TerritoryPolygon>,
     id_list: Vec<i32>,
     layer_group: LayerGroup,
+    mouse_click_x: i32,
+    mouse_click_y: i32,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -74,6 +78,8 @@ pub struct Props {
     pub territory_map: MapModel,
     pub tpolygons: Vec<TerritoryPolygon>,
     pub search: String,
+    // pub mouse_click_x: i32,
+    // pub mouse_click_y: i32,
 }
 
 impl MapComponent {
@@ -100,6 +106,8 @@ impl Component for MapComponent {
             tpolygons: vec![],
             id_list: vec![],
             layer_group: LayerGroup::new(),
+            mouse_click_x: 0,
+            mouse_click_y: 0,
         }
     }
 
@@ -110,8 +118,16 @@ impl Component for MapComponent {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        false
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg{
+            Msg::MouseClick(x, y) => {
+                //log!(format!("map_component:update: Map cover clicked {}, {}", x, y));
+                let latLng = &self.map.containerPointToLatLng(
+                    &Point::new(x as u32, y as u32));
+                log!(format!("map_component:update: Map cover clicked LatLng {}, {}", latLng.lat(), latLng.lng()));
+                false
+            }
+        }
     }
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
@@ -151,7 +167,7 @@ impl Component for MapComponent {
                 self.polygons.push(p); // TODO: I don't think we need this
 
                 let p = polygon_from_territory_polygon(&tp);
-                    
+
                 p.addTo_LayerGroup(&self.layer_group);
 
                 let layer_id = self.layer_group.getLayerId(&p);
@@ -192,14 +208,46 @@ impl Component for MapComponent {
 
     }
 
-    fn view(&self, _ctx: &Context<Self>) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
        
+        ////let mouse_click_model_clone = mouse_click_model.clone();
+        //let self_clone = &self;
+        let link = ctx.link().clone();
+        let map_cover_click = {
+            ////let mouse_click_model_clone = mouse_click_model_clone.clone();
+            ////let leaflet_map_clone = leaflet_map_clone.clone();
+            //et self_clone = &self_clone;
+            let link = link.clone();
+            Callback::from(move |event: MouseEvent| {
+                //print_click_lat_lng(leaflet_map.clone());
+                log!(format!("map_component:view: Map cover clicked {}, {}", event.x(), event.y()-57));
+                //link.send_message(Msg::MouseEvent(event.clone()));
+                
+                link.send_message(Msg::MouseClick(event.x(), event.y()-57));
+                
+                
+                // let mouse_thing = MouseClickModel {
+                //     mouse_click_x: event.x(),
+                //     mouse_click_y: event.y(),
+                // };
+                ////mouse_click_model_clone.set(mouse_thing);
+                
+                // TODO: Figure this out, leafelet_map gets moved here
+                // let latLng = &self_clone.map.layerPointToLatLng(
+                //     &Point::new(
+                //         event.x() as u32, 
+                //         event.y() as u32));
+            })
+        };
 
         html! {
             //<div style="background-color:yellow;height:100%;">
             // TODO: Move this whole header thing into the model.rs
               
-                <div class="map map-container component-container"  style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;">
+                <div 
+                    class="map map-container component-container"  
+                    style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;"
+                    onclick={map_cover_click}>
                     {self.render_map()}
                 </div>
             //</div>
