@@ -24,6 +24,7 @@ pub enum Msg {
     LoadBordersPath(MapModel, String),
     Search(String),
     MouseClick(i32, i32),
+    MouseMove(i32, i32),
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -234,6 +235,15 @@ impl Component for Model {
 
 
                 
+            },
+            Msg::MouseMove(x, y) => {
+                log!(format!("model:update: MouseMove {}, {}", x, y));
+                // self.mouse_click_x = x;
+                // self.mouse_click_y = y;
+
+
+
+                
             }
         }
         true
@@ -307,12 +317,13 @@ impl Component for Model {
                 event.stop_propagation();
                 //event.stop_immediate_propagation();
                 event.prevent_default();
+                // TODO: Send a mouse move event....
                 //link.send_message(Msg::MouseClick(event.x(), event.y()-57));
             })
         };
 
         html! {
-           <div style="background-color:yellow;height:100%;pointer-events:none;" onclick={map_cover_click} onmousemove={map_cover_move}>
+           <div style="background-color:yellow;height:100%;" onclick={map_cover_click} onmousemove={map_cover_move}>
             <div id="menu-bar-header" style="height:57px;background-color:red;">
                     <MenuBarV2>
                         <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
@@ -348,6 +359,7 @@ impl Component for Model {
                     </MenuBarV2>
                 </div>
                 <MapComponent 
+                   
                     mouse_click_x={&self.mouse_click_x}
                     mouse_click_y={&self.mouse_click_y}
                     city={&self.city} 

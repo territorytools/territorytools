@@ -328,7 +328,7 @@ impl Component for MapComponent {
               
                 <div 
                     class="map map-container component-container"  
-                    style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;"
+                    style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;pointer-events:none;"
                     onclick={map_cover_click}>                    
                     {self.render_map()}
                 </div>
