@@ -20,7 +20,7 @@ use crate::components::map_component_functions::{
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
-use web_sys::{Element, HtmlElement, Node};
+use web_sys::{Element, HtmlElement, Node, SvgPathElement};
 use yew::{html::ImplicitClone, prelude::*};
 use serde::{Deserialize, Serialize};
 use gloo_console::log;
@@ -161,18 +161,30 @@ impl Component for MapComponent {
                     let inside = is_inside_polygon(vertices, &GeoPoint {x: lat_lng.lng() as f64, y: lat_lng.lat() as f64});
     
                     if inside { 
-                        log!(format!("map_component:update: Map cover clicked Inside {} HTML: {}", inside, tp.tooltip_text.clone()));
-                        if self.selected.contains(&tp.tooltip_text.clone()) {
-                            let index = self.selected.iter().position(|x| *x == tp.tooltip_text.clone()).unwrap();
+                        log!(format!("mc:update: Map cover clicked Inside {} territory_id: {}", inside, tp.territory_id.clone()));
+                        let path: Element = document().get_element_by_id(format!("territory-id-{}", tp.territory_id.clone()).as_str()).unwrap();
+                        let path: SvgPathElement = path.dyn_into().unwrap();
+                        
+                        if self.selected.contains(&tp.territory_id.clone()) {
+                            let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();
                             self.selected.remove(index);
+                            path.set_attribute("fill", "magenta");
+                            path.set_attribute("stroke", "magenta");
                         } else {
-                            self.selected.push(tp.tooltip_text.clone());
+                            self.selected.push(tp.territory_id.clone());
+                            path.set_attribute("fill", "rebeccapurple");
+                            path.set_attribute("stroke", "rebeccapurple");
+                        
+                        }
+                        for selected in self.selected.iter() {
+                            log!(format!("mc:update: MouseClick: Selected: {}", selected));
                         }
                         let mut new_tpolygons: Vec<TerritoryPolygon> = vec![];
                         for t in self.tpolygons.clone().iter() {
-                            if t.tooltip_text == tp.tooltip_text {
-                                log!(format!("mc:inside: found one tooltip: {}", t.tooltip_text.clone()));
+                            if t.territory_id == tp.territory_id {
+                                log!(format!("mc:inside: found one territory_id: {}", t.territory_id.clone()));
                                 let altered_tpolygon = TerritoryPolygon {
+                                    territory_id: tp.territory_id.clone(),
                                     layer_id: tp.layer_id,
                                     // Not used
                                     color: "purple".to_string(), //tp.color.clone(),
@@ -181,6 +193,7 @@ impl Component for MapComponent {
                                     popup_html: tp.popup_html.clone(), 
                                     tooltip_text: tp.tooltip_text.clone(),
                                 };
+                                // Not used
                                 new_tpolygons.push(altered_tpolygon);
                                 
                             } else {
@@ -188,6 +201,9 @@ impl Component for MapComponent {
                             }
                         }
                         self.tpolygons = new_tpolygons.clone();
+
+                      
+
                         //self.map.fitBounds(&self.bounds);
 
 
@@ -315,8 +331,8 @@ impl Component for MapComponent {
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
                 log!(format!("map_component:view: Map cover clicked {}, {}", event.x(), event.y()-57));
-                event.stop_propagation();
-                event.prevent_default();
+                // event.stop_propagation();
+                // event.prevent_default();
                 link.send_message(Msg::MouseClick(event.x(), event.y()-57));
             })
         };
@@ -328,7 +344,7 @@ impl Component for MapComponent {
               
                 <div 
                     class="map map-container component-container"  
-                    style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;pointer-events:none;"
+                    style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;xxxx-removed-xxxx-pointer-events:none;"
                     onclick={map_cover_click}>                    
                     {self.render_map()}
                 </div>

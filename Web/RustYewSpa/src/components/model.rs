@@ -313,10 +313,10 @@ impl Component for Model {
         let map_cover_move = {
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
-                log!(format!("model:view: Map cover move {}, {}", event.x(), event.y()-57));
-                event.stop_propagation();
+                //log!(format!("model:view: Map cover move {}, {}", event.x(), event.y()-57));
+                ////event.stop_propagation();
                 //event.stop_immediate_propagation();
-                event.prevent_default();
+                ////event.prevent_default();
                 // TODO: Send a mouse move event....
                 //link.send_message(Msg::MouseClick(event.x(), event.y()-57));
             })

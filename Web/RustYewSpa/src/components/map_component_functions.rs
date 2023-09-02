@@ -23,6 +23,7 @@ pub struct TooltipOptions {
 struct PolylineOptions {
     color: String,
     opacity: f32,
+    pathId: String,
 }
 
 #[derive(PartialEq, Clone, Default)]
@@ -35,6 +36,7 @@ impl ImplicitClone for TerritoryLatLng {}
 
 #[derive(PartialEq, Clone, Default)]
 pub struct TerritoryPolygon {
+    pub territory_id: String,
     pub layer_id: i32,
     pub color: String,
     pub opacity: f32,
@@ -56,11 +58,13 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
         &serde_wasm_bindgen::to_value(&PolylineOptions {
             color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
             opacity: tpoly.opacity,
+            pathId: format!("territory-id-{}", tpoly.territory_id.clone()),
         })
         .expect("Unable to serialize polygon options"),
     );
 
-    if tpoly.border.len() > 2 {
+    // TODO: Don't bind this is 'select' mode
+    if tpoly.border.len() > 2 && !tpoly.tooltip_text.is_empty() {
         poly.bindTooltip(
             &JsValue::from_str(tpoly.tooltip_text.as_str()),
             &serde_wasm_bindgen::to_value(&TooltipOptions {
@@ -72,11 +76,14 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
         );
     }
 
-    poly.bindPopup(
-        &JsValue::from_str(tpoly.popup_html.as_str()),
-        &serde_wasm_bindgen::to_value(&PopupOptions { auto_close: true })
-            .expect("Unable to serialize popup options"),
-    );
+    // TODO: Don't bind this is 'select' mode
+    if tpoly.border.len() > 2 && !tpoly.popup_html.is_empty() {
+        poly.bindPopup(
+            &JsValue::from_str(tpoly.popup_html.as_str()),
+            &serde_wasm_bindgen::to_value(&PopupOptions { auto_close: true })
+                .expect("Unable to serialize popup options"),
+        );
+    }
 
     poly
 }
@@ -156,6 +163,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enable
     //     return polyline
     // } else {
         let poly = TerritoryPolygon {
+            territory_id: t.number.clone(),
             layer_id: 0,
             color: territory_color.into(),
             opacity: opacity.into(),
