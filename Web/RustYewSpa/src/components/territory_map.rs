@@ -208,7 +208,7 @@ pub fn territory_map() -> Html {
             if t.is_active {
                 1.0
             } else {
-                0.01
+                1.0
             }
         };
 
@@ -585,15 +585,15 @@ pub fn territory_map() -> Html {
                                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                         </svg>
                                     </button>
-                                    <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
-                                    <span>{"  LatLng: "}{format!("{:.4},{:.4}",lat_lng.lat(),lat_lng.lng())}</span>
+                                    //<span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
+                                    //<span>{"  LatLng: "}{format!("{:.4},{:.4}",lat_lng.lat(),lat_lng.lng())}</span>
                                 </div>
                             </div>
                         </li>
                     </ul>
                 </MenuBarV2>
             </div>
-            <div style="height: calc(100% - 57px);background-color:blue;" onclick={map_cover_click}>
+            <div style="height: calc(100% - 57px);background-color:blue;">
                 {
                     {map_container}
                 }
