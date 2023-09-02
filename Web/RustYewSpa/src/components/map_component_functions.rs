@@ -54,7 +54,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
     let poly = Polygon::new_with_options(
         vertices.iter().map(JsValue::from).collect(),
         &serde_wasm_bindgen::to_value(&PolylineOptions {
-            color: if selected { "red".to_string() } else { tpoly.color.to_string() },
+            color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
             opacity: tpoly.opacity,
         })
         .expect("Unable to serialize polygon options"),

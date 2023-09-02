@@ -69,8 +69,8 @@ pub struct Props {
     pub territory_map: MapModel,
     pub tpolygons: Vec<TerritoryPolygon>,
     pub search: String,
-    // pub mouse_click_x: i32,
-    // pub mouse_click_y: i32,
+    pub mouse_click_x: i32,
+    pub mouse_click_y: i32,
 }
 
 pub struct MapComponent {
@@ -84,6 +84,9 @@ pub struct MapComponent {
     mouse_click_x: i32,
     mouse_click_y: i32,
     selected: Vec<String>,
+    bounds: LatLngBounds,
+    center_lat: f64,
+    center_lon: f64,
 }
 
 impl MapComponent {
@@ -97,11 +100,13 @@ impl Component for MapComponent {
     type Message = Msg;
     type Properties = Props;
 
-    fn create(_ctx: &Context<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
         let container: Element = document().create_element("div").unwrap();
         let container: HtmlElement = container.dyn_into().unwrap();
         container.set_class_name("map");
         let leaflet_map = Map::new_with_element(&container, &JsValue::NULL);
+        log!(format!("mc:create:map.territories.len(): {}", ctx.props().territory_map.territories.len()));
+        //leaflet_map.setView(&LatLng::new(49.0, -122.0), 12.0 as f64);
         Self {
             map: leaflet_map,
             container,
@@ -113,13 +118,29 @@ impl Component for MapComponent {
             mouse_click_x: 0,
             mouse_click_y: 0,
             selected: vec![],
+            bounds: LatLngBounds::new(&LatLng::new(0.0, 0.0), &LatLng::new(10.0, 10.0)),
+            center_lat: 0.0,
+            center_lon: 0.0,
         }
     }
 
     fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
+        log!("mc:rendered: Starting...");
         if first_render {
             //self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lat), 11.0);
             add_tile_layer(&self.map);
+            log!("mc:rendered:first_render: true");
+        } else {
+            log!("mc:rendered: recording bounds...");
+            if self.map.getBounds().isValid() {
+                log!("mc:rendered: bounds valid: yes");
+            } else {
+                log!("mc:rendered: bounds valid: no");
+            }
+            self.bounds = self.map.getBounds();
+            self.center_lat = self.map.getCenter().lat();
+            self.center_lon = self.map.getCenter().lng();
+            log!(format!("mc:rendered: center: {},{}", self.center_lat, self.center_lon ))
         }
     }
 
@@ -141,14 +162,20 @@ impl Component for MapComponent {
     
                     if inside { 
                         log!(format!("map_component:update: Map cover clicked Inside {} HTML: {}", inside, tp.tooltip_text.clone()));
-                        self.selected.push(tp.tooltip_text.clone());
+                        if self.selected.contains(&tp.tooltip_text.clone()) {
+                            let index = self.selected.iter().position(|x| *x == tp.tooltip_text.clone()).unwrap();
+                            self.selected.remove(index);
+                        } else {
+                            self.selected.push(tp.tooltip_text.clone());
+                        }
                         let mut new_tpolygons: Vec<TerritoryPolygon> = vec![];
                         for t in self.tpolygons.clone().iter() {
                             if t.tooltip_text == tp.tooltip_text {
                                 log!(format!("mc:inside: found one tooltip: {}", t.tooltip_text.clone()));
                                 let altered_tpolygon = TerritoryPolygon {
                                     layer_id: tp.layer_id,
-                                    color: "red".to_string(), //tp.color.clone(),
+                                    // Not used
+                                    color: "purple".to_string(), //tp.color.clone(),
                                     opacity: tp.opacity,
                                     border: tp.border.clone(),
                                     popup_html: tp.popup_html.clone(), 
@@ -161,6 +188,7 @@ impl Component for MapComponent {
                             }
                         }
                         self.tpolygons = new_tpolygons.clone();
+                        //self.map.fitBounds(&self.bounds);
 
 
                         // self.territory_map = MapModel {
@@ -176,6 +204,7 @@ impl Component for MapComponent {
                         //     edit_territory_button_enabled: self.territory_map.edit_territory_button_enabled,
                         //     territory_open_enabled: self.territory_map.territory_open_enabled,
                         // };
+                        log!("mc:update:MouseClick: I think this will reload!");
                         return true;
                     } 
                     //return true;
@@ -190,9 +219,20 @@ impl Component for MapComponent {
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         let props = ctx.props();
+        log!(format!("map_component: changed: starting..."));
         // if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
         //     false
         // } else {
+        
+        log!("mc:changed: NOT (again) recording bounds...");
+        // if self.map.getBounds().isValid() {
+        //     log!("mc:changed: bounds valid: yes");
+        // } else {
+        //     log!("mc:changed: bounds valid: no");
+        // }
+        // self.bounds = self.map.getBounds();
+
+        //log!("mc:changed: bounds: {},{}", self.bounds.getNorthEast().lat(), self.bounds.getNorthEast().lng());
             self.territory_map = MapModel {
                 territories: props.territory_map.territories.clone(),
                 territories_is_loaded: true,
@@ -270,36 +310,17 @@ impl Component for MapComponent {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-       
-        ////let mouse_click_model_clone = mouse_click_model.clone();
-        //let self_clone = &self;
         let link = ctx.link().clone();
         let map_cover_click = {
-            ////let mouse_click_model_clone = mouse_click_model_clone.clone();
-            ////let leaflet_map_clone = leaflet_map_clone.clone();
-            //et self_clone = &self_clone;
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
-                //print_click_lat_lng(leaflet_map.clone());
                 log!(format!("map_component:view: Map cover clicked {}, {}", event.x(), event.y()-57));
-                //link.send_message(Msg::MouseEvent(event.clone()));
-                
+                event.stop_propagation();
+                event.prevent_default();
                 link.send_message(Msg::MouseClick(event.x(), event.y()-57));
-                
-                
-                // let mouse_thing = MouseClickModel {
-                //     mouse_click_x: event.x(),
-                //     mouse_click_y: event.y(),
-                // };
-                ////mouse_click_model_clone.set(mouse_thing);
-                
-                // TODO: Figure this out, leafelet_map gets moved here
-                // let latLng = &self_clone.map.layerPointToLatLng(
-                //     &Point::new(
-                //         event.x() as u32, 
-                //         event.y() as u32));
             })
         };
+
 
         html! {
             //<div style="background-color:yellow;height:100%;">
@@ -308,7 +329,7 @@ impl Component for MapComponent {
                 <div 
                     class="map map-container component-container"  
                     style="height: calc(100% - 57px);background-color:blue;padding:0;border-width:0;"
-                    onclick={map_cover_click}>
+                    onclick={map_cover_click}>                    
                     {self.render_map()}
                 </div>
             //</div>

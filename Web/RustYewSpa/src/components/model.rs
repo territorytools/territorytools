@@ -23,6 +23,7 @@ pub enum Msg {
     LoadBorders(MapModel),
     LoadBordersPath(MapModel, String),
     Search(String),
+    MouseClick(i32, i32),
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -36,6 +37,15 @@ pub struct Model {
     territory_map: MapModel,
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
+    mouse_click_x: i32,
+    mouse_click_y: i32,
+    corner_1_lat: f64,
+    corner_1_lon: f64,
+    corner_2_lat: f64,
+    corner_2_lon: f64,
+    center_lat: f64,
+    center_lon: f64,
+    zoom: f64,
 }
 
 impl Component for Model {
@@ -60,7 +70,13 @@ impl Component for Model {
         });
 
         return Self { city, cities, territory_map, search: 
-            "loading search...".to_string(), tpolygons: vec![] }                
+            "loading search...".to_string(), tpolygons: vec![],
+            mouse_click_x: 0, mouse_click_y: 0,
+            corner_1_lat: 0.0, corner_1_lon: 0.0,
+            corner_2_lat: 0.0, corner_2_lon: 0.0,
+            center_lat: 0.0, center_lon: 0.0,
+            zoom: 1.0,
+         }                
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -210,6 +226,15 @@ impl Component for Model {
                     // }            
                 }
             },
+            Msg::MouseClick(x, y) => {
+                log!(format!("model:update: MouseClick {}, {}", x, y));
+                // self.mouse_click_x = x;
+                // self.mouse_click_y = y;
+
+
+
+                
+            }
         }
         true
     }
@@ -266,8 +291,28 @@ impl Component for Model {
             })
         };
 
+        let link = ctx.link().clone();
+        let map_cover_click = {
+            let link = link.clone();
+            Callback::from(move |event: MouseEvent| {
+                log!(format!("model:view: Map cover clicked {}, {}", event.x(), event.y()-57));
+                link.send_message(Msg::MouseClick(event.x(), event.y()-57));
+            })
+        };
+
+        let map_cover_move = {
+            let link = link.clone();
+            Callback::from(move |event: MouseEvent| {
+                log!(format!("model:view: Map cover move {}, {}", event.x(), event.y()-57));
+                event.stop_propagation();
+                //event.stop_immediate_propagation();
+                event.prevent_default();
+                //link.send_message(Msg::MouseClick(event.x(), event.y()-57));
+            })
+        };
+
         html! {
-           <div style="background-color:yellow;height:100%;">
+           <div style="background-color:yellow;height:100%;pointer-events:none;" onclick={map_cover_click} onmousemove={map_cover_move}>
             <div id="menu-bar-header" style="height:57px;background-color:red;">
                     <MenuBarV2>
                         <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
@@ -302,7 +347,13 @@ impl Component for Model {
                         </ul>
                     </MenuBarV2>
                 </div>
-                <MapComponent city={&self.city} territory_map={&self.territory_map} tpolygons={self.tpolygons.clone()} search={self.search.clone()}/>
+                <MapComponent 
+                    mouse_click_x={&self.mouse_click_x}
+                    mouse_click_y={&self.mouse_click_y}
+                    city={&self.city} 
+                    territory_map={&self.territory_map} 
+                    tpolygons={self.tpolygons.clone()} 
+                    search={self.search.clone()}/>
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </div>
         }

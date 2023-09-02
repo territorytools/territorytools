@@ -79,7 +79,10 @@ extern "C" {
 
     #[wasm_bindgen(method)]
     pub fn contains(this: &LatLngBounds, latlng: &LatLng) -> bool;
-
+    
+    #[wasm_bindgen(method)]
+    pub fn isValid(this: &LatLngBounds) -> bool;
+    
     // Layer
 
     #[derive(Debug, Clone)]
