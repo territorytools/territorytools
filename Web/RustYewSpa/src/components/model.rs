@@ -98,10 +98,7 @@ impl Component for Model {
                 
                 for t in self.territory_map.territories.iter() {
                     if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        let tp = tpoly_from_territory_w_button(
-                            t, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     }            
                 }
@@ -155,11 +152,7 @@ impl Component for Model {
                     //log!("model:update: LoadBorderPath: territory.description: item: {}");
                     if territory.description.clone() != None && territory.description.clone().unwrap().contains(&description_contains.clone()) {
                         //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
-                        let tp = tpoly_from_territory_w_button(
-                            territory, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
-
+                        let tp = tpoly_from_territory_w_button(territory, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     }            
                 }
@@ -173,34 +166,21 @@ impl Component for Model {
                 for t in self.territory_map.territories.iter() {
                     if self.search == "ALL".to_string(){
                         //log!(format!("model: update: Msg::Search: search: (ALL) {}", self.search.clone()));
-                        let tp = tpoly_from_territory_w_button(
-                            t, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
-
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if (self.search == "*".to_string() || self.search.trim() == "".to_string()) 
                         && t.group_id != Some("outer".to_string())  
                         && t.number != "OUTER".to_string() {
                         //log!(format!("model: update: Msg::Search: search: (*) {}", self.search.clone()));
-                        let tp = tpoly_from_territory_w_button(
-                            t, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if self.search == "OUTER".to_string() && t.number == "OUTER".to_string() {
                         //log!(format!("model: update: Msg::Search: search: (OUTER) {}", self.search.clone()));
-                        let tp = tpoly_from_territory_w_button(
-                            t, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         //log!(format!("model: update: Msg::Search: search: (outer) {}", self.search.clone()));
-                        let tp = tpoly_from_territory_w_button(
-                            t, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     // } else if self.search.starts_with('<') 
                     //     && t.signed_out.
@@ -216,10 +196,7 @@ impl Component for Model {
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
                         //log!(format!("model: update: Msg::Search: search: (INNER) {}", self.search.clone()));
-                        let tp = tpoly_from_territory_w_button(
-                            t, 
-                            self.territory_map.edit_territory_button_enabled, 
-                            self.territory_map.territory_open_enabled);
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } 
                     // else {
@@ -228,7 +205,7 @@ impl Component for Model {
                 }
             },
             Msg::MouseClick(x, y) => {
-                log!(format!("model:update: MouseClick {}, {}", x, y));
+                ////log!(format!("model:update: MouseClick {}, {}", x, y));
                 // self.mouse_click_x = x;
                 // self.mouse_click_y = y;
 
@@ -237,7 +214,7 @@ impl Component for Model {
                 
             },
             Msg::MouseMove(x, y) => {
-                log!(format!("model:update: MouseMove {}, {}", x, y));
+                ////log!(format!("model:update: MouseMove {}, {}", x, y));
                 // self.mouse_click_x = x;
                 // self.mouse_click_y = y;
 
@@ -288,7 +265,7 @@ impl Component for Model {
                     .unchecked_into::<HtmlInputElement>()
                     .value();
                 
-                log!(format!("model: search_text_onchange: value: {}", value));
+                ////log!(format!("model: search_text_onchange: value: {}", value));
 
                 link.send_message(Msg::Search(value));
             })
@@ -305,7 +282,7 @@ impl Component for Model {
         let map_cover_click = {
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
-                log!(format!("model:view: Map cover clicked {}, {}", event.x(), event.y()-57));
+                ////log!(format!("model:view: Map cover clicked {}, {}", event.x(), event.y()-57));
                 link.send_message(Msg::MouseClick(event.x(), event.y()-57));
             })
         };

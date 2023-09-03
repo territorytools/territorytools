@@ -519,9 +519,9 @@ pub fn territory_editor_page() -> Html {
                         <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={4000} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={4005} english="Door-to-Door: Visiting Started" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={4010} english="Door-to-Door: Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4010} english="Door-to-Door: Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4020} english="Door-to-Door: Done" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={4020} english="Door-to-Door: Visiting Done" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={4100} english="Reserved: Done" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={5000} english="Reserved: Cooling Off" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />

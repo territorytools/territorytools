@@ -13,10 +13,9 @@ use crate::components::map_component_functions::{
     polygon_from_territory_polygon,
     get_southwest_corner,
     get_northeast_corner,
+    territory_color,
 };
-// use geo::{Coordinate, LineString, Polygon as GeoPolygon};
-// use geo::algorithm::contains::Contains;
-// use geo_types::{coord};
+use crate::components::popup_content::PopupContentOptions;
 
 use wasm_bindgen::{prelude::*, JsCast};
 use gloo_utils::document;
@@ -42,8 +41,7 @@ pub struct MapModel {
     pub group_visible: String,
     pub user_roles: Option<String>,
     pub link_grants: Option<String>,
-    pub edit_territory_button_enabled: bool,
-    pub territory_open_enabled: bool,
+    pub popup_content_options: PopupContentOptions,
 }
 
 impl ImplicitClone for MapModel {}
@@ -132,7 +130,7 @@ impl Component for MapComponent {
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg{
             Msg::MouseClick(x, y) => {
-                log!(format!("mc:update:MouseClick({}, {})", x, y));
+                //log!(format!("mc:update:MouseClick({}, {})", x, y));
                 let lat_lng = &self.map.containerPointToLatLng(
                     &Point::new(x as u32, y as u32));
 
@@ -149,19 +147,32 @@ impl Component for MapComponent {
                             .expect(format!("Cannot find path with territory-id-{}", tp.territory_id.clone()).as_str());
                         let path: SvgPathElement = path.dyn_into().unwrap();
                         
+                        let territories = self
+                            .territory_map
+                            .territories
+                            //.clone()
+                            .iter()
+                            .map(|t| t.to_owned())
+                            .filter(|t| t.number == tp.territory_id.clone())
+                            .collect::<Vec<_>>();
+                            //.expect(format!("A territory to exist with number: {}", tp.territory_id.clone()))
+                            
+
+                        let territory_color = territory_color(&territories[0]);
+
                         if self.selected.contains(&tp.territory_id.clone()) {
                             let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();
                             self.selected.remove(index);
-                            let _ = path.set_attribute("fill", "magenta");
-                            let _ = path.set_attribute("stroke", "magenta");
+                            let _ = path.set_attribute("fill", territory_color.as_str());
+                            let _ = path.set_attribute("stroke", territory_color.as_str());
                         } else {
                             self.selected.push(tp.territory_id.clone());
-                            // TODO: New feature
-                            let _ = path.set_attribute("fill", "rebeccapurple");
-                            let _ = path.set_attribute("stroke", "rebeccapurple");
+                            // TODO: New feature, only when selecting
+                            // let _ = path.set_attribute("fill", "black");
+                            // let _ = path.set_attribute("stroke", "white");
                         }
 
-                        log!(format!("mc:update:MouseClick: inside:yes: self.selected.len() {}", self.selected.len()));
+                        //log!(format!("mc:update:MouseClick: inside:yes: self.selected.len() {}", self.selected.len()));
 
                         return true;
                     } 
@@ -186,8 +197,11 @@ impl Component for MapComponent {
             group_visible: props.territory_map.group_visible.clone(),
             link_grants: Some("".to_string()),
             user_roles: Some("".to_string()),
-            edit_territory_button_enabled: true,
-            territory_open_enabled: false,
+            popup_content_options: PopupContentOptions {
+                edit_territory_button_enabled: true,
+                territory_open_enabled: false,
+                show_stage: false,
+            }
         };
 
         self.tpolygons = props.tpolygons.clone();
@@ -233,7 +247,7 @@ impl Component for MapComponent {
         let map_cover_click = {
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
-                log!(format!("mc:view: MouseEvent x,y: {}, {}", event.x(), event.y()-57));
+                ////log!(format!("mc:view: MouseEvent x,y: {}, {}", event.x(), event.y()-57));
                 // event.stop_propagation();
                 // event.prevent_default();
                 link.send_message(Msg::MouseClick(event.x(), event.y()-57));

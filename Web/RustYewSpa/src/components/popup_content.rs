@@ -4,8 +4,14 @@ use gloo_console::log;
 // pub fn popup_content(territory: &Territory) -> String  {
 //     popup_content_w_button(territory, true, false)
 // }
+#[derive(Clone, PartialEq, Default)]
+pub struct PopupContentOptions {
+    pub edit_territory_button_enabled: bool,
+    pub territory_open_enabled: bool,
+    pub show_stage: bool,
+}
 
-pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabled: bool, territory_open_enabled: bool) -> String  {
+pub fn popup_content_w_button(territory: &Territory, options: PopupContentOptions) -> String { //edit_territory_button_enabled: bool, territory_open_enabled: bool) -> String  {
     let assignee_line = {
         match &territory.signed_out_to {
             Some(_t) => format!("<br/><span>{}</span>", territory.signed_out_to.clone().unwrap()),
@@ -29,7 +35,7 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
         };
         
         let _id = territory.id.unwrap_or_default();
-        if edit_territory_button_enabled { //1 == 1 { //id == 0 {
+        if options.edit_territory_button_enabled { //1 == 1 { //id == 0 {
             format!("<br/><a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
@@ -82,7 +88,7 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
     //     } else { "".to_string() }
     //};
 
-    let edit_button_html = if edit_territory_button_enabled {
+    let edit_button_html = if options.edit_territory_button_enabled {
         //log!("edit_button_html yes");
         format!("<br/><a 
             style='margin-top:5px;color:white;'
@@ -97,7 +103,7 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
 
     let assignee_link_key = territory.assignee_link_key.clone().unwrap_or("".to_string());
     //log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
-    let open_button_html = if territory_open_enabled {
+    let open_button_html = if options.territory_open_enabled {
         if assignee_link_key.is_empty() {
             format!("<br/><a 
                 style='margin-top:5px;color:white;'
@@ -116,7 +122,12 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
         }
     } else { 
         "".to_string()
-    };      
+    };
+    let stage_html = if options.show_stage { 
+        format!("<br/><span>Stage: {}</span>", territory.stage.clone().unwrap_or("".to_string()))
+    } else { 
+        "".to_string() 
+    };
 
     format!(
         "<div style='font-size:15px;'>
@@ -125,14 +136,16 @@ pub fn popup_content_w_button(territory: &Territory, edit_territory_button_enabl
             <br/><span>Group {group_id}</span>
             <!--br/><span>Addresses: {address_count}</span-->
             <br/><span>{status}</span>
+            {stage_html}
             {assignee_line}
             {open_button_html}
             {assign_button_html}
             {edit_button_html}
-            <br/><span><small><small>TID: {territory_id}</small></small></span>
+            <br/><span><small><small>TID:{territory_id} SG:{stage_id}</small></small></span>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap_or("".to_string()),
         address_count = territory.address_count,
+        stage_id = territory.stage_id.clone().unwrap_or(0),
     )
 }

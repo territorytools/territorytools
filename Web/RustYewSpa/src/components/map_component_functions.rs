@@ -1,5 +1,6 @@
 use crate::libs::leaflet::{LatLng, Polygon};
 use crate::components::popup_content::popup_content_w_button;
+use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::Territory;
 
 use wasm_bindgen::{prelude::*};
@@ -93,7 +94,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
 //     tpoly_from_territory_w_button(t, true, false)
 // }
 
-pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enabled: bool, territory_open_enabled: bool) -> TerritoryPolygon {
+pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions) -> TerritoryPolygon {
     let mut polygon: Vec<TerritoryLatLng> = Vec::new();
     //log!(format!("mcf: tpoly_from_territory_w_button: edit_territory_button_enabled: {edit_territory_button_enabled} territory_open_enabled:{territory_open_enabled}"));
     for v in &t.border {
@@ -123,20 +124,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enable
         }
     };
 
-    let territory_color: String = {
-        if area_code == "TER" {
-            "red".to_string()
-        } else if t.status == "Signed-out" {
-            "magenta".to_string()
-        } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
-            "blue".to_string() // Completed
-        } else if t.status == "Available" {
-            "black".to_string()
-        } else {
-            "#090".to_string()
-        }
-    };
-
+    let territory_color: String = territory_color(&t);
     let opacity: f32 = 1.0;
     // {
     //     if t.is_active {
@@ -170,7 +158,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, edit_territory_button_enable
             opacity: opacity.into(),
             border: polygon, //.iter().map().collect(),
             tooltip_text: format!("{group_id}: {area_code}: {}", t.number),
-            popup_html: popup_content_w_button(&t, edit_territory_button_enabled, territory_open_enabled),
+            popup_html: popup_content_w_button(&t, options.clone()),
         };
 
         //if !t.is_hidden && t.group_id.clone().unwrap_or("".to_string()) != "outer".to_string() {
@@ -215,4 +203,29 @@ pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
     }
 
     TerritoryLatLng { lat: north, lon: east }
+}
+
+pub fn territory_color(t: &Territory) -> String {
+    let completed_by: String = {
+        match t.last_completed_by {
+            Some(_) => "yes".to_string(),
+            None => "no".to_string(),
+        }
+    };
+    
+    if t.stage == Some("Visiting".to_string()) {
+        "magenta".to_string()
+    } else if t.stage == Some("Visiting Started".to_string()) {
+        "red".to_string()    
+    } else if t.stage == Some("Visiting Done".to_string()) {
+        "#55F".to_string()    
+    } else if t.stage == Some("Ready to Visit".to_string()) {
+        "magenta".to_string()    
+    } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
+        "blue".to_string() // Completed
+    } else if t.status == "Available" {
+        "black".to_string()
+    } else {
+        "#090".to_string()
+    }
 }
