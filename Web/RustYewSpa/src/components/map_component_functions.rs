@@ -20,10 +20,11 @@ pub struct TooltipOptions {
 }
 
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct PolylineOptions {
     color: String,
     opacity: f32,
-    pathId: String,
+    path_id: String,
 }
 
 #[derive(PartialEq, Clone, Default)]
@@ -58,7 +59,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
         &serde_wasm_bindgen::to_value(&PolylineOptions {
             color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
             opacity: tpoly.opacity,
-            pathId: format!("territory-id-{}", tpoly.territory_id.clone()),
+            path_id: format!("territory-id-{}", tpoly.territory_id.clone()),
         })
         .expect("Unable to serialize polygon options"),
     );

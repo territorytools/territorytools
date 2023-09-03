@@ -525,6 +525,7 @@ pub fn territory_editor_page() -> Html {
                         <EnglishChineseIdOption id={4100} english="Reserved: Done" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={5000} english="Reserved: Cooling Off" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
+                        <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
                     </select>
                 </div>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">

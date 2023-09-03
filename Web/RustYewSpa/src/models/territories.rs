@@ -23,6 +23,7 @@ pub struct Territory {
     pub number: String,
     pub status: String,
     pub stage_id: Option<i32>,
+    pub stage: Option<String>,
     pub description: Option<String>,
     pub notes: Option<String>,
     pub address_count: i32,

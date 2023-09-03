@@ -105,8 +105,7 @@ impl Component for MapComponent {
         let container: HtmlElement = container.dyn_into().unwrap();
         container.set_class_name("map");
         let leaflet_map = Map::new_with_element(&container, &JsValue::NULL);
-        log!(format!("mc:create:map.territories.len(): {}", ctx.props().territory_map.territories.len()));
-        //leaflet_map.setView(&LatLng::new(49.0, -122.0), 12.0 as f64);
+
         Self {
             map: leaflet_map,
             container,
@@ -125,108 +124,48 @@ impl Component for MapComponent {
     }
 
     fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
-        log!("mc:rendered: Starting...");
         if first_render {
-            //self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lat), 11.0);
             add_tile_layer(&self.map);
-            log!("mc:rendered:first_render: true");
-        } else {
-            log!("mc:rendered: recording bounds...");
-            if self.map.getBounds().isValid() {
-                log!("mc:rendered: bounds valid: yes");
-            } else {
-                log!("mc:rendered: bounds valid: no");
-            }
-            self.bounds = self.map.getBounds();
-            self.center_lat = self.map.getCenter().lat();
-            self.center_lon = self.map.getCenter().lng();
-            log!(format!("mc:rendered: center: {},{}", self.center_lat, self.center_lon ))
-        }
+        } 
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg{
             Msg::MouseClick(x, y) => {
-                //log!(format!("map_component:update: Map cover clicked {}, {}", x, y));
+                log!(format!("mc:update:MouseClick({}, {})", x, y));
                 let lat_lng = &self.map.containerPointToLatLng(
                     &Point::new(x as u32, y as u32));
-                log!(format!("map_component:update: Map cover clicked LatLng {}, {}", lat_lng.lat(), lat_lng.lng()));
-
 
                 for tp in self.tpolygons.clone().iter() {
                     let mut vertices: Vec<GeoPoint> = vec![];
                     for v in tp.border.iter() {
                         vertices.push(GeoPoint { x: v.lon as f64, y: v.lat as f64});
                     }
+
                     let inside = is_inside_polygon(vertices, &GeoPoint {x: lat_lng.lng() as f64, y: lat_lng.lat() as f64});
     
                     if inside { 
-                        log!(format!("mc:update: Map cover clicked Inside {} territory_id: {}", inside, tp.territory_id.clone()));
-                        let path: Element = document().get_element_by_id(format!("territory-id-{}", tp.territory_id.clone()).as_str()).unwrap();
+                        let path: Element = document().get_element_by_id(format!("territory-id-{}", tp.territory_id.clone()).as_str())
+                            .expect(format!("Cannot find path with territory-id-{}", tp.territory_id.clone()).as_str());
                         let path: SvgPathElement = path.dyn_into().unwrap();
                         
                         if self.selected.contains(&tp.territory_id.clone()) {
                             let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();
                             self.selected.remove(index);
-                            path.set_attribute("fill", "magenta");
-                            path.set_attribute("stroke", "magenta");
+                            let _ = path.set_attribute("fill", "magenta");
+                            let _ = path.set_attribute("stroke", "magenta");
                         } else {
                             self.selected.push(tp.territory_id.clone());
-                            path.set_attribute("fill", "rebeccapurple");
-                            path.set_attribute("stroke", "rebeccapurple");
-                        
+                            // TODO: New feature
+                            let _ = path.set_attribute("fill", "rebeccapurple");
+                            let _ = path.set_attribute("stroke", "rebeccapurple");
                         }
-                        for selected in self.selected.iter() {
-                            log!(format!("mc:update: MouseClick: Selected: {}", selected));
-                        }
-                        let mut new_tpolygons: Vec<TerritoryPolygon> = vec![];
-                        for t in self.tpolygons.clone().iter() {
-                            if t.territory_id == tp.territory_id {
-                                log!(format!("mc:inside: found one territory_id: {}", t.territory_id.clone()));
-                                let altered_tpolygon = TerritoryPolygon {
-                                    territory_id: tp.territory_id.clone(),
-                                    layer_id: tp.layer_id,
-                                    // Not used
-                                    color: "purple".to_string(), //tp.color.clone(),
-                                    opacity: tp.opacity,
-                                    border: tp.border.clone(),
-                                    popup_html: tp.popup_html.clone(), 
-                                    tooltip_text: tp.tooltip_text.clone(),
-                                };
-                                // Not used
-                                new_tpolygons.push(altered_tpolygon);
-                                
-                            } else {
-                                new_tpolygons.push(t.clone());
-                            }
-                        }
-                        self.tpolygons = new_tpolygons.clone();
 
-                      
+                        log!(format!("mc:update:MouseClick: inside:yes: self.selected.len() {}", self.selected.len()));
 
-                        //self.map.fitBounds(&self.bounds);
-
-
-                        // self.territory_map = MapModel {
-                        //     territories: self.territory_map.territories.clone(),
-                        //     territories_is_loaded: self.territory_map.territories_is_loaded,
-                        //     local_load: self.territory_map.local_load,
-                        //     lat:  self.territory_map.lat,
-                        //     lon: self.territory_map.lon,
-                        //     zoom: self.territory_map.zoom,
-                        //     group_visible: self.territory_map.group_visible.clone(),
-                        //     link_grants: self.territory_map.link_grants.clone(),
-                        //     user_roles: self.territory_map.user_roles.clone(),
-                        //     edit_territory_button_enabled: self.territory_map.edit_territory_button_enabled,
-                        //     territory_open_enabled: self.territory_map.territory_open_enabled,
-                        // };
-                        log!("mc:update:MouseClick: I think this will reload!");
                         return true;
                     } 
-                    //return true;
                 }
-
-
 
                 false
             }
@@ -236,93 +175,57 @@ impl Component for MapComponent {
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         let props = ctx.props();
         log!(format!("map_component: changed: starting..."));
-        // if self.territory_map.lat == props.territory_map.lat && self.territory_map.lon == props.territory_map.lon {
-        //     false
-        // } else {
+
+        self.territory_map = MapModel {
+            territories: props.territory_map.territories.clone(),
+            territories_is_loaded: true,
+            local_load: false,
+            lat:  props.territory_map.lat,
+            lon: props.territory_map.lon,
+            zoom: props.territory_map.zoom,
+            group_visible: props.territory_map.group_visible.clone(),
+            link_grants: Some("".to_string()),
+            user_roles: Some("".to_string()),
+            edit_territory_button_enabled: true,
+            territory_open_enabled: false,
+        };
+
+        self.tpolygons = props.tpolygons.clone();
+
+        for id in self.id_list.iter() {
+            self.layer_group.removeLayer_byId(*id);
+        }
+
+        self.polygons.clear();
+        self.id_list.clear();
+        self.layer_group = LayerGroup::new();
+
+        for tp in self.tpolygons.iter() {
+            let selected: bool = self.selected.contains(&tp.tooltip_text.clone());
+            let p = polygon_from_territory_polygon(&tp, selected);
+            self.polygons.push(p); // TODO: I don't think we need this
+
+            //tp.color = "red".to_string();
+            let p = polygon_from_territory_polygon(&tp, selected);
+            p.addTo_LayerGroup(&self.layer_group);
+
+            let layer_id = self.layer_group.getLayerId(&p);
+            self.id_list.push(layer_id);
+        }
+
+        self.layer_group.addTo(&self.map);
+
+        let sw = get_southwest_corner(self.tpolygons.clone());
+        let ne = get_northeast_corner(self.tpolygons.clone());
         
-        log!("mc:changed: NOT (again) recording bounds...");
-        // if self.map.getBounds().isValid() {
-        //     log!("mc:changed: bounds valid: yes");
-        // } else {
-        //     log!("mc:changed: bounds valid: no");
-        // }
-        // self.bounds = self.map.getBounds();
+        let bounds = LatLngBounds::new(
+            &LatLng::new(ne.lat as f64, ne.lon as f64),
+            &LatLng::new(sw.lat as f64, sw.lon as f64)
+        );
+        
+        self.map.fitBounds(&bounds);
 
-        //log!("mc:changed: bounds: {},{}", self.bounds.getNorthEast().lat(), self.bounds.getNorthEast().lng());
-            self.territory_map = MapModel {
-                territories: props.territory_map.territories.clone(),
-                territories_is_loaded: true,
-                local_load: false,
-                lat:  props.territory_map.lat,
-                lon: props.territory_map.lon,
-                zoom: props.territory_map.zoom,
-                group_visible: props.territory_map.group_visible.clone(),
-                link_grants: Some("".to_string()),
-                user_roles: Some("".to_string()),
-                edit_territory_button_enabled: true,
-                territory_open_enabled: false,
-            };
-
-            self.tpolygons = props.tpolygons.clone();
-            
-            //self.map.setView(&LatLng::new(self.territory_map.lat, self.territory_map.lon), 7.0);
-            
-            log!(format!("map_component: changed: tpolygons len: {}", self.tpolygons.len()));
-
-            for id in self.id_list.iter() {
-                self.layer_group.removeLayer_byId(*id);
-            }
-
-            self.polygons.clear();
-            self.id_list.clear();
-            self.layer_group = LayerGroup::new();
-            log!(format!("mc:selected.len(): {}", self.selected.len()));
-            for tp in self.tpolygons.iter() {
-                
-                let selected: bool = self.selected.contains(&tp.tooltip_text.clone());
-                let p = polygon_from_territory_polygon(&tp, selected);
-                self.polygons.push(p); // TODO: I don't think we need this
-
-                //tp.color = "red".to_string();
-                let p = polygon_from_territory_polygon(&tp, selected);
-                p.addTo_LayerGroup(&self.layer_group);
-
-                let layer_id = self.layer_group.getLayerId(&p);
-                self.id_list.push(layer_id);
-            }
-
-            self.layer_group.addTo(&self.map);
-
-            let sw = get_southwest_corner(self.tpolygons.clone());
-            let ne = get_northeast_corner(self.tpolygons.clone());
-            
-            let bounds = LatLngBounds::new(
-                &LatLng::new(ne.lat as f64, ne.lon as f64),
-                &LatLng::new(sw.lat as f64, sw.lon as f64)
-            );
-            
-            self.map.fitBounds(&bounds);
-
-            // //self.map.clearLayers();
-            // for p in self.polygons.iter() {
-            //     p.removeFrom(&self.map);
-            // }
-            // for p in self.polygons.iter() {
-            //     p.addTo(&self.map);
-            // }
-
-            // let outer_border_territories = self.territory_map.territories
-            //     .iter()
-            //     .filter(|t| t.number == "OUTER".to_string())
-            //     .collect::<Vec<_>>();
-            // log!("map_component: changed: 3");
-            // let outer_polygon = polyline_from_territory(&outer_border_territories.first().unwrap());
-            // self.map.fitBounds(&outer_polygon.getBounds());
-            // outer_polygon.addTo(&self.map);
-            //log!("map_component: changed: 4");
-            true
-        //}
-
+        true
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
@@ -330,7 +233,7 @@ impl Component for MapComponent {
         let map_cover_click = {
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
-                log!(format!("map_component:view: Map cover clicked {}, {}", event.x(), event.y()-57));
+                log!(format!("mc:view: MouseEvent x,y: {}, {}", event.x(), event.y()-57));
                 // event.stop_propagation();
                 // event.prevent_default();
                 link.send_message(Msg::MouseClick(event.x(), event.y()-57));
