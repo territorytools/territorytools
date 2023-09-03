@@ -2,10 +2,17 @@ use crate::libs::leaflet::{LatLng, Polygon};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::Territory;
+use crate::libs::leaflet::Marker;
 
 use wasm_bindgen::{prelude::*};
 use serde::{Deserialize, Serialize};
 use yew::{html::ImplicitClone};
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkerOptions {
+    //auto_close: bool,
+}
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -64,6 +71,19 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
         })
         .expect("Unable to serialize polygon options"),
     );
+
+    // let marker_point = LatLng::new(tpoly.border[0].lat.into(), tpoly.border[0].lon.into());
+    // let marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+    //     //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+    // });
+    // let marker = Marker::new_with_options(
+    //     &marker_point, 
+    //     &serde_wasm_bindgen::to_value(&MarkerOptions {
+    //         //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+    //     }).expect("Unable to serialize marker options")
+    // );
+    // marker.addTo(self.map)
+
 
     // TODO: Don't bind this is 'select' mode
     if tpoly.border.len() > 2 && !tpoly.tooltip_text.is_empty() {

@@ -1,4 +1,5 @@
 use crate::models::addresses::Address;
+use crate::libs::leaflet::Marker;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone)]
@@ -78,6 +79,7 @@ pub struct TerritorySummary {
     pub area_code: Option<String>,
     pub status: Option<String>,
     pub status_date: Option<String>,
+    pub stage: Option<String>,
     pub publisher: Option<String>,
     pub view_link: Option<String>,
     // pub stage_id: Option<i32>,

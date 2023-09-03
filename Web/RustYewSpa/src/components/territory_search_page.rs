@@ -126,6 +126,10 @@ pub fn address_search_page() -> Html {
                                         {territory.description.clone()}
                                     </div>
                                     <div class="col-4 col-md-2">
+                                        <span class="badge" style="border-radius:3px;border-width:1px;border-style:solid;border-color:green;color:black;">
+                                            {territory.stage.clone()}
+                                        </span>
+                                        <span style="ming-width:5px;">{" / "}</span>
                                         if territory.status.clone() == Some("Available".to_string()) {
                                             <span class="badge" style="background-color:green">{territory.status.clone()}</span> 
                                         } else if territory.status.clone() == Some("Out".to_string()) {

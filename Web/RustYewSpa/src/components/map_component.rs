@@ -2,6 +2,7 @@ use crate::libs::leaflet::{
     LatLng, 
     LatLngBounds,
     Map,
+    Marker,
     Point,
     Polygon, 
     TileLayer, 
@@ -10,6 +11,7 @@ use crate::libs::leaflet::{
 use crate::models::territories::Territory;
 use crate::components::map_component_functions::{
     TerritoryPolygon,
+    MarkerOptions,
     polygon_from_territory_polygon,
     get_southwest_corner,
     get_northeast_corner,
@@ -225,6 +227,19 @@ impl Component for MapComponent {
 
             let layer_id = self.layer_group.getLayerId(&p);
             self.id_list.push(layer_id);
+
+            
+            let marker_point = LatLng::new(tp.border[0].lat.into(), tp.border[0].lon.into());
+            let marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+                //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+            });
+            let marker = Marker::new_with_options(
+                &marker_point, 
+                &serde_wasm_bindgen::to_value(&MarkerOptions {
+                    //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+                }).expect("Unable to serialize marker options")
+            );
+           // it works! // marker.addTo(&self.map)
         }
 
         self.layer_group.addTo(&self.map);
