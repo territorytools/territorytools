@@ -201,7 +201,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         check_out_button_visible: false, // !publisher_is_entered && !is_checking_out,
         publisher_input_visible: true, // publisher_is_entered,
         publisher_input_error: false,
-        publisher_input_readonly: is_sent,
+        publisher_input_readonly: is_sent || publisher_is_entered,
         final_check_out_button_visible: false,
         sent_button_visible: publisher_is_entered && !is_sent,
         cancel_button_visible: false,
@@ -215,21 +215,37 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
     let publisher_click = {
         Callback::from(move |event: MouseEvent| {
             if state_clone.address.sent_date.clone().unwrap_or_default().is_empty() {
-                let mut modification = state_clone.deref().clone();
-                modification.publisher_input_visible = true;
-                modification.check_out_button_visible = false;
-                modification.final_check_out_button_visible = true;
-                modification.cancel_button_visible = true;
-                modification.sent_button_visible = false;
-                modification.is_sent = false;
-                modification.status_pills_visible = false;
+              
 
-                if modification.address.publisher.clone().unwrap_or_default().is_empty() {
-                    log!(format!("address: current_publisher: {}", props_clone.current_publisher.clone().unwrap_or_default()));
+                if state_clone.address.publisher.clone().unwrap_or_default().is_empty() {
+                    let mut modification = state_clone.deref().clone();
+                    modification.publisher_input_visible = true;
+                    
+                    modification.check_out_button_visible = false;
+                    modification.final_check_out_button_visible = true;
+                    modification.cancel_button_visible = true;
+                    modification.sent_button_visible = false;
+                    modification.is_sent = false;
+                    modification.status_pills_visible = false;
+
                     modification.address.publisher = props_clone.current_publisher.clone();
+                    state_clone.set(modification);
+                } else {
+                    // let mut modification = state_clone.deref().clone();
+                    // modification.publisher_input_visible = true;
+                    // modification.publisher_input_readonly = true;
+                    // modification.check_out_button_visible = false;
+                    // modification.final_check_out_button_visible = false;
+                    // modification.cancel_button_visible = false;
+                    // modification.sent_button_visible = false;
+                    // modification.is_sent = false;
+                    // modification.status_pills_visible = false;
+
+                    // //modification.address.publisher = props_clone.current_publisher.clone();
+                    // state_clone.set(modification);
                 }
 
-                state_clone.set(modification);
+                
             } // or do nothing
         })
     };
@@ -259,12 +275,14 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
             if state_clone.address.publisher.clone().unwrap_or_default().is_empty() {
                 modification.publisher_input_visible = true;
                 modification.publisher_input_error = true;
+                modification.publisher_input_readonly = false;                
                 modification.final_check_out_button_visible = true;
                 modification.cancel_button_visible = true;
                 
             } else {
                 modification.publisher_input_visible = true;
                 modification.publisher_input_error = false;
+                modification.publisher_input_readonly = true;                
                 modification.final_check_out_button_visible = false;
                 modification.sent_button_visible = true;
                 modification.cancel_button_visible = false;
@@ -379,8 +397,8 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                     if state_clone.sent_button_visible.clone() {
                         <button 
                             id={format!("sent-button-for-address-id-{}", address.address_id)} 
-                            style="border-color:#090;" 
-                            class="btn btn-outline-success m-1" 
+                            //style="border-color:#090;" 
+                            class="btn btn-outline-primary m-1" 
                             data-address-id={address.address_id.to_string()} 
                             onclick={sent_click.clone()}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
