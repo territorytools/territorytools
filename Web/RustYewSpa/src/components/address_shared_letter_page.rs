@@ -310,7 +310,7 @@ impl Component for AddressSharedLetter {
                             html!{
                                 <>
                                     <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">
-                                        <div class="col-6 col-md-3">
+                                        <div class="col-5 col-sm-3 col-md-3 col-lg-2 col-xl-2">
                                             <div>
                                             <input value="" /*{state.address.name.clone()}*/ 
                                                 id={format!("publisher-for-address-id-{}", address.address_id)} 
@@ -323,7 +323,7 @@ impl Component for AddressSharedLetter {
                                             <button
                                                 id={format!("check-out-button-for-address-id-{}", address.address_id)} 
                                                 style="display:block;" 
-                                                class="btn btn-outline-primary"
+                                                class="btn btn-outline-primary m-1"
                                                 data-address-id={address.address_id.to_string()} 
                                                 onclick={check_out_click.clone()}>
                                                 {"Check Out"}
@@ -331,7 +331,7 @@ impl Component for AddressSharedLetter {
                                             <button
                                                 id={format!("final-check-out-button-for-address-id-{}", address.address_id)} 
                                                 style="display:none;" 
-                                                class="btn btn-primary"
+                                                class="btn btn-primary m-1"
                                                 data-address-id={address.address_id.to_string()} 
                                                 onclick={final_check_out_click.clone()}>
                                                 {"Check Out"}
@@ -340,7 +340,7 @@ impl Component for AddressSharedLetter {
                                             <button 
                                                 id={format!("sent-button-for-address-id-{}", address.address_id)} 
                                                 style="display:none;" 
-                                                class="btn btn-primary" 
+                                                class="btn btn-primary m-1" 
                                                 data-address-id={address.address_id.to_string()} 
                                                 onclick={sent_click.clone()}>
                                                 {"Letter Sent"}
@@ -349,7 +349,7 @@ impl Component for AddressSharedLetter {
                                             <button 
                                                 id={format!("cancel-button-for-address-id-{}", address.address_id)} 
                                                 style="display:none;" 
-                                                class="btn btn-secondary" 
+                                                class="btn btn-secondary m-1" 
                                                 data-address-id={address.address_id.to_string()} 
                                                 //onclick={sent_click.clone()}
                                                 >
@@ -361,37 +361,7 @@ impl Component for AddressSharedLetter {
                                         //     //<input value="" /*{state.address.name.clone()}*/ onchange={publisher_text_onchange.clone()} type="text" class="form-control shadow-sm" id="input_sent_date" placeholder="Date Letter Sent"/>
                                         //     // <button class="btn btn-primary">{"Letter Sent"}</button>
                                         // </div>
-                                        <div class="col-6 col-md-3">
-                                            if address.status.clone() == Some("Valid".to_string()) {
-                                                <span class="ms-2 badge bg-success">{"Confirmed "}{address.language.clone()}</span> 
-                                            }
-                                            //<br/>
-                                            if address.status.clone() == Some("New".to_string()) {
-                                            } else if address.status.clone() == Some("Valid".to_string()) {
-                                            } else if address.status.clone() == Some("Do not call".to_string()) {
-                                                <span class="ms-2 badge bg-danger">{address.status.clone()}</span> 
-                                            } else if address.status.clone() == Some("Moved".to_string()) {
-                                                <span class="ms-2 badge bg-warning">{address.status.clone()}</span> 
-                                            } 
-                                            else {
-                                                <span class="ms-2 badge bg-dark">{address.status.clone()}</span> 
-                                            }
-                                            // <br/>
-                                            if address.delivery_status.clone() == Some("None".to_string()) {
-                                            
-                                            } else if address.delivery_status.clone() == Some("Assigned".to_string()) {
-                                                <span class="ms-2 badge bg-info">{address.delivery_status.clone()}</span> 
-                                            } else if address.delivery_status.clone() == Some("Sent".to_string()) {
-                                                <span class="ms-2 badge bg-success">{address.delivery_status.clone()}</span> 
-                                            } else if address.delivery_status.clone() == Some("Returned".to_string()) {
-                                                <span class="ms-2 badge bg-warning">{address.delivery_status.clone()}</span> 
-                                            } else if address.delivery_status.clone() == Some("Undeliverable".to_string()) {
-                                                <span class="ms-2 badge bg-warning">{address.delivery_status.clone()}</span> 
-                                            } else {
-                                                 <span class="ms-2 badge bg-dark">{address.delivery_status.clone()}</span> 
-                                            }               
-                                        </div>
-                                        <div class="col-8 col-md-5">
+                                        <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
                                             <span style="font-weight:bold;">{address.name.clone()}</span>
                                             <br/>
                                             {address.street.clone().unwrap_or("".to_string())}
@@ -402,7 +372,37 @@ impl Component for AddressSharedLetter {
                                             {address.state.clone()}
                                             {"  "}
                                             {address.postal_code.clone()}
-                                        </div>
+                                        </div>                                        
+                                        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                                            if address.status.clone() == Some("Valid".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-success">{""}{address.language.clone()}</span> 
+                                            }
+                                            //<br/>
+                                            if address.status.clone() == Some("New".to_string()) {
+                                            } else if address.status.clone() == Some("Valid".to_string()) {
+                                            } else if address.status.clone() == Some("Do not call".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-danger">{address.status.clone()}</span> 
+                                            } else if address.status.clone() == Some("Moved".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-warning">{address.status.clone()}</span> 
+                                            } 
+                                            else {
+                                                <span class="ms-2 badge rounded-pill bg-dark">{address.status.clone()}</span> 
+                                            }
+                                            // <br/>
+                                            if address.delivery_status.clone() == Some("None".to_string()) {
+                                            
+                                            } else if address.delivery_status.clone() == Some("Assigned".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-info">{address.delivery_status.clone()}</span> 
+                                            } else if address.delivery_status.clone() == Some("Sent".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-success">{address.delivery_status.clone()}</span> 
+                                            } else if address.delivery_status.clone() == Some("Returned".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
+                                            } else if address.delivery_status.clone() == Some("Undeliverable".to_string()) {
+                                                <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
+                                            } else {
+                                                 <span class="ms-2 badge rounded-pill bg-dark">{address.delivery_status.clone()}</span> 
+                                            }               
+                                        </div>                                      
                                         // <div class="col-2 col-md-1">
                                         //     {address.territory_number.clone()}
                                         //     <br/>
