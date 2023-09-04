@@ -68,6 +68,9 @@ pub struct SharedLetterAddress {
     pub delivery_status: Option<String>,
     pub language: Option<String>,
     pub status: Option<String>,
+    pub sent_date: Option<String>,    
+    pub publisher: Option<String>,    
+    pub checking_out: bool,    
 }
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
@@ -331,13 +334,15 @@ impl Component for AddressSharedLetter {
                 if publisher_name.clone().is_empty() {
                     log!("aslp:sent_click:publisher_name: EMPTY");
                     publisher_box.style().set_property("border-color", "red").expect("border-color should be changed");
-                    //publisher_box.style().set_property("background-color", "#FAA").expect("border-color should be red");
+                    publisher_box.style().set_property("background-color", "white").expect("background-color should be white");
+                    publisher_box.style().set_property("color", "black").expect("color should be white");
                     publisher_box.style().set_property("border-width", "4px").expect("border-wdith should be changed");
                     return;
                 } else {
                     log!("aslp:sent_click:publisher_name: READY");
                     publisher_box.style().remove_property("border-color").expect("border-color should be changed");
-                    //publisher_box.style().set_property("background-color", "#FAA").expect("border-color should be red");
+                    publisher_box.style().set_property("background-color", "#198754").expect("background-color should be green");
+                    publisher_box.style().set_property("color", "white").expect("color should be white");
                     publisher_box.style().set_property("border-width", "1px").expect("border-wdith should be changed");
                     publisher_box.set_attribute("readonly", "true").expect("read only attribute");
                 }
@@ -399,17 +404,21 @@ impl Component for AddressSharedLetter {
                                 None => "".to_string()
                             };
                             let mut checked_out: bool = false;
+                            let has_publisher: bool = !address.publisher.clone().unwrap_or("".to_string()).is_empty();
+                            let publisher_style = if has_publisher { "display:block;".to_string() } else { "display:none;".to_string() };
                             html!{
                                 <>
                                     <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">
                                         <div class="col-5 col-sm-3 col-md-3 col-lg-2 col-xl-2">
-                                            <div>
-                                            <input value="" /*{state.address.name.clone()}*/ 
+                                            <input 
+                                                value={address.publisher.clone()} 
                                                 id={format!("publisher-for-address-id-{}", address.address_id)} 
                                                 onchange={publisher_text_onchange.clone()} 
                                                 type="text" 
-                                                style="display:none;" 
-                                                class="form-control shadow-sm" 
+                                                style={publisher_style}
+                                                //"display:none;" 
+                                                class="form-control shadow-sm m-1" 
+                                                readonly={has_publisher}
                                                 placeholder="Publisher"/>
                                             
                                             <button
@@ -446,25 +455,6 @@ impl Component for AddressSharedLetter {
                                                 onclick={cancel_click.clone()}>
                                                 {"Cancel"}
                                             </button>
-                                            </div>
-                                        </div>
-                                        // <div class="col-6 col-md-3">
-                                        //     //<input value="" /*{state.address.name.clone()}*/ onchange={publisher_text_onchange.clone()} type="text" class="form-control shadow-sm" id="input_sent_date" placeholder="Date Letter Sent"/>
-                                        //     // <button class="btn btn-primary">{"Letter Sent"}</button>
-                                        // </div>
-                                        <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
-                                            <span style="font-weight:bold;">{address.name.clone()}</span>
-                                            <br/>
-                                            {address.street.clone().unwrap_or("".to_string())}
-                                            {unit_text}
-                                            <br/>
-                                            {address.city.clone()}
-                                            {", "}
-                                            {address.state.clone()}
-                                            {"  "}
-                                            {address.postal_code.clone()}
-                                        </div>                                        
-                                        <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2">
                                             if address.status.clone() == Some("Valid".to_string()) {
                                                 <span class="ms-2 badge rounded-pill bg-success">{""}{address.language.clone()}</span> 
                                             }
@@ -492,13 +482,50 @@ impl Component for AddressSharedLetter {
                                                 <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
                                             } else {
                                                  <span class="ms-2 badge rounded-pill bg-dark">{address.delivery_status.clone()}</span> 
-                                            }               
-                                        </div>                                      
-                                        // <div class="col-2 col-md-1">
-                                        //     {address.territory_number.clone()}
-                                        //     <br/>
-                                        //     <small style="color:lightgray;">{address.alba_address_id}</small>
-                                        // </div>
+                                            }     
+                                        </div>
+                                        <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
+                                            <span style="font-weight:bold;">{address.name.clone()}</span>
+                                            <br/>
+                                            {address.street.clone().unwrap_or("".to_string())}
+                                            {unit_text}
+                                            <br/>
+                                            {address.city.clone()}
+                                            {", "}
+                                            {address.state.clone()}
+                                            {"  "}
+                                            {address.postal_code.clone()}
+                                        </div>                                        
+                                        // <div class="col-12 col-sm-3 col-md-3 col-lg-2 col-xl-2">
+                                        //     if address.status.clone() == Some("Valid".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-success">{""}{address.language.clone()}</span> 
+                                        //     }
+                                        //     //<br/>
+                                        //     if address.status.clone() == Some("New".to_string()) {
+                                        //     } else if address.status.clone() == Some("Valid".to_string()) {
+                                        //     } else if address.status.clone() == Some("Do not call".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-danger">{address.status.clone()}</span> 
+                                        //     } else if address.status.clone() == Some("Moved".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-warning">{address.status.clone()}</span> 
+                                        //     } 
+                                        //     else {
+                                        //         <span class="ms-2 badge rounded-pill bg-dark">{address.status.clone()}</span> 
+                                        //     }
+                                        //     // <br/>
+                                        //     if address.delivery_status.clone() == Some("None".to_string()) {
+                                            
+                                        //     } else if address.delivery_status.clone() == Some("Assigned".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-info">{address.delivery_status.clone()}</span> 
+                                        //     } else if address.delivery_status.clone() == Some("Sent".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-success">{address.delivery_status.clone()}</span> 
+                                        //     } else if address.delivery_status.clone() == Some("Returned".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
+                                        //     } else if address.delivery_status.clone() == Some("Undeliverable".to_string()) {
+                                        //         <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
+                                        //     } else {
+                                        //          <span class="ms-2 badge rounded-pill bg-dark">{address.delivery_status.clone()}</span> 
+                                        //     }               
+                                        // </div>                                      
                                     </div>
                                 </>
                             }
