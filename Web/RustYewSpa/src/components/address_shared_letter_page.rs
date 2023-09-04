@@ -202,6 +202,22 @@ impl Component for AddressSharedLetter {
                 //     .style()
                 //     .set_property("display", "block")
                 //     .expect("'display' should have been set to 'block'");
+                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
+                let publisher_name: String = publisher_box.value();
+
+                log!(format!("aslp:final_check_out_click:publisher_name: {}", publisher_name.clone()));
+                
+                if publisher_name.clone().is_empty() {
+                    log!("aslp:final_check_out_click:publisher_name: EMPTY");
+                    publisher_box.style().set_property("border-color", "red").expect("border-color should be red");
+                    //publisher_box.style().set_property("color", "red").expect("color should be red");
+                    publisher_box.style().set_property("border-width", "4px").expect("border-color width be set");
+                    return;
+                } else {
+                    log!("aslp:final_check_out_click:publisher_name: READY");
+                }
 
                 let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
                     .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
@@ -239,6 +255,61 @@ impl Component for AddressSharedLetter {
             })
         };
 
+        let cancel_click = {
+            Callback::from(move |event: MouseEvent| {
+                let address_id = event
+                    .target()
+                    .expect("An input value for an Publisher HtmlInputElement")
+                    .unchecked_into::<HtmlInputElement>()
+                    .get_attribute("data-address-id");
+                
+                //log!(format!("model: publisher_text_onchange: value: {}", value));
+                log!(format!("cancelclicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
+                
+                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                        .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
+                publisher_box
+                    .style()
+                    .set_property("display", "none")
+                    .expect("'display' should have been set to 'block'");
+
+                let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let sent_button: HtmlButtonElement = sent_button.dyn_into().unwrap();
+                sent_button
+                    .style()
+                    .set_property("display", "none")
+                    .expect("'display' should have been set to 'block'");
+
+                let check_out_button: Element = document().get_element_by_id(format!("check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let check_out_button: HtmlButtonElement = check_out_button.dyn_into().unwrap();
+                check_out_button
+                    .style()
+                    .set_property("display", "block")
+                    .expect("'display' should have been set to 'none'");
+
+                let final_check_out_button: Element = document().get_element_by_id(format!("final-check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let final_check_out_button: HtmlButtonElement = final_check_out_button.dyn_into().unwrap();
+                final_check_out_button
+                    .style()
+                    .set_property("display", "none")
+                    .expect("'display' should have been set to 'none'");
+
+                let cancel_button: Element = document().get_element_by_id(format!("cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find button with id: cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let cancel_button: HtmlButtonElement = cancel_button.dyn_into().unwrap();
+                cancel_button
+                    .style()
+                    .set_property("display", "none")
+                    .expect("'display' should have been set to 'none'");
+
+                //link.send_message(Msg::Search(value));
+            })
+        };
+
         let sent_click = {
             Callback::from(move |event: MouseEvent| {
                 let address_id = event
@@ -248,23 +319,44 @@ impl Component for AddressSharedLetter {
                     .get_attribute("data-address-id");
                 
                 //log!(format!("model: publisher_text_onchange: value: {}", value));
-                log!(format!("check out clicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
+                log!(format!("sent clicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
                 
+                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
+                let publisher_name: String = publisher_box.value();
+
+                log!(format!("aslp:sent_click:publisher_name: {}", publisher_name.clone()));
+                 
+                if publisher_name.clone().is_empty() {
+                    log!("aslp:sent_click:publisher_name: EMPTY");
+                    publisher_box.style().set_property("border-color", "red").expect("border-color should be changed");
+                    //publisher_box.style().set_property("background-color", "#FAA").expect("border-color should be red");
+                    publisher_box.style().set_property("border-width", "4px").expect("border-wdith should be changed");
+                    return;
+                } else {
+                    log!("aslp:sent_click:publisher_name: READY");
+                    publisher_box.style().remove_property("border-color").expect("border-color should be changed");
+                    //publisher_box.style().set_property("background-color", "#FAA").expect("border-color should be red");
+                    publisher_box.style().set_property("border-width", "1px").expect("border-wdith should be changed");
+                    publisher_box.set_attribute("readonly", "true").expect("read only attribute");
+                }
+
                 let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
                         .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
                 let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                let publisher_name: String = publisher_box
-                    // .expect("An input value for an Publisher HtmlInputElement")
-                    // .unchecked_into::<HtmlInputElement>()
+                let publisher_name: String = publisher_box.clone()
                     .value();
 
                 log!(format!("aslp:sent_click:publisher_name: {}", publisher_name.clone()));
-                
-                if publisher_name.clone().is_empty() {
-                    log!("aslp:sent_click:publisher_name: EMPTY");
-                } else {
-                    log!("aslp:sent_click:publisher_name: READY");
-                }
+
+                let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
+                    .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
+                let sent_button: HtmlButtonElement = sent_button.dyn_into().unwrap();
+                sent_button
+                    .style()
+                    .set_property("display", "none")
+                    .expect("'display' should have been set to 'block'");
 
                 //link.send_message(Msg::Search(value));
             })
@@ -351,8 +443,7 @@ impl Component for AddressSharedLetter {
                                                 style="display:none;" 
                                                 class="btn btn-secondary m-1" 
                                                 data-address-id={address.address_id.to_string()} 
-                                                //onclick={sent_click.clone()}
-                                                >
+                                                onclick={cancel_click.clone()}>
                                                 {"Cancel"}
                                             </button>
                                             </div>
