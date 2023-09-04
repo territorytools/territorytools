@@ -1,5 +1,6 @@
 use crate::AddressEditPage;
 use crate::AddressSearch;
+use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::AssignPage;
 use crate::Secure;
 use crate::TerritoryEditPage;
@@ -52,6 +53,8 @@ pub enum Route {
     EditExample { territory_number: String },
     #[at("/app/address-search")]
     AddressSearch,
+    #[at("/app/shared-letter")]
+    AddressSharedLetter,
     #[at("/app/address-edit")]
     AddressEdit,
     #[at("/app/territory-edit")]
@@ -109,6 +112,7 @@ pub fn switch(route: Route) -> Html {
         Route::SvgMap => html! { <SvgMap /> },
         Route::CanvasMap => html! { <CanvasMap /> },
         Route::AddressSearch => html! { <AddressSearch /> },
+        Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearch /> },

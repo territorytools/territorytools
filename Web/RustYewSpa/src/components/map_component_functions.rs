@@ -2,7 +2,6 @@ use crate::libs::leaflet::{LatLng, Polygon};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::Territory;
-use crate::libs::leaflet::Marker;
 
 use wasm_bindgen::{prelude::*};
 use serde::{Deserialize, Serialize};

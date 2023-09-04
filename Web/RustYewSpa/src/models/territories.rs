@@ -1,5 +1,4 @@
 use crate::models::addresses::Address;
-use crate::libs::leaflet::Marker;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone)]

@@ -1,5 +1,4 @@
 use crate::models::territories::{Territory};
-use gloo_console::log;
 
 // pub fn popup_content(territory: &Territory) -> String  {
 //     popup_content_w_button(territory, true, false)

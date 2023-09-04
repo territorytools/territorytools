@@ -44,7 +44,8 @@ regex = "1.9.4"
 version = "0.3"
 features = [
     "HtmlImageElement",
-    "HtmlInputElement", 
+    "HtmlInputElement",
+    "HtmlButtonElement",
     "HtmlSelectElement", 
     "HtmlAnchorElement", 
     "HtmlElement", 

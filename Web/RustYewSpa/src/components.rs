@@ -1,6 +1,8 @@
 pub mod address_delivery_status_selector;
 pub mod address_edit_page;
 pub mod address_search_page;
+pub mod address_shared_letter_page;
+pub mod address_shared_letter_functions;
 pub mod assign_form;
 pub mod assign_page;
 pub mod bb_button;
