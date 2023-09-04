@@ -45,6 +45,7 @@ pub struct AddressSearchPage {
 pub enum Msg {
     Load(AddressSharedLetterResult),
     Search(String),
+    SetCurrentPublisher(String),
 }
 
 
@@ -84,6 +85,7 @@ pub struct AddressSharedLetterResult {
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct AddressSharedLetter {
     result: AddressSharedLetterResult,
+    current_publisher: Option<String>,
     // search: String,
 }
 
@@ -99,7 +101,8 @@ impl Component for AddressSharedLetter {
             result: AddressSharedLetterResult {
                 count: 99,
                 addresses: vec![],
-            }
+            },
+            current_publisher: None,
         }
     }
 
@@ -112,6 +115,10 @@ impl Component for AddressSharedLetter {
             },
             Msg::Search(String) => {
 
+            },
+            Msg::SetCurrentPublisher(publisher) => {
+                self.current_publisher = Some(publisher.clone());
+                return true;
             }
         }
         false
@@ -119,254 +126,24 @@ impl Component for AddressSharedLetter {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link().clone();
-        let publisher_text_onchange = {
-            Callback::from(move |event: Event| {
-                let value = event
-                    .target()
-                    .expect("An input value for an Publisher HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .value();
-                
-                log!(format!("model: publisher_text_onchange: value: {}", value));
-
-                //link.send_message(Msg::Search(value));
-            })
-        };
-
-        let check_out_click = {
-            Callback::from(move |event: MouseEvent| {
-                let address_id = event
-                    .target()
-                    .expect("An input value for an Publisher HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .get_attribute("data-address-id");
-                
-                //log!(format!("model: publisher_text_onchange: value: {}", value));
-                log!(format!("check out clicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
-                
-                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                        .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                publisher_box
-                    .style()
-                    .set_property("display", "block")
-                    .expect("'display' should have been set to 'block'");
-
-                let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let sent_button: HtmlButtonElement = sent_button.dyn_into().unwrap();
-                sent_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                let check_out_button: Element = document().get_element_by_id(format!("check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let check_out_button: HtmlButtonElement = check_out_button.dyn_into().unwrap();
-                check_out_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                let final_check_out_button: Element = document().get_element_by_id(format!("final-check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let final_check_out_button: HtmlButtonElement = final_check_out_button.dyn_into().unwrap();
-                final_check_out_button
-                    .style()
-                    .set_property("display", "block")
-                    .expect("'display' should have been set to 'block'");
-
-                let cancel_button: Element = document().get_element_by_id(format!("cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let cancel_button: HtmlButtonElement = cancel_button.dyn_into().unwrap();
-                cancel_button
-                    .style()
-                    .set_property("display", "block")
-                    .expect("'display' should have been set to 'block'");
-
-                //link.send_message(Msg::Search(value));
-            })
-        };
-
-        let final_check_out_click = {
-            Callback::from(move |event: MouseEvent| {
-                let address_id = event
-                    .target()
-                    .expect("An input value for an Publisher HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .get_attribute("data-address-id");
-                
-                //log!(format!("model: publisher_text_onchange: value: {}", value));
-                log!(format!("check out clicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
-                
-                // let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                //         .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                // let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                // publisher_box
-                //     .style()
-                //     .set_property("display", "block")
-                //     .expect("'display' should have been set to 'block'");
-                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                let publisher_name: String = publisher_box.value();
-
-                log!(format!("aslp:final_check_out_click:publisher_name: {}", publisher_name.clone()));
-                
-                if publisher_name.clone().is_empty() {
-                    log!("aslp:final_check_out_click:publisher_name: EMPTY");
-                    publisher_box.style().set_property("border-color", "red").expect("border-color should be red");
-                    //publisher_box.style().set_property("color", "red").expect("color should be red");
-                    publisher_box.style().set_property("border-width", "4px").expect("border-color width be set");
-                    return;
-                } else {
-                    log!("aslp:final_check_out_click:publisher_name: READY");
-                }
-
-                let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let sent_button: HtmlButtonElement = sent_button.dyn_into().unwrap();
-                sent_button
-                    .style()
-                    .set_property("display", "block")
-                    .expect("'display' should have been set to 'block'");
-
-                let check_out_button: Element = document().get_element_by_id(format!("check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let check_out_button: HtmlButtonElement = check_out_button.dyn_into().unwrap();
-                check_out_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                let final_check_out_button: Element = document().get_element_by_id(format!("final-check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let final_check_out_button: HtmlButtonElement = final_check_out_button.dyn_into().unwrap();
-                final_check_out_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                let cancel_button: Element = document().get_element_by_id(format!("cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let cancel_button: HtmlButtonElement = cancel_button.dyn_into().unwrap();
-                cancel_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                //link.send_message(Msg::Search(value));
-            })
-        };
-
-        let cancel_click = {
-            Callback::from(move |event: MouseEvent| {
-                let address_id = event
-                    .target()
-                    .expect("An input value for an Publisher HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .get_attribute("data-address-id");
-                
-                //log!(format!("model: publisher_text_onchange: value: {}", value));
-                log!(format!("cancelclicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
-                
-                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                        .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                publisher_box
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'block'");
-
-                let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let sent_button: HtmlButtonElement = sent_button.dyn_into().unwrap();
-                sent_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'block'");
-
-                let check_out_button: Element = document().get_element_by_id(format!("check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let check_out_button: HtmlButtonElement = check_out_button.dyn_into().unwrap();
-                check_out_button
-                    .style()
-                    .set_property("display", "block")
-                    .expect("'display' should have been set to 'none'");
-
-                let final_check_out_button: Element = document().get_element_by_id(format!("final-check-out-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: check-out-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let final_check_out_button: HtmlButtonElement = final_check_out_button.dyn_into().unwrap();
-                final_check_out_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                let cancel_button: Element = document().get_element_by_id(format!("cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: cancel-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let cancel_button: HtmlButtonElement = cancel_button.dyn_into().unwrap();
-                cancel_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'none'");
-
-                //link.send_message(Msg::Search(value));
-            })
-        };
-
-        let sent_click = {
-            Callback::from(move |event: MouseEvent| {
-                let address_id = event
-                    .target()
-                    .expect("An input value for an Publisher HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .get_attribute("data-address-id");
-                
-                //log!(format!("model: publisher_text_onchange: value: {}", value));
-                log!(format!("sent clicked: address_id: {}", address_id.clone().unwrap_or("null".to_string())));
-                
-                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                let publisher_name: String = publisher_box.value();
-
-                log!(format!("aslp:sent_click:publisher_name: {}", publisher_name.clone()));
-                 
-                if publisher_name.clone().is_empty() {
-                    log!("aslp:sent_click:publisher_name: EMPTY");
-                    publisher_box.style().set_property("border-color", "red").expect("border-color should be changed");
-                    publisher_box.style().set_property("background-color", "white").expect("background-color should be white");
-                    publisher_box.style().set_property("color", "black").expect("color should be white");
-                    publisher_box.style().set_property("border-width", "4px").expect("border-wdith should be changed");
-                    return;
-                } else {
-                    log!("aslp:sent_click:publisher_name: READY");
-                    publisher_box.style().remove_property("border-color").expect("border-color should be changed");
-                    publisher_box.style().set_property("background-color", "#198754").expect("background-color should be green");
-                    publisher_box.style().set_property("color", "white").expect("color should be white");
-                    publisher_box.style().set_property("border-width", "1px").expect("border-wdith should be changed");
-                    publisher_box.set_attribute("readonly", "true").expect("read only attribute");
-                }
-
-                let publisher_box: Element = document().get_element_by_id(format!("publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                        .expect(format!("Cannot find input box with id: publisher-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let publisher_box: HtmlInputElement = publisher_box.dyn_into().unwrap();
-                let publisher_name: String = publisher_box.clone()
-                    .value();
-
-                log!(format!("aslp:sent_click:publisher_name: {}", publisher_name.clone()));
-
-                let sent_button: Element = document().get_element_by_id(format!("sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str())
-                    .expect(format!("Cannot find button with id: sent-button-for-address-id-{}", address_id.clone().unwrap_or("null".to_string())).as_str());
-                let sent_button: HtmlButtonElement = sent_button.dyn_into().unwrap();
-                sent_button
-                    .style()
-                    .set_property("display", "none")
-                    .expect("'display' should have been set to 'block'");
-
-                //link.send_message(Msg::Search(value));
-            })
-        };
+        // let publisher_text_onchange = {
+        //     Callback::from(move |event: Event| {
+        //         let value = event
+        //             .target()
+        //             .expect("An input value for an Publisher HtmlInputElement")
+        //             .unchecked_into::<HtmlInputElement>()
+        //             .value();
+        //         log!(format!("model: publisher_text_onchange: value: {}", value));
+        //         //link.send_message(Msg::Search(value));
+        //     })
+        // };
+        let publisher_change = //{
+            Callback::from(move |publisher_name: String| {
+                log!(format!("ASLP: publisher_change: publisher_name: value: {}", publisher_name.clone()));
+                //self.current_publisher = Some(publisher_name.clone());
+                link.send_message(Msg::SetCurrentPublisher(publisher_name.clone()));
+            });
+        //};
 
         html!{
             <>
@@ -380,17 +157,17 @@ impl Component for AddressSharedLetter {
                 <div class="container">
                     <span><strong>{"Letter Writing - Shared"}</strong></span>
                     <hr/>
-                    <div class="d-flex flex-row">
-                        <div class="d-flex flex-colum mb-2 shadow-sm">
-                            // <input /*{onchange}*/ type="text" value="" style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
-                            // <button type="submit" class="btn btn-primary">{"Search"}</button>
+                    //<div class="d-flex flex-row">
+                    //     <div class="d-flex flex-colum mb-2 shadow-sm">
+                    //         // <input /*{onchange}*/ type="text" value="" style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
+                    //         // <button type="submit" class="btn btn-primary">{"Search"}</button>
 
-                            // if state.load_error { 
-                            //     <span class="mx-1 badge bg-danger">{"Error"}</span> 
-                            //     <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
-                            // }    
-                        </div>
-                    </div>
+                    //         // if state.load_error { 
+                    //         //     <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                    //         //     <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
+                    //         // }    
+                    //     </div>
+                    // </div>
                     <div class="row">
                         <div class="col">
                             <span>{"Addresses: "}{self.result.count}</span>
@@ -398,17 +175,11 @@ impl Component for AddressSharedLetter {
                     </div>
                     {
                         self.result.addresses.iter().map(|address| {
-                            // let alba_address_id = address.alba_address_id;
-                            // let edit_uri = format!("/app/address-edit?alba_address_id={alba_address_id}");
-                            // let unit_text: String = match &address.unit {
-                            //     Some(v) => if v == "" { "".to_string() } else { format!(", {}", v.clone()) },
-                            //     None => "".to_string()
-                            // };
-                            // let mut checked_out: bool = false;
-                            // let has_publisher: bool = !address.publisher.clone().unwrap_or("".to_string()).is_empty();
-                            // let publisher_style = if has_publisher { "display:block;".to_string() } else { "display:none;".to_string() };
                             html!{
-                                <AddressSharedLetterRow address={address.clone()} />                                  
+                                <AddressSharedLetterRow     
+                                    address={address.clone()} 
+                                    current_publisher={self.current_publisher.clone()}
+                                    on_publisher_change={publisher_change.clone()} />                                  
                             }
                     }).collect::<Html>()
                 }                
@@ -424,6 +195,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
     let publisher_is_entered =  !props.address.publisher.clone().unwrap_or_default().is_empty();
     let is_checking_out = !props.address.check_out_started.clone().unwrap_or_default().is_empty();
     let is_sent = !props.address.sent_date.clone().unwrap_or_default().is_empty();
+    let status_pills_visible = !is_sent;
     let state = use_state(|| AddressSharedLetterRowModel {
         address: props.address.clone(),
         check_out_button_visible: false, // !publisher_is_entered && !is_checking_out,
@@ -434,22 +206,31 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         sent_button_visible: publisher_is_entered && !is_sent,
         cancel_button_visible: false,
         is_sent: is_sent,
-        status_pills_visible: true,
+        status_pills_visible: status_pills_visible,
         address_visible: true,
     });
 
     let state_clone = state.clone();
-    let check_out_click = {
+    let props_clone = props.clone();
+    let publisher_click = {
         Callback::from(move |event: MouseEvent| {
-            log!("check_out_clicked");
-            let mut modification = state_clone.deref().clone();
-            modification.publisher_input_visible = true;
-            modification.check_out_button_visible = false;
-            modification.final_check_out_button_visible = true;
-            modification.cancel_button_visible = true;
-            modification.is_sent = false;
-            modification.status_pills_visible = false;
-            state_clone.set(modification);
+            if state_clone.address.sent_date.clone().unwrap_or_default().is_empty() {
+                let mut modification = state_clone.deref().clone();
+                modification.publisher_input_visible = true;
+                modification.check_out_button_visible = false;
+                modification.final_check_out_button_visible = true;
+                modification.cancel_button_visible = true;
+                modification.sent_button_visible = false;
+                modification.is_sent = false;
+                modification.status_pills_visible = false;
+
+                if modification.address.publisher.clone().unwrap_or_default().is_empty() {
+                    log!(format!("address: current_publisher: {}", props_clone.current_publisher.clone().unwrap_or_default()));
+                    modification.address.publisher = props_clone.current_publisher.clone();
+                }
+
+                state_clone.set(modification);
+            } // or do nothing
         })
     };
     
@@ -471,6 +252,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
     };
 
     let state_clone = state.clone();
+    let on_publisher_change = props.on_publisher_change.clone();
     let final_check_out_click = {
         Callback::from(move |event: MouseEvent| {
             let mut modification = state_clone.deref().clone();
@@ -478,11 +260,15 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                 modification.publisher_input_visible = true;
                 modification.publisher_input_error = true;
                 modification.final_check_out_button_visible = true;
+                modification.cancel_button_visible = true;
+                
             } else {
                 modification.publisher_input_visible = true;
                 modification.publisher_input_error = false;
                 modification.final_check_out_button_visible = false;
                 modification.sent_button_visible = true;
+                modification.cancel_button_visible = false;
+                on_publisher_change.emit(state_clone.address.publisher.clone().unwrap_or_default());
             }
             state_clone.set(modification);
         })
@@ -524,6 +310,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
             modification.final_check_out_button_visible = false;
             modification.sent_button_visible = false;
             modification.status_pills_visible = true;
+            modification.address.publisher = Some("".to_string());
             state_clone.set(modification);
         })
     };
@@ -546,7 +333,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
     } else if has_publisher { 
         "color:black;border-color:black;"
     } else { 
-        "border-color:blue;color:blue;" 
+        "border-color:blue;color:black;" 
     };
 
     let state_clone = state.clone();
@@ -561,12 +348,12 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                             value={address.publisher.clone()} 
                             id={format!("publisher-for-address-id-{}", address.address_id)} 
                             onchange={publisher_text_onchange.clone()}
-                            onclick={check_out_click.clone()}
+                            onclick={publisher_click.clone()}
                             type="text" 
                             style={publisher_style}
                             class="form-control shadow-sm m-1 letter-writing-shared-input" 
                             readonly={state_clone.publisher_input_readonly.clone()}
-                            placeholder="Publisher Name"/>
+                            placeholder=""/>
                     } 
                     // else if is_checking_out {
                     //     <input 
@@ -584,7 +371,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                             id={format!("check-out-button-for-address-id-{}", address.address_id)} 
                             class="btn btn-outline-primary m-1"
                             data-address-id={address.address_id.to_string()} 
-                            onclick={check_out_click.clone()}>
+                            onclick={publisher_click.clone()}>
                             {"Check Out"}
                         </button>
                     }
@@ -602,11 +389,11 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                     if state_clone.sent_button_visible.clone() {
                         <button 
                             id={format!("sent-button-for-address-id-{}", address.address_id)} 
-                            //style="display:none;" 
+                            style="background-color:#090;" 
                             class="btn btn-success m-1" 
                             data-address-id={address.address_id.to_string()} 
                             onclick={sent_click.clone()}>
-                            {"Letter Sent"}
+                            {"Send Letter"}
                         </button>
                     }
 
@@ -624,7 +411,24 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                         <span class="ms-2 badge rounded-pill" style="background-color:#090;">{"Sent"}</span> 
                         <span>{" "}</span>
                         <span style="color:#090">{state.address.sent_date.clone().unwrap_or_default().chars().take(10).collect::<String>()}</span>
-                    } else if state.status_pills_visible {
+                    }
+                </div>
+                <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
+                    <span style="font-weight:bold;">{address.name.clone()}</span>
+                    <br/>
+                    {address.street.clone().unwrap_or("".to_string())}
+                    {unit_text}
+                    <br/>
+                    {address.city.clone()}
+                    {", "}
+                    {address.state.clone()}
+                    {"  "}
+                    {address.postal_code.clone()}
+                </div> 
+                                    
+                <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
+                    
+                    if state.status_pills_visible {
                         if address.status.clone() == Some("Valid".to_string()) {
                             <span class="ms-2 badge rounded-pill bg-secondary">{""}{address.language.clone()}</span> 
                         }
@@ -655,27 +459,16 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                         }     
                     }
                 </div>
-                <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
-                    <span style="font-weight:bold;">{address.name.clone()}</span>
-                    <br/>
-                    {address.street.clone().unwrap_or("".to_string())}
-                    {unit_text}
-                    <br/>
-                    {address.city.clone()}
-                    {", "}
-                    {address.state.clone()}
-                    {"  "}
-                    {address.postal_code.clone()}
-                </div>                                        
-                    
             </div>
         </>
     }
 }
 
-#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+#[derive(Properties, PartialEq, Clone, Default)] //, Serialize)]
 pub struct AddressSharedLetterRowProperties {
     pub address: SharedLetterAddress,
+    pub on_publisher_change: Callback<String>,
+    pub current_publisher: Option<String>,
     // #[prop_or_default]
     // pub error_message: String,
 }
@@ -694,5 +487,6 @@ pub struct AddressSharedLetterRowModel {
     pub is_sent: bool,
     pub status_pills_visible: bool,
     pub address_visible: bool,
+    //pub current_publisher: Option<String>,
 }
 
