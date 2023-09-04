@@ -353,18 +353,8 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                             style={publisher_style}
                             class="form-control shadow-sm m-1 letter-writing-shared-input" 
                             readonly={state_clone.publisher_input_readonly.clone()}
-                            placeholder=""/>
+                            placeholder="你的名字"/>
                     } 
-                    // else if is_checking_out {
-                    //     <input 
-                    //         id={format!("publisher-for-address-id-{}", address.address_id)} 
-                    //         onchange={publisher_text_onchange.clone()}
-                    //         type="text" 
-                    //         style="border-width:4px;"
-                    //         class="form-control shadow-sm m-1" 
-                    //         readonly={true}
-                    //         placeholder="Someone else..."/>
-                    // }
          
                     if state_clone.check_out_button_visible.clone() {
                         <button
@@ -389,11 +379,14 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                     if state_clone.sent_button_visible.clone() {
                         <button 
                             id={format!("sent-button-for-address-id-{}", address.address_id)} 
-                            style="background-color:#090;" 
-                            class="btn btn-success m-1" 
+                            style="border-color:#090;" 
+                            class="btn btn-outline-success m-1" 
                             data-address-id={address.address_id.to_string()} 
                             onclick={sent_click.clone()}>
-                            {"Send Letter"}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                            </svg>
+                            {" Send Letter"}
                         </button>
                     }
 
