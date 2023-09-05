@@ -99,7 +99,7 @@ impl Component for AddressSharedLetter {
         });
         AddressSharedLetter {
             result: AddressSharedLetterResult {
-                count: 99,
+                count: 0,
                 addresses: vec![],
             },
             current_publisher: None,
@@ -110,7 +110,6 @@ impl Component for AddressSharedLetter {
         match msg {
             Msg::Load(result) => {
                 self.result = result.clone();
-                log!(format!("aslp:update: addresses.len(): {}", self.result.addresses.len()));
                 return true;
             },
             Msg::Search(String) => {
@@ -126,24 +125,10 @@ impl Component for AddressSharedLetter {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link().clone();
-        // let publisher_text_onchange = {
-        //     Callback::from(move |event: Event| {
-        //         let value = event
-        //             .target()
-        //             .expect("An input value for an Publisher HtmlInputElement")
-        //             .unchecked_into::<HtmlInputElement>()
-        //             .value();
-        //         log!(format!("model: publisher_text_onchange: value: {}", value));
-        //         //link.send_message(Msg::Search(value));
-        //     })
-        // };
-        let publisher_change = //{
+        let publisher_change =
             Callback::from(move |publisher_name: String| {
-                log!(format!("ASLP: publisher_change: publisher_name: value: {}", publisher_name.clone()));
-                //self.current_publisher = Some(publisher_name.clone());
                 link.send_message(Msg::SetCurrentPublisher(publisher_name.clone()));
             });
-        //};
 
         html!{
             <>
@@ -157,20 +142,9 @@ impl Component for AddressSharedLetter {
                 <div class="container">
                     <span><strong>{"Letter Writing - Shared"}</strong></span>
                     <hr/>
-                    //<div class="d-flex flex-row">
-                    //     <div class="d-flex flex-colum mb-2 shadow-sm">
-                    //         // <input /*{onchange}*/ type="text" value="" style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
-                    //         // <button type="submit" class="btn btn-primary">{"Search"}</button>
-
-                    //         // if state.load_error { 
-                    //         //     <span class="mx-1 badge bg-danger">{"Error"}</span> 
-                    //         //     <span class="mx-1" style="color:red;">{state.load_error_message.clone()}</span>
-                    //         // }    
-                    //     </div>
-                    // </div>
                     <div class="row">
                         <div class="col">
-                            <span>{"Addresses: "}{self.result.count}</span>
+                            <span>{"Addresses: "}{self.result.addresses.len()}</span>
                         </div>
                     </div>
                     {

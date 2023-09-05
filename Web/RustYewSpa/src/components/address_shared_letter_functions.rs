@@ -10,7 +10,7 @@ const DATA_API_PATH: &str = "/api/addresses-shared-letter";
 
 pub async fn fetch_shared_letter_addresses() ->  AddressSharedLetterResult {
     let access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{DATA_API_PATH}?mtk={access_key}");
+    let uri: String = format!("{DATA_API_PATH}"); //?mtk={access_key}");
     Request::get(uri.as_str())
         .send()
         .await
