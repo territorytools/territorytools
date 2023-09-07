@@ -177,14 +177,13 @@ impl Component for AddressSharedLetterRow {
                 true
             },
             Msg::CheckoutFinish() => {
-            
                 if self.address.publisher.clone().unwrap_or_default().is_empty() {
                     self.publisher_input_visible = true;
                     self.publisher_input_error = true;
                     self.publisher_input_readonly = false;                
                     self.final_check_out_button_visible = true;
                     self.cancel_button_visible = true;
-                
+                    self.sent_button_visible = false;
                 } else {
                     self.publisher_input_visible = true;
                     self.publisher_input_error = false;
@@ -192,8 +191,6 @@ impl Component for AddressSharedLetterRow {
                     self.final_check_out_button_visible = false;
                     self.sent_button_visible = true;
                     self.cancel_button_visible = false;
-                    //////self.address.publisher = ctx.props().address.publisher.clone();
-                ////on_publisher_change.emit(address_clone.publisher.clone().unwrap_or_default());
                 }
                 true
             },
@@ -210,18 +207,8 @@ impl Component for AddressSharedLetterRow {
         }
     }
 
-    //pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Html {
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         self.address = ctx.props().address.clone();
-        
-        //let publisher_is_entered =  !ctx.props().address.publisher.clone().unwrap_or_default().is_empty();
-        //let is_checking_out = !ctx.props().address.check_out_started.clone().unwrap_or_default().is_empty();
-        let _is_sent = !ctx.props().address.sent_date.clone().unwrap_or_default().is_empty();
-        // // //let status_pills_visible = !is_sent;
-
-        //self.publisher_input_readonly =  is_sent || publisher_is_entered || is_checking_out;
-        //self.cancel_button_visible = publisher_is_entered && !is_sent;
-        // // //self.status_pills_visible = status_pills_visible;
         true
     }
 
@@ -231,15 +218,10 @@ impl Component for AddressSharedLetterRow {
         }
     }
     fn view(&self, ctx: &Context<Self>) -> Html {
-    
-        let _publisher_is_entered =  !self.address.publisher.clone().unwrap_or_default().is_empty();
-        let _is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
-        let _status_pills_visible = !_is_sent;
-
         let link = ctx.link().clone();
         let alba_address_id = self.address.alba_address_id;
         let publisher_click = {
-            Callback::from(move |_event: MouseEvent| {
+            Callback::from(move |_: MouseEvent| {
                 link.send_future(async move {
                     Msg::PublisherClick(post_address_checkout_start(alba_address_id).await)
                 });
@@ -254,8 +236,6 @@ impl Component for AddressSharedLetterRow {
                     .expect("An input value for an Publisher HtmlInputElement")
                     .unchecked_into::<HtmlInputElement>()
                     .value();
-                
-                log!(format!("model: publisher_text_onchange: value: {}", value));
 
                 link.send_message(Msg::UpdatePublisher(value));
             })
@@ -263,53 +243,52 @@ impl Component for AddressSharedLetterRow {
 
         let link = ctx.link().clone();
         let final_check_out_click = {
-            Callback::from(move |_event: MouseEvent| {
+            Callback::from(move |_: MouseEvent| {
                 link.send_message(Msg::CheckoutFinish());
             })
         };
 
         let link = ctx.link().clone();
         let sent_click = {
-            Callback::from(move |_event: MouseEvent| {
+            Callback::from(move |_: MouseEvent| {
                 link.send_message(Msg::LetterSent());                
             })
         };
 
         let link = ctx.link().clone();
         let cancel_click = {
-            Callback::from(move |_event: MouseEvent| {
+            Callback::from(move |_: MouseEvent| {
                 link.send_message(Msg::CheckoutCancel());
             })
         };
-
-        let _edit_uri = format!(
-            "/app/address-edit?alba_address_id={}",
-            self.address.alba_address_id);
 
         let unit_text: String = match &self.address.unit {
             Some(v) => if v == "" { "".to_string() } else { format!(", {}", v.clone()) },
             None => "".to_string()
         };
 
-        let has_publisher: bool = !self.address.publisher.clone().unwrap_or("".to_string()).is_empty();
+        let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
+        let is_checked_out = !self.address.publisher.clone().unwrap_or("".to_string()).is_empty();
+        let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
         let publisher_style = if self.clone().publisher_input_error {
             "border-width:4px;border-color:red;color:black;"
-        } else if self.clone().is_sent {
-            "color:#090;border-color:#090;"
-        } else if !self.address.check_out_started.clone().unwrap_or_default().is_empty() {
+        } else if is_checking_out {
             "color:gray;border-color:gray;"
-        } else if has_publisher { 
+        } else if is_checked_out { 
             "color:black;border-color:black;"
+        } else if is_sent {
+            "color:#090;border-color:#090;"
         } else { 
             "border-color:blue;color:black;" 
         };
 
-        let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
         let publisher_value: Option<String> = if is_checking_out {
             Some("Unavailable...".to_string())
         } else {
             self.address.publisher.clone()
         };
+
+        let publisher_readonly = is_checking_out || is_checked_out || is_sent;
 
         html!{
             <>
@@ -324,7 +303,7 @@ impl Component for AddressSharedLetterRow {
                                 type="text" 
                                 style={publisher_style}
                                 class="form-control shadow-sm m-1 letter-writing-shared-input" 
-                                readonly={self.publisher_input_readonly.clone()}
+                                readonly={publisher_readonly}
                                 placeholder="你的名字"/>
                         } 
             
@@ -337,6 +316,7 @@ impl Component for AddressSharedLetterRow {
                                 {"Check Out"}
                             </button>
                         }
+
                         if self.final_check_out_button_visible.clone() {
                             <button
                                 id={format!("final-check-out-button-for-address-id-{}", self.address.address_id)} 
@@ -348,7 +328,8 @@ impl Component for AddressSharedLetterRow {
                             </button>
                         }
 
-                        if self.sent_button_visible.clone() {
+                        //if self.sent_button_visible.clone() {
+                        if is_checked_out && !is_sent {
                             <button 
                                 id={format!("sent-button-for-address-id-{}", self.address.address_id)} 
                                 //style="border-color:#090;" 
@@ -372,7 +353,8 @@ impl Component for AddressSharedLetterRow {
                                 {"Cancel"}
                             </button>
                         }
-                        if self.is_sent {
+                        // if self.is_sent was probably better
+                        if is_sent {
                             <span class="ms-2 badge rounded-pill" style="background-color:#090;">{"Sent"}</span> 
                             <span>{" "}</span>
                             <span style="color:#090">{self.address.sent_date.clone().unwrap_or_default().chars().take(10).collect::<String>()}</span>
@@ -430,19 +412,19 @@ impl Component for AddressSharedLetterRow {
     }
 }
 
-#[derive(Properties, PartialEq, Clone, Default, Serialize)]
-pub struct AddressSharedLetterRowModel {
-    pub address: SharedLetterAddress,
-    pub check_out_button_visible: bool,
-    pub publisher_input_visible: bool,
-    pub publisher_input_error: bool,
-    pub publisher_input_readonly: bool,
-    pub final_check_out_button_visible: bool,
-    pub sent_button_visible: bool,
-    pub cancel_button_visible: bool,
-    pub is_sent: bool,
-    pub status_pills_visible: bool,
-    pub address_visible: bool,
-    //pub current_publisher: Option<String>,
-}
+// #[derive(Properties, PartialEq, Clone, Default, Serialize)]
+// pub struct AddressSharedLetterRowModel {
+//     pub address: SharedLetterAddress,
+//     pub check_out_button_visible: bool,
+//     pub publisher_input_visible: bool,
+//     pub publisher_input_error: bool,
+//     pub publisher_input_readonly: bool,
+//     pub final_check_out_button_visible: bool,
+//     pub sent_button_visible: bool,
+//     pub cancel_button_visible: bool,
+//     pub is_sent: bool,
+//     pub status_pills_visible: bool,
+//     pub address_visible: bool,
+//     //pub current_publisher: Option<String>,
+// }
 
