@@ -288,7 +288,7 @@ impl Component for Model {
         };
 
         let map_cover_move = {
-            let link = link.clone();
+            let _link = link.clone();
             Callback::from(move |event: MouseEvent| {
                 //log!(format!("model:view: Map cover move {}, {}", event.x(), event.y()-57));
                 ////event.stop_propagation();
