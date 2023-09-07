@@ -45,6 +45,10 @@ pub enum Msg {
     // SetCurrentPublisher(String),
     LoadAddress(CheckoutStartResult),
     PublisherClick(CheckoutStartResult),
+    UpdatePublisher(String),
+    LetterSent(),
+    CheckoutFinish(),
+    CheckoutCancel(),
 }
 
 
@@ -158,10 +162,11 @@ impl Component for AddressSharedLetterRow {
                             //}
                         //});
                     } 
-                } 
+                }
+                true
             },
             Msg::PublisherClick(result) => {
-                self.address = ctx.props().address.clone();
+                ////self.address = ctx.props().address.clone();
                 log!(format!("aslp: PublisherClick: post result: aid: {}, success: {}", result.alba_address_id, result.success));
                 if self.address.sent_date.clone().unwrap_or_default().is_empty() 
                     && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
@@ -174,6 +179,7 @@ impl Component for AddressSharedLetterRow {
                             // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
 
                             if result.success {
+                                log!("aslr: result.success: Setting button visibilities...");
                                 //let mut modification = state_clone.deref().clone();
                                 self.publisher_input_visible = true;
                                 self.check_out_button_visible = false;
@@ -193,9 +199,64 @@ impl Component for AddressSharedLetterRow {
                         //});
                     } 
                 } 
+                true
+            },
+            Msg::UpdatePublisher(value) => {
+                self.address.publisher = Some(value);
+                true
+            },
+            Msg::LetterSent() => {
+                if self.address.publisher.clone().unwrap_or_default().is_empty() {
+                    self.publisher_input_visible = true;
+                    self.publisher_input_error = true;
+                    self.publisher_input_readonly = false;
+                    self.sent_button_visible = true;
+                    self.is_sent = false;
+                    self.status_pills_visible = true;
+                } else {
+                    self.publisher_input_visible = true;
+                    self.publisher_input_error = false;
+                    self.publisher_input_readonly = true;
+                    self.sent_button_visible = false;
+                    self.address.delivery_status = Some("Sent".to_string());
+                    self.address.sent_date = Some("Just now".to_string());
+                    self.is_sent = true;
+                    self.status_pills_visible = false;
+                }
+                true
+            },
+            Msg::CheckoutFinish() => {
+            
+                if self.address.publisher.clone().unwrap_or_default().is_empty() {
+                    self.publisher_input_visible = true;
+                    self.publisher_input_error = true;
+                    self.publisher_input_readonly = false;                
+                    self.final_check_out_button_visible = true;
+                    self.cancel_button_visible = true;
+                
+                } else {
+                    self.publisher_input_visible = true;
+                    self.publisher_input_error = false;
+                    self.publisher_input_readonly = true;                
+                    self.final_check_out_button_visible = false;
+                    self.sent_button_visible = true;
+                    self.cancel_button_visible = false;
+                    //////self.address.publisher = ctx.props().address.publisher.clone();
+                ////on_publisher_change.emit(address_clone.publisher.clone().unwrap_or_default());
+                }
+                true
+            },
+            Msg::CheckoutCancel() => {
+                self.publisher_input_visible = true; // should always be true
+                self.publisher_input_error = false;
+                self.cancel_button_visible = false;
+                self.final_check_out_button_visible = false;
+                self.sent_button_visible = false;
+                self.status_pills_visible = true;
+                self.address.publisher = Some("".to_string());
+                true
             }
         }
-        false
     }
 
     //pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Html {
@@ -240,6 +301,7 @@ impl Component for AddressSharedLetterRow {
         };
         
         //let state_clone = state.clone();
+        let link = ctx.link().clone();
         let address_clone = self.address.clone();
         let publisher_text_onchange = {
             Callback::from(move |event: Event| {
@@ -251,74 +313,35 @@ impl Component for AddressSharedLetterRow {
                 
                 log!(format!("model: publisher_text_onchange: value: {}", value));
                 
-                address_clone.publisher = Some(value);
+                //address_clone.publisher = Some(value);
+                link.send_message(Msg::UpdatePublisher(value));
             })
         };
 
         //let state_clone = state.clone();
+        let link = ctx.link().clone();
         let address_clone = self.address.clone();
         let on_publisher_change = ctx.props().on_publisher_change.clone();
         let final_check_out_click = {
             Callback::from(move |event: MouseEvent| {
-                //let mut modification = state_clone.deref().clone();
-                if address_clone.publisher.clone().unwrap_or_default().is_empty() {
-                    // modification.publisher_input_visible = true;
-                    // modification.publisher_input_error = true;
-                    // modification.publisher_input_readonly = false;                
-                    // modification.final_check_out_button_visible = true;
-                    // modification.cancel_button_visible = true;
-                    
-                } else {
-                    // modification.publisher_input_visible = true;
-                    // modification.publisher_input_error = false;
-                    // modification.publisher_input_readonly = true;                
-                    // modification.final_check_out_button_visible = false;
-                    // modification.sent_button_visible = true;
-                    // modification.cancel_button_visible = false;
-                    on_publisher_change.emit(address_clone.publisher.clone().unwrap_or_default());
-                }
-               //state_clone.set(modification);
+                link.send_message(Msg::CheckoutFinish());
             })
         };
 
         //let state_clone = state.clone();
+        let link = ctx.link().clone();
         let address_clone = self.address.clone();
         let sent_click = {
             Callback::from(move |event: MouseEvent| {
-                //let mut modification = state_clone.deref().clone();
-                if address_clone.publisher.clone().unwrap_or_default().is_empty() {
-                    // modification.publisher_input_visible = true;
-                    // modification.publisher_input_error = true;
-                    // modification.publisher_input_readonly = false;
-                    // modification.sent_button_visible = true;
-                    // modification.is_sent = false;
-                    // modification.status_pills_visible = true;
-                } else {
-                    // modification.publisher_input_visible = true;
-                    // modification.publisher_input_error = false;
-                    // modification.publisher_input_readonly = true;
-                    // modification.sent_button_visible = false;
-                    // modification.address.delivery_status = Some("Sent".to_string());
-                    // modification.address.sent_date = Some("Just now".to_string());
-                    // modification.is_sent = true;
-                    // modification.status_pills_visible = false;
-                }
-                //state_clone.set(modification);
+                link.send_message(Msg::LetterSent());                
             })
         };
 
         //let state_clone = state.clone();
+        let link = ctx.link().clone();
         let cancel_click = {
             Callback::from(move |event: MouseEvent| {
-                // let mut modification = self.deref().clone();
-                // modification.publisher_input_visible = true; // should always be true
-                // modification.publisher_input_error = false;
-                // modification.cancel_button_visible = false;
-                // modification.final_check_out_button_visible = false;
-                // modification.sent_button_visible = false;
-                // modification.status_pills_visible = true;
-                // modification.address.publisher = Some("".to_string());
-                // self.set(modification);
+                link.send_message(Msg::CheckoutCancel());
             })
         };
 
