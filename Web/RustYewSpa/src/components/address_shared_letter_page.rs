@@ -1,4 +1,4 @@
-use crate::components::address_shared_letter_functions::fetch_shared_letter_addresses;
+use crate::components::address_shared_letter_functions::*;
 use serde::{Deserialize, Serialize};
 
 #[cfg(debug_assertions)]
@@ -184,6 +184,25 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         address_visible: true,
     });
 
+    // let props_clone = props.clone();
+    // let state_clone = state.clone();
+    // let checkout_start_returned = {
+    //     Callback::from(move || {
+    //         let value = event
+    //             .target()
+    //             .expect("An input value for an Publisher HtmlInputElement")
+    //             .unchecked_into::<HtmlInputElement>()
+    //             .value();
+            
+    //         log!(format!("model: publisher_text_onchange: value: {}", value));
+
+    //         let mut modification = state_clone.deref().clone();
+    //         modification.address.publisher = Some(value);
+    //         state_clone.set(modification);
+    //     })
+    // };
+
+
     let state_clone = state.clone();
     let props_clone = props.clone();
     let publisher_click = {
@@ -192,6 +211,10 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
               
 
                 if state_clone.address.publisher.clone().unwrap_or_default().is_empty() {
+
+                    //let result: CheckoutStartResult = post_address_checkout_start(state_clone.address.alba_address_id).await;
+                    //log!(format!("aslp: publisher_click: post result: aid: {}, success: {}", result.address_id, result.success));
+
                     let mut modification = state_clone.deref().clone();
                     modification.publisher_input_visible = true;
                     
@@ -204,22 +227,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
 
                     modification.address.publisher = props_clone.current_publisher.clone();
                     state_clone.set(modification);
-                } else {
-                    // let mut modification = state_clone.deref().clone();
-                    // modification.publisher_input_visible = true;
-                    // modification.publisher_input_readonly = true;
-                    // modification.check_out_button_visible = false;
-                    // modification.final_check_out_button_visible = false;
-                    // modification.cancel_button_visible = false;
-                    // modification.sent_button_visible = false;
-                    // modification.is_sent = false;
-                    // modification.status_pills_visible = false;
-
-                    // //modification.address.publisher = props_clone.current_publisher.clone();
-                    // state_clone.set(modification);
-                }
-
-                
+                } 
             } // or do nothing
         })
     };
