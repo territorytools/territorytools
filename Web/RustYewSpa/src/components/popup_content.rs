@@ -61,7 +61,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     };
  
     let id = territory.id.unwrap_or_default();
-    let description: String = match &territory.description {
+    let _description: String = match &territory.description {
         Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
         None => "(empty)".to_string()
     };

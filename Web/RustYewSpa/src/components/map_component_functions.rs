@@ -122,7 +122,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
         }
     }
 
-    let completed_by: String = {
+    let _completed_by: String = {
         match t.last_completed_by {
             Some(_) => "yes".to_string(),
             None => "no".to_string(),

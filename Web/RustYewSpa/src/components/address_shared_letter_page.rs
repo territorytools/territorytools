@@ -6,17 +6,9 @@ use serde::{Deserialize, Serialize};
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
-use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
-use gloo_utils::document;
-use gloo::timers::callback::{Interval, Timeout};
-use std::ops::Deref;
-use wasm_bindgen_futures::spawn_local;
+use gloo::timers::callback::{Interval};
 use yew::prelude::*;
-use wasm_bindgen::JsCast;
-use web_sys::{
-    HtmlInputElement,
-};
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -37,7 +29,7 @@ pub struct AddressSearchPage {
 
 pub enum Msg {
     Load(AddressSharedLetterResult),
-    Search(String),
+    //Search(String),
     SetCurrentPublisher(String),
 }
 
@@ -74,7 +66,6 @@ impl Component for AddressSharedLetter {
         let link_clone = ctx.link().clone();
         let standalone_handle = Interval::new(15000, move ||
             { 
-                log!("Timer tick.");
                 link_clone.send_future(async move {
                     Msg::Load(fetch_shared_letter_addresses().await)
                 });
@@ -95,17 +86,16 @@ impl Component for AddressSharedLetter {
             Msg::Load(result) => {
                 self.result = result.clone();
                 log!("ASLP:update: Msg::Load: loading...");
-                return true;
+                true
             },
-            Msg::Search(text) => {
+            // Msg::Search(_text) => {
 
-            },
+            // },
             Msg::SetCurrentPublisher(publisher) => {
                 self.current_publisher = Some(publisher.clone());
-                return true;
+                true
             }
         }
-        false
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {

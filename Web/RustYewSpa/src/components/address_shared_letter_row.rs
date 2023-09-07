@@ -1,21 +1,14 @@
 use crate::components::address_shared_letter_functions::*;
 use serde::{Deserialize, Serialize};
 
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/addresses_search.json";
+// #[cfg(debug_assertions)]
+// const DATA_API_PATH: &str = "/data/addresses_search.json";
 
-#[cfg(not(debug_assertions))]
-const DATA_API_PATH: &str = "/api/addresses/search";
+// #[cfg(not(debug_assertions))]
+// const DATA_API_PATH: &str = "/api/addresses/search";
 
-//use crate::components::menu_bar::MenuBar;
-use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
-use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
-use gloo_utils::document;
-use std::ops::Deref;
-use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{
@@ -43,7 +36,7 @@ pub enum Msg {
     // Load(AddressSharedLetterResult),
     // Search(String),
     // SetCurrentPublisher(String),
-    LoadAddress(CheckoutStartResult),
+    // LoadAddress(CheckoutStartResult),
     PublisherClick(CheckoutStartResult),
     UpdatePublisher(String),
     LetterSent(),
@@ -132,71 +125,29 @@ impl Component for AddressSharedLetterRow {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::LoadAddress(result) => {
-                if self.address.sent_date.clone().unwrap_or_default().is_empty() 
-                    && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
-                    if self.address.publisher.clone().unwrap_or_default().is_empty() {
-                        //let state_clone = state_clone.clone();
-                        ////let props_clone = props_clone.clone(); // FnOnce
-                        //wasm_bindgen_futures::spawn_local(async move {
-                            
-                            // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
-                            // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
-
-                            //if result.success {
-                                // let mut modification = state_clone.deref().clone();
-                                // modification.publisher_input_visible = true;
-                                // modification.check_out_button_visible = false;
-                                // modification.final_check_out_button_visible = true;
-                                // modification.cancel_button_visible = true;
-                                // modification.sent_button_visible = false;
-                                // modification.is_sent = false;
-                                // modification.status_pills_visible = false;
-                                // modification.address.publisher = props_clone.current_publisher.clone();
-                                // state_clone.set(modification);
-                            //} else {
-                                // let mut modification = state_clone.deref().clone();
-                                // modification.publisher_input_readonly = true;  
-                                // modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
-                                // state_clone.set(modification);
-                            //}
-                        //});
-                    } 
-                }
-                true
-            },
+            // Msg::LoadAddress(_result) => {
+            //     true
+            // },
             Msg::PublisherClick(result) => {
-                ////self.address = ctx.props().address.clone();
                 log!(format!("aslp: PublisherClick: post result: aid: {}, success: {}", result.alba_address_id, result.success));
                 if self.address.sent_date.clone().unwrap_or_default().is_empty() 
                     && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
                     if self.address.publisher.clone().unwrap_or_default().is_empty() {
-                        //let state_clone = state_clone.clone();
-                        //let props_clone = props_clone.clone(); // FnOnce
-                        //wasm_bindgen_futures::spawn_local(async move {
-                            
-                            // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
-                            // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
-
-                            if result.success {
-                                log!("aslr: result.success: Setting button visibilities...");
-                                //let mut modification = state_clone.deref().clone();
-                                self.publisher_input_visible = true;
-                                self.check_out_button_visible = false;
-                                self.final_check_out_button_visible = true;
-                                self.cancel_button_visible = true;
-                                self.sent_button_visible = false;
-                                self.is_sent = false;
-                                self.status_pills_visible = false;
-                                self.address.publisher = ctx.props().current_publisher.clone();
-                                //state_clone.set(modification);
-                            } else {
-                                //let mut modification = state_clone.deref().clone();
-                                self.publisher_input_readonly = true;  
-                                self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
-                                //state_clone.set(modification);
-                            }
-                        //});
+                        if result.success {
+                            log!("aslr: result.success: Setting button visibilities...");
+                            self.publisher_input_visible = true;
+                            self.check_out_button_visible = false;
+                            self.final_check_out_button_visible = true;
+                            self.cancel_button_visible = true;
+                            self.sent_button_visible = false;
+                            self.is_sent = false;
+                            self.status_pills_visible = false;
+                            self.address.publisher = ctx.props().current_publisher.clone();
+                        } else {
+                            self.publisher_input_readonly = true;  
+                            self.cancel_button_visible = true;
+                            self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                        }
                     } 
                 } 
                 true
@@ -263,14 +214,14 @@ impl Component for AddressSharedLetterRow {
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         self.address = ctx.props().address.clone();
         
-        let publisher_is_entered =  !ctx.props().address.publisher.clone().unwrap_or_default().is_empty();
-        let is_checking_out = !ctx.props().address.check_out_started.clone().unwrap_or_default().is_empty();
-        let is_sent = !ctx.props().address.sent_date.clone().unwrap_or_default().is_empty();
-        let status_pills_visible = !is_sent;
+        //let publisher_is_entered =  !ctx.props().address.publisher.clone().unwrap_or_default().is_empty();
+        //let is_checking_out = !ctx.props().address.check_out_started.clone().unwrap_or_default().is_empty();
+        let _is_sent = !ctx.props().address.sent_date.clone().unwrap_or_default().is_empty();
+        // // //let status_pills_visible = !is_sent;
 
-        self.publisher_input_readonly =  is_sent || publisher_is_entered || is_checking_out;
-        self.cancel_button_visible = publisher_is_entered && !is_sent;
-        self.status_pills_visible = status_pills_visible;
+        //self.publisher_input_readonly =  is_sent || publisher_is_entered || is_checking_out;
+        //self.cancel_button_visible = publisher_is_entered && !is_sent;
+        // // //self.status_pills_visible = status_pills_visible;
         true
     }
 
@@ -281,28 +232,21 @@ impl Component for AddressSharedLetterRow {
     }
     fn view(&self, ctx: &Context<Self>) -> Html {
     
-        let publisher_is_entered =  !self.address.publisher.clone().unwrap_or_default().is_empty();
-        let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
-        let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
-        let status_pills_visible = !is_sent;
+        let _publisher_is_entered =  !self.address.publisher.clone().unwrap_or_default().is_empty();
+        let _is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
+        let _status_pills_visible = !_is_sent;
 
-        //let state_clone = state.clone();
-        let address_clone = self.address.clone();
-        let props_clone = ctx.props().clone();
         let link = ctx.link().clone();
+        let alba_address_id = self.address.alba_address_id;
         let publisher_click = {
-            // error[E0525]: expected a closure that implements the `Fn` trait, but this closure only implements `FnOnce`
-            Callback::from(move |event: MouseEvent| {
+            Callback::from(move |_event: MouseEvent| {
                 link.send_future(async move {
-                    //Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
-                    Msg::PublisherClick(post_address_checkout_start(address_clone.alba_address_id).await)
+                    Msg::PublisherClick(post_address_checkout_start(alba_address_id).await)
                 });
             })
         };
         
-        //let state_clone = state.clone();
         let link = ctx.link().clone();
-        let address_clone = self.address.clone();
         let publisher_text_onchange = {
             Callback::from(move |event: Event| {
                 let value = event
@@ -312,57 +256,47 @@ impl Component for AddressSharedLetterRow {
                     .value();
                 
                 log!(format!("model: publisher_text_onchange: value: {}", value));
-                
-                //address_clone.publisher = Some(value);
+
                 link.send_message(Msg::UpdatePublisher(value));
             })
         };
 
-        //let state_clone = state.clone();
         let link = ctx.link().clone();
-        let address_clone = self.address.clone();
-        let on_publisher_change = ctx.props().on_publisher_change.clone();
         let final_check_out_click = {
-            Callback::from(move |event: MouseEvent| {
+            Callback::from(move |_event: MouseEvent| {
                 link.send_message(Msg::CheckoutFinish());
             })
         };
 
-        //let state_clone = state.clone();
         let link = ctx.link().clone();
-        let address_clone = self.address.clone();
         let sent_click = {
-            Callback::from(move |event: MouseEvent| {
+            Callback::from(move |_event: MouseEvent| {
                 link.send_message(Msg::LetterSent());                
             })
         };
 
-        //let state_clone = state.clone();
         let link = ctx.link().clone();
         let cancel_click = {
-            Callback::from(move |event: MouseEvent| {
+            Callback::from(move |_event: MouseEvent| {
                 link.send_message(Msg::CheckoutCancel());
             })
         };
 
-        //let state = state.clone();
-        let address = self.address.clone();
+        let _edit_uri = format!(
+            "/app/address-edit?alba_address_id={}",
+            self.address.alba_address_id);
 
-        let alba_address_id = address.alba_address_id;
-        let edit_uri = format!("/app/address-edit?alba_address_id={alba_address_id}");
-        let unit_text: String = match &address.unit {
+        let unit_text: String = match &self.address.unit {
             Some(v) => if v == "" { "".to_string() } else { format!(", {}", v.clone()) },
             None => "".to_string()
         };
 
-        //let mut checked_out: bool = false;
-        //let state_clone = state.clone();
-        let has_publisher: bool = !address.publisher.clone().unwrap_or("".to_string()).is_empty();
+        let has_publisher: bool = !self.address.publisher.clone().unwrap_or("".to_string()).is_empty();
         let publisher_style = if self.clone().publisher_input_error {
             "border-width:4px;border-color:red;color:black;"
         } else if self.clone().is_sent {
-            "color:#090;border-color:#090;" //"border-width:4px;border-color:#090;" //background-color:#090;color:white;"
-        } else if !self.address.check_out_started.clone().unwrap_or_default().is_empty() { // is_checking_out
+            "color:#090;border-color:#090;"
+        } else if !self.address.check_out_started.clone().unwrap_or_default().is_empty() {
             "color:gray;border-color:gray;"
         } else if has_publisher { 
             "color:black;border-color:black;"
@@ -370,18 +304,13 @@ impl Component for AddressSharedLetterRow {
             "border-color:blue;color:black;" 
         };
 
-        //let state_clone = state.clone();
-        let publisher_value: Option<String> = if !self.address.check_out_started.clone().unwrap_or_default().is_empty() {
+        let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
+        let publisher_value: Option<String> = if is_checking_out {
             Some("Unavailable...".to_string())
         } else {
-            address.publisher.clone()
+            self.address.publisher.clone()
         };
 
-        let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
-        log!(format!("ASLR: before html! s_checking_out: {}", is_checking_out));
-
-        //let state_clone = state.clone();
-        let address = self.address.clone();
         html!{
             <>
                 <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">

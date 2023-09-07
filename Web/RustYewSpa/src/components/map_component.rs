@@ -100,7 +100,7 @@ impl Component for MapComponent {
     type Message = Msg;
     type Properties = Props;
 
-    fn create(ctx: &Context<Self>) -> Self {
+    fn create(_ctx: &Context<Self>) -> Self {
         let container: Element = document().create_element("div").unwrap();
         let container: HtmlElement = container.dyn_into().unwrap();
         container.set_class_name("map");
@@ -230,10 +230,10 @@ impl Component for MapComponent {
 
             
             let marker_point = LatLng::new(tp.border[0].lat.into(), tp.border[0].lon.into());
-            let marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+            let _marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
                 //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
             });
-            let marker = Marker::new_with_options(
+            let _marker = Marker::new_with_options(
                 &marker_point, 
                 &serde_wasm_bindgen::to_value(&MarkerOptions {
                     //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },

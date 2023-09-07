@@ -23,8 +23,7 @@ pub enum Msg {
     LoadBorders(MapModel),
     LoadBordersPath(MapModel, String),
     Search(String),
-    MouseClick(i32, i32),
-    MouseMove(i32, i32),
+    //MouseClick(i32, i32),
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -40,13 +39,13 @@ pub struct Model {
     search: String,
     mouse_click_x: i32,
     mouse_click_y: i32,
-    corner_1_lat: f64,
-    corner_1_lon: f64,
-    corner_2_lat: f64,
-    corner_2_lon: f64,
-    center_lat: f64,
-    center_lon: f64,
-    zoom: f64,
+    // corner_1_lat: f64,
+    // corner_1_lon: f64,
+    // corner_2_lat: f64,
+    // corner_2_lon: f64,
+    // center_lat: f64,
+    // center_lon: f64,
+    // zoom: f64,
 }
 
 impl Component for Model {
@@ -73,10 +72,10 @@ impl Component for Model {
         return Self { city, cities, territory_map, search: 
             "loading search...".to_string(), tpolygons: vec![],
             mouse_click_x: 0, mouse_click_y: 0,
-            corner_1_lat: 0.0, corner_1_lon: 0.0,
-            corner_2_lat: 0.0, corner_2_lon: 0.0,
-            center_lat: 0.0, center_lon: 0.0,
-            zoom: 1.0,
+            // corner_1_lat: 0.0, corner_1_lon: 0.0,
+            // corner_2_lat: 0.0, corner_2_lon: 0.0,
+            // center_lat: 0.0, center_lon: 0.0,
+            // zoom: 1.0,
          }                
     }
 
@@ -203,25 +202,7 @@ impl Component for Model {
                     //     log!(format!("model: update: Msg::Search: search: (else) {}", self.search.clone()));
                     // }            
                 }
-            },
-            Msg::MouseClick(x, y) => {
-                ////log!(format!("model:update: MouseClick {}, {}", x, y));
-                // self.mouse_click_x = x;
-                // self.mouse_click_y = y;
-
-
-
-                
-            },
-            Msg::MouseMove(x, y) => {
-                ////log!(format!("model:update: MouseMove {}, {}", x, y));
-                // self.mouse_click_x = x;
-                // self.mouse_click_y = y;
-
-
-
-                
-            }
+            },          
         }
         true
     }
@@ -280,16 +261,15 @@ impl Component for Model {
 
         let link = ctx.link().clone();
         let map_cover_click = {
-            let link = link.clone();
-            Callback::from(move |event: MouseEvent| {
-                ////log!(format!("model:view: Map cover clicked {}, {}", event.x(), event.y()-57));
-                link.send_message(Msg::MouseClick(event.x(), event.y()-57));
+            let _link = link.clone();
+            Callback::from(move |_event: MouseEvent| {
+                //link.send_message(Msg::MouseClick(event.x(), event.y()-57));
             })
         };
 
         let map_cover_move = {
             let _link = link.clone();
-            Callback::from(move |event: MouseEvent| {
+            Callback::from(move |_event: MouseEvent| {
                 //log!(format!("model:view: Map cover move {}, {}", event.x(), event.y()-57));
                 ////event.stop_propagation();
                 //event.stop_immediate_propagation();

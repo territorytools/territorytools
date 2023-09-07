@@ -400,9 +400,9 @@ pub fn territory_map() -> Html {
     
     let mouse_click_model_clone = mouse_click_model.clone();
     let leaflet_map_clone = leaflet_map.clone();
-    let map_cover_click = {
+    let _map_cover_click = {
         let mouse_click_model_clone = mouse_click_model_clone.clone();
-        let leaflet_map_clone = leaflet_map_clone.clone();
+        let _leaflet_map_clone = leaflet_map_clone.clone();
         //let model_clone = model.clone();
         Callback::from(move |event: MouseEvent| {
             //print_click_lat_lng(leaflet_map.clone());
@@ -552,7 +552,7 @@ pub fn territory_map() -> Html {
 
     let _search_state_clone = search_state.clone();
 
-    let lat_lng = &leaflet_map.layerPointToLatLng(
+    let _lat_lng = &leaflet_map.layerPointToLatLng(
         &Point::new(
             mouse_click_model.mouse_click_x as u32, 
             mouse_click_model.mouse_click_y as u32));
