@@ -93,6 +93,9 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
     let is_checking_out = !props.address.check_out_started.clone().unwrap_or_default().is_empty();
     let is_sent = !props.address.sent_date.clone().unwrap_or_default().is_empty();
     let status_pills_visible = !is_sent;
+    
+    //log!(format!("address_shared_letter_row: loading: is_checking_out: {}", is_checking_out));
+
     let state = use_state(|| AddressSharedLetterRowModel {
         address: props.address.clone(),
         check_out_button_visible: false, // !publisher_is_entered && !is_checking_out,
@@ -143,7 +146,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                     wasm_bindgen_futures::spawn_local(async move {
                         //checkout_start_returned.emit();
                         let result: CheckoutStartResult = post_address_checkout_start(state_clone.address.alba_address_id).await;
-                        log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.address_id, result.success));
+                        log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
 
                         if result.success {
                             let mut modification = state_clone.deref().clone();
@@ -269,6 +272,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         Some(v) => if v == "" { "".to_string() } else { format!(", {}", v.clone()) },
         None => "".to_string()
     };
+
     //let mut checked_out: bool = false;
     let state_clone = state.clone();
     let has_publisher: bool = !address.publisher.clone().unwrap_or("".to_string()).is_empty();
@@ -291,9 +295,11 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         address.publisher.clone()
     };
 
-    let state_clone = state.clone();
-    log!(format!("publisher_input_error: {}",state_clone.publisher_input_error.clone()));
+    let is_checking_out = !state_clone.address.check_out_started.clone().unwrap_or_default().is_empty();
+    log!(format!("ASLR: before html! s_checking_out: {}", is_checking_out));
 
+    let state_clone = state.clone();
+    //log!(format!("publisher_input_error: {}",state_clone.publisher_input_error.clone()));
     html!{
         <>
             <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">

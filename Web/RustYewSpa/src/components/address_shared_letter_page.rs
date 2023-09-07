@@ -9,6 +9,7 @@ use crate::models::addresses::Address;
 use crate::functions::document_functions::set_document_title;
 use gloo_console::log;
 use gloo_utils::document;
+use gloo::timers::callback::{Interval, Timeout};
 use std::ops::Deref;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -53,11 +54,12 @@ pub struct AddressSharedLetterResult {
     addresses: Vec<SharedLetterAddress>,
 }
 
-#[derive(Properties, PartialEq, Clone, Default)]
+//#[derive(Properties, PartialEq, Clone, Default)]
 pub struct AddressSharedLetter {
     result: AddressSharedLetterResult,
     current_publisher: Option<String>,
     // search: String,
+    _timer: Interval
 }
 
 impl Component for AddressSharedLetter {
@@ -68,12 +70,23 @@ impl Component for AddressSharedLetter {
         ctx.link().send_future(async move {
             Msg::Load(fetch_shared_letter_addresses().await)
         });
+
+        let link_clone = ctx.link().clone();
+        let standalone_handle = Interval::new(15000, move ||
+            { 
+                log!("Timer tick.");
+                link_clone.send_future(async move {
+                    Msg::Load(fetch_shared_letter_addresses().await)
+                });
+            });
+
         AddressSharedLetter {
             result: AddressSharedLetterResult {
                 count: 0,
                 addresses: vec![],
             },
             current_publisher: None,
+            _timer: standalone_handle,
         }
     }
 
@@ -81,6 +94,7 @@ impl Component for AddressSharedLetter {
         match msg {
             Msg::Load(result) => {
                 self.result = result.clone();
+                log!("ASLP:update: Msg::Load: loading...");
                 return true;
             },
             Msg::Search(text) => {
