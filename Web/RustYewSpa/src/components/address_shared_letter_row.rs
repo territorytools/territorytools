@@ -98,7 +98,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         check_out_button_visible: false, // !publisher_is_entered && !is_checking_out,
         publisher_input_visible: true, // publisher_is_entered,
         publisher_input_error: false,
-        publisher_input_readonly: is_sent || publisher_is_entered,
+        publisher_input_readonly: is_sent || publisher_is_entered || is_checking_out,
         final_check_out_button_visible: false,
         sent_button_visible: publisher_is_entered && !is_sent,
         cancel_button_visible: false,
@@ -135,7 +135,8 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
     let publisher_click = {
         // error[E0525]: expected a closure that implements the `Fn` trait, but this closure only implements `FnOnce`
         Callback::from(move |event: MouseEvent| {
-            if state_clone.address.sent_date.clone().unwrap_or_default().is_empty() {
+            if state_clone.address.sent_date.clone().unwrap_or_default().is_empty() 
+                && state_clone.address.check_out_started.clone().unwrap_or_default().is_empty() {
                 if state_clone.address.publisher.clone().unwrap_or_default().is_empty() {
                     let state_clone = state_clone.clone();
                     let props_clone = props_clone.clone(); // FnOnce
@@ -166,7 +167,8 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                             // modification.sent_button_visible = false;
                             // modification.is_sent = false;
                             // modification.status_pills_visible = false;
-                            modification.address.publisher = Some("Not available...".to_string());
+                            modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                            // modification.address.publisher = Some("Not available...".to_string());
                             state_clone.set(modification);
                         }
                     });
@@ -268,15 +270,25 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
         None => "".to_string()
     };
     //let mut checked_out: bool = false;
+    let state_clone = state.clone();
     let has_publisher: bool = !address.publisher.clone().unwrap_or("".to_string()).is_empty();
-    let publisher_style = if state.clone().publisher_input_error {
+    let publisher_style = if state_clone.clone().publisher_input_error {
         "border-width:4px;border-color:red;color:black;"
-    } else if state.clone().is_sent {
+    } else if state_clone.clone().is_sent {
         "color:#090;border-color:#090;" //"border-width:4px;border-color:#090;" //background-color:#090;color:white;"
+    } else if !state_clone.address.check_out_started.clone().unwrap_or_default().is_empty() { // is_checking_out
+        "color:gray;border-color:gray;"
     } else if has_publisher { 
         "color:black;border-color:black;"
     } else { 
         "border-color:blue;color:black;" 
+    };
+
+    let state_clone = state.clone();
+    let publisher_value: Option<String> = if !state_clone.address.check_out_started.clone().unwrap_or_default().is_empty() {
+        Some("Unavailable...".to_string())
+    } else {
+        address.publisher.clone()
     };
 
     let state_clone = state.clone();
@@ -288,7 +300,7 @@ pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Ht
                 <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
                     if state_clone.publisher_input_visible.clone() {
                         <input 
-                            value={address.publisher.clone()} 
+                            value={publisher_value} 
                             id={format!("publisher-for-address-id-{}", address.address_id)} 
                             onchange={publisher_text_onchange.clone()}
                             onclick={publisher_click.clone()}
