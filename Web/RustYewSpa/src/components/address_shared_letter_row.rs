@@ -157,24 +157,28 @@ impl Component for AddressSharedLetterRow {
                 self.address.publisher = Some(value);
                 true
             },
-            Msg::LetterSent(_result) => {
-                if self.address.publisher.clone().unwrap_or_default().is_empty() {
-                    self.publisher_input_visible = true;
-                    self.publisher_input_error = true;
-                    self.publisher_input_readonly = false;
-                    self.sent_button_visible = true;
-                    self.is_sent = false;
-                    self.status_pills_visible = true;
-                } else {
-                    self.publisher_input_visible = true;
-                    self.publisher_input_error = false;
-                    self.publisher_input_readonly = true;
-                    self.sent_button_visible = false;
-                    self.address.delivery_status = Some("Sent".to_string());
-                    self.address.sent_date = Some("Just now".to_string());
-                    self.is_sent = true;
-                    self.status_pills_visible = false;
+            Msg::LetterSent(result) => {
+                if result.success {
+                    self.address.sent_date = result.letter_sent_utc;
+                    self.address.publisher = result.publisher;
                 }
+                // if self.address.publisher.clone().unwrap_or_default().is_empty() {
+                //     self.publisher_input_visible = true;
+                //     self.publisher_input_error = true;
+                //     self.publisher_input_readonly = false;
+                //     self.sent_button_visible = true;
+                //     self.is_sent = false;
+                //     self.status_pills_visible = true;
+                // } else {
+                //     self.publisher_input_visible = true;
+                //     self.publisher_input_error = false;
+                //     self.publisher_input_readonly = true;
+                //     self.sent_button_visible = false;
+                //     self.address.delivery_status = Some("Sent".to_string());
+                //     self.address.sent_date = Some("Just now".to_string());
+                //     self.is_sent = true;
+                //     self.status_pills_visible = false;
+                // }
                 true
             },
             Msg::CheckoutFinish(result) => {
@@ -287,12 +291,12 @@ impl Component for AddressSharedLetterRow {
         let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
         let publisher_style = if self.clone().publisher_input_error {
             "border-width:4px;border-color:red;color:black;"
-        } else if is_checking_out {
-            "color:gray;border-color:gray;"
-        } else if is_checked_out { 
-            "color:black;border-color:black;"
         } else if is_sent {
             "color:#090;border-color:#090;"
+        } else if is_checked_out { 
+            "color:black;border-color:black;"
+        } else if is_checking_out {
+            "color:gray;border-color:gray;"
         } else { 
             "border-color:blue;color:black;" 
         };
