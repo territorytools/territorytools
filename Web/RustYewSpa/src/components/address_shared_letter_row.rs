@@ -44,6 +44,7 @@ pub enum Msg {
     // Search(String),
     // SetCurrentPublisher(String),
     LoadAddress(CheckoutStartResult),
+    PublisherClick(CheckoutStartResult),
 }
 
 
@@ -175,6 +176,38 @@ impl Component for AddressSharedLetterRow {
                         //});
                     } 
                 } 
+            },
+            Msg::PublisherClick(result) => {
+                if self.address.sent_date.clone().unwrap_or_default().is_empty() 
+                    && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
+                    if self.address.publisher.clone().unwrap_or_default().is_empty() {
+                        //let state_clone = state_clone.clone();
+                        //let props_clone = props_clone.clone(); // FnOnce
+                        //wasm_bindgen_futures::spawn_local(async move {
+                            
+                            // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
+                            // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
+
+                            //if result.success {
+                                // let mut modification = state_clone.deref().clone();
+                                // modification.publisher_input_visible = true;
+                                // modification.check_out_button_visible = false;
+                                // modification.final_check_out_button_visible = true;
+                                // modification.cancel_button_visible = true;
+                                // modification.sent_button_visible = false;
+                                // modification.is_sent = false;
+                                // modification.status_pills_visible = false;
+                                // modification.address.publisher = props_clone.current_publisher.clone();
+                                // state_clone.set(modification);
+                            //} else {
+                                // let mut modification = state_clone.deref().clone();
+                                // modification.publisher_input_readonly = true;  
+                                // modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                                // state_clone.set(modification);
+                            //}
+                        //});
+                    } 
+                } 
             }
         }
         false
@@ -207,22 +240,6 @@ impl Component for AddressSharedLetterRow {
         let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
         let status_pills_visible = !is_sent;
       
-        // let state = use_state(|| AddressSharedLetterRowModel {
-        //     address: props.address.clone(),
-        //     check_out_button_visible: false, // !publisher_is_entered && !is_checking_out,
-        //     publisher_input_visible: true, // publisher_is_entered,
-        //     publisher_input_error: false,
-        //     publisher_input_readonly: is_sent || publisher_is_entered || is_checking_out,
-        //     final_check_out_button_visible: false,
-        //     sent_button_visible: publisher_is_entered && !is_sent,
-        //     cancel_button_visible: false,
-        //     is_sent: is_sent,
-        //     status_pills_visible: status_pills_visible,
-        //     address_visible: true,
-        // });
-
-        // let props_clone = props.clone();
-        // let state_clone = state.clone();
         let checkout_start_returned = {
             Callback::from(move |alba_address_id: i32| {
                 // let result: CheckoutStartResult = post_address_checkout_start(state_clone.address.alba_address_id).await;
@@ -247,39 +264,45 @@ impl Component for AddressSharedLetterRow {
         //let state_clone = state.clone();
         let address_clone = self.address.clone();
         let props_clone = ctx.props().clone();
+        let link = ctx.link().clone();
         let publisher_click = {
             // error[E0525]: expected a closure that implements the `Fn` trait, but this closure only implements `FnOnce`
             Callback::from(move |event: MouseEvent| {
-                if address_clone.sent_date.clone().unwrap_or_default().is_empty() 
-                    && address_clone.check_out_started.clone().unwrap_or_default().is_empty() {
-                    if address_clone.publisher.clone().unwrap_or_default().is_empty() {
-                        //let state_clone = state_clone.clone();
-                        let props_clone = props_clone.clone(); // FnOnce
-                        //wasm_bindgen_futures::spawn_local(async move {
+                link.send_future(async move {
+                    //Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
+                    Msg::PublisherClick(post_address_checkout_start(address_clone.alba_address_id).await)
+                });
+                //link.send_message(Msg::PublisherClick(post_address_checkout_start(self.address.alba_address_id)));
+                // if address_clone.sent_date.clone().unwrap_or_default().is_empty() 
+                //     && address_clone.check_out_started.clone().unwrap_or_default().is_empty() {
+                //     if address_clone.publisher.clone().unwrap_or_default().is_empty() {
+                //         //let state_clone = state_clone.clone();
+                //         let props_clone = props_clone.clone(); // FnOnce
+                //         //wasm_bindgen_futures::spawn_local(async move {
                             
-                            // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
-                            // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
+                //             // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
+                //             // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
 
-                            //if result.success {
-                                // let mut modification = state_clone.deref().clone();
-                                // modification.publisher_input_visible = true;
-                                // modification.check_out_button_visible = false;
-                                // modification.final_check_out_button_visible = true;
-                                // modification.cancel_button_visible = true;
-                                // modification.sent_button_visible = false;
-                                // modification.is_sent = false;
-                                // modification.status_pills_visible = false;
-                                // modification.address.publisher = props_clone.current_publisher.clone();
-                                // state_clone.set(modification);
-                            //} else {
-                                // let mut modification = state_clone.deref().clone();
-                                // modification.publisher_input_readonly = true;  
-                                // modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
-                                // state_clone.set(modification);
-                            //}
-                        //});
-                    } 
-                } 
+                //             //if result.success {
+                //                 // let mut modification = state_clone.deref().clone();
+                //                 // modification.publisher_input_visible = true;
+                //                 // modification.check_out_button_visible = false;
+                //                 // modification.final_check_out_button_visible = true;
+                //                 // modification.cancel_button_visible = true;
+                //                 // modification.sent_button_visible = false;
+                //                 // modification.is_sent = false;
+                //                 // modification.status_pills_visible = false;
+                //                 // modification.address.publisher = props_clone.current_publisher.clone();
+                //                 // state_clone.set(modification);
+                //             //} else {
+                //                 // let mut modification = state_clone.deref().clone();
+                //                 // modification.publisher_input_readonly = true;  
+                //                 // modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                //                 // state_clone.set(modification);
+                //             //}
+                //         //});
+                //     } 
+                // } 
             })
         };
         
