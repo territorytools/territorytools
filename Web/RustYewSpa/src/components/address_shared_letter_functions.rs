@@ -1,7 +1,7 @@
 use crate::components::address_shared_letter_page::AddressSharedLetterResult;
 
-use serde::{Serialize, Deserialize};
-use reqwasm::http::Request;
+use serde::{Deserialize};
+use reqwasm::http::{Request,Method};
 
 #[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/addresses-shared-letter.json";
@@ -15,8 +15,13 @@ const CHECKOUT_START_API_PATH: &str = "/data/addresses-shared-letter-checkout-st
 #[cfg(not(debug_assertions))]
 const CHECKOUT_START_API_PATH: &str = "/api/addresses-shared-letter/address-checkout-start";
 
+#[cfg(not(debug_assertions))]
+const POST_METHOD: Method = Method::POST;
+#[cfg(debug_assertions)]
+const POST_METHOD: Method = Method::GET;
+
 pub async fn fetch_shared_letter_addresses() ->  AddressSharedLetterResult {
-    let access_key: String = "TEST-ACCESS-KEY".to_string();
+    let _access_key: String = "TEST-ACCESS-KEY".to_string();
     let uri: String = format!("{DATA_API_PATH}"); //?mtk={access_key}");
     Request::get(uri.as_str())
         .send()
@@ -38,23 +43,11 @@ pub struct CheckoutStartResult {
 }
 
 pub async fn post_address_checkout_start(alba_address_id: i32) ->  CheckoutStartResult {
-    let access_key: String = "TEST-ACCESS-KEY".to_string();
+    let _access_key: String = "TEST-ACCESS-KEY".to_string();
     let uri: String = format!("{CHECKOUT_START_API_PATH}?albaAddressId={alba_address_id}"); //?mtk={access_key}");
 
-    // let data_serialized = serde_json::to_string_pretty(&edit_request)
-    // .expect("Should be able to serialize territory edit request form into JSON");
-
-    // let resp = Request::new(uri)
-    // .method(Method::PUT)
-    // .header("Content-Type", "application/json")
-    // .body(data_serialized)
-    // .send()
-    // .await
-    // .expect("A result from the endpoint");
-
-    Request::post(uri.as_str())
-        // .header("Content-Type", "application/json")
-        // .body()
+    Request::new(uri.as_str())
+        .method(POST_METHOD)
         .send()
         .await
         .unwrap()
