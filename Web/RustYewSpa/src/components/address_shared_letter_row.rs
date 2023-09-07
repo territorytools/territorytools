@@ -143,7 +143,7 @@ impl Component for AddressSharedLetterRow {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::LoadAddress(result) => {
                 if self.address.sent_date.clone().unwrap_or_default().is_empty() 
@@ -178,6 +178,7 @@ impl Component for AddressSharedLetterRow {
                 } 
             },
             Msg::PublisherClick(result) => {
+                log!(format!("aslp: PublisherClick: post result: aid: {}, success: {}", result.alba_address_id, result.success));
                 if self.address.sent_date.clone().unwrap_or_default().is_empty() 
                     && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
                     if self.address.publisher.clone().unwrap_or_default().is_empty() {
@@ -188,23 +189,23 @@ impl Component for AddressSharedLetterRow {
                             // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
                             // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
 
-                            //if result.success {
-                                // let mut modification = state_clone.deref().clone();
-                                // modification.publisher_input_visible = true;
-                                // modification.check_out_button_visible = false;
-                                // modification.final_check_out_button_visible = true;
-                                // modification.cancel_button_visible = true;
-                                // modification.sent_button_visible = false;
-                                // modification.is_sent = false;
-                                // modification.status_pills_visible = false;
-                                // modification.address.publisher = props_clone.current_publisher.clone();
-                                // state_clone.set(modification);
-                            //} else {
-                                // let mut modification = state_clone.deref().clone();
-                                // modification.publisher_input_readonly = true;  
-                                // modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
-                                // state_clone.set(modification);
-                            //}
+                            if result.success {
+                                //let mut modification = state_clone.deref().clone();
+                                self.publisher_input_visible = true;
+                                self.check_out_button_visible = false;
+                                self.final_check_out_button_visible = true;
+                                self.cancel_button_visible = true;
+                                self.sent_button_visible = false;
+                                self.is_sent = false;
+                                self.status_pills_visible = false;
+                                self.address.publisher = ctx.props().current_publisher.clone();
+                                //state_clone.set(modification);
+                            } else {
+                                //let mut modification = state_clone.deref().clone();
+                                self.publisher_input_readonly = true;  
+                                self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                                //state_clone.set(modification);
+                            }
                         //});
                     } 
                 } 
