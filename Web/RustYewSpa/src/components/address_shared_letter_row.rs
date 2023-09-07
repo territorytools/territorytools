@@ -40,9 +40,10 @@ pub struct AddressSearchPage {
 }
 
 pub enum Msg {
-    Load(AddressSharedLetterResult),
-    Search(String),
-    SetCurrentPublisher(String),
+    // Load(AddressSharedLetterResult),
+    // Search(String),
+    // SetCurrentPublisher(String),
+    LoadAddress(CheckoutStartResult),
 }
 
 
@@ -114,8 +115,8 @@ impl Component for AddressSharedLetterRow {
                 address_id: -1,
                 alba_address_id: -1,
                 territory_number: "".to_string(),
-                name: Some("".to_string()),
-                street: Some("".to_string()),
+                name: Some("Loading...".to_string()),
+                street: Some("Loading...".to_string()),
                 unit: Some("".to_string()),
                 city: Some("".to_string()),
                 state: Some("".to_string()),
@@ -142,15 +143,47 @@ impl Component for AddressSharedLetterRow {
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        // match msg {
-        //     Msg::SelectCity(city) => {
-        //     }
-        // }
+        match msg {
+            Msg::LoadAddress(result) => {
+                if self.address.sent_date.clone().unwrap_or_default().is_empty() 
+                    && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
+                    if self.address.publisher.clone().unwrap_or_default().is_empty() {
+                        //let state_clone = state_clone.clone();
+                        ////let props_clone = props_clone.clone(); // FnOnce
+                        //wasm_bindgen_futures::spawn_local(async move {
+                            
+                            // let result: CheckoutStartResult = post_address_checkout_start(self.address.alba_address_id).await;
+                            // log!(format!("aslp: checkout_start_returned: post result: aid: {}, success: {}", result.alba_address_id, result.success));
+
+                            //if result.success {
+                                // let mut modification = state_clone.deref().clone();
+                                // modification.publisher_input_visible = true;
+                                // modification.check_out_button_visible = false;
+                                // modification.final_check_out_button_visible = true;
+                                // modification.cancel_button_visible = true;
+                                // modification.sent_button_visible = false;
+                                // modification.is_sent = false;
+                                // modification.status_pills_visible = false;
+                                // modification.address.publisher = props_clone.current_publisher.clone();
+                                // state_clone.set(modification);
+                            //} else {
+                                // let mut modification = state_clone.deref().clone();
+                                // modification.publisher_input_readonly = true;  
+                                // modification.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                                // state_clone.set(modification);
+                            //}
+                        //});
+                    } 
+                } 
+            }
+        }
         false
     }
 
     //pub fn address_shared_letter_row(props: &AddressSharedLetterRowProperties) -> Html {
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
+        self.address = ctx.props().address.clone();
+        
         let publisher_is_entered =  !ctx.props().address.publisher.clone().unwrap_or_default().is_empty();
         let is_checking_out = !ctx.props().address.check_out_started.clone().unwrap_or_default().is_empty();
         let is_sent = !ctx.props().address.sent_date.clone().unwrap_or_default().is_empty();
@@ -159,7 +192,6 @@ impl Component for AddressSharedLetterRow {
         self.publisher_input_readonly =  is_sent || publisher_is_entered || is_checking_out;
         self.cancel_button_visible = publisher_is_entered && !is_sent;
         self.status_pills_visible = status_pills_visible;
-
         true
     }
 
@@ -170,9 +202,9 @@ impl Component for AddressSharedLetterRow {
     }
     fn view(&self, ctx: &Context<Self>) -> Html {
     
-        let publisher_is_entered =  !ctx.props().address.publisher.clone().unwrap_or_default().is_empty();
-        let is_checking_out = !ctx.props().address.check_out_started.clone().unwrap_or_default().is_empty();
-        let is_sent = !ctx.props().address.sent_date.clone().unwrap_or_default().is_empty();
+        let publisher_is_entered =  !self.address.publisher.clone().unwrap_or_default().is_empty();
+        let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
+        let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
         let status_pills_visible = !is_sent;
       
         // let state = use_state(|| AddressSharedLetterRowModel {
@@ -371,7 +403,7 @@ impl Component for AddressSharedLetterRow {
         log!(format!("ASLR: before html! s_checking_out: {}", is_checking_out));
 
         //let state_clone = state.clone();
-        
+        let address = self.address.clone();
         html!{
             <>
                 <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">
@@ -379,7 +411,7 @@ impl Component for AddressSharedLetterRow {
                         if self.publisher_input_visible.clone() {
                             <input 
                                 value={publisher_value} 
-                                id={format!("publisher-for-address-id-{}", address.address_id)} 
+                                id={format!("publisher-for-address-id-{}", self.address.address_id)} 
                                 onchange={publisher_text_onchange.clone()}
                                 onclick={publisher_click.clone()}
                                 type="text" 
@@ -391,19 +423,19 @@ impl Component for AddressSharedLetterRow {
             
                         if self.check_out_button_visible.clone() {
                             <button
-                                id={format!("check-out-button-for-address-id-{}", address.address_id)} 
+                                id={format!("check-out-button-for-address-id-{}", self.address.address_id)} 
                                 class="btn btn-outline-primary m-1"
-                                data-address-id={address.address_id.to_string()} 
+                                data-address-id={self.address.address_id.to_string()} 
                                 onclick={publisher_click.clone()}>
                                 {"Check Out"}
                             </button>
                         }
                         if self.final_check_out_button_visible.clone() {
                             <button
-                                id={format!("final-check-out-button-for-address-id-{}", address.address_id)} 
+                                id={format!("final-check-out-button-for-address-id-{}", self.address.address_id)} 
                                 //style="display:none;" 
                                 class="btn btn-primary m-1"
-                                data-address-id={address.address_id.to_string()} 
+                                data-address-id={self.address.address_id.to_string()} 
                                 onclick={final_check_out_click.clone()}>
                                 {"Check Out"}
                             </button>
@@ -411,10 +443,10 @@ impl Component for AddressSharedLetterRow {
 
                         if self.sent_button_visible.clone() {
                             <button 
-                                id={format!("sent-button-for-address-id-{}", address.address_id)} 
+                                id={format!("sent-button-for-address-id-{}", self.address.address_id)} 
                                 //style="border-color:#090;" 
                                 class="btn btn-outline-primary m-1" 
-                                data-address-id={address.address_id.to_string()} 
+                                data-address-id={self.address.address_id.to_string()} 
                                 onclick={sent_click.clone()}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                                     <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
@@ -425,10 +457,10 @@ impl Component for AddressSharedLetterRow {
 
                         if self.cancel_button_visible.clone() {
                             <button 
-                                id={format!("cancel-button-for-address-id-{}", address.address_id)} 
+                                id={format!("cancel-button-for-address-id-{}", self.address.address_id)} 
                                 //style="display:none;" 
                                 class="btn btn-secondary m-1" 
-                                data-address-id={address.address_id.to_string()} 
+                                data-address-id={self.address.address_id.to_string()} 
                                 onclick={cancel_click.clone()}>
                                 {"Cancel"}
                             </button>
@@ -440,48 +472,48 @@ impl Component for AddressSharedLetterRow {
                         }
                     </div>
                     <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
-                        <span style="font-weight:bold;">{address.name.clone()}</span>
+                        <span style="font-weight:bold;">{self.address.name.clone()}</span>
                         <br/>
-                        {address.street.clone().unwrap_or("".to_string())}
+                        {self.address.street.clone().unwrap_or("".to_string())}
                         {unit_text}
                         <br/>
-                        {address.city.clone()}
+                        {self.address.city.clone()}
                         {", "}
-                        {address.state.clone()}
+                        {self.address.state.clone()}
                         {"  "}
-                        {address.postal_code.clone()}
+                        {self.address.postal_code.clone()}
                     </div> 
                                         
                     <div class="col-12 col-sm-12 col-md-3 col-lg-2 col-xl-2">
                         
                         if self.status_pills_visible {
-                            if address.status.clone() == Some("Valid".to_string()) {
-                                <span class="ms-2 badge rounded-pill bg-secondary">{""}{address.language.clone()}</span> 
+                            if self.address.status.clone() == Some("Valid".to_string()) {
+                                <span class="ms-2 badge rounded-pill bg-secondary">{""}{self.address.language.clone()}</span> 
                             }
                             //<br/>
-                            if address.status.clone() == Some("New".to_string()) {
-                            } else if address.status.clone() == Some("Valid".to_string()) {
-                            } else if address.status.clone() == Some("Do not call".to_string()) {
-                                <span class="ms-2 badge rounded-pill bg-danger">{address.status.clone()}</span> 
-                            } else if address.status.clone() == Some("Moved".to_string()) {
-                                <span class="ms-2 badge rounded-pill bg-warning">{address.status.clone()}</span> 
+                            if self.address.status.clone() == Some("New".to_string()) {
+                            } else if self.address.status.clone() == Some("Valid".to_string()) {
+                            } else if self.address.status.clone() == Some("Do not call".to_string()) {
+                                <span class="ms-2 badge rounded-pill bg-danger">{self.address.status.clone()}</span> 
+                            } else if self.address.status.clone() == Some("Moved".to_string()) {
+                                <span class="ms-2 badge rounded-pill bg-warning">{self.address.status.clone()}</span> 
                             } 
                             else {
-                                <span class="ms-2 badge rounded-pill bg-dark">{address.status.clone()}</span> 
+                                <span class="ms-2 badge rounded-pill bg-dark">{self.address.status.clone()}</span> 
                             }
                             // <br/>
-                            if address.delivery_status.clone() == Some("None".to_string()) {
+                            if self.address.delivery_status.clone() == Some("None".to_string()) {
                             
-                            } else if address.delivery_status.clone() == Some("Assigned".to_string()) {
-                                <span class="ms-2 badge rounded-pill bg-info">{address.delivery_status.clone()}</span> 
-                            } else if address.delivery_status.clone() == Some("Sent".to_string()) {
+                            } else if self.address.delivery_status.clone() == Some("Assigned".to_string()) {
+                                <span class="ms-2 badge rounded-pill bg-info">{self.address.delivery_status.clone()}</span> 
+                            } else if self.address.delivery_status.clone() == Some("Sent".to_string()) {
                             // <span class="ms-2 badge rounded-pill bg-success">{address.delivery_status.clone()}</span> 
-                            } else if address.delivery_status.clone() == Some("Returned".to_string()) {
-                                <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
-                            } else if address.delivery_status.clone() == Some("Undeliverable".to_string()) {
-                                <span class="ms-2 badge rounded-pill bg-warning">{address.delivery_status.clone()}</span> 
+                            } else if self.address.delivery_status.clone() == Some("Returned".to_string()) {
+                                <span class="ms-2 badge rounded-pill bg-warning">{self.address.delivery_status.clone()}</span> 
+                            } else if self.address.delivery_status.clone() == Some("Undeliverable".to_string()) {
+                                <span class="ms-2 badge rounded-pill bg-warning">{self.address.delivery_status.clone()}</span> 
                             } else {
-                                    <span class="ms-2 badge rounded-pill bg-dark">{address.delivery_status.clone()}</span> 
+                                    <span class="ms-2 badge rounded-pill bg-dark">{self.address.delivery_status.clone()}</span> 
                             }     
                         }
                     </div>
