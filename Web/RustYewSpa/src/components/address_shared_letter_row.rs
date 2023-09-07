@@ -39,8 +39,8 @@ pub enum Msg {
     // LoadAddress(CheckoutStartResult),
     PublisherClick(CheckoutStartResult),
     UpdatePublisher(String),
-    LetterSent(),
-    CheckoutFinish(),
+    LetterSent(LetterSentResult),
+    CheckoutFinish(CheckoutFinishResult),
     CheckoutCancel(),
 }
 
@@ -133,6 +133,7 @@ impl Component for AddressSharedLetterRow {
                 if self.address.sent_date.clone().unwrap_or_default().is_empty() 
                     && self.address.check_out_started.clone().unwrap_or_default().is_empty() {
                     if self.address.publisher.clone().unwrap_or_default().is_empty() {
+                        self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
                         if result.success {
                             log!("aslr: result.success: Setting button visibilities...");
                             self.publisher_input_visible = true;
@@ -146,7 +147,7 @@ impl Component for AddressSharedLetterRow {
                         } else {
                             self.publisher_input_readonly = true;  
                             self.cancel_button_visible = true;
-                            self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
+                            ////self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
                         }
                     } 
                 } 
@@ -156,7 +157,7 @@ impl Component for AddressSharedLetterRow {
                 self.address.publisher = Some(value);
                 true
             },
-            Msg::LetterSent() => {
+            Msg::LetterSent(_result) => {
                 if self.address.publisher.clone().unwrap_or_default().is_empty() {
                     self.publisher_input_visible = true;
                     self.publisher_input_error = true;
@@ -176,8 +177,8 @@ impl Component for AddressSharedLetterRow {
                 }
                 true
             },
-            Msg::CheckoutFinish() => {
-                if self.address.publisher.clone().unwrap_or_default().is_empty() {
+            Msg::CheckoutFinish(result) => {
+                if result.success && self.address.publisher.clone().unwrap_or_default().is_empty() {
                     self.publisher_input_visible = true;
                     self.publisher_input_error = true;
                     self.publisher_input_readonly = false;                
@@ -195,13 +196,14 @@ impl Component for AddressSharedLetterRow {
                 true
             },
             Msg::CheckoutCancel() => {
-                self.publisher_input_visible = true; // should always be true
-                self.publisher_input_error = false;
-                self.cancel_button_visible = false;
-                self.final_check_out_button_visible = false;
-                self.sent_button_visible = false;
-                self.status_pills_visible = true;
-                self.address.publisher = Some("".to_string());
+                self.address.check_out_started = None;
+                // self.publisher_input_visible = true; // should always be true
+                // self.publisher_input_error = false;
+                // self.cancel_button_visible = false;
+                // self.final_check_out_button_visible = false;
+                // self.sent_button_visible = false;
+                // self.status_pills_visible = true;
+                // self.address.publisher = Some("".to_string());
                 true
             }
         }
@@ -217,6 +219,7 @@ impl Component for AddressSharedLetterRow {
      
         }
     }
+
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link().clone();
         let alba_address_id = self.address.alba_address_id;
@@ -242,16 +245,28 @@ impl Component for AddressSharedLetterRow {
         };
 
         let link = ctx.link().clone();
+        let alba_address_id = self.address.alba_address_id.clone();
+        let publisher = self.address.publisher.clone().unwrap_or_default();
         let final_check_out_click = {
+            let publisher = publisher.clone();
             Callback::from(move |_: MouseEvent| {
-                link.send_message(Msg::CheckoutFinish());
+                let publisher = publisher.clone();
+                link.send_future(async move {
+                    Msg::CheckoutFinish(post_address_checkout_finish(alba_address_id, publisher).await)
+                });
             })
         };
 
         let link = ctx.link().clone();
+        let alba_address_id = self.address.alba_address_id.clone();
+        let publisher = self.address.publisher.clone().unwrap_or_default();
         let sent_click = {
+            let publisher = publisher.clone();
             Callback::from(move |_: MouseEvent| {
-                link.send_message(Msg::LetterSent());                
+                let publisher = publisher.clone();
+                link.send_future(async move {
+                    Msg::LetterSent(post_address_leter_sent(alba_address_id, publisher).await)
+                });
             })
         };
 
@@ -289,6 +304,7 @@ impl Component for AddressSharedLetterRow {
         };
 
         let publisher_readonly = is_checking_out || is_checked_out || is_sent;
+        let cancel_button_visible = is_checking_out;
 
         html!{
             <>
@@ -343,7 +359,7 @@ impl Component for AddressSharedLetterRow {
                             </button>
                         }
 
-                        if self.cancel_button_visible.clone() {
+                        if cancel_button_visible {
                             <button 
                                 id={format!("cancel-button-for-address-id-{}", self.address.address_id)} 
                                 //style="display:none;" 
