@@ -112,24 +112,7 @@ impl Component for AddressSharedLetterRow {
 
     fn create(ctx: &Context<Self>) -> Self {
         return Self {
-            address: SharedLetterAddress {
-                address_id: -1,
-                alba_address_id: -1,
-                territory_number: "".to_string(),
-                name: Some("Loading...".to_string()),
-                street: Some("Loading...".to_string()),
-                unit: Some("".to_string()),
-                city: Some("".to_string()),
-                state: Some("".to_string()),
-                postal_code: Some("".to_string()),
-                delivery_status: Some("".to_string()),
-                language: Some("".to_string()),
-                status: Some("".to_string()),
-                sent_date: Some("".to_string()),
-                publisher: Some("".to_string()),
-                check_out_started: Some("".to_string()),
-            },
-                //ctx.props().address.clone(),
+            address: ctx.props().address.clone(),
             check_out_button_visible: false,
             publisher_input_visible: true, 
             publisher_input_error: false,
