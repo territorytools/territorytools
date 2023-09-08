@@ -8,6 +8,7 @@ use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
 use gloo_console::log;
 use gloo::timers::callback::{Interval};
+use rand::Rng;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
@@ -51,7 +52,8 @@ pub struct AddressSharedLetter {
     result: AddressSharedLetterResult,
     current_publisher: Option<String>,
     // search: String,
-    _timer: Interval
+    _timer: Interval,
+    session_id: String,
 }
 
 impl Component for AddressSharedLetter {
@@ -59,18 +61,27 @@ impl Component for AddressSharedLetter {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
+        let mut rng = rand::thread_rng();
+        let session_id: u32 = rng.gen();
+        let session_id = format!("{}", session_id);
+        log!(format!("session_id: {session_id}"));
+        
+        let session_id_clone = session_id.clone();
         ctx.link().send_future(async move {
-            Msg::Load(fetch_shared_letter_addresses().await)
+            Msg::Load(fetch_shared_letter_addresses(session_id_clone).await)
         });
 
+        let session_id_clone = session_id.clone();
         let link_clone = ctx.link().clone();
         let standalone_handle = Interval::new(15000, move ||
-            { 
-                link_clone.send_future(async move {
-                    Msg::Load(fetch_shared_letter_addresses().await)
-                });
+        { 
+            let session_id_clone = session_id_clone.clone();
+            link_clone.send_future(async move {
+                Msg::Load(fetch_shared_letter_addresses(session_id_clone).await)
             });
-
+        });
+        
+        let session_id_clone = session_id.clone();
         AddressSharedLetter {
             result: AddressSharedLetterResult {
                 count: 0,
@@ -78,6 +89,7 @@ impl Component for AddressSharedLetter {
             },
             current_publisher: None,
             _timer: standalone_handle,
+            session_id: session_id_clone,
         }
     }
 
@@ -128,7 +140,9 @@ impl Component for AddressSharedLetter {
                                 <AddressSharedLetterRow     
                                     address={address.clone()} 
                                     current_publisher={self.current_publisher.clone()}
-                                    on_publisher_change={publisher_change.clone()} />                                  
+                                    session_id={self.session_id.clone()}
+                                    on_publisher_change={publisher_change.clone()}
+                                    />                                  
                             }
                     }).collect::<Html>()
                 }                

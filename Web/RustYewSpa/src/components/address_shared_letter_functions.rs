@@ -28,9 +28,9 @@ const POST_METHOD: Method = Method::POST;
 #[cfg(debug_assertions)]
 const POST_METHOD: Method = Method::GET;
 
-pub async fn fetch_shared_letter_addresses() ->  AddressSharedLetterResult {
+pub async fn fetch_shared_letter_addresses(session_id: String) ->  AddressSharedLetterResult {
     let _access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SUFFIX}"); //?mtk={access_key}");
+    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SUFFIX}?sessionId={session_id}"); //?mtk={access_key}");
     Request::get(uri.as_str())
         .send()
         .await
@@ -40,6 +40,8 @@ pub async fn fetch_shared_letter_addresses() ->  AddressSharedLetterResult {
         .expect("Valid JSON for a AddressSharedLetterResult")
 }
 
+// TODO: Need to get session_id in the main list too
+
 #[derive(PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CheckoutStartResult {
@@ -47,11 +49,12 @@ pub struct CheckoutStartResult {
     pub address_id: i32,
     pub alba_address_id: i32,
     pub checkout_start_utc: Option<String>,
+    pub session_id: Option<String>,
 }
 
-pub async fn post_address_checkout_start(alba_address_id: i32) ->  CheckoutStartResult {
+pub async fn post_address_checkout_start(alba_address_id: i32, session_id: String) ->  CheckoutStartResult {
     let _access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}address-checkout-start{API_SUFFIX}?albaAddressId={alba_address_id}"); //?mtk={access_key}");
+    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}address-checkout-start{API_SUFFIX}?albaAddressId={alba_address_id}&sessionId={session_id}"); //?mtk={access_key}");
 
     Request::new(uri.as_str())
         .method(POST_METHOD)
