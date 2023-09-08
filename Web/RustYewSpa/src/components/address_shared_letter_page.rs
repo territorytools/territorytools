@@ -51,7 +51,6 @@ pub struct AddressSharedLetterResult {
 pub struct AddressSharedLetter {
     result: AddressSharedLetterResult,
     current_publisher: Option<String>,
-    // search: String,
     _timer: Interval,
     session_id: String,
 }
@@ -97,12 +96,8 @@ impl Component for AddressSharedLetter {
         match msg {
             Msg::Load(result) => {
                 self.result = result.clone();
-                log!("ASLP:update: Msg::Load: loading...");
                 true
             },
-            // Msg::Search(_text) => {
-
-            // },
             Msg::SetCurrentPublisher(publisher) => {
                 self.current_publisher = Some(publisher.clone());
                 true

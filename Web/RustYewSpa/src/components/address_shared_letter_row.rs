@@ -111,21 +111,21 @@ impl Component for AddressSharedLetterRow {
     fn create(ctx: &Context<Self>) -> Self {
         let address = ctx.props().address.clone();
         let me_checking_out = address.session_id == Some(ctx.props().session_id.clone()) || address.session_id == Some("session-1".to_string());
-        if me_checking_out {
-            log!(format!("aslr:create: me_checking_out: {} aaid: {}, name: {}, street: {}",
-                me_checking_out, address.alba_address_id, address.name.clone().unwrap_or_default(), address.street.clone().unwrap_or_default()));
-        }
+        //if me_checking_out {
+        //    log!(format!("aslr:create: me_checking_out: {} aaid: {}, name: {}, street: {}",
+        //        me_checking_out, address.alba_address_id, address.name.clone().unwrap_or_default(), address.street.clone().unwrap_or_default()));
+        //}
         return Self {
             address: ctx.props().address.clone(),
             check_out_button_visible: false,
             publisher_input_visible: true, 
             publisher_input_error: false,
-            publisher_input_readonly: false, // is_sent || publisher_is_entered || is_checking_out,
+            publisher_input_readonly: false,
             final_check_out_button_visible: false,
-            sent_button_visible: false, //publisher_is_entered && !is_sent,
+            sent_button_visible: false,
             cancel_button_visible: false,
-            is_sent: false, //is_sent,
-            status_pills_visible: true, //status_pills_visible,
+            is_sent: false,
+            status_pills_visible: true,
             address_visible: true,
             session_id: ctx.props().session_id.clone(),
             me_checking_out: me_checking_out,
@@ -136,7 +136,7 @@ impl Component for AddressSharedLetterRow {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::HoldForCheckout(result) => {
-                log!(format!("aslp:update: HoldForCheckout: post result: aid: {}, success: {}", result.alba_address_id, result.success));
+                //log!(format!("aslp:update: HoldForCheckout: post result: aid: {}, success: {}", result.alba_address_id, result.success));
                 // if result.success {
                     self.address.check_out_started = result.checkout_start_utc;
                     self.address.session_id = result.session_id;                
@@ -144,22 +144,22 @@ impl Component for AddressSharedLetterRow {
                 true
             },
             Msg::UpdatePublisher(value) => {
-                log!(format!("aslr:update:UpdatePublisher:publisher: {}", value));
+                //log!(format!("aslr:update:UpdatePublisher:publisher: {}", value));
                 //self.address.publisher = Some(value);
                 self.pending_publisher = Some(value);
                 true
             },
             Msg::CheckoutCancel() => {
-                log!(format!("aslr:update:CheckoutCancel:publisher: {}", self.address.publisher.clone().unwrap_or_default()));
+                //log!(format!("aslr:update:CheckoutCancel:publisher: {}", self.address.publisher.clone().unwrap_or_default()));
                 self.address.check_out_started = None;
                 self.address.session_id = None;
                 self.address.publisher = None;
                 self.pending_publisher = None;
-                log!(format!("aslr:update:CheckoutCancel:pending_publisher: {}", self.pending_publisher.clone().unwrap_or_default()));
+                //log!(format!("aslr:update:CheckoutCancel:pending_publisher: {}", self.pending_publisher.clone().unwrap_or_default()));
                 true
             }
             Msg::CheckoutFinish(result) => {
-                log!(format!("aslr:update:CheckoutFinish:publisher: {}", result.publisher.clone().unwrap_or_default()));
+                //log!(format!("aslr:update:CheckoutFinish:publisher: {}", result.publisher.clone().unwrap_or_default()));
                 if result.success {
                     self.address.publisher = result.publisher.clone();
                 }
@@ -187,7 +187,6 @@ impl Component for AddressSharedLetterRow {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link().clone();
         let alba_address_id = self.address.alba_address_id;
         let session_id = self.session_id.clone();
         let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
@@ -203,22 +202,35 @@ impl Component for AddressSharedLetterRow {
         // let is_checked_out = !self.address.publisher.clone().unwrap_or("".to_string()).is_empty();
         // let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
 
-        let publisher_click = {
-            Callback::from(move |_: MouseEvent| {
-                let session_id = session_id.clone();
-                if !already_mine && !is_sent && !is_checked_out && !is_checking_out {
-                    log!(format!("aslr:view: publisher_click: ready to check out.  aaid: {alba_address_id} session_id: {session_id}",
-                        alba_address_id = alba_address_id.clone(),
-                        session_id = session_id.clone()
-                    ));
-                    link.send_future(async move {
-                        Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id).await)
-                    });
-                }
+        // let link = ctx.link().clone();
+        // let session_id_clone = session_id.clone();
+        // let publisher_click = {
+        //     Callback::from(move |_: MouseEvent| {
+        //         let session_id_clone = session_id_clone.clone();
+        //         if !already_mine && !is_sent && !is_checked_out && !is_checking_out {
+        //             link.send_future(async move {
+        //                 Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id_clone).await)
+        //             });
+        //         }
+        //     })
+        // };
+
+        let link = ctx.link().clone();
+        let session_id_clone = session_id.clone();
+        let publisher_onfocus = {
+            Callback::from(move |_: FocusEvent| {
+                let session_id_clone = session_id_clone.clone();
+                // if !already_mine && !is_sent && !is_checked_out && !is_checking_out {
+                //     link.send_future(async move {
+                //         Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id_clone).await)
+                //     });
+                // }
             })
         };
         
         let link = ctx.link().clone();
+        let session_id_clone = session_id.clone();
+        let previous_publisher = self.address.publisher.clone();
         let publisher_text_onchange = {
             Callback::from(move |event: Event| {
                 let value = event
@@ -233,7 +245,43 @@ impl Component for AddressSharedLetterRow {
                     .unchecked_into::<HtmlInputElement>()
                     .set_value("");
 
-                link.send_message(Msg::UpdatePublisher(value));
+                link.send_message(Msg::UpdatePublisher(value.clone()));
+
+                let session_id_clone = session_id_clone.clone();
+                if value.len() > 0 {
+                    link.send_future(async move {
+                        Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id_clone).await)
+                    });
+                }
+            })
+        };
+
+        let link = ctx.link().clone();
+        let session_id_clone = session_id.clone();
+        let previous_publisher = self.address.publisher.clone();
+        let publisher_onkeypress = {
+            Callback::from(move |event: KeyboardEvent| {
+                let value = event
+                    .target()
+                    .expect("An input value for an Publisher HtmlInputElement")
+                    .unchecked_into::<HtmlInputElement>()
+                    .value();
+                
+                log!(format!("aslr:publisher_onkeypress:value: {}", value.clone()));
+                // event
+                //     .target()
+                //     .expect("An input value for an Publisher HtmlInputElement")
+                //     .unchecked_into::<HtmlInputElement>()
+                //     .set_value("");
+
+                link.send_message(Msg::UpdatePublisher(value.clone()));
+
+                let session_id_clone = session_id_clone.clone();
+                //if value.len() > 0 {
+                    link.send_future(async move {
+                        Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id_clone).await)
+                    });
+                //}
             })
         };
 
@@ -304,9 +352,6 @@ impl Component for AddressSharedLetterRow {
                 self.address.publisher.clone()
             };
         
-        log!(format!("aslr:view:publisher_value: {}", publisher_value.clone().unwrap_or_default()));
-
-        
         let publisher_readonly = others_checking_out || is_checked_out || is_sent;
         let checkout_button_visible = !is_sent && !is_checked_out && already_mine && is_checking_out;
         let cancel_button_visible = checkout_button_visible;
@@ -315,15 +360,15 @@ impl Component for AddressSharedLetterRow {
         html!{
             <>
                 <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">
-                    // <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
-                    //     {"error:"}{self.clone().publisher_input_error}
-                    //     {",sid:"}{self.session_id.clone()}<br/>
-                    //     {",held:"}{is_checking_out}
-                    //     {",mine:"}{already_mine}<br/>
-                    //     {",others:"}{others_checking_out}
-                    //     {",out:"}{is_checked_out}<br/>
-                    //     {",sent:"}{is_sent}<br/>
-                    // </div>
+                    <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
+                        {"error:"}{self.clone().publisher_input_error}
+                        {",sid:"}{self.session_id.clone()}<br/>
+                        {",held:"}{is_checking_out}
+                        {",mine:"}{already_mine}<br/>
+                        {",others:"}{others_checking_out}
+                        {",out:"}{is_checked_out}<br/>
+                        {",sent:"}{is_sent}<br/>
+                    </div>
                     <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
                         if others_checking_out && !has_publisher {
                             <span 
@@ -337,7 +382,9 @@ impl Component for AddressSharedLetterRow {
                                 //id={format!("publisher-for-address-id-{}", self.address.address_id)} 
                                 onchange={publisher_text_onchange.clone()}
                                 // TODO: onleave ? (for tab keys and enter)
-                                onclick={publisher_click.clone()}
+                                //onclick={publisher_click.clone()}
+                                //onfocus={publisher_onfocus.clone()}
+                                onkeypress={publisher_onkeypress.clone()}
                                 type="text" 
                                 style={publisher_style}
                                 class="form-control shadow-sm m-1 letter-writing-shared-input" 
