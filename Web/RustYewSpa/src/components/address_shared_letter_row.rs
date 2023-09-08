@@ -33,10 +33,6 @@ pub struct AddressSearchPage {
 }
 
 pub enum Msg {
-    // Load(AddressSharedLetterResult),
-    // Search(String),
-    // SetCurrentPublisher(String),
-    // LoadAddress(CheckoutStartResult),
     HoldForCheckout(CheckoutStartResult),
     UpdatePublisher(String),
     LetterSent(LetterSentResult),
@@ -156,9 +152,9 @@ impl Component for AddressSharedLetterRow {
             Msg::CheckoutCancel() => {
                 log!(format!("aslr:update:CheckoutCancel:publisher: {}", self.address.publisher.clone().unwrap_or_default()));
                 self.address.check_out_started = None;
-                self.address.publisher = None;
                 self.address.session_id = None;
-                self.pending_publisher = Some("".to_string()); // new ?
+                self.address.publisher = None;
+                self.pending_publisher = None;
                 log!(format!("aslr:update:CheckoutCancel:pending_publisher: {}", self.pending_publisher.clone().unwrap_or_default()));
                 true
             }
@@ -198,7 +194,7 @@ impl Component for AddressSharedLetterRow {
         let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
         let is_checked_out = !self.address.publisher.clone().unwrap_or_default().is_empty();
         let has_publisher = !self.address.publisher.clone().unwrap_or_default().is_empty();
-        let already_mine = self.address.session_id.clone().unwrap_or_default() == session_id
+        let already_mine = is_checking_out && self.address.session_id.clone().unwrap_or_default() == session_id
             && !session_id.is_empty()
             || self.address.session_id == Some("session-1".to_string());
 
@@ -330,20 +326,14 @@ impl Component for AddressSharedLetterRow {
                     // </div>
                     <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
                         if others_checking_out && !has_publisher {
-                            <input 
-                                value="Not available" 
-                                //id={format!("publisher-for-address-id-{}", self.address.address_id)} 
-                                //onchange={publisher_text_onchange.clone()}
-                                // TODO: onleave ? (for tab keys and enter)
-                                //onclick={publisher_click.clone()}
-                                type="text" 
+                            <span 
                                 style="color:magenta;border-color:magenta;"
-                                class="form-control shadow-sm m-1 letter-writing-shared-input" 
-                                readonly={true}
-                            placeholder="你的名字"/>
+                                class="form-control shadow-sm m-1 letter-writing-shared-input">
+                                {"Not available"}
+                            </span>
                         } else {
                             <input 
-                                value={publisher_value} 
+                                value={self.address.publisher.clone()} 
                                 //id={format!("publisher-for-address-id-{}", self.address.address_id)} 
                                 onchange={publisher_text_onchange.clone()}
                                 // TODO: onleave ? (for tab keys and enter)
