@@ -105,6 +105,7 @@ pub struct AddressSharedLetterRow {
     pub address_visible: bool,
     pub session_id: String,
     pub me_checking_out: bool,
+    pub pending_publisher: Option<String>,
 }
 
 impl Component for AddressSharedLetterRow {
@@ -131,95 +132,25 @@ impl Component for AddressSharedLetterRow {
             status_pills_visible: true, //status_pills_visible,
             address_visible: true,
             session_id: ctx.props().session_id.clone(),
-            me_checking_out: me_checking_out
+            me_checking_out: me_checking_out,
+            pending_publisher: None,
         }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            // Msg::LoadAddress(_result) => {
-            //     true
-            // },
             Msg::HoldForCheckout(result) => {
                 log!(format!("aslp:update: HoldForCheckout: post result: aid: {}, success: {}", result.alba_address_id, result.success));
-                // let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
-                // let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
-                // let is_checked_out = !self.address.publisher.clone().unwrap_or_default().is_empty();
-
-                if result.success {
+                // if result.success {
                     self.address.check_out_started = result.checkout_start_utc;
-                    self.address.session_id = result.session_id;
-                }
-               
-                // if !is_sent && !is_checking_out {
-                //     if !is_checked_out {
-                //         self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
-                //         if result.success {
-                //             self.publisher_input_visible = true;
-                //             self.check_out_button_visible = false;
-                //             self.final_check_out_button_visible = true;
-                //             self.cancel_button_visible = true;
-                //             self.sent_button_visible = false;
-                //             self.is_sent = false;
-                //             self.status_pills_visible = false;
-                //             self.address.publisher = ctx.props().current_publisher.clone();
-                //         } else {
-                //             self.publisher_input_readonly = true;  
-                //             self.cancel_button_visible = true;
-                //             ////self.address.check_out_started = Some("9999-12-31T23:59:59".to_string());
-                //         }
-                //     } 
-                // } 
+                    self.address.session_id = result.session_id;                
+                //}
                 true
             },
             Msg::UpdatePublisher(value) => {
-                self.address.publisher = Some(value);
-                true
-            },
-            Msg::LetterSent(result) => {
-                if result.success {
-                    self.address.sent_date = result.letter_sent_utc;
-                    self.address.publisher = result.publisher;
-                }
-                // if self.address.publisher.clone().unwrap_or_default().is_empty() {
-                //     self.publisher_input_visible = true;
-                //     self.publisher_input_error = true;
-                //     self.publisher_input_readonly = false;
-                //     self.sent_button_visible = true;
-                //     self.is_sent = false;
-                //     self.status_pills_visible = true;
-                // } else {
-                //     self.publisher_input_visible = true;
-                //     self.publisher_input_error = false;
-                //     self.publisher_input_readonly = true;
-                //     self.sent_button_visible = false;
-                //     self.address.delivery_status = Some("Sent".to_string());
-                //     self.address.sent_date = Some("Just now".to_string());
-                //     self.is_sent = true;
-                //     self.status_pills_visible = false;
-                // }
-                true
-            },
-            Msg::CheckoutFinish(result) => {
-                log!(format!("aslr:update:CheckoutFinish:publisher: {}", result.publisher.clone().unwrap_or_default()));
-                if result.success {
-                    self.address.publisher = result.publisher.clone();
-                }
-                // if result.success && self.address.publisher.clone().unwrap_or_default().is_empty() {
-                //     self.publisher_input_visible = true;
-                //     self.publisher_input_error = true;
-                //     self.publisher_input_readonly = false;                
-                //     self.final_check_out_button_visible = true;
-                //     self.cancel_button_visible = true;
-                //     self.sent_button_visible = false;
-                // } else {
-                //     self.publisher_input_visible = true;
-                //     self.publisher_input_error = false;
-                //     self.publisher_input_readonly = true;                
-                //     self.final_check_out_button_visible = false;
-                //     self.sent_button_visible = true;
-                //     self.cancel_button_visible = false;
-                // }
+                log!(format!("aslr:update:UpdatePublisher:publisher: {}", value));
+                //self.address.publisher = Some(value);
+                self.pending_publisher = Some(value);
                 true
             },
             Msg::CheckoutCancel() => {
@@ -227,15 +158,24 @@ impl Component for AddressSharedLetterRow {
                 self.address.check_out_started = None;
                 self.address.publisher = None;
                 self.address.session_id = None;
-                // self.publisher_input_visible = true; // should always be true
-                // self.publisher_input_error = false;
-                // self.cancel_button_visible = false;
-                // self.final_check_out_button_visible = false;
-                // self.sent_button_visible = false;
-                // self.status_pills_visible = true;
-                // self.address.publisher = Some("".to_string());
+                self.pending_publisher = Some("".to_string()); // new ?
+                log!(format!("aslr:update:CheckoutCancel:pending_publisher: {}", self.pending_publisher.clone().unwrap_or_default()));
                 true
             }
+            Msg::CheckoutFinish(result) => {
+                log!(format!("aslr:update:CheckoutFinish:publisher: {}", result.publisher.clone().unwrap_or_default()));
+                if result.success {
+                    self.address.publisher = result.publisher.clone();
+                }
+                true
+            },
+            Msg::LetterSent(result) => {
+                if result.success {
+                    self.address.sent_date = result.letter_sent_utc;
+                    self.address.publisher = result.publisher;
+                }
+                true
+            },
         }
     }
 
@@ -257,6 +197,7 @@ impl Component for AddressSharedLetterRow {
         let is_sent = !self.address.sent_date.clone().unwrap_or_default().is_empty();
         let is_checking_out = !self.address.check_out_started.clone().unwrap_or_default().is_empty();
         let is_checked_out = !self.address.publisher.clone().unwrap_or_default().is_empty();
+        let has_publisher = !self.address.publisher.clone().unwrap_or_default().is_empty();
         let already_mine = self.address.session_id.clone().unwrap_or_default() == session_id
             && !session_id.is_empty()
             || self.address.session_id == Some("session-1".to_string());
@@ -289,6 +230,12 @@ impl Component for AddressSharedLetterRow {
                     .expect("An input value for an Publisher HtmlInputElement")
                     .unchecked_into::<HtmlInputElement>()
                     .value();
+                
+                event
+                    .target()
+                    .expect("An input value for an Publisher HtmlInputElement")
+                    .unchecked_into::<HtmlInputElement>()
+                    .set_value("");
 
                 link.send_message(Msg::UpdatePublisher(value));
             })
@@ -296,13 +243,14 @@ impl Component for AddressSharedLetterRow {
 
         let link = ctx.link().clone();
         let alba_address_id = self.address.alba_address_id.clone();
-        let publisher = self.address.publisher.clone().unwrap_or_default();
+        //let publisher = self.address.publisher.clone().unwrap_or_default();
+        let pending_publisher = self.pending_publisher.clone().unwrap_or_default();
         let final_check_out_click = {
-            let publisher = publisher.clone();
+            let pending_publisher = pending_publisher.clone();
             Callback::from(move |_: MouseEvent| {
-                let publisher = publisher.clone();
+                let pending_publisher = pending_publisher.clone();
                 link.send_future(async move {
-                    Msg::CheckoutFinish(post_address_checkout_finish(alba_address_id, publisher).await)
+                    Msg::CheckoutFinish(post_address_checkout_finish(alba_address_id, pending_publisher).await)
                 });
             })
         };
@@ -339,19 +287,30 @@ impl Component for AddressSharedLetterRow {
         } else if is_checked_out { 
             "color:black;border-color:black;"
         } else if already_mine && is_checking_out {
-            "color:gray;border-color:yellow;" // TODO: change this color
-        } else if others_checking_out {
-            "color:magenta;border-color:magenta;"
+            "color:blue;border-color:blue;" // TODO: change this color
+        // } else if others_checking_out {
+        //     "color:magenta;border-color:magenta;"
         } else { 
             "border-color:blue;color:black;" 
         };
 
-        let publisher_value: Option<String> = if others_checking_out {
-            Some("Unavailable...".to_string())
-        } else {
-            self.address.publisher.clone()
-        };
+        let publisher_value: Option<String> = 
+            if already_mine && is_checking_out && !others_checking_out && !is_sent && !is_checked_out {
+                self.pending_publisher.clone()
+            } else if is_sent {
+                self.address.publisher.clone()
+            } else if is_checked_out {
+                self.address.publisher.clone()
+            // } else if others_checking_out {
+            //     //Some("Unavailable...".to_string())
+            //     self.address.publisher.clone()
+            } else {
+                self.address.publisher.clone()
+            };
+        
+        log!(format!("aslr:view:publisher_value: {}", publisher_value.clone().unwrap_or_default()));
 
+        
         let publisher_readonly = others_checking_out || is_checked_out || is_sent;
         let checkout_button_visible = !is_sent && !is_checked_out && already_mine && is_checking_out;
         let cancel_button_visible = checkout_button_visible;
@@ -360,20 +319,32 @@ impl Component for AddressSharedLetterRow {
         html!{
             <>
                 <div class="row" style="border-top: 1px solid gray;padding-top:8px;margin-bottom:8px;">
+                    // <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
+                    //     {"error:"}{self.clone().publisher_input_error}
+                    //     {",sid:"}{self.session_id.clone()}<br/>
+                    //     {",held:"}{is_checking_out}
+                    //     {",mine:"}{already_mine}<br/>
+                    //     {",others:"}{others_checking_out}
+                    //     {",out:"}{is_checked_out}<br/>
+                    //     {",sent:"}{is_sent}<br/>
+                    // </div>
                     <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
-                        {"error:"}{self.clone().publisher_input_error}
-                        {",sid:"}{self.session_id.clone()}<br/>
-                        {",held:"}{is_checking_out}
-                        {",mine:"}{already_mine}<br/>
-                        {",others:"}{others_checking_out}
-                        {",out:"}{is_checked_out}<br/>
-                        {",sent:"}{is_sent}<br/>
-                    </div>
-                    <div class="col-5 col-sm-5 col-md-3 col-lg-2 col-xl-2">
-                        if self.publisher_input_visible.clone() {
+                        if others_checking_out && !has_publisher {
+                            <input 
+                                value="Not available" 
+                                //id={format!("publisher-for-address-id-{}", self.address.address_id)} 
+                                //onchange={publisher_text_onchange.clone()}
+                                // TODO: onleave ? (for tab keys and enter)
+                                //onclick={publisher_click.clone()}
+                                type="text" 
+                                style="color:magenta;border-color:magenta;"
+                                class="form-control shadow-sm m-1 letter-writing-shared-input" 
+                                readonly={true}
+                            placeholder="你的名字"/>
+                        } else {
                             <input 
                                 value={publisher_value} 
-                                id={format!("publisher-for-address-id-{}", self.address.address_id)} 
+                                //id={format!("publisher-for-address-id-{}", self.address.address_id)} 
                                 onchange={publisher_text_onchange.clone()}
                                 // TODO: onleave ? (for tab keys and enter)
                                 onclick={publisher_click.clone()}
