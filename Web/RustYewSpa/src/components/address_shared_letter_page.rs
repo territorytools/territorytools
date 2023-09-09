@@ -103,7 +103,7 @@ impl Component for AddressSharedLetter {
                 count: 0,
                 addresses: vec![],
             },
-            current_publisher: None,
+            current_publisher: query.current_publisher.clone(),
             session_id: session_id_clone,
             _timer: standalone_handle,
            // _listener: listener,
@@ -119,6 +119,7 @@ impl Component for AddressSharedLetter {
             },
             Msg::SetCurrentPublisher(publisher) => {
                 self.current_publisher = Some(publisher.clone());
+                
 
                 let location = ctx.link().location().expect("Location or URI");
                 let mut query = location.query().unwrap_or(LetterQuery::default());
@@ -135,9 +136,9 @@ impl Component for AddressSharedLetter {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link().clone();
         let publisher_change =
-        Callback::from(move |publisher_name: String| {
-            link.send_message(Msg::SetCurrentPublisher(publisher_name.clone()));
-        });
+            Callback::from(move |publisher_name: String| {
+                link.send_message(Msg::SetCurrentPublisher(publisher_name.clone()));
+            });
         
         // let navigator = ctx.link().navigator().unwrap();
         // let query = LetterQuery { 
@@ -161,6 +162,10 @@ impl Component for AddressSharedLetter {
                     <div class="row">
                         <div class="col">
                             <span>{"Addresses: "}{self.result.addresses.len()}</span>
+                            if self.query.debug.unwrap_or_default() {
+                                <span>{", Publisher: "}{self.current_publisher.clone()}</span>
+                                <span>{", Session ID: "}{self.session_id.clone()}</span>
+                            }
                         </div>
                     </div>
                     {

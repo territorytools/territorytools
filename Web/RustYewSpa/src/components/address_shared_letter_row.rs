@@ -277,35 +277,35 @@ impl Component for AddressSharedLetterRow {
             })
         };
 
-        let link = ctx.link().clone();
-        let session_id_clone = session_id.clone();
-        let mtk = self.query.mtk.clone().unwrap_or_default();
-        let publisher_onkeypress = {
-            Callback::from(move |event: KeyboardEvent| {
-                let value = event
-                    .target()
-                    .expect("An input value for an Publisher HtmlInputElement")
-                    .unchecked_into::<HtmlInputElement>()
-                    .value();
+        // let link = ctx.link().clone();
+        // let session_id_clone = session_id.clone();
+        // let mtk = self.query.mtk.clone().unwrap_or_default();
+        // let publisher_onkeypress = {
+        //     Callback::from(move |event: KeyboardEvent| {
+        //         let value = event
+        //             .target()
+        //             .expect("An input value for an Publisher HtmlInputElement")
+        //             .unchecked_into::<HtmlInputElement>()
+        //             .value();
                 
-                log!(format!("aslr:publisher_onkeypress:value: {}", value.clone()));
-                // event
-                //     .target()
-                //     .expect("An input value for an Publisher HtmlInputElement")
-                //     .unchecked_into::<HtmlInputElement>()
-                //     .set_value("");
+        //         log!(format!("aslr:publisher_onkeypress:value: {}", value.clone()));
+        //         // event
+        //         //     .target()
+        //         //     .expect("An input value for an Publisher HtmlInputElement")
+        //         //     .unchecked_into::<HtmlInputElement>()
+        //         //     .set_value("");
 
-                // removed for queries // link.send_message(Msg::UpdatePublisher(value.clone()));
+        //         // removed for queries // link.send_message(Msg::UpdatePublisher(value.clone()));
 
-                let session_id_clone = session_id_clone.clone();
-                let mtk = mtk.clone();
-                //if value.len() > 0 {
-                    link.send_future(async move {
-                        Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id_clone, mtk).await)
-                    });
-                //}
-            })
-        };
+        //         let session_id_clone = session_id_clone.clone();
+        //         let mtk = mtk.clone();
+        //         //if value.len() > 0 {
+        //             link.send_future(async move {
+        //                 Msg::HoldForCheckout(post_address_checkout_start(alba_address_id, session_id_clone, mtk).await)
+        //             });
+        //         //}
+        //     })
+        // };
 
         let link = ctx.link().clone();
         let alba_address_id = self.address.alba_address_id.clone();
@@ -400,7 +400,7 @@ impl Component for AddressSharedLetterRow {
                                 // TODO: onleave ? (for tab keys and enter)
                                 //onclick={publisher_click.clone()}
                                 //onfocus={publisher_onfocus.clone()}
-                                onkeypress={publisher_onkeypress.clone()}
+                                //nkeypress={publisher_onkeypress.clone()}
                                 type="text" 
                                 style={publisher_style}
                                 class="form-control shadow-sm m-1 letter-writing-shared-input" 
