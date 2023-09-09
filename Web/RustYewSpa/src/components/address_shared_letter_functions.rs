@@ -28,9 +28,8 @@ const POST_METHOD: Method = Method::POST;
 #[cfg(debug_assertions)]
 const POST_METHOD: Method = Method::GET;
 
-pub async fn fetch_shared_letter_addresses(session_id: String) ->  AddressSharedLetterResult {
-    let _access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SUFFIX}?sessionId={session_id}"); //?mtk={access_key}");
+pub async fn fetch_shared_letter_addresses(session_id: String, mtk: String) ->  AddressSharedLetterResult {    
+    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SUFFIX}?sessionId={session_id}&mtk={mtk}");
     Request::get(uri.as_str())
         .send()
         .await
@@ -52,9 +51,8 @@ pub struct CheckoutStartResult {
     pub session_id: Option<String>,
 }
 
-pub async fn post_address_checkout_start(alba_address_id: i32, session_id: String) ->  CheckoutStartResult {
-    let _access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}address-checkout-start{API_SUFFIX}?albaAddressId={alba_address_id}&sessionId={session_id}"); //?mtk={access_key}");
+pub async fn post_address_checkout_start(alba_address_id: i32, session_id: String, mtk: String) ->  CheckoutStartResult {
+    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}address-checkout-start{API_SUFFIX}?albaAddressId={alba_address_id}&sessionId={session_id}&?mtk={mtk}");
 
     Request::new(uri.as_str())
         .method(POST_METHOD)
@@ -76,9 +74,8 @@ pub struct CheckoutFinishResult {
     pub publisher: Option<String>,
 }
 
-pub async fn post_address_checkout_finish(alba_address_id: i32, publisher: String) ->  CheckoutFinishResult {
-    let _access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}address-checkout-finish{API_SUFFIX}?albaAddressId={alba_address_id}&publisher={publisher}"); 
+pub async fn post_address_checkout_finish(alba_address_id: i32, publisher: String, mtk: String) ->  CheckoutFinishResult {
+    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}address-checkout-finish{API_SUFFIX}?albaAddressId={alba_address_id}&publisher={publisher}&mtk={mtk}"); 
         //?mtk={access_key}");
 
     Request::new(uri.as_str())
@@ -90,7 +87,6 @@ pub async fn post_address_checkout_finish(alba_address_id: i32, publisher: Strin
         .await
         .expect("Valid JSON for a CheckoutFinishResult")
 }
-
 
 #[derive(PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -106,10 +102,8 @@ pub struct LetterSentResult {
     pub publisher: Option<String>,
 }
 
-pub async fn post_address_leter_sent(alba_address_id: i32, publisher: String) ->  LetterSentResult {
-    let _access_key: String = "TEST-ACCESS-KEY".to_string();
-    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}letter-sent{API_SUFFIX}?albaAddressId={alba_address_id}&publisher={publisher}"); 
-        //?mtk={access_key}");
+pub async fn post_address_leter_sent(alba_address_id: i32, publisher: String, mtk: String) ->  LetterSentResult {
+    let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SEPARATOR}letter-sent{API_SUFFIX}?albaAddressId={alba_address_id}&publisher={publisher}&mtk={mtk}");
 
     Request::new(uri.as_str())
         .method(POST_METHOD)

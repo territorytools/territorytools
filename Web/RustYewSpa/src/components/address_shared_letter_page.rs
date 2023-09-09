@@ -2,7 +2,7 @@ use crate::components::address_shared_letter_functions::*;
 use crate::components::address_shared_letter_row::AddressSharedLetterRow;
 use crate::components::address_shared_letter_row::SharedLetterAddress;
 use serde::{Deserialize, Serialize};
-
+use crate::Route;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
@@ -10,6 +10,9 @@ use gloo_console::log;
 use gloo::timers::callback::{Interval};
 use rand::Rng;
 use yew::prelude::*;
+//use yew_router::prelude::LocationHandle;
+use yew_router::scope_ext::RouterScopeExt;
+use yew_router::history::HistoryError;
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -51,8 +54,10 @@ pub struct AddressSharedLetterResult {
 pub struct AddressSharedLetter {
     result: AddressSharedLetterResult,
     current_publisher: Option<String>,
-    _timer: Interval,
     session_id: String,
+    _timer: Interval,
+    //_listener: LocationHandle,
+    query: LetterQuery,
 }
 
 impl Component for AddressSharedLetter {
@@ -65,18 +70,30 @@ impl Component for AddressSharedLetter {
         let session_id = format!("{}", session_id);
         log!(format!("session_id: {session_id}"));
         
+        // let listener = ctx.link()
+        // .add_location_listener(ctx.link().callback(
+        //     // handle event
+        // ))
+        // .unwrap();
+
+        let location = ctx.link().location().expect("Location or URI");
+        let query = location.query().unwrap_or(LetterQuery::default());
+
         let session_id_clone = session_id.clone();
+        let mtk = query.mtk.clone().unwrap_or_default();
         ctx.link().send_future(async move {
-            Msg::Load(fetch_shared_letter_addresses(session_id_clone).await)
+            Msg::Load(fetch_shared_letter_addresses(session_id_clone, mtk).await)
         });
 
         let session_id_clone = session_id.clone();
         let link_clone = ctx.link().clone();
+        let mtk = query.mtk.clone().unwrap_or_default();
         let standalone_handle = Interval::new(15000, move ||
         { 
             let session_id_clone = session_id_clone.clone();
+            let mtk = mtk.clone();
             link_clone.send_future(async move {
-                Msg::Load(fetch_shared_letter_addresses(session_id_clone).await)
+                Msg::Load(fetch_shared_letter_addresses(session_id_clone, mtk).await)
             });
         });
         
@@ -87,12 +104,14 @@ impl Component for AddressSharedLetter {
                 addresses: vec![],
             },
             current_publisher: None,
-            _timer: standalone_handle,
             session_id: session_id_clone,
+            _timer: standalone_handle,
+           // _listener: listener,
+            query: query,
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::Load(result) => {
                 self.result = result.clone();
@@ -100,6 +119,14 @@ impl Component for AddressSharedLetter {
             },
             Msg::SetCurrentPublisher(publisher) => {
                 self.current_publisher = Some(publisher.clone());
+
+                let location = ctx.link().location().expect("Location or URI");
+                let mut query = location.query().unwrap_or(LetterQuery::default());
+                query.current_publisher = Some(publisher);
+                    
+                let navigator = ctx.link().navigator().unwrap();
+                let _ = navigator.replace_with_query(&Route::AddressSharedLetter, &query);
+
                 true
             }
         }
@@ -108,9 +135,16 @@ impl Component for AddressSharedLetter {
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link().clone();
         let publisher_change =
-            Callback::from(move |publisher_name: String| {
-                link.send_message(Msg::SetCurrentPublisher(publisher_name.clone()));
-            });
+        Callback::from(move |publisher_name: String| {
+            link.send_message(Msg::SetCurrentPublisher(publisher_name.clone()));
+        });
+        
+        // let navigator = ctx.link().navigator().unwrap();
+        // let query = LetterQuery { 
+        //     current_publisher: Some("joe publisher".to_string()), //self.current_publisher.clone(), 
+        //     ..Default::default() };
+
+        // navigator.replace_with_query(&Route::AddressSharedLetter, &query);
 
         html!{
             <>
@@ -145,4 +179,11 @@ impl Component for AddressSharedLetter {
             </>
         }
     }
+}
+#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
+pub struct LetterQuery {
+    pub campaign_name: Option<String>,
+    pub current_publisher: Option<String>,
+    pub mtk: Option<String>,
+    pub debug: Option<bool>,
 }
