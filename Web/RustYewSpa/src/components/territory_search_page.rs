@@ -43,12 +43,14 @@ impl Component for TerritorySearchPage {
     type Properties = Props;
     
     fn create(ctx: &Context<Self>) -> Self {
-        // let location = ctx.link().location().expect("Location or URI");
-        // let query = location.query().unwrap_or(TerritorySearchQuery::default());
-        // let search_text = query.search_text.clone();
+        let location = ctx.link().location().expect("Location or URI");
+        let query = location.query().unwrap_or(TerritorySearchQuery::default());
+        let search_text = query.search_text.clone();
+
+        log!(format!("tsp:create: (then Load):search_text: {}", search_text.clone().unwrap_or_default()));
 
         ctx.link().send_future(async move {
-            Msg::Load(get_territories("".to_string()).await) //search_text.clone().unwrap_or_default()).await)
+            Msg::Load(get_territories(search_text.clone().unwrap_or_default()).await)
         });
 
         return TerritorySearchPage::default()
@@ -58,6 +60,7 @@ impl Component for TerritorySearchPage {
         match msg {
             Msg::Load(result) => {
                 self.territories = result.territories.clone();
+                self.search_text = result.search_text.clone();
                 log!(format!("tsp:update:Load:search_text: {}", self.search_text.clone()));
                 true
             },
@@ -71,18 +74,10 @@ impl Component for TerritorySearchPage {
     fn view(&self, ctx: &Context<Self>) -> Html {
         //set_document_title("Territory Search");
         
-        let search_text = self.search_text.clone();
-        let link = ctx.link().clone();
         let onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
-            let search_text = search_text.clone();
-            // link.send_future(async move {
-            //     log!(format!("tsp:onsubmit:send_future:search_text: {}", search_text.clone()));
-            //     Msg::Load(get_territories(search_text).await)
-            // });
         });
 
-        let search_text = self.search_text.clone();
         let navigator = ctx.link().navigator().unwrap();
         let link = ctx.link().clone();
         let onchange = {
@@ -93,29 +88,23 @@ impl Component for TerritorySearchPage {
                     .unchecked_into::<HtmlInputElement>()
                     .value();
                 
-                let search_text = value.clone();
+                let v = value.clone();
                 link.send_future(async move {
-                    log!(format!("tsp:onsubmit:onchange:search_text: {}", search_text.clone()));
-                    Msg::Load(get_territories(search_text.clone()).await)
+                    Msg::Load(get_territories(v).await)
                 });
 
+                let v = value.clone();
                 let query = TerritorySearchQuery {
-                    search_text: Some(value.clone()),
+                    search_text: Some(v),
                 };
     
                 let _ = navigator.push_with_query(&Route::TerritorySearch, &query);
-
-                //link.send_future(async move {
-                    // log!(format!("tsp:onchange:send_future:value.clone(): {}", value.clone().clone()));
-                    // link.send_message(Msg::UpdateSearchText(value.clone()));
-                //});
             })
         };
     
-        // let link = ctx.link().clone(); // TODO: does this need to be cloned?
-        // link.send_message(Msg::UpdateSearchText(search_text.clone()));
-
         let count = self.territories.len();
+
+        log!(format!("tsp:view:self.search_text: {}", self.search_text.clone()));
 
         html!{
             <>
@@ -235,7 +224,7 @@ async fn get_territories(search_text: String) -> TerritorySearchResult {
         success: (resp.status() == 200),
         count: territory_result.len() as i32,
         territories: territory_result,
-        search_text: "".to_string(),
+        search_text: search_text.clone(),
         load_error: resp.status() != 200,
         load_error_message: if resp.status() == 401 {
                 "Unauthorized".to_string()
