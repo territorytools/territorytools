@@ -1,5 +1,5 @@
 use crate::components::address_edit_page::AddressEditPage;
-use crate::components::address_search_page::AddressSearch;
+use crate::components::address_search_page::AddressSearchPage;
 use crate::components::assign_page::AssignPage;
 use crate::components::link_page::TerritoryLinkPage;
 use crate::components::route_stuff::Route;

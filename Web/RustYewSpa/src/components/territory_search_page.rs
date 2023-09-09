@@ -11,12 +11,8 @@ use crate::functions::document_functions::set_document_title;
 use crate::Route;
 
 use gloo_console::log;
-use std::ops::Deref;
 use reqwasm::http::{Request};
-use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
-use yew_router::hooks::use_location;
-use yew_router::prelude::use_navigator;
 use yew_router::prelude::LocationHandle;
 use yew_router::scope_ext::RouterScopeExt;
 use wasm_bindgen::JsCast;
@@ -183,17 +179,6 @@ impl Component for TerritorySearchPage {
     }
 }
 
-pub trait SearchQuery {
-    fn search_query(&self) -> TerritorySearchQuery;
-}
-
-impl SearchQuery for &Context<TerritorySearchPage> {
-    fn search_query(&self) -> TerritorySearchQuery {
-        let location = self.link().location().expect("Location or URI");
-        location.query().unwrap_or(TerritorySearchQuery::default())    
-    }
-}
-
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritorySearchResult {
     pub success: bool,
@@ -245,4 +230,15 @@ async fn get_territories(search_text: String) -> TerritorySearchResult {
 #[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
 pub struct TerritorySearchQuery {
     pub search_text: Option<String>,
+}
+
+pub trait SearchQuery {
+    fn search_query(&self) -> TerritorySearchQuery;
+}
+
+impl SearchQuery for &Context<TerritorySearchPage> {
+    fn search_query(&self) -> TerritorySearchQuery {
+        let location = self.link().location().expect("Location or URI");
+        location.query().unwrap_or(TerritorySearchQuery::default())    
+    }
 }

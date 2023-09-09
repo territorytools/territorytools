@@ -1,5 +1,5 @@
 use crate::AddressEditPage;
-use crate::AddressSearch;
+use crate::AddressSearchPage;
 use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::AssignPage;
 use crate::Secure;
@@ -114,7 +114,7 @@ pub fn switch(route: Route) -> Html {
         Route::MapComponent => html! { <Model /> },
         Route::SvgMap => html! { <SvgMap /> },
         Route::CanvasMap => html! { <CanvasMap /> },
-        Route::AddressSearch => html! { <AddressSearch /> },
+        Route::AddressSearch => html! { <AddressSearchPage /> },
         Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
