@@ -7,6 +7,7 @@ use crate::TerritoryEditPage;
 use crate::TerritoryEditorPage;
 use crate::TerritoryEditPageExample;
 use crate::TerritorySearch;
+use crate::TerritorySearchOld;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
 use crate::SvgMap;
@@ -61,6 +62,8 @@ pub enum Route {
     TerritoryEditor,
     #[at("/app/territory-search")]
     TerritorySearch,    
+    #[at("/app/territory-search-old")]
+    TerritorySearchOld,    
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
@@ -116,6 +119,7 @@ pub fn switch(route: Route) -> Html {
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearch /> },
+        Route::TerritorySearchOld => html! { <TerritorySearchOld /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },

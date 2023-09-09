@@ -20,6 +20,7 @@ pub mod state_selector;
 pub mod svg_map;
 pub mod territory_map;
 pub mod territory_search_page;
+pub mod territory_search_page_old;
 pub mod territory_summary;
 pub mod territory_editor;
 pub mod territory_edit_form;
