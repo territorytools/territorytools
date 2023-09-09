@@ -23,32 +23,26 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use serde::{Serialize, Deserialize};
 
-#[derive(Properties, PartialEq, Clone, Default)]
-pub struct Props {
-}
-
-pub struct TerritorySearchPage {
-    _listener: LocationHandle,
-    search_text: String,
-    territories: Vec<TerritorySummary>,
-    result: TerritorySearchResult,
-}
-
 pub enum Msg {
     Load(TerritorySearchResult),
     RefreshFromSearchText(),
 }
 
+pub struct TerritorySearchPage {
+    _listener: LocationHandle,
+    territories: Vec<TerritorySummary>,
+    result: TerritorySearchResult,
+}
+
 impl Component for TerritorySearchPage {
     type Message = Msg;
-    type Properties = Props;
+    type Properties = ();
     
     fn create(ctx: &Context<Self>) -> Self {
         let link = ctx.link().clone();      
         let listener = ctx.link()
             .add_location_listener(
                 Callback::from(move |_| {
-                    log!("tsp:create:location_listener/Callback:send_message(RefreshFromSearchText)");
                     link.send_message(Msg::RefreshFromSearchText());
                 })
             )
@@ -56,7 +50,6 @@ impl Component for TerritorySearchPage {
 
         return Self {
             _listener: listener,
-            search_text: "".to_string(),
             territories: vec![],
             result: TerritorySearchResult::default(),
         }
@@ -66,13 +59,10 @@ impl Component for TerritorySearchPage {
         match msg {
             Msg::Load(result) => {
                 self.territories = result.territories.clone();
-                log!(format!("tsp:update:Load:territories.len(): {}",self.territories.len()));
                 true
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
-                log!(format!("tsp:update:RefreshFromSearchText():search_text {}", search_text.clone()));
-
                 ctx.link().send_future(async move {
                     Msg::Load(get_territories(search_text.clone()).await)
                 });
@@ -86,10 +76,10 @@ impl Component for TerritorySearchPage {
         
         let onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
+            // If we don't prevent_default() it will clear the box and search again
         });
 
         let navigator = ctx.link().navigator().unwrap();
-        let link = ctx.link().clone();
         let onchange = {
             Callback::from(move |event: Event| {
                 let value = event
@@ -98,26 +88,15 @@ impl Component for TerritorySearchPage {
                     .unchecked_into::<HtmlInputElement>()
                     .value();
 
-                let v = value.clone();
                 let query = TerritorySearchQuery {
-                    search_text: Some(v),
+                    search_text: Some(value.clone()),
                 };
-                
-                let v = value.clone();
-                log!(format!("tsp:view:onchange:push_with_query:search_text: {}", v));
-
                 let _ = navigator.push_with_query(&Route::TerritorySearch, &query);
             })
         };
     
         let count = self.territories.len();
-
-        // let location = ctx.link().location().expect("Location or URI");
-        // let query = location.query().unwrap_or(TerritorySearchQuery::default());
-        //let search_text = query.search_text.clone().unwrap_or_default();  
         let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
-
-        log!(format!("tsp:view:self.search_text: {}", search_text.clone()));
 
         html!{
             <>
@@ -136,6 +115,7 @@ impl Component for TerritorySearchPage {
                         <div class="d-flex flex-row">
                             <div class="d-flex flex-colum mb-2 shadow-sm">
                                 <input {onchange} type="text" value={search_text} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
+                                // TODO: Add an onclick and send the RefreshFromSearchText() message?
                                 <button type="submit" class="btn btn-primary">{"Search"}</button>
                                 if self.result.load_error { 
                                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
