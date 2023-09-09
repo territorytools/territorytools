@@ -9,14 +9,19 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
 use crate::functions::document_functions::set_document_title;
+use crate::Route;
+
 use gloo_console::log;
 use std::ops::Deref;
 use reqwasm::http::{Request};
 use serde::Deserialize;
+use serde::Serialize;
 use wasm_bindgen_futures::spawn_local;
-use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
+use yew::prelude::*;
+use yew_router::hooks::use_location;
+use yew_router::prelude::use_navigator;
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -36,18 +41,28 @@ pub struct AddressSearchPage {
 }
 
 #[function_component(AddressSearch)]
-pub fn address_search_page() -> Html {        
-    let state = use_state(|| AddressSearchPage::default());
+pub fn address_search_page() -> Html {
+    let navigator = use_navigator().unwrap();
+    let location = use_location().expect("Location with query parameters");
+    let query: AddressSearchQuery = location.query().expect("A AddressSearchQuery struct");
+
+    //let state = use_state(|| AddressSearchPage::default());
+    let state = use_state(|| AddressSearchPage {
+        search_text: query.search_text.clone().unwrap_or_default(),
+        ..AddressSearchPage::default()
+    });
 
     set_document_title("Address Search");
 
     let cloned_state = state.clone();
+    let search_text = query.search_text.clone().unwrap_or_default();
     let onsubmit = Callback::from(move |event: SubmitEvent| {
         event.prevent_default();
         let cloned_state = cloned_state.clone();
+        let search_text = search_text.clone();
         spawn_local(async move {
             let cloned_state = cloned_state.clone();
-            let search_text = cloned_state.search_text.clone();
+             //cloned_state.search_text.clone();
             if !search_text.is_empty() {
                 let uri_string: String = format!("{path}?text={search_text}", path = DATA_API_PATH);
                 let uri: &str = uri_string.as_str();
@@ -76,7 +91,7 @@ pub fn address_search_page() -> Html {
                     success: (resp.status() == 200),
                     count: address_result.count,
                     addresses: address_result.addresses,
-                    search_text: "".to_string(),
+                    search_text: search_text.to_string(),
                     load_error: resp.status() != 200,
                     load_error_message: if resp.status() == 401 {
                             "Unauthorized".to_string()
@@ -107,12 +122,20 @@ pub fn address_search_page() -> Html {
                 .expect("An input value for an HtmlInputElement")
                 .unchecked_into::<HtmlInputElement>()
                 .value();
+            
+            let query = AddressSearchQuery {
+                search_text: Some(value.clone()),
+            };
+
+            let _ = navigator.replace_with_query(&Route::AddressSearch, &query);
 
             modification.search_text = value;
             state.set(modification);
         })
     };
 
+    let search_text = query.search_text.clone().unwrap_or_default();
+    log!(format!("address_search_page:searc_text: {}", search_text.clone()));
     html! {
         <>
             <MenuBarV2>
@@ -129,7 +152,7 @@ pub fn address_search_page() -> Html {
                 <form {onsubmit} >
                 <div class="d-flex flex-row">
                     <div class="d-flex flex-colum mb-2 shadow-sm">
-                        <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
+                        <input {onchange} type="text" value={search_text.clone()} style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
                         <button type="submit" class="btn btn-primary">{"Search"}</button>
                         if state.load_error { 
                             <span class="mx-1 badge bg-danger">{"Error"}</span> 
@@ -210,4 +233,9 @@ pub fn address_search_page() -> Html {
             </div>
         </>
     }
+}
+
+#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
+pub struct AddressSearchQuery {
+    pub search_text: Option<String>,
 }

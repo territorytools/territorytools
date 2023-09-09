@@ -16,7 +16,6 @@ use web_sys::{
 };
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
-use yew_router::history::HistoryError;
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]

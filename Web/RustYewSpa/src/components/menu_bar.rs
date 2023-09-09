@@ -67,7 +67,7 @@ pub fn menu_bar() -> Html {
 pub fn map_page_link() -> Html {
     let navigator = use_navigator().unwrap();
 
-    let onclick = Callback::from(move |_| navigator.push(&Route::MapComponent));
+    let onclick = Callback::from(move |_| navigator.push(&Route::Map));
     html! {
         <>
             

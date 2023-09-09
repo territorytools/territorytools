@@ -8,13 +8,18 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::territories::TerritorySummary;
 use crate::functions::document_functions::set_document_title;
+use crate::Route;
+
 use gloo_console::log;
 use std::ops::Deref;
 use reqwasm::http::{Request};
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
+use yew_router::hooks::use_location;
+use yew_router::prelude::use_navigator;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
+use serde::{Serialize, Deserialize};
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritorySearchPage {
@@ -27,7 +32,11 @@ pub struct TerritorySearchPage {
 }
 
 #[function_component(TerritorySearch)]
-pub fn address_search_page() -> Html {        
+pub fn address_search_page() -> Html {     
+    let navigator = use_navigator().unwrap();
+    let location = use_location().expect("Location with query parameters");
+    let query: TerritorySearchQuery = location.query().expect("A TerritorySearchQuery struct"); //.unwrap_or(TerritorySearchQuery::default());
+    
     let state = use_state(|| TerritorySearchPage::default());
 
     set_document_title("Territory Search");
@@ -42,12 +51,14 @@ pub fn address_search_page() -> Html {
             //if !search_text.is_empty() {
                 // TODO: Clear search results if nothing is returned
                 // TODO: Leave search text in the search box?
+                log!(format!("tsp:onsubmit:text: {}", search_text.clone()));
                 let result = get_territories(search_text).await;
                 cloned_state.set(result);
            // }
         });
     });
 
+    let navigator = navigator.clone();
     let onchange = {
         let state = state.clone();
         Callback::from(move |event: Event| {
@@ -57,11 +68,19 @@ pub fn address_search_page() -> Html {
                 .expect("An input value for an HtmlInputElement")
                 .unchecked_into::<HtmlInputElement>()
                 .value();
+            
+            let query = TerritorySearchQuery {
+                search_text: Some(value.clone()),
+            };
+
+            let _ = navigator.push_with_query(&Route::TerritorySearch, &query);
 
             modification.search_text = value;
             state.set(modification);
         })
     };
+
+    let search_text = query.search_text.clone().unwrap_or_default();
 
     let cloned_state = state.clone();
     use_effect_with_deps(move |_| {
@@ -90,7 +109,7 @@ pub fn address_search_page() -> Html {
                 <form {onsubmit} >
                     <div class="d-flex flex-row">
                         <div class="d-flex flex-colum mb-2 shadow-sm">
-                            <input {onchange} type="text" value="" style="max-width:400px;" placeholder="Enter search text" class="form-control" />
+                            <input {onchange} type="text" value={search_text.clone()} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
                             <button type="submit" class="btn btn-primary">{"Search"}</button>
                             if state.load_error { 
                                 <span class="mx-1 badge bg-danger">{"Error"}</span> 
@@ -194,4 +213,9 @@ async fn get_territories(search_text: String) -> TerritorySearchPage {
     };
 
     result
+}
+
+#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
+pub struct TerritorySearchQuery {
+    pub search_text: Option<String>,
 }
