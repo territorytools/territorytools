@@ -27,17 +27,15 @@ use serde::{Serialize, Deserialize};
 pub struct Props {
 }
 
-//#[derive(Properties, PartialEq, Clone, Default)]
 pub struct TerritorySearchPage {
-    /*pub*/ search_text: String,
-    /*pub*/ territories: Vec<TerritorySummary>,
-    /*pub*/ result: TerritorySearchResult,
-    /*pub*/ _listener: LocationHandle,
+    _listener: LocationHandle,
+    search_text: String,
+    territories: Vec<TerritorySummary>,
+    result: TerritorySearchResult,
 }
 
 pub enum Msg {
     Load(TerritorySearchResult),
-    UpdateSearchText(String),
     RefreshFromSearchText(),
 }
 
@@ -46,41 +44,21 @@ impl Component for TerritorySearchPage {
     type Properties = Props;
     
     fn create(ctx: &Context<Self>) -> Self {
-        let location = ctx.link().location().expect("Location or URI");
-        let query = location.query().unwrap_or(TerritorySearchQuery::default());
-        
-        let search_text = query.search_text.clone().unwrap_or_default();  
         let link = ctx.link().clone();      
         let listener = ctx.link()
-        .add_location_listener(
-            Callback::from(move |_| {
-                // Location URI & ctx not available here... not really?
+            .add_location_listener(
+                Callback::from(move |_| {
+                    log!("tsp:create:location_listener/Callback:send_message(RefreshFromSearchText)");
+                    link.send_message(Msg::RefreshFromSearchText());
+                })
+            )
+            .unwrap();
 
-                log!("tsp:create:location_listener_callback.RefreshFromSearchText:");
-                let search_text = search_text.clone();
-
-                link.send_message(Msg::RefreshFromSearchText());
-                // link.send_future(async move {
-                //     Msg::Load(get_territories(search_text).await)
-                // })
-            })
-        )
-        .unwrap();
-
-        let search_text = query.search_text.clone().unwrap_or_default();  
-        log!(format!("tsp:create: (then Load):search_text: {}", search_text.clone()));
-
-        let search_text = query.search_text.clone().unwrap_or_default();
-        ctx.link().send_future(async move {
-            Msg::Load(get_territories(search_text.clone()).await)
-        });
-
-        let search_text = query.search_text.clone().unwrap_or_default();
         return Self {
-            search_text: search_text.clone(), 
+            _listener: listener,
+            search_text: "".to_string(),
             territories: vec![],
             result: TerritorySearchResult::default(),
-            _listener: listener,
         }
     }
 
@@ -88,23 +66,17 @@ impl Component for TerritorySearchPage {
         match msg {
             Msg::Load(result) => {
                 self.territories = result.territories.clone();
-                self.search_text = result.search_text.clone();
-                log!(format!("tsp:update:Load:search_text: {}", self.search_text.clone()));
-                true
-            },
-            Msg::UpdateSearchText(text) => {
-                self.search_text = text;
+                log!(format!("tsp:update:Load:territories.len(): {}",self.territories.len()));
                 true
             },
             Msg::RefreshFromSearchText() => {
-                let location = ctx.link().location().expect("Location or URI");
-                let query = location.query().unwrap_or(TerritorySearchQuery::default());
-                let search_text = query.search_text.clone().unwrap_or_default();  
-                self.search_text = search_text.clone();
+                let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
+                log!(format!("tsp:update:RefreshFromSearchText():search_text {}", search_text.clone()));
+
                 ctx.link().send_future(async move {
                     Msg::Load(get_territories(search_text.clone()).await)
                 });
-                true
+                false
             }
         }
     }
@@ -125,11 +97,6 @@ impl Component for TerritorySearchPage {
                     .expect("An input value for an HtmlInputElement")
                     .unchecked_into::<HtmlInputElement>()
                     .value();
-                
-                // let v = value.clone();
-                // link.send_future(async move {
-                //     Msg::Load(get_territories(v).await)
-                // });
 
                 let v = value.clone();
                 let query = TerritorySearchQuery {
@@ -145,7 +112,12 @@ impl Component for TerritorySearchPage {
     
         let count = self.territories.len();
 
-        log!(format!("tsp:view:self.search_text: {}", self.search_text.clone()));
+        // let location = ctx.link().location().expect("Location or URI");
+        // let query = location.query().unwrap_or(TerritorySearchQuery::default());
+        //let search_text = query.search_text.clone().unwrap_or_default();  
+        let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
+
+        log!(format!("tsp:view:self.search_text: {}", search_text.clone()));
 
         html!{
             <>
@@ -163,7 +135,7 @@ impl Component for TerritorySearchPage {
                     <form {onsubmit} >
                         <div class="d-flex flex-row">
                             <div class="d-flex flex-colum mb-2 shadow-sm">
-                                <input {onchange} type="text" value={self.search_text.clone()} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
+                                <input {onchange} type="text" value={search_text} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
                                 <button type="submit" class="btn btn-primary">{"Search"}</button>
                                 if self.result.load_error { 
                                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
@@ -228,6 +200,17 @@ impl Component for TerritorySearchPage {
                 </div>
             </>
         }
+    }
+}
+
+pub trait SearchQuery {
+    fn search_query(&self) -> TerritorySearchQuery;
+}
+
+impl SearchQuery for &Context<TerritorySearchPage> {
+    fn search_query(&self) -> TerritorySearchQuery {
+        let location = self.link().location().expect("Location or URI");
+        location.query().unwrap_or(TerritorySearchQuery::default())    
     }
 }
 
