@@ -14,6 +14,9 @@ Use an SVG file and upload it to
 https://realfavicongenerator.net/
 in order to generate all the fav icon files.
 
+# Codespaces & vscode.dev
+(https://aka.ms/ghcs-default-image)
+
 # Troubleshooting
 
 ## Error: No space left on device
