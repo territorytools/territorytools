@@ -1,28 +1,26 @@
 # Data Flow
 
-
 ## Sequence of Events for **editor**:
 - create
     - send_future(RefreshFromSearchText())
-    - return/set empty struct
+    - return empty Self struct
 - view
-    - search_text = search_text query param
-    - show data
+    - search_text = search_text from query param
+    - html!
 
+- render: not implemented
 
-- render: Nothing
-
-- update/Messages (called later)
+- update: Messages
   - RefreshFromSearchText()
     - search_text = search_text query param
     - send_future(Load(fetch_data(search_text)))
   - Load(FetchDataResult)
 
-- SearchText_OnChange: Callback
-    - get value
-    - navigator.push_with_query
-    - ?? send_message(RefreshFromSearchText())
+- onchange: search text input Callback
+    - get value from HTML input box
+    - navigator.push_with_query(with value)
+    - (The above push triggers the _listener)
 
-- LocationChangeListener: Callback
+- _listener: location change listener Callback
     - send_message(RefreshFromSearchText())
 
