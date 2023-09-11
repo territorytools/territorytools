@@ -1,11 +1,13 @@
 use crate::AddressEditPage;
-use crate::AddressSearch;
+use crate::AddressSearchPage;
+use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::AssignPage;
 use crate::Secure;
 use crate::TerritoryEditPage;
 use crate::TerritoryEditorPage;
 use crate::TerritoryEditPageExample;
-use crate::TerritorySearch;
+use crate::TerritorySearchPage;
+use crate::TerritorySearchOld;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
 use crate::SvgMap;
@@ -52,12 +54,16 @@ pub enum Route {
     EditExample { territory_number: String },
     #[at("/app/address-search")]
     AddressSearch,
+    #[at("/app/shared-letter")]
+    AddressSharedLetter,
     #[at("/app/address-edit")]
     AddressEdit,
     #[at("/app/territory-edit")]
     TerritoryEditor,
     #[at("/app/territory-search")]
     TerritorySearch,    
+    #[at("/app/territory-search-old")]
+    TerritorySearchOld,    
     #[at("/app/secure")]
     Secure,
     #[at("/app/territory/:id")]
@@ -108,10 +114,12 @@ pub fn switch(route: Route) -> Html {
         Route::MapComponent => html! { <Model /> },
         Route::SvgMap => html! { <SvgMap /> },
         Route::CanvasMap => html! { <CanvasMap /> },
-        Route::AddressSearch => html! { <AddressSearch /> },
+        Route::AddressSearch => html! { <AddressSearchPage /> },
+        Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
-        Route::TerritorySearch => html! { <TerritorySearch /> },
+        Route::TerritorySearch => html! { <TerritorySearchPage /> },
+        Route::TerritorySearchOld => html! { <TerritorySearchOld /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },

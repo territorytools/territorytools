@@ -79,7 +79,10 @@ extern "C" {
 
     #[wasm_bindgen(method)]
     pub fn contains(this: &LatLngBounds, latlng: &LatLng) -> bool;
-
+    
+    #[wasm_bindgen(method)]
+    pub fn isValid(this: &LatLngBounds) -> bool;
+    
     // Layer
 
     #[derive(Debug, Clone)]
@@ -224,12 +227,24 @@ extern "C" {
     
     #[wasm_bindgen(constructor, js_namespace = L)]
     pub fn new_with_element(el: &HtmlElement, options: &JsValue) -> Map;
-   
+    
+    #[wasm_bindgen(method)]
+    pub fn getPixelOrigin(this: &Map) -> Point;
+
     #[wasm_bindgen(method)]
     pub fn layerPointToLatLng(this: &Map, point: &Point) -> LatLng;
 
     #[wasm_bindgen(method)]
     pub fn latLngToLayerPoint(this: &Map, latLng: &LatLng) -> Point;
+    
+    #[wasm_bindgen(method)]
+    pub fn containerPointToLatLng(this: &Map, point: &Point) -> LatLng;
+
+    #[wasm_bindgen(method)]
+    pub fn latLngToContainerPoint(this: &Map, point: &LatLng) -> Point;
+    
+    #[wasm_bindgen(method)]
+    pub fn mouseEventToLatLng(this: &Map, event: &MouseEvent) -> LatLng;
 
     #[wasm_bindgen(method)]
     pub fn setView(this: &Map, center: &LatLng, zoom: f64);

@@ -23,6 +23,7 @@ pub struct Territory {
     pub number: String,
     pub status: String,
     pub stage_id: Option<i32>,
+    pub stage: Option<String>,
     pub description: Option<String>,
     pub notes: Option<String>,
     pub address_count: i32,
@@ -30,6 +31,7 @@ pub struct Territory {
     pub last_completed_by: Option<String>,
     pub signed_out_to: Option<String>,
     pub signed_out: Option<String>,
+    pub assignee_link_key: Option<String>,
     pub group_id: Option<String>,
     pub sub_group_id: Option<String>,
     #[serde(default)]
@@ -76,6 +78,7 @@ pub struct TerritorySummary {
     pub area_code: Option<String>,
     pub status: Option<String>,
     pub status_date: Option<String>,
+    pub stage: Option<String>,
     pub publisher: Option<String>,
     pub view_link: Option<String>,
     // pub stage_id: Option<i32>,
