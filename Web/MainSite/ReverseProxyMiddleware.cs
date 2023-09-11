@@ -53,7 +53,8 @@ namespace TerritoryTools.Web.MainSite
                 if(context.Request.Query.TryGetValue("mtk", out StringValues value))
                 {
                     _logger.LogTrace($"MTK query param detected: {value}");
-                    if (string.IsNullOrWhiteSpace(value))
+                    if (string.IsNullOrWhiteSpace(value) 
+                        && !context.User.Identity.IsAuthenticated)
                     {
                         context.Response.StatusCode = 401;
                         _logger.LogTrace($"ReverseProxy: Territory key is missing");
@@ -62,13 +63,14 @@ namespace TerritoryTools.Web.MainSite
                     else
                     {
                         TerritoryLinkContract link = _apiService.Get<TerritoryLinkContract>($"territory-links/{value}", "");
-                        if (link == null)
+                        if (link == null && !context.User.Identity.IsAuthenticated)
                         {
                             context.Response.StatusCode = 401;
                             _logger.LogTrace($"ReverseProxy: Territory key does not exist");
                             return;
                         }
-                        else if (!link.Successful || link.Expires != null && link.Expires < DateTime.UtcNow)
+                        else if ((!link.Successful || link.Expires != null && link.Expires < DateTime.UtcNow) 
+                            && !context.User.Identity.IsAuthenticated)
                         {
                             context.Response.StatusCode = 403;
                             _logger.LogTrace($"ReverseProxy: Territory key expired {link.Expires}");
