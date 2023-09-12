@@ -7,9 +7,10 @@ use crate::components::{
 };
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::Route;
-use serde::{Serialize, Deserialize};
 
+use gloo_console::log;
 use regex::Regex;
+use serde::{Serialize, Deserialize};
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -42,10 +43,18 @@ impl Component for Model {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
+        log!("model:create:Creating...");
+        // let query = MapSearchQuery {
+        //     search: Some(value.clone()),
+        //     path: Some(path.clone()),
+        // };
+
+        // let _ = navigator.push_with_query(&Route::MapComponent, &query);
         let link = ctx.link().clone();      
         let listener = ctx.link()
             .add_location_listener(
                 Callback::from(move |_| {
+                    log!(format!("model:location change detected (possibly the first page load)"));
                     link.send_message(Msg::RefreshFromSearchText());
                 })
             )
@@ -59,7 +68,9 @@ impl Component for Model {
         // };
 
         // let _ = navigator.push_with_query(&Route::MapComponent, &query);
-
+        
+        let path = ctx.props().path.clone().unwrap_or_default();  
+        log!(format!("model:created:query.path: {}", path));
         return Self {
             _listener: listener,
             // city, 
@@ -67,7 +78,7 @@ impl Component for Model {
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
-            last_path: None, //Some(ctx.props().path.clone().unwrap_or_default()),
+            last_path: Some(path), //None, //Some(ctx.props().path.clone().unwrap_or_default()),
         }                
     }
 
@@ -159,6 +170,14 @@ impl Component for Model {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        // let navigator = ctx.link().navigator().unwrap();
+        // let query = MapSearchQuery {
+        //     search: Some("".to_string()),
+        //     path: ctx.props().path.clone(),
+        // };
+
+        // let _ = navigator.push_with_query(&Route::MapComponent, &query);
+
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default(); // Keep this here to prevent 2 searches
         });
