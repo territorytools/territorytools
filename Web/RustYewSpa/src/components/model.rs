@@ -69,6 +69,19 @@ impl Component for Model {
 
         // let _ = navigator.push_with_query(&Route::MapComponent, &query);
         
+        let navigator = ctx.link().navigator().unwrap();
+        let path_prop = ctx.props().path.clone().unwrap_or_default();
+        if !path_prop.is_empty() {
+            //Callback::from(move |event: Event| {
+                let query = MapSearchQuery {
+                    search: None,
+                    path: Some(path_prop.clone()),
+                };
+
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            //})
+        }
+        
         let path = ctx.props().path.clone().unwrap_or_default();  
         log!(format!("model:created:query.path: {}", path));
         return Self {
@@ -78,14 +91,15 @@ impl Component for Model {
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
-            last_path: Some(path), //None, //Some(ctx.props().path.clone().unwrap_or_default()),
+            last_path: None, //Some(ctx.props().path.clone().unwrap_or_default()), //Some(path), //
         }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::LoadBordersPath(map_model, _path, search) => {
+            Msg::LoadBordersPath(map_model, path, search) => {
                 self.territory_map = map_model.clone();
+                self.last_path = Some(path);
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -147,12 +161,25 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
-                let path = ctx.search_query().path.clone().unwrap_or_default();
+                let path = if ctx.search_query().path.clone().unwrap_or_default().is_empty() {
+                    log!("model:RefreshFromSearchText:query:path.is_empty:TRUE");
+                    //ctx.props().path.clone().unwrap_or_default()
+                    self.last_path.clone().unwrap_or_default()
+                } else {
+                    log!("model:RefreshFromSearchText:query:path.is_empty:FALSE");
+                    ctx.search_query().path.clone().unwrap_or_default()
+                };
+
+                log!(format!("mmodel:RefreshFromSearchText:path (variable): {} last_path: {}", 
+                    path.clone(),
+                    self.last_path.clone().unwrap_or_default()
+                ));
 
                 // This one is weird because all the territories are preloaded and searchable                
                 if self.last_path != Some(path.to_string()) {
                     self.last_path = Some(path.to_string());  
                     ctx.link().send_future(async move {
+                        log!(format!("model:future:LoadBordersPath:path:{}", path.clone()));
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_key(
                                 &path.to_string()).await, 
