@@ -82,10 +82,11 @@ pub struct MapComponent {
     layer_group: LayerGroup,
     mouse_click_x: i32,
     mouse_click_y: i32,
-    selected: Vec<String>,
+    selected: Vec<String>, // TODO: Use territory ids (ints) instead of tags
     bounds: LatLngBounds,
     center_lat: f64,
     center_lon: f64,
+    multi_select: bool,
 }
 
 impl MapComponent {
@@ -119,6 +120,7 @@ impl Component for MapComponent {
             bounds: LatLngBounds::new(&LatLng::new(0.0, 0.0), &LatLng::new(10.0, 10.0)),
             center_lat: 0.0,
             center_lon: 0.0,
+            multi_select: false,
         }
     }
 
@@ -141,7 +143,10 @@ impl Component for MapComponent {
                         vertices.push(GeoPoint { x: v.lon as f64, y: v.lat as f64});
                     }
 
-                    let inside = is_inside_polygon(vertices, &GeoPoint {x: lat_lng.lng() as f64, y: lat_lng.lat() as f64});
+                    let inside = is_inside_polygon(vertices, &GeoPoint {
+                        x: lat_lng.lng() as f64, 
+                        y: lat_lng.lat() as f64
+                    });
     
                     if inside { 
                         let path: Element = document().get_element_by_id(format!("territory-id-{}", tp.territory_id.clone()).as_str())
@@ -151,13 +156,10 @@ impl Component for MapComponent {
                         let territories = self
                             .territory_map
                             .territories
-                            //.clone()
                             .iter()
                             .map(|t| t.to_owned())
                             .filter(|t| t.number == tp.territory_id.clone())
                             .collect::<Vec<_>>();
-                            //.expect(format!("A territory to exist with number: {}", tp.territory_id.clone()))
-                            
 
                         let territory_color = territory_color(&territories[0]);
 
@@ -168,9 +170,12 @@ impl Component for MapComponent {
                             let _ = path.set_attribute("stroke", territory_color.as_str());
                         } else {
                             self.selected.push(tp.territory_id.clone());
-                            // TODO: New feature, only when selecting
-                            // let _ = path.set_attribute("fill", "black");
-                            // let _ = path.set_attribute("stroke", "white");
+                            // TODO: New feature, only when selecting, no button yet
+                            if self.multi_select {
+                                let _ = path.set_attribute("fill", "black");
+                                let _ = path.set_attribute("stroke", "white");
+                                // TODO: Bring it to the front with z?
+                            }
                         }
 
                         //log!(format!("mc:update:MouseClick: inside:yes: self.selected.len() {}", self.selected.len()));

@@ -19,10 +19,10 @@ use yew_router::prelude::LocationHandle;
 use gloo_console::log;
 
 pub enum Msg {
-    LoadBorders(MapModel),
-    LoadBordersPath(MapModel, String),
+    //LoadBorders(MapModel), // Never called
+    LoadBordersPath(MapModel, String), // Download a "path", which includes a default search
     Search(String),
-    RefreshFromSearchText(),
+    RefreshFromSearchText(), // Search what's already downloaded
     //MouseClick(i32, i32),
 }
 
@@ -90,18 +90,19 @@ impl Component for Model {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         // Calling this update(Message) calls map_components.change(Properties)
         match msg {
-            Msg::LoadBorders(territory_map) => {
-                self.territory_map = territory_map.clone();
-                self.tpolygons.clear();
+            // Msg::LoadBorders(territory_map) => {
+            //     // never called
+            //     self.territory_map = territory_map.clone();
+            //     self.tpolygons.clear();
                 
-                for t in self.territory_map.territories.iter() {
-                    if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
-                    }            
-                }
-                true
-            },
+            //     for t in self.territory_map.territories.iter() {
+            //         if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
+            //             let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
+            //             self.tpolygons.push(tp);
+            //         }            
+            //     }
+            //     true
+            // },
             Msg::LoadBordersPath(map_model, path) => {
                 log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
                 self.territory_map = map_model.clone();
@@ -145,16 +146,18 @@ impl Component for Model {
                 // }
                 // log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.map_model.edit_territory_button_enabled));
 
-                self.tpolygons.clear();
-                //log!(format!("model:update: LoadBorderPath: territories: {}", self.map_model.territories.len()));
-                for territory in self.territory_map.territories.iter() {
-                    //log!("model:update: LoadBorderPath: territory.description: item: {}");
-                    if territory.description.clone() != None && territory.description.clone().unwrap().contains(&description_contains.clone()) {
-                        //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
-                        let tp = tpoly_from_territory_w_button(territory, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
-                    }            
-                }
+                // self.tpolygons.clear();
+                // //log!(format!("model:update: LoadBorderPath: territories: {}", self.map_model.territories.len()));
+                // for territory in self.territory_map.territories.iter() {
+                //     //log!("model:update: LoadBorderPath: territory.description: item: {}");
+                //     if territory.description.clone() != None && territory.description.clone().unwrap().contains(&description_contains.clone()) {
+                //         //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
+                //         let tp = tpoly_from_territory_w_button(territory, self.territory_map.popup_content_options.clone());
+                //         self.tpolygons.push(tp);
+                //     }            
+                // }
+
+                ctx.link().send_message(Msg::Search(path.clone()));
                 true
             },
             Msg::Search(search) => {
@@ -229,7 +232,7 @@ impl Component for Model {
     // }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
+        //let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
 
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
