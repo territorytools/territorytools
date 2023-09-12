@@ -7,7 +7,6 @@ const DATA_API_PATH: &str = "/api/addresses/search";
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
-use crate::functions::document_functions::set_document_title;
 use crate::Route;
 
 use gloo_console::log;

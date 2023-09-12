@@ -65,7 +65,6 @@ impl ImplicitClone for City {}
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
-    pub city: City,
     pub territory_map: MapModel,
     pub tpolygons: Vec<TerritoryPolygon>,
     pub search: String,

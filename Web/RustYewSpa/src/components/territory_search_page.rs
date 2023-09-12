@@ -7,7 +7,6 @@ const DATA_API_PATH: &str = "/api/territories/list";
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::territories::TerritorySummary;
-use crate::functions::document_functions::set_document_title;
 use crate::Route;
 
 use gloo_console::log;

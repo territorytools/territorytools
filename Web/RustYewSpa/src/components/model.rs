@@ -1,9 +1,5 @@
 use crate::components::{
-    control::{
-        Cities, 
-        //Control,
-    },
-    map_component::{City, MapComponent, PixelPoint, MapModel},
+    map_component::{MapComponent, MapModel},
     model_functions::*,
     map_component_functions::{
         //tpoly_from_territory,
@@ -19,13 +15,14 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
+use yew_router::prelude::LocationHandle;
 use gloo_console::log;
 
 pub enum Msg {
-    SelectCity(City),
     LoadBorders(MapModel),
     LoadBordersPath(MapModel, String),
     Search(String),
+    RefreshFromSearchText(),
     //MouseClick(i32, i32),
 }
 
@@ -35,8 +32,9 @@ pub struct Props {
 }
 
 pub struct Model {
-    city: City,
-    cities: Cities,
+    _listener: LocationHandle,
+    // city: City,  // These are interesting don't delete them yet
+    // cities: Cities,
     territory_map: MapModel,
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
@@ -56,25 +54,27 @@ impl Component for Model {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
-        let seattle = City {
-            name: "Seattle".to_string(),
-            lat: PixelPoint(47.7784f64, -122.1742f64),
-        };
-        let cities: Cities = Cities {
-            list: vec![seattle],
-        };
-        let city = cities.list[0].clone();
+        let link = ctx.link().clone();      
+        let listener = ctx.link()
+            .add_location_listener(
+                Callback::from(move |_| {
+                    link.send_message(Msg::RefreshFromSearchText());
+                })
+            )
+            .unwrap();
+
         let territory_map: MapModel = MapModel::default();
 
-        let path: String = ctx.props().path.clone().unwrap_or("".to_string());
-        log!(format!("model: create: ctx.props().path.clone().unwrap_or(\"\".to_string()): {}", path));
-        ctx.link().send_future(async move {
-            Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
-        });
+        // let path: String = ctx.props().path.clone().unwrap_or("".to_string());
+        // log!(format!("model: create: ctx.props().path.clone().unwrap_or(\"\".to_string()): {}", path));
+        // ctx.link().send_future(async move {
+        //     Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
+        // });
 
-        return Self { 
-            city, 
-            cities, 
+        return Self {
+            _listener: listener,
+            // city, 
+            // cities, // These are interesting dont' delete them yet
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
@@ -87,18 +87,9 @@ impl Component for Model {
          }                
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         // Calling this update(Message) calls map_components.change(Properties)
         match msg {
-            Msg::SelectCity(city) => {
-                self.city = self
-                    .cities
-                    .list
-                    .iter()
-                    .find(|c| c.name == city.name)
-                    .unwrap()
-                    .clone();
-            },
             Msg::LoadBorders(territory_map) => {
                 self.territory_map = territory_map.clone();
                 self.tpolygons.clear();
@@ -109,6 +100,7 @@ impl Component for Model {
                         self.tpolygons.push(tp);
                     }            
                 }
+                true
             },
             Msg::LoadBordersPath(map_model, path) => {
                 log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
@@ -163,6 +155,7 @@ impl Component for Model {
                         self.tpolygons.push(tp);
                     }            
                 }
+                true
             },
             Msg::Search(search) => {
                 self.search = search;
@@ -210,9 +203,17 @@ impl Component for Model {
                     //     log!(format!("model: update: Msg::Search: search: (else) {}", self.search.clone()));
                     // }            
                 }
-            },          
+                true
+            },
+            Msg::RefreshFromSearchText() => {
+                let search_text = ctx.search_query().search.clone().unwrap_or_default();  
+                ctx.link().send_future(async move {
+                    // This one is weird because all the territories are preloaded and searchable
+                    Msg::LoadBordersPath(fetch_territory_map_w_key(&search_text.clone()).await, search_text)
+                });
+                false
+            }          
         }
-        true
     }
 
     // fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
@@ -227,7 +228,6 @@ impl Component for Model {
     // }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let _cb = ctx.link().callback(Msg::SelectCity); // Call self back with this message
         let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
 
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
@@ -323,7 +323,7 @@ impl Component for Model {
                    
                     mouse_click_x={&self.mouse_click_x}
                     mouse_click_y={&self.mouse_click_y}
-                    city={&self.city} 
+                    
                     territory_map={&self.territory_map} 
                     tpolygons={self.tpolygons.clone()} 
                     search={self.search.clone()}/>
