@@ -79,9 +79,6 @@ pub struct MapComponent {
     id_list: Vec<i32>,
     layer_group: LayerGroup,
     selected: Vec<String>, // TODO: Use territory ids (ints) instead of tags
-    bounds: LatLngBounds,
-    center_lat: f64,
-    center_lon: f64,
     multi_select: bool,
 }
 
@@ -110,10 +107,7 @@ impl Component for MapComponent {
             tpolygons: vec![],
             id_list: vec![],
             layer_group: LayerGroup::new(),
-            selected: vec![],
-            bounds: LatLngBounds::new(&LatLng::new(0.0, 0.0), &LatLng::new(10.0, 10.0)),
-            center_lat: 0.0,
-            center_lon: 0.0,
+            selected: vec![],     
             multi_select: false,
         }
     }

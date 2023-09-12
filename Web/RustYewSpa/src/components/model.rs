@@ -16,7 +16,6 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 use yew_router::prelude::LocationHandle;
-use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "path", which includes a default search
@@ -66,21 +65,14 @@ impl Component for Model {
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::LoadBordersPath(map_model, path, search) => {
-                log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
+            Msg::LoadBordersPath(map_model, _path, search) => {
                 self.territory_map = map_model.clone();
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
-                log!(format!(
-                    "model:update: LoadBorderPath: link-grants: {}", 
-                    link_grants.clone()));
-
-                log!(format!(
-                    "model:update: LoadBorderPath: territories.len(): {}", 
-                    self.territory_map.territories.len()));
-
                 // Description Contains Section
+                // TODO: This part... maybe should be somewhere else
+                // but it would contain the default search for the key
                 let regex = Regex::new(r"description\-contains=([^;]+?);").expect("Valid RegEx");
                 let link_grants_clone = link_grants.clone();
                 let caps = regex.captures(link_grants_clone.as_str());
@@ -92,9 +84,6 @@ impl Component for Model {
                         .get(1)
                         .map_or("".to_string(), |m| m.as_str().to_string());
 
-                    log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
-                    // TODO: This part... maybe should be somewhere else
-                    // but it would contain the default search for the key
                     self.search = description_contains.clone();
                 }
                 ctx.link().send_message(Msg::Search(search.clone()));
@@ -139,12 +128,13 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
+                let path = ctx.search_query().path.clone().unwrap_or_default();  
                 ctx.link().send_future(async move {
                     // This one is weird because all the territories are preloaded and searchable
                     Msg::LoadBordersPath(
                         fetch_territory_map_w_key(
-                            &search_text.clone()).await, 
-                            "PATH_GOES_HERE".to_string(), 
+                            &path.to_string()).await, 
+                            path.to_string(), 
                             search_text.clone())
                 });
                 false
@@ -158,7 +148,8 @@ impl Component for Model {
         });
 
         let navigator = ctx.link().navigator().unwrap();
-        let link = ctx.link().clone();
+        //let path_prop = ctx.props().path.clone().unwrap_or_default();
+        let path = ctx.search_query().path.clone().unwrap_or_default();  
         let search_text_onchange = {
             Callback::from(move |event: Event| {
                 let value = event
@@ -168,7 +159,8 @@ impl Component for Model {
                     .value();
 
                 let query = MapSearchQuery {
-                    search: Some(value.clone())
+                    search: Some(value.clone()),
+                    path: Some(path.clone()),
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -176,10 +168,13 @@ impl Component for Model {
         };
 
         let navigator = ctx.link().navigator().unwrap();
+        //let path_prop = ctx.props().path.clone().unwrap_or_default();
+        let path = ctx.search_query().path.clone().unwrap_or_default();  
         let search_clear_onclick = {
             Callback::from(move |_event: MouseEvent| {
                 let query = MapSearchQuery {
                     search: Some("".to_string()),
+                    path: Some(path.clone()),
                 };
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
@@ -237,6 +232,7 @@ impl Component for Model {
 #[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
 pub struct MapSearchQuery {
     pub search: Option<String>,
+    pub path: Option<String>, // TODO: Rename this to 'key' ?
 }
 
 pub trait SearchQuery {
