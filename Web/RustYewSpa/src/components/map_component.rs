@@ -24,7 +24,6 @@ use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node, SvgPathElement};
 use yew::{html::ImplicitClone, prelude::*};
 use serde::{Deserialize, Serialize};
-use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
 struct PolylineOptions {

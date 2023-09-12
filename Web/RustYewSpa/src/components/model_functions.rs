@@ -5,7 +5,6 @@ use crate::models::territories::{Territory,BorderFilteredResult};
 use crate::components::popup_content::PopupContentOptions;
 
 use reqwasm::http::Request;
-use gloo_console::log;
 use regex::Regex;
 
 #[cfg(debug_assertions)]

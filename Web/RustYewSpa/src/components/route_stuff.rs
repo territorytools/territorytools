@@ -24,11 +24,11 @@ pub enum Route {
     Root,
     #[at("/wasm/index.html")]
     Start,
-    #[at("/app/map")]
+    #[at("/app/map-old")]
     Map,
-    #[at("/key/:path")]
-    MapComponentPath { path: String },
-    #[at("/app/map-new")]
+    #[at("/key/:key")]
+    MapComponentKey { key: String },
+    #[at("/app/map")]
     MapComponent,
     #[at("/app/svg-map")]
     SvgMap,
@@ -108,7 +108,7 @@ pub fn switch(route: Route) -> Html {
             territory_number={territory_number}
         /> },
         Route::Map => html! { <TerritoryMap /> },
-        Route::MapComponentPath { path } => html! { <Model {path} /> },
+        Route::MapComponentKey { key } => html! { <Model {key} /> },
         Route::MapComponent => html! { <Model /> },
         Route::SvgMap => html! { <SvgMap /> },
         Route::CanvasMap => html! { <CanvasMap /> },
