@@ -53,6 +53,13 @@ impl Component for Model {
 
         let territory_map: MapModel = MapModel::default();
 
+        // let query = MapSearchQuery {
+        //     search: Some("".to_string()),
+        //     path: Some(ctx.props().path.clone().unwrap_or_default()),
+        // };
+
+        // let _ = navigator.push_with_query(&Route::MapComponent, &query);
+
         return Self {
             _listener: listener,
             // city, 
@@ -60,7 +67,7 @@ impl Component for Model {
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
-            last_path: None,
+            last_path: None, //Some(ctx.props().path.clone().unwrap_or_default()),
         }                
     }
 
@@ -77,15 +84,15 @@ impl Component for Model {
                 let regex = Regex::new(r"description\-contains=([^;]+?);").expect("Valid RegEx");
                 let link_grants_clone = link_grants.clone();
                 let caps = regex.captures(link_grants_clone.as_str());
-                let mut description_contains: String = "".to_string();
+                let mut _description_contains: String = "".to_string();
                 if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
-                    description_contains = caps
+                    _description_contains = caps
                         .as_ref()
                         .expect("description-contains in link_grants")
                         .get(1)
                         .map_or("".to_string(), |m| m.as_str().to_string());
 
-                    self.search = description_contains.clone();
+                    self.search = _description_contains.clone();
                 }
                 ctx.link().send_message(Msg::Search(search.clone()));
                 true

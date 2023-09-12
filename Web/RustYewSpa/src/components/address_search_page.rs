@@ -97,7 +97,7 @@ impl Component for AddressSearchPage {
             })
         };
     
-        let count = self.addresses.len();
+        let _count = self.addresses.len();
         let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
       
         html! {

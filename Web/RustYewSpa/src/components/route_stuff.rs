@@ -47,8 +47,6 @@ pub enum Route {
     #[at("/app/territories/:territory_number/edit")]
     Edit {
         territory_number: String,
-        //description: String,
-        //group_id: String,
     },
     #[at("/app/territories/:territory_number/example")]
     EditExample { territory_number: String },
