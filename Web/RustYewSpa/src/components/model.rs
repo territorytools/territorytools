@@ -2,7 +2,6 @@ use crate::components::{
     map_component::{MapComponent, MapModel},
     model_functions::*,
     map_component_functions::{
-        //tpoly_from_territory,
         TerritoryPolygon,
         tpoly_from_territory_w_button},
 };
@@ -35,6 +34,7 @@ pub struct Model {
     territory_map: MapModel,
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
+    last_path: Option<String>,
 }
 
 impl Component for Model {
@@ -60,7 +60,8 @@ impl Component for Model {
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
-         }                
+            last_path: None,
+        }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -128,15 +129,23 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
-                let path = ctx.search_query().path.clone().unwrap_or_default();  
-                ctx.link().send_future(async move {
-                    // This one is weird because all the territories are preloaded and searchable
-                    Msg::LoadBordersPath(
-                        fetch_territory_map_w_key(
-                            &path.to_string()).await, 
-                            path.to_string(), 
-                            search_text.clone())
-                });
+                let path = ctx.search_query().path.clone().unwrap_or_default();
+
+                // This one is weird because all the territories are preloaded and searchable                
+                if self.last_path != Some(path.to_string()) {
+                    self.last_path = Some(path.to_string());  
+                    ctx.link().send_future(async move {
+                        Msg::LoadBordersPath(
+                            fetch_territory_map_w_key(
+                                &path.to_string()).await, 
+                                path.to_string(), 
+                                search_text.clone())
+                    });
+                } else {
+                    ctx.link().send_future(async move {
+                        Msg::Search(search_text.clone())
+                    });                    
+                }
                 false
             }          
         }
@@ -148,7 +157,6 @@ impl Component for Model {
         });
 
         let navigator = ctx.link().navigator().unwrap();
-        //let path_prop = ctx.props().path.clone().unwrap_or_default();
         let path = ctx.search_query().path.clone().unwrap_or_default();  
         let search_text_onchange = {
             Callback::from(move |event: Event| {
@@ -168,7 +176,6 @@ impl Component for Model {
         };
 
         let navigator = ctx.link().navigator().unwrap();
-        //let path_prop = ctx.props().path.clone().unwrap_or_default();
         let path = ctx.search_query().path.clone().unwrap_or_default();  
         let search_clear_onclick = {
             Callback::from(move |_event: MouseEvent| {
@@ -176,6 +183,7 @@ impl Component for Model {
                     search: Some("".to_string()),
                     path: Some(path.clone()),
                 };
+
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
         };
