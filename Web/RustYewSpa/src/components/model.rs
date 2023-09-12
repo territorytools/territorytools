@@ -43,47 +43,28 @@ impl Component for Model {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
-        log!("model:create:Creating...");
-        // let query = MapSearchQuery {
-        //     search: Some(value.clone()),
-        //     path: Some(path.clone()),
-        // };
-
-        // let _ = navigator.push_with_query(&Route::MapComponent, &query);
         let link = ctx.link().clone();      
         let listener = ctx.link()
             .add_location_listener(
                 Callback::from(move |_| {
-                    log!(format!("model:location change detected (possibly the first page load)"));
                     link.send_message(Msg::RefreshFromSearchText());
                 })
             )
             .unwrap();
 
         let territory_map: MapModel = MapModel::default();
-
-        // let query = MapSearchQuery {
-        //     search: Some("".to_string()),
-        //     path: Some(ctx.props().path.clone().unwrap_or_default()),
-        // };
-
-        // let _ = navigator.push_with_query(&Route::MapComponent, &query);
-        
+       
         let navigator = ctx.link().navigator().unwrap();
-        let path_prop = ctx.props().path.clone().unwrap_or_default();
-        if !path_prop.is_empty() {
-            //Callback::from(move |event: Event| {
-                let query = MapSearchQuery {
-                    search: None,
-                    path: Some(path_prop.clone()),
-                };
+        let path = ctx.props().path.clone().unwrap_or_default();
+        if !path.is_empty() {
+            let query = MapSearchQuery {
+                search: None,
+                path: Some(path.clone()),
+            };
 
-                let _ = navigator.push_with_query(&Route::MapComponent, &query);
-            //})
+            let _ = navigator.push_with_query(&Route::MapComponent, &query);
         }
         
-        let path = ctx.props().path.clone().unwrap_or_default();  
-        log!(format!("model:created:query.path: {}", path));
         return Self {
             _listener: listener,
             // city, 
@@ -91,7 +72,7 @@ impl Component for Model {
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
-            last_path: None, //Some(ctx.props().path.clone().unwrap_or_default()), //Some(path), //
+            last_path: None,
         }                
     }
 
@@ -162,24 +143,15 @@ impl Component for Model {
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
                 let path = if ctx.search_query().path.clone().unwrap_or_default().is_empty() {
-                    log!("model:RefreshFromSearchText:query:path.is_empty:TRUE");
-                    //ctx.props().path.clone().unwrap_or_default()
                     self.last_path.clone().unwrap_or_default()
                 } else {
-                    log!("model:RefreshFromSearchText:query:path.is_empty:FALSE");
                     ctx.search_query().path.clone().unwrap_or_default()
                 };
-
-                log!(format!("mmodel:RefreshFromSearchText:path (variable): {} last_path: {}", 
-                    path.clone(),
-                    self.last_path.clone().unwrap_or_default()
-                ));
 
                 // This one is weird because all the territories are preloaded and searchable                
                 if self.last_path != Some(path.to_string()) {
                     self.last_path = Some(path.to_string());  
                     ctx.link().send_future(async move {
-                        log!(format!("model:future:LoadBordersPath:path:{}", path.clone()));
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_key(
                                 &path.to_string()).await, 
@@ -197,14 +169,6 @@ impl Component for Model {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        // let navigator = ctx.link().navigator().unwrap();
-        // let query = MapSearchQuery {
-        //     search: Some("".to_string()),
-        //     path: ctx.props().path.clone(),
-        // };
-
-        // let _ = navigator.push_with_query(&Route::MapComponent, &query);
-
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default(); // Keep this here to prevent 2 searches
         });

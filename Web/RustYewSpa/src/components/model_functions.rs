@@ -38,7 +38,7 @@ fn territory_filter(t: &Territory) -> bool {
 }
 
 pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
-    log!(format!("fetch_territory_map_w_key: access_key: {access_key}"));
+    //log!(format!("fetch_territory_map_w_key: access_key: {access_key}"));
     let fetched_result: BorderFilteredResult = fetch_territories_w_key(&access_key).await;       
     let map_center = find_center(&fetched_result.territories);
 
@@ -50,14 +50,14 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     let caps = regex.captures(link_grants_clone.as_str());
     if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
         edit_territory_button_enabled = caps.as_ref().expect("edit_territory_button_enabled in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string()).parse().unwrap_or(true);
-        log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: (link_grants) {}", edit_territory_button_enabled));
+        //log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: (link_grants) {}", edit_territory_button_enabled));
     }
     // user_roles (override link_grants)
     let user_roles_clone = fetched_result.user_roles.clone().unwrap_or("".to_string());
     let caps2 = regex.captures(user_roles_clone.as_str());
     if caps2.is_some() && caps2.as_ref().unwrap().len() > 0usize {
         edit_territory_button_enabled = caps2.as_ref().expect("edit_territory_button_enabled in user_roles_clone").get(2).map_or("".to_string(), |m| m.as_str().to_string()).parse().unwrap_or(true);
-        log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: (user_roles) {}", edit_territory_button_enabled));
+        //log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: (user_roles) {}", edit_territory_button_enabled));
     }
     //log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", edit_territory_button_enabled.parse().unwrap_or(true)));
 
@@ -69,7 +69,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
         territory_open_enabled = caps.as_ref().expect("big-map-territory-open-enabled in user_roles").get(2).map_or("".to_string(), |m| m.as_str().to_string());
     }
-    log!(format!("model:update: LoadBorderPath: territory_open_enabled: {}", territory_open_enabled.parse().unwrap_or(false)));
+    //log!(format!("model:update: LoadBorderPath: territory_open_enabled: {}", territory_open_enabled.parse().unwrap_or(false)));
 
     // big-map-show-stage Section
     let regex = Regex::new(r"(^|;|\s+)big\-map\-show\-stage=([^;]+?)($|;)").expect("Valid RegEx");
@@ -79,7 +79,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
     if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
         show_stage = caps.as_ref().expect("big-map-show-stage in user_roles").get(2).map_or("".to_string(), |m| m.as_str().to_string());
     }
-    log!(format!("model:update: LoadBorderPath: show_stage: {}", show_stage.parse().unwrap_or(false)));
+    //log!(format!("model:update: LoadBorderPath: show_stage: {}", show_stage.parse().unwrap_or(false)));
 
     MapModel {
         territories: fetched_result.territories.clone(),

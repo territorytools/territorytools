@@ -179,8 +179,6 @@ impl Component for MapComponent {
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         let props = ctx.props();
-        log!(format!("map_component: changed: starting..."));
-
         self.territory_map = MapModel {
             territories: props.territory_map.territories.clone(),
             territories_is_loaded: true,
