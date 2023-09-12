@@ -209,7 +209,8 @@ impl Component for Model {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
                 ctx.link().send_future(async move {
                     // This one is weird because all the territories are preloaded and searchable
-                    Msg::LoadBordersPath(fetch_territory_map_w_key(&search_text.clone()).await, search_text)
+                    Msg::LoadBordersPath(fetch_territory_map_w_key(&search_text.clone()).await, search_text.clone())
+                    //Msg::Search(search_text.clone())
                 });
                 false
             }          
@@ -249,15 +250,18 @@ impl Component for Model {
                 let query = MapSearchQuery {
                     search: Some(value.clone()),
                 };
+
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
-  
             })
         };
 
-        let link = ctx.link().clone();
+        let navigator = ctx.link().navigator().unwrap();
         let search_clear_onclick = {
             Callback::from(move |_event: MouseEvent| {
-                link.send_message(Msg::Search("".to_string()));
+                let query = MapSearchQuery {
+                    search: Some("".to_string()),
+                };
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
         };
 
