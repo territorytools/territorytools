@@ -11,11 +11,14 @@ use crate::components::{
         tpoly_from_territory_w_button},
 };
 use crate::components::menu_bar_v2::MenuBarV2;
+use crate::Route;
+use serde::{Serialize, Deserialize};
 
 use regex::Regex;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+use yew_router::scope_ext::RouterScopeExt;
 use gloo_console::log;
 
 pub enum Msg {
@@ -69,9 +72,14 @@ impl Component for Model {
             Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
         });
 
-        return Self { city, cities, territory_map, search: 
-            "loading search...".to_string(), tpolygons: vec![],
-            mouse_click_x: 0, mouse_click_y: 0,
+        return Self { 
+            city, 
+            cities, 
+            territory_map, 
+            search: "".to_string(), 
+            tpolygons: vec![],
+            mouse_click_x: 0, 
+            mouse_click_y: 0,
             // corner_1_lat: 0.0, corner_1_lon: 0.0,
             // corner_2_lat: 0.0, corner_2_lon: 0.0,
             // center_lat: 0.0, center_lon: 0.0,
@@ -207,27 +215,16 @@ impl Component for Model {
         true
     }
 
-    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
-        //if ctx.props().path == Some("campaign".to_string()) {        
-        if _old_props.path == Some("campaign".to_string()) {
-            log!("campaign");
-            self.search = "[X]".to_string();
-            ctx.link().send_message(Msg::Search("[C]".to_string()));
-            return true;
-        }
-        false
-    }
-
-    fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
-        if first_render {
-            // let group_id: String = "23".to_string();
-            // ctx.link().send_future(async move {
-            //     //Msg::LoadBorders(fetch_territory_map(&group_id).await)
-            //     Msg::LoadBordersPath(fetch_territory_map(&group_id).await, "[X]".to_string())
-            //     //Msg::Search("[R]".to_string())
-            // });
-        }
-    }
+    // fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
+    //     //if ctx.props().path == Some("campaign".to_string()) {        
+    //     if _old_props.path == Some("campaign".to_string()) {
+    //         log!("campaign");
+    //         self.search = "[X]".to_string();
+    //         ctx.link().send_message(Msg::Search("[C]".to_string()));
+    //         return true;
+    //     }
+    //     false
+    // }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let _cb = ctx.link().callback(Msg::SelectCity); // Call self back with this message
@@ -237,6 +234,7 @@ impl Component for Model {
             event.prevent_default();
         });
 
+        let navigator = ctx.link().navigator().unwrap();
         let link = ctx.link().clone();
         let search_text_onchange = {
             Callback::from(move |event: Event| {
@@ -245,10 +243,14 @@ impl Component for Model {
                     .expect("An input value for an HtmlInputElement")
                     .unchecked_into::<HtmlInputElement>()
                     .value();
-                
-                ////log!(format!("model: search_text_onchange: value: {}", value));
 
-                link.send_message(Msg::Search(value));
+                //worked//link.send_message(Msg::Search(value));
+
+                let query = MapSearchQuery {
+                    search: Some(value.clone()),
+                };
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+  
             })
         };
 
@@ -279,6 +281,8 @@ impl Component for Model {
             })
         };
 
+        let search_text = ctx.search_query().search.clone().unwrap_or_default();  
+
         html! {
            <div style="background-color:yellow;height:100%;" onclick={map_cover_click} onmousemove={map_cover_move}>
             <div id="menu-bar-header" style="height:57px;background-color:red;">
@@ -292,7 +296,7 @@ impl Component for Model {
                                     <div class="input-group">
                                         <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
                                             <input onchange={search_text_onchange}
-                                                value={self.search.clone()}
+                                                value={search_text}
                                                 type="text"
                                                 class="form-control"
                                                 placeholder="Search"  />
@@ -326,5 +330,21 @@ impl Component for Model {
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </div>
         }
+    }
+}
+
+#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
+pub struct MapSearchQuery {
+    pub search: Option<String>,
+}
+
+pub trait SearchQuery {
+    fn search_query(&self) -> MapSearchQuery;
+}
+
+impl SearchQuery for &Context<Model> {
+    fn search_query(&self) -> MapSearchQuery {
+        let location = self.link().location().expect("Location or URI");
+        location.query().unwrap_or(MapSearchQuery::default())    
     }
 }
