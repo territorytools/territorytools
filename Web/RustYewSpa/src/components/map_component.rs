@@ -68,8 +68,6 @@ pub struct Props {
     pub territory_map: MapModel,
     pub tpolygons: Vec<TerritoryPolygon>,
     pub search: String,
-    pub mouse_click_x: i32,
-    pub mouse_click_y: i32,
 }
 
 pub struct MapComponent {
@@ -80,8 +78,6 @@ pub struct MapComponent {
     tpolygons: Vec<TerritoryPolygon>,
     id_list: Vec<i32>,
     layer_group: LayerGroup,
-    mouse_click_x: i32,
-    mouse_click_y: i32,
     selected: Vec<String>, // TODO: Use territory ids (ints) instead of tags
     bounds: LatLngBounds,
     center_lat: f64,
@@ -114,8 +110,6 @@ impl Component for MapComponent {
             tpolygons: vec![],
             id_list: vec![],
             layer_group: LayerGroup::new(),
-            mouse_click_x: 0,
-            mouse_click_y: 0,
             selected: vec![],
             bounds: LatLngBounds::new(&LatLng::new(0.0, 0.0), &LatLng::new(10.0, 10.0)),
             center_lat: 0.0,

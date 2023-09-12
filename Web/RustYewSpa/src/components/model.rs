@@ -19,11 +19,9 @@ use yew_router::prelude::LocationHandle;
 use gloo_console::log;
 
 pub enum Msg {
-    //LoadBorders(MapModel), // Never called
-    LoadBordersPath(MapModel, String), // Download a "path", which includes a default search
+    LoadBordersPath(MapModel, String, String), // Download a "path", which includes a default search
     Search(String),
     RefreshFromSearchText(), // Search what's already downloaded
-    //MouseClick(i32, i32),
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -38,15 +36,6 @@ pub struct Model {
     territory_map: MapModel,
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
-    mouse_click_x: i32,
-    mouse_click_y: i32,
-    // corner_1_lat: f64,
-    // corner_1_lon: f64,
-    // corner_2_lat: f64,
-    // corner_2_lon: f64,
-    // center_lat: f64,
-    // center_lon: f64,
-    // zoom: f64,
 }
 
 impl Component for Model {
@@ -65,12 +54,6 @@ impl Component for Model {
 
         let territory_map: MapModel = MapModel::default();
 
-        // let path: String = ctx.props().path.clone().unwrap_or("".to_string());
-        // log!(format!("model: create: ctx.props().path.clone().unwrap_or(\"\".to_string()): {}", path));
-        // ctx.link().send_future(async move {
-        //     Msg::LoadBordersPath(fetch_territory_map_w_key(&path).await, path)
-        // });
-
         return Self {
             _listener: listener,
             // city, 
@@ -78,32 +61,12 @@ impl Component for Model {
             territory_map, 
             search: "".to_string(), 
             tpolygons: vec![],
-            mouse_click_x: 0, 
-            mouse_click_y: 0,
-            // corner_1_lat: 0.0, corner_1_lon: 0.0,
-            // corner_2_lat: 0.0, corner_2_lon: 0.0,
-            // center_lat: 0.0, center_lon: 0.0,
-            // zoom: 1.0,
          }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        // Calling this update(Message) calls map_components.change(Properties)
         match msg {
-            // Msg::LoadBorders(territory_map) => {
-            //     // never called
-            //     self.territory_map = territory_map.clone();
-            //     self.tpolygons.clear();
-                
-            //     for t in self.territory_map.territories.iter() {
-            //         if t.group_id != Some("outer".to_string()) && t.number != "OUTER".to_string() {
-            //             let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-            //             self.tpolygons.push(tp);
-            //         }            
-            //     }
-            //     true
-            // },
-            Msg::LoadBordersPath(map_model, path) => {
+            Msg::LoadBordersPath(map_model, path, search) => {
                 log!(format!("model:update: LoadBorderPath: path: {}", path.clone()));
                 self.territory_map = map_model.clone();
 
@@ -130,59 +93,29 @@ impl Component for Model {
                         .map_or("".to_string(), |m| m.as_str().to_string());
 
                     log!(format!("model:update: LoadBorderPath: description-contains: {}", description_contains.clone()));
+                    // TODO: This part... maybe should be somewhere else
+                    // but it would contain the default search for the key
                     self.search = description_contains.clone();
                 }
-                
-                // // edit-territory-button-enabled Section
-                // let regex = Regex::new(r"(^|;)edit\-territory\-button\-enabled=([^;]+?)($|;)").expect("Valid RegEx");
-                // let link_grants_clone = link_grants.clone();
-                // let caps = regex.captures(link_grants_clone.as_str());
-                // let mut edit_territory_button_enabled: String = "".to_string();
-                // if caps.is_some() && caps.as_ref().unwrap().len() > 0usize {
-                //     edit_territory_button_enabled = caps.as_ref().expect("description-contains in link_grants").get(2).map_or("".to_string(), |m| m.as_str().to_string());
-                //     //self.search = description_contains.clone();
-                //     self.map_model.edit_territory_button_enabled 
-                //         = edit_territory_button_enabled.parse().unwrap_or(true);
-                // }
-                // log!(format!("model:update: LoadBorderPath: edit_territory_button_enabled: {}", self.map_model.edit_territory_button_enabled));
-
-                // self.tpolygons.clear();
-                // //log!(format!("model:update: LoadBorderPath: territories: {}", self.map_model.territories.len()));
-                // for territory in self.territory_map.territories.iter() {
-                //     //log!("model:update: LoadBorderPath: territory.description: item: {}");
-                //     if territory.description.clone() != None && territory.description.clone().unwrap().contains(&description_contains.clone()) {
-                //         //log!("model:update: LoadBorderPath: territory.description: ADDED: {}");
-                //         let tp = tpoly_from_territory_w_button(territory, self.territory_map.popup_content_options.clone());
-                //         self.tpolygons.push(tp);
-                //     }            
-                // }
-
-                ctx.link().send_message(Msg::Search(path.clone()));
+                ctx.link().send_message(Msg::Search(search.clone()));
                 true
             },
             Msg::Search(search) => {
                 self.search = search;
                 self.tpolygons.clear();
-
-                // log!(format!("model: update: Msg::Search: ssssearch: {}", self.search.clone()));
-                // log!(format!("model: update: Msg::Search: ssssearch: count {}", self.territory_map.territories.len()));
                 for t in self.territory_map.territories.iter() {
                     if self.search == "ALL".to_string(){
-                        //log!(format!("model: update: Msg::Search: search: (ALL) {}", self.search.clone()));
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if (self.search == "*".to_string() || self.search.trim() == "".to_string()) 
                         && t.group_id != Some("outer".to_string())  
                         && t.number != "OUTER".to_string() {
-                        //log!(format!("model: update: Msg::Search: search: (*) {}", self.search.clone()));
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if self.search == "OUTER".to_string() && t.number == "OUTER".to_string() {
-                        //log!(format!("model: update: Msg::Search: search: (OUTER) {}", self.search.clone()));
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        //log!(format!("model: update: Msg::Search: search: (outer) {}", self.search.clone()));
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     // } else if self.search.starts_with('<') 
@@ -198,13 +131,9 @@ impl Component for Model {
                       || t.signed_out_to == Some(self.search.clone()))
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
-                        //log!(format!("model: update: Msg::Search: search: (INNER) {}", self.search.clone()));
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } 
-                    // else {
-                    //     log!(format!("model: update: Msg::Search: search: (else) {}", self.search.clone()));
-                    // }            
                 }
                 true
             },
@@ -212,30 +141,20 @@ impl Component for Model {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
                 ctx.link().send_future(async move {
                     // This one is weird because all the territories are preloaded and searchable
-                    Msg::LoadBordersPath(fetch_territory_map_w_key(&search_text.clone()).await, search_text.clone())
-                    //Msg::Search(search_text.clone())
+                    Msg::LoadBordersPath(
+                        fetch_territory_map_w_key(
+                            &search_text.clone()).await, 
+                            "PATH_GOES_HERE".to_string(), 
+                            search_text.clone())
                 });
                 false
             }          
         }
     }
 
-    // fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
-    //     //if ctx.props().path == Some("campaign".to_string()) {        
-    //     if _old_props.path == Some("campaign".to_string()) {
-    //         log!("campaign");
-    //         self.search = "[X]".to_string();
-    //         ctx.link().send_message(Msg::Search("[C]".to_string()));
-    //         return true;
-    //     }
-    //     false
-    // }
-
     fn view(&self, ctx: &Context<Self>) -> Html {
-        //let _tcb = ctx.link().callback(Msg::LoadBorders); // Call self back with this message
-
         let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
-            event.prevent_default();
+            event.prevent_default(); // Keep this here to prevent 2 searches
         });
 
         let navigator = ctx.link().navigator().unwrap();
@@ -248,10 +167,8 @@ impl Component for Model {
                     .unchecked_into::<HtmlInputElement>()
                     .value();
 
-                //worked//link.send_message(Msg::Search(value));
-
                 let query = MapSearchQuery {
-                    search: Some(value.clone()),
+                    search: Some(value.clone())
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -268,30 +185,10 @@ impl Component for Model {
             })
         };
 
-        let link = ctx.link().clone();
-        let map_cover_click = {
-            let _link = link.clone();
-            Callback::from(move |_event: MouseEvent| {
-                //link.send_message(Msg::MouseClick(event.x(), event.y()-57));
-            })
-        };
-
-        let map_cover_move = {
-            let _link = link.clone();
-            Callback::from(move |_event: MouseEvent| {
-                //log!(format!("model:view: Map cover move {}, {}", event.x(), event.y()-57));
-                ////event.stop_propagation();
-                //event.stop_immediate_propagation();
-                ////event.prevent_default();
-                // TODO: Send a mouse move event....
-                //link.send_message(Msg::MouseClick(event.x(), event.y()-57));
-            })
-        };
-
         let search_text = ctx.search_query().search.clone().unwrap_or_default();  
 
         html! {
-           <div style="background-color:yellow;height:100%;" onclick={map_cover_click} onmousemove={map_cover_move}>
+           <div style="background-color:yellow;height:100%;">
             <div id="menu-bar-header" style="height:57px;background-color:red;">
                     <MenuBarV2>
                         <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
@@ -327,13 +224,10 @@ impl Component for Model {
                     </MenuBarV2>
                 </div>
                 <MapComponent 
-                   
-                    mouse_click_x={&self.mouse_click_x}
-                    mouse_click_y={&self.mouse_click_y}
-                    
                     territory_map={&self.territory_map} 
                     tpolygons={self.tpolygons.clone()} 
                     search={self.search.clone()}/>
+                // Leave this here for a bit, it's interesting
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </div>
         }
