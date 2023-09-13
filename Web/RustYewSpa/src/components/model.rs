@@ -44,7 +44,6 @@ impl Component for Model {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
-        // Properties are not available here?
         let link = ctx.link().clone();      
         let listener = ctx.link()
             .add_location_listener(
@@ -56,7 +55,6 @@ impl Component for Model {
         
         let navigator = ctx.link().navigator().unwrap();
         let key = ctx.props().link_key.clone().unwrap_or_default();
-        log!(format!("model:create:key 1 = {}", key.clone()));
 
         if !key.is_empty() {
             let query = MapSearchQuery {
@@ -67,8 +65,6 @@ impl Component for Model {
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
         }
         
-        log!(format!("model:create:key 2 = {}", key.clone()));
-
         return Self {
             _listener: listener,
             // city, 
@@ -80,16 +76,12 @@ impl Component for Model {
         }                
     }
 
-    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
-        log!(format!("model:changed: props().link_key: {}", ctx.props().link_key.clone().unwrap_or_default()));
-        true
-    }
-
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::LoadBordersPath(map_model, key, search) => {
                 self.territory_map = map_model.clone();
                 self.last_key = Some(key); // TODO: Do I need this?
+                log!(format!("model:update:LoadBordersPath::RFST: self.last_key: {}", self.last_key.clone().unwrap_or_default()));
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -154,15 +146,18 @@ impl Component for Model {
                 log!(format!("model:update:Msg::RFST: props().link_key: {}", ctx.props().link_key.clone().unwrap_or_default()));
                 log!(format!("model:update:Msg::RFST: query().key: {}", ctx.search_query().key.clone().unwrap_or_default()));
                 log!(format!("model:update:Msg::RFST: self.last_key: {}", self.last_key.clone().unwrap_or_default()));
-                let key = if ctx.search_query().key.clone().unwrap_or_default().is_empty() {
-                    self.last_key.clone().unwrap_or_default()
-                } else {
+                let key = if ctx.search_query().key.clone().unwrap_or_default().is_empty() 
+                    && ctx.props().link_key.clone().unwrap_or_default().is_empty() {
+                        self.last_key.clone().unwrap_or_default()
+                } else if ctx.props().link_key.clone().unwrap_or_default().is_empty() {
                     ctx.search_query().key.clone().unwrap_or_default()
+                } else {
+                    ctx.props().link_key.clone().unwrap_or_default()
                 };
 
                 // This one is weird because all the territories are preloaded and searchable                
                 if self.last_key != Some(key.to_string()) {
-                    self.last_key = Some(key.to_string());  
+                    //self.last_key = Some(key.to_string());  
                     ctx.link().send_future(async move {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_key(
