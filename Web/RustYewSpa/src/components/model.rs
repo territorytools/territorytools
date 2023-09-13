@@ -52,10 +52,10 @@ impl Component for Model {
                 })
             )
             .unwrap();
-        
+
+            // Convert host/key/1234 to host/app?key=1234
         let navigator = ctx.link().navigator().unwrap();
         let key = ctx.props().link_key.clone().unwrap_or_default();
-
         if !key.is_empty() {
             let query = MapSearchQuery {
                 search: None,
@@ -81,7 +81,6 @@ impl Component for Model {
             Msg::LoadBordersPath(map_model, key, search) => {
                 self.territory_map = map_model.clone();
                 self.last_key = Some(key); // TODO: Do I need this?
-                log!(format!("model:update:LoadBordersPath::RFST: self.last_key: {}", self.last_key.clone().unwrap_or_default()));
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -143,9 +142,6 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
-                log!(format!("model:update:Msg::RFST: props().link_key: {}", ctx.props().link_key.clone().unwrap_or_default()));
-                log!(format!("model:update:Msg::RFST: query().key: {}", ctx.search_query().key.clone().unwrap_or_default()));
-                log!(format!("model:update:Msg::RFST: self.last_key: {}", self.last_key.clone().unwrap_or_default()));
                 let key = if ctx.search_query().key.clone().unwrap_or_default().is_empty() 
                     && ctx.props().link_key.clone().unwrap_or_default().is_empty() {
                         self.last_key.clone().unwrap_or_default()
@@ -157,7 +153,6 @@ impl Component for Model {
 
                 // This one is weird because all the territories are preloaded and searchable                
                 if self.last_key != Some(key.to_string()) {
-                    //self.last_key = Some(key.to_string());  
                     ctx.link().send_future(async move {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_key(
@@ -213,6 +208,7 @@ impl Component for Model {
         };
 
         let search_text = ctx.search_query().search.clone().unwrap_or_default();  
+        let count = self.tpolygons.len();
 
         html! {
            <div style="background-color:yellow;height:100%;">
@@ -223,7 +219,7 @@ impl Component for Model {
                             //     <TerritorySearchLink />
                             // </li>
                             <li class="nav-item">
-                                <div class="d-flex flex-colum shadow-sm">
+                                <div class="d-flex flex-column">
                                     <div class="input-group">
                                         <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
                                             <input onchange={search_text_onchange}
@@ -242,10 +238,13 @@ impl Component for Model {
                                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                             </svg>
                                         </button>
-                                        <span>{"Key: "}{ctx.props().link_key.clone()}</span>
                                         // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
-                                        // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>
-                                    </div>
+                                        // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>                                    
+                                        <span class="p-2 flex-grow-3 ">
+                                            {count}
+                                        </span>
+                                    </div>    
+                                  
                                 </div>
                             </li>
                         </ul>
