@@ -15,6 +15,7 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 use yew_router::prelude::LocationHandle;
+use  gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
@@ -24,7 +25,7 @@ pub enum Msg {
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
-    pub key: Option<String>,
+    pub mtk: Option<String>,
 }
 
 pub struct Model {
@@ -42,6 +43,7 @@ impl Component for Model {
     type Properties = Props;
 
     fn create(ctx: &Context<Self>) -> Self {
+        // Properties are not available here?
         let link = ctx.link().clone();      
         let listener = ctx.link()
             .add_location_listener(
@@ -52,7 +54,9 @@ impl Component for Model {
             .unwrap();
         
         let navigator = ctx.link().navigator().unwrap();
-        let key = ctx.props().key.clone().unwrap_or_default();
+        let key = ctx.props().mtk.clone().unwrap_or_default();
+        log!(format!("model:create:key 1 = {}", key.clone()));
+
         if !key.is_empty() {
             let query = MapSearchQuery {
                 search: None,
@@ -62,6 +66,8 @@ impl Component for Model {
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
         }
         
+        log!(format!("model:create:key 2 = {}", key.clone()));
+
         return Self {
             _listener: listener,
             // city, 
@@ -71,6 +77,11 @@ impl Component for Model {
             tpolygons: vec![],
             last_key: None,
         }                
+    }
+
+    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
+        log!(format!("model:changed: props().key: {}", ctx.props().mtk.clone().unwrap_or_default()));
+        true
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -139,6 +150,9 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
+                log!(format!("model:update:Msg::RFST: props().key: {}", ctx.props().mtk.clone().unwrap_or_default()));
+                log!(format!("model:update:Msg::RFST: query().key: {}", ctx.search_query().key.clone().unwrap_or_default()));
+                log!(format!("model:update:Msg::RFST: self.last_key: {}", self.last_key.clone().unwrap_or_default()));
                 let key = if ctx.search_query().key.clone().unwrap_or_default().is_empty() {
                     self.last_key.clone().unwrap_or_default()
                 } else {
@@ -232,6 +246,7 @@ impl Component for Model {
                                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                             </svg>
                                         </button>
+                                        <span>{"Key: "}{ctx.props().mtk.clone()}</span>
                                         // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
                                         // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>
                                     </div>
@@ -267,3 +282,4 @@ impl SearchQuery for &Context<Model> {
         location.query().unwrap_or(MapSearchQuery::default())    
     }
 }
+
