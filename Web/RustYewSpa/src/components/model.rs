@@ -15,6 +15,7 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 use yew_router::prelude::LocationHandle;
+use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
@@ -106,32 +107,45 @@ impl Component for Model {
             Msg::Search(search) => {
                 self.search = search;
                 self.tpolygons.clear();
+                let search: String = self.search.trim().to_string();
+                // TODO: Finish number finder github issue #18
+                // let has_whitespace_regex = Regex::new(r"\d+\s*\d+[\s\d]*").expect("Valid RegEx for digits");
+                // let whitespace_captures = regex.captures(search.as_str());                
+                // if whitespace_captures.is_some() && whitespace_captures.as_ref().unwrap().len() > 0usize {
+                //     _description_contains = caps
+                //         .as_ref()
+                //         .expect("description-contains in link_grants")
+                //         .get(1)
+                //         .map_or("".to_string(), |m| m.as_str().to_string());
+                //     self.search = _description_contains.clone();
+                // }
+
                 for t in self.territory_map.territories.iter() {
-                    if self.search == "ALL".to_string(){
+                    if search == "ALL".to_string(){
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
-                    } else if (self.search == "*".to_string() || self.search.trim() == "".to_string()) 
+                    } else if (search == "*".to_string() || search.trim() == "".to_string()) 
                         && t.group_id != Some("outer".to_string())  
                         && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
-                    } else if self.search == "OUTER".to_string() && t.number == "OUTER".to_string() {
+                    } else if search == "OUTER".to_string() && t.number == "OUTER".to_string() {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
-                    } else if self.search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
+                    } else if search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
-                    // } else if self.search.starts_with('<') 
+                    // } else if search.starts_with('<') 
                     //     && t.signed_out.
                     //     && t.number != "OUTER".to_string() {
                     //     let tp = tpoly_from_territory(t);
                     //     self.tpolygons.push(tp);    
-                    } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
-                      || Some(format!("group{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(self.search.clone())
-                      || Some(format!("stage{}", t.stage_id.unwrap_or(0))) == Some(self.search.clone())
-                      || (t.description.clone() != None && t.description.clone().unwrap().contains(&self.search.clone()))
-                      || t.number == self.search.clone()
-                      || t.signed_out_to == Some(self.search.clone()))
+                    } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
+                      || Some(format!("group{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
+                      || Some(format!("stage{}", t.stage_id.unwrap_or(0))) == Some(search.clone())
+                      || (t.description.clone() != None && t.description.clone().unwrap().contains(&search.clone()))
+                      || t.number == search.clone()
+                      || t.signed_out_to == Some(search.clone()))
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
