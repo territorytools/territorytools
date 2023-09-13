@@ -25,7 +25,8 @@ pub enum Msg {
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
-    pub mtk: Option<String>,
+    // If I name it just 'key' it doesn't work, it might be a reserved word
+    pub link_key: Option<String>,
 }
 
 pub struct Model {
@@ -54,7 +55,7 @@ impl Component for Model {
             .unwrap();
         
         let navigator = ctx.link().navigator().unwrap();
-        let key = ctx.props().mtk.clone().unwrap_or_default();
+        let key = ctx.props().link_key.clone().unwrap_or_default();
         log!(format!("model:create:key 1 = {}", key.clone()));
 
         if !key.is_empty() {
@@ -80,7 +81,7 @@ impl Component for Model {
     }
 
     fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
-        log!(format!("model:changed: props().key: {}", ctx.props().mtk.clone().unwrap_or_default()));
+        log!(format!("model:changed: props().link_key: {}", ctx.props().link_key.clone().unwrap_or_default()));
         true
     }
 
@@ -150,7 +151,7 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
-                log!(format!("model:update:Msg::RFST: props().key: {}", ctx.props().mtk.clone().unwrap_or_default()));
+                log!(format!("model:update:Msg::RFST: props().link_key: {}", ctx.props().link_key.clone().unwrap_or_default()));
                 log!(format!("model:update:Msg::RFST: query().key: {}", ctx.search_query().key.clone().unwrap_or_default()));
                 log!(format!("model:update:Msg::RFST: self.last_key: {}", self.last_key.clone().unwrap_or_default()));
                 let key = if ctx.search_query().key.clone().unwrap_or_default().is_empty() {
@@ -246,7 +247,7 @@ impl Component for Model {
                                                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                                             </svg>
                                         </button>
-                                        <span>{"Key: "}{ctx.props().mtk.clone()}</span>
+                                        <span>{"Key: "}{ctx.props().link_key.clone()}</span>
                                         // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
                                         // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>
                                     </div>

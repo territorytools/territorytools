@@ -27,8 +27,8 @@ pub enum Route {
     Start,
     #[at("/app/map-old")]
     Map,
-    #[at("/key/:mtk")]
-    MapComponentKey { mtk: String },
+    #[at("/key/:link_key")]
+    MapComponentKey { link_key: String },
     #[at("/app/map")]
     MapComponent,
     #[at("/app/svg-map")]
@@ -109,9 +109,9 @@ pub fn switch(route: Route) -> Html {
             territory_number={territory_number}
         /> },
         Route::Map => html! { <TerritoryMap /> },
-        Route::MapComponentKey { mtk } => {
-            log!(format!("route_stuff:MapCompKey:mtk:{}", mtk.clone()));
-            html! { <Model mtk={mtk} /> }
+        Route::MapComponentKey { link_key } => {
+            log!(format!("route_stuff:MapCompKey:link_key:{}", link_key.clone()));
+            html! { <Model link_key={link_key} /> }
         },
         Route::MapComponent => html! { <Model /> },
         Route::SvgMap => html! { <SvgMap /> },
