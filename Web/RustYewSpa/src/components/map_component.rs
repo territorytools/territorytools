@@ -31,7 +31,7 @@ struct PolylineOptions {
     opacity: f32,
 }
 
-#[derive(Properties, PartialEq, Clone, Default)]
+#[derive(Properties, PartialEq, Clone)]
 pub struct MapModel {
     pub territories: Vec<Territory>,
     pub territories_is_loaded: bool,
@@ -43,6 +43,23 @@ pub struct MapModel {
     pub user_roles: Option<String>,
     pub link_grants: Option<String>,
     pub popup_content_options: PopupContentOptions,
+}
+
+impl Default for MapModel {
+    fn default() -> Self {
+        MapModel {
+            territories: vec![],
+            territories_is_loaded: false,
+            local_load: false,
+            zoom: 1.0,
+            lat: 0.0,
+            lon: 0.0,
+            group_visible: "".to_string(),
+            user_roles: Some("".to_string()),
+            link_grants: Some("".to_string()),
+            popup_content_options: PopupContentOptions::default(),
+        }
+    }
 }
 
 impl ImplicitClone for MapModel {}
@@ -108,6 +125,7 @@ impl Component for MapComponent {
             layer_group: LayerGroup::new(),
             selected: vec![],     
             multi_select: false,
+            // TODO: Try default()
         }
     }
 
@@ -283,6 +301,7 @@ fn add_tile_layer(map: &Map) {
     .addTo(map);
 }
 
+#[derive(Default)]
 struct GeoPoint {
     x: f64,
     y: f64,

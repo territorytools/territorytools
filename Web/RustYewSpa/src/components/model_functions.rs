@@ -97,6 +97,7 @@ pub async fn fetch_territory_map_w_key(access_key: &String) -> MapModel {
             territory_open_enabled: territory_open_enabled.parse().unwrap_or(false),
             show_stage: show_stage.parse().unwrap_or(false),
         }
+        // TODO: Try default()?
     }
 }
 

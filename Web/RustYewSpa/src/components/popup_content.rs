@@ -3,11 +3,21 @@ use crate::models::territories::{Territory};
 // pub fn popup_content(territory: &Territory) -> String  {
 //     popup_content_w_button(territory, true, false)
 // }
-#[derive(Clone, PartialEq, Default)]
+#[derive(Clone, PartialEq)]
 pub struct PopupContentOptions {
     pub edit_territory_button_enabled: bool,
     pub territory_open_enabled: bool,
     pub show_stage: bool,
+}
+
+impl Default for PopupContentOptions {
+    fn default() -> Self {
+        PopupContentOptions {
+            edit_territory_button_enabled: false,
+            territory_open_enabled: false,
+            show_stage: false,    
+        }
+    }
 }
 
 pub fn popup_content_w_button(territory: &Territory, options: PopupContentOptions) -> String { //edit_territory_button_enabled: bool, territory_open_enabled: bool) -> String  {
