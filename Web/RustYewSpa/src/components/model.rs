@@ -60,6 +60,7 @@ impl Component for Model {
             let query = MapSearchQuery {
                 search: None,
                 key: Some(key.clone()),
+                ..MapSearchQuery::default()
             };
             
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -188,6 +189,7 @@ impl Component for Model {
                 let query = MapSearchQuery {
                     search: Some(value.clone()),
                     key: Some(key.clone()),
+                    ..MapSearchQuery::default()
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -201,6 +203,7 @@ impl Component for Model {
                 let query = MapSearchQuery {
                     search: Some("".to_string()),
                     key: Some(key.clone()),
+                    ..MapSearchQuery::default()
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -265,6 +268,7 @@ impl Component for Model {
 pub struct MapSearchQuery {
     pub search: Option<String>,
     pub key: Option<String>,
+    pub as_of_date: Option<String>,
 }
 
 pub trait SearchQuery {
