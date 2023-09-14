@@ -84,6 +84,7 @@ pub struct Props {
     pub territory_map: MapModel,
     pub tpolygons: Vec<TerritoryPolygon>,
     pub search: String,
+    pub as_of_date: Option<String>,
 }
 
 pub struct MapComponent {
@@ -135,12 +136,13 @@ impl Component for MapComponent {
         } 
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg{
             Msg::MouseClick(x, y) => {
                 //log!(format!("mc:update:MouseClick({}, {})", x, y));
                 let lat_lng = &self.map.containerPointToLatLng(
                     &Point::new(x as u32, y as u32));
+                let as_of_date = ctx.props().as_of_date.clone();
 
                 for tp in self.tpolygons.clone().iter() {
                     let mut vertices: Vec<GeoPoint> = vec![];
@@ -166,7 +168,7 @@ impl Component for MapComponent {
                             .filter(|t| t.number == tp.territory_id.clone())
                             .collect::<Vec<_>>();
 
-                        let territory_color = territory_color(&territories[0]);
+                        let territory_color = territory_color(&territories[0], as_of_date);
 
                         if self.selected.contains(&tp.territory_id.clone()) {
                             let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();
@@ -210,6 +212,7 @@ impl Component for MapComponent {
                 edit_territory_button_enabled: true,
                 territory_open_enabled: false,
                 show_stage: false,
+                as_of_date: None,
             }
         };
 

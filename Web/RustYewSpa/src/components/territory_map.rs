@@ -249,6 +249,7 @@ pub fn territory_map() -> Html {
                 edit_territory_button_enabled: true,
                 territory_open_enabled: false,
                 show_stage: false,
+                as_of_date: None,
             };
             let popup_text = popup_content_w_button(&t, popup_options); //true, false);
 
@@ -668,6 +669,7 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
                 || t.status.clone() == number.to_string()),
             border: t.border.clone(),
             addresses: t.addresses.clone(),
+            ..Territory::default()
         };
         new_territories.push(nt);
     }
@@ -725,6 +727,7 @@ fn setup_filter(model: UseStateHandle<TerritoryMapModel>, group: &str) {
                 || (group == "all")),
             border: t.border.clone(),
             addresses: t.addresses.clone(),
+            ..Territory::default()
         };
         new_territories.push(nt);
     }

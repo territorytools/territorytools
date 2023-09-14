@@ -8,6 +8,7 @@ pub struct PopupContentOptions {
     pub edit_territory_button_enabled: bool,
     pub territory_open_enabled: bool,
     pub show_stage: bool,
+    pub as_of_date: Option<String>,
 }
 
 impl Default for PopupContentOptions {
@@ -15,7 +16,8 @@ impl Default for PopupContentOptions {
         PopupContentOptions {
             edit_territory_button_enabled: false,
             territory_open_enabled: false,
-            show_stage: false,    
+            show_stage: false,
+            as_of_date: None,    
         }
     }
 }

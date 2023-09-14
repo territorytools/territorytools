@@ -15,7 +15,6 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 use yew_router::prelude::LocationHandle;
-use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
@@ -164,15 +163,17 @@ impl Component for Model {
                 } else {
                     ctx.props().link_key.clone().unwrap_or_default()
                 };
+                let as_of_date = ctx.search_query().as_of_date.clone();
 
                 // This one is weird because all the territories are preloaded and searchable                
                 if self.last_key != Some(key.to_string()) {
                     ctx.link().send_future(async move {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_key(
-                                &key.to_string()).await, 
-                                key.to_string(), 
-                                search_text.clone())
+                                &key.to_string(), 
+                                as_of_date).await, 
+                            key.to_string(), 
+                            search_text.clone())
                     });
                 } else {
                     ctx.link().send_future(async move {
@@ -223,6 +224,7 @@ impl Component for Model {
             })
         };
 
+        let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();  
         let search_text = ctx.search_query().search.clone().unwrap_or_default();  
         let count = self.tpolygons.len();
 
@@ -269,7 +271,8 @@ impl Component for Model {
                 <MapComponent 
                     territory_map={&self.territory_map} 
                     tpolygons={self.tpolygons.clone()} 
-                    search={self.search.clone()}/>
+                    search={self.search.clone()}
+                    as_of_date={as_of_date.clone()}/>
                 // Leave this here for a bit, it's interesting
                 //<Control select_city={cb} border_loader={tcb} cities={&self.cities}/>
             </div>
