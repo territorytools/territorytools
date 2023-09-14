@@ -31,7 +31,7 @@ struct PolylineOptions {
     opacity: f32,
 }
 
-#[derive(Properties, PartialEq, Clone, Default)]
+#[derive(Properties, PartialEq, Clone)]
 pub struct MapModel {
     pub territories: Vec<Territory>,
     pub territories_is_loaded: bool,
@@ -43,6 +43,23 @@ pub struct MapModel {
     pub user_roles: Option<String>,
     pub link_grants: Option<String>,
     pub popup_content_options: PopupContentOptions,
+}
+
+impl Default for MapModel {
+    fn default() -> Self {
+        MapModel {
+            territories: vec![],
+            territories_is_loaded: false,
+            local_load: false,
+            zoom: 1.0,
+            lat: 0.0,
+            lon: 0.0,
+            group_visible: "".to_string(),
+            user_roles: Some("".to_string()),
+            link_grants: Some("".to_string()),
+            popup_content_options: PopupContentOptions::default(),
+        }
+    }
 }
 
 impl ImplicitClone for MapModel {}
@@ -67,6 +84,7 @@ pub struct Props {
     pub territory_map: MapModel,
     pub tpolygons: Vec<TerritoryPolygon>,
     pub search: String,
+    pub as_of_date: Option<String>,
 }
 
 pub struct MapComponent {
@@ -108,6 +126,7 @@ impl Component for MapComponent {
             layer_group: LayerGroup::new(),
             selected: vec![],     
             multi_select: false,
+            // TODO: Try default()
         }
     }
 
@@ -117,12 +136,13 @@ impl Component for MapComponent {
         } 
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg{
             Msg::MouseClick(x, y) => {
                 //log!(format!("mc:update:MouseClick({}, {})", x, y));
                 let lat_lng = &self.map.containerPointToLatLng(
                     &Point::new(x as u32, y as u32));
+                let as_of_date = ctx.props().as_of_date.clone();
 
                 for tp in self.tpolygons.clone().iter() {
                     let mut vertices: Vec<GeoPoint> = vec![];
@@ -148,7 +168,7 @@ impl Component for MapComponent {
                             .filter(|t| t.number == tp.territory_id.clone())
                             .collect::<Vec<_>>();
 
-                        let territory_color = territory_color(&territories[0]);
+                        let territory_color = territory_color(&territories[0], as_of_date);
 
                         if self.selected.contains(&tp.territory_id.clone()) {
                             let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();
@@ -192,6 +212,7 @@ impl Component for MapComponent {
                 edit_territory_button_enabled: true,
                 territory_open_enabled: false,
                 show_stage: false,
+                as_of_date: None,
             }
         };
 
@@ -283,6 +304,7 @@ fn add_tile_layer(map: &Map) {
     .addTo(map);
 }
 
+#[derive(Default)]
 struct GeoPoint {
     x: f64,
     y: f64,

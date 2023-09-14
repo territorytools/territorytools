@@ -6,6 +6,7 @@ use crate::models::territories::Territory;
 use wasm_bindgen::{prelude::*};
 use serde::{Deserialize, Serialize};
 use yew::{html::ImplicitClone};
+//use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -143,7 +144,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
         }
     };
 
-    let territory_color: String = territory_color(&t);
+    let territory_color: String = territory_color(&t, options.as_of_date.clone());
     let opacity: f32 = 1.0;
     // {
     //     if t.is_active {
@@ -224,21 +225,35 @@ pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
     TerritoryLatLng { lat: north, lon: east }
 }
 
-pub fn territory_color(t: &Territory) -> String {
+pub fn territory_color(t: &Territory, as_of_date: Option<String>) -> String {
     let completed_by: String = {
         match t.last_completed_by {
             Some(_) => "yes".to_string(),
             None => "no".to_string(),
         }
     };
-    
-    if t.stage == Some("Visiting".to_string()) {
+
+    let stage = if as_of_date.is_none() || as_of_date.clone().unwrap_or_default().is_empty() {
+        t.stage.clone()
+    } else {
+        if  !t.last_visiting_done.clone().unwrap_or_default().is_empty() 
+            && t.last_visiting_done.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default() {
+            Some("Visiting Done".to_string())
+        } else if !t.last_visiting_started.clone().unwrap_or_default().is_empty() 
+            && t.last_visiting_started.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default()  {
+            Some("Visiting Started".to_string())
+        } else {
+            Some("Ready to Visit".to_string())
+        }
+    };
+
+    if stage == Some("Visiting".to_string()) {
         "magenta".to_string()
-    } else if t.stage == Some("Visiting Started".to_string()) {
+    } else if stage == Some("Visiting Started".to_string()) {
         "red".to_string()    
-    } else if t.stage == Some("Visiting Done".to_string()) {
+    } else if stage == Some("Visiting Done".to_string()) {
         "#55F".to_string()    
-    } else if t.stage == Some("Ready to Visit".to_string()) {
+    } else if stage == Some("Ready to Visit".to_string()) {
         "magenta".to_string()    
     } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
         "blue".to_string() // Completed
