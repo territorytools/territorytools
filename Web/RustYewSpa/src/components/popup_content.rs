@@ -140,6 +140,10 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
         "".to_string() 
     };
 
+    let active = territory.addresses_active;
+    let total = territory.addresses_total;
+    let unvisited = territory.addresses_unvisited;
+
     format!(
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>
@@ -147,12 +151,13 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             <br/><span>Group {group_id}</span>
             <!--br/><span>Addresses: {address_count}</span-->
             <br/><span>{status}</span>
+            <br/>Remaining: {unvisited}/{active}            
             {stage_html}
             {assignee_line}
             {open_button_html}
             {assign_button_html}
             {edit_button_html}
-            <br/><span><small><small>TID:{territory_id} SG:{stage_id}</small></small></span>
+            <br/><span><small><small>TID:{territory_id} SG:{stage_id} A:{unvisited}/{active}/{total}</small></small></span>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap_or("".to_string()),
