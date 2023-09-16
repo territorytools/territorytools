@@ -1,4 +1,5 @@
 use crate::libs::leaflet::{
+    DivIcon,
     LatLng, 
     LatLngBounds,
     Map,
@@ -10,6 +11,7 @@ use crate::libs::leaflet::{
 };
 use crate::models::territories::Territory;
 use crate::components::map_component_functions::{
+    DivIconOptions,
     TerritoryPolygon,
     MarkerOptions,
     polygon_from_territory_polygon,
@@ -237,20 +239,35 @@ impl Component for MapComponent {
 
             let layer_id = self.layer_group.getLayerId(&p);
             self.id_list.push(layer_id);
-
+            
+            /*
             if tp.border.len() > 0 {
-                let marker_point = LatLng::new(tp.border[0].lat.into(), tp.border[0].lon.into());
-                let _marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+                let avg_lat: f32 = tp.border.iter().map(|v| v.lat as f32).sum::<f32>() / tp.border.len() as f32;
+                let avg_lon: f32 = tp.border.iter().map(|v| v.lon as f32).sum::<f32>() / tp.border.len() as f32;
+                //let marker_point = LatLng::new(tp.border[0].lat.into(), tp.border[0].lon.into());
+                let marker_point = LatLng::new(avg_lat.into(), avg_lon.into());
+
+                let icon = DivIcon::new({
+                    &serde_wasm_bindgen::to_value( &DivIconOptions {
+                        html: format!("<div style='pointer-events:none;'><span style='background-color:yellow;'>{}</span></div>", &tp.tooltip_text.clone()),
+                        class_name: "tt-map-marker".to_string()
+                    }).expect("Unable to serialzie DivIcon options")
+                });
+
+                let marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+                    //icon: icon,
                     //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
                 });
-                let _marker = Marker::new_with_options(
+                let marker = Marker::new_with_options(
                     &marker_point, 
                     &serde_wasm_bindgen::to_value(&MarkerOptions {
+                        //icon: icon,
                         //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
                     }).expect("Unable to serialize marker options")
                 );
-            }
-           // it works! // marker.addTo(&self.map)
+                marker.setIcon(&icon);
+                marker.addTo(&self.map);
+            }*/
         }
 
         self.layer_group.addTo(&self.map);

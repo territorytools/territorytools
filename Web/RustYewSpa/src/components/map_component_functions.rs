@@ -1,4 +1,4 @@
-use crate::libs::leaflet::{LatLng, Polygon};
+use crate::libs::leaflet::{DivIcon, LatLng, Polygon};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::Territory;
@@ -11,7 +11,16 @@ use yew::{html::ImplicitClone};
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MarkerOptions {
+    //pub icon: DivIcon,
     //auto_close: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DivIconOptions {
+    pub html: String,
+    pub class_name: String,
+    //pub bg_pos: Point,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -82,7 +91,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
     //         //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
     //     }).expect("Unable to serialize marker options")
     // );
-    // marker.addTo(self.map)
+    // marker.addTo(self.map);
 
 
     // TODO: Don't bind this is 'select' mode
@@ -177,7 +186,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
             color: territory_color.into(),
             opacity: opacity.into(),
             border: polygon, //.iter().map().collect(),
-            tooltip_text: format!("{group_id}: {area_code}: {}", t.number),
+            tooltip_text: t.number.clone().to_string(), //format!("{group_id}: {area_code}: {}", t.number),
             popup_html: popup_content_w_button(&t, options.clone()),
         };
 

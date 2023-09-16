@@ -32,6 +32,15 @@ extern "C" {
     #[wasm_bindgen(constructor, js_namespace = L)]
     pub fn new(options: &JsValue) -> Icon;
 
+    // DivIcon
+
+    #[derive(Debug)]
+    #[wasm_bindgen(extends = Icon)]
+    pub type DivIcon;
+
+    #[wasm_bindgen(constructor, js_namespace = L)]
+    pub fn new(options: &JsValue) -> DivIcon;
+
     // Point
 
     #[derive(Debug)]
