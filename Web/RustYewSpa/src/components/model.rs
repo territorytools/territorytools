@@ -108,24 +108,24 @@ impl Component for Model {
                 self.search = search;
                 self.tpolygons.clear();
                 let search: String = self.search.trim().to_string();
-                // TODO: Finish number finder github issue #18
-                //let numbers: Vec<String> = vec![];
-                let has_whitespace_regex = Regex::new(r"(\d*)[\S]").expect("Valid RegEx for digits");
-                let whitespace_captures = has_whitespace_regex.captures(search.as_str());                
-                if whitespace_captures.is_some() && whitespace_captures.as_ref().unwrap().len() > 0usize {
-                    //numbers.push()
-                    let numbers = whitespace_captures
-                        .as_ref()
-                        .expect("description-contains in link_grants")
-                        .get(1)
-                        .map_or("".to_string(), |m| m.as_str().to_string());
-                    log!(format!("model:numbers:len(): {}", whitespace_captures.as_ref().unwrap().len()));
-                    //self.search = _description_contains.clone();
-                }
+                
+                let prefix_removed: String = if search.to_uppercase().trim().starts_with("NUMBERS:") {
+                    search["NUMBERS:".len()..].to_string().clone()
+                } else { "".to_string() };
 
+                let numbers = if !prefix_removed.is_empty() {
+                    let regex = Regex::new(r"[\s,]+").expect("Valid RegEx for separators");
+                    regex.split(prefix_removed.as_str()).collect::<Vec<&str>>()
+                } else { vec![] };
+                               
                 let search_text = Some(search.clone().to_uppercase().trim().to_string());
                 for t in self.territory_map.territories.iter() {
-                    if search == "ALL".to_string(){
+                    if numbers.len() > 0usize 
+                        && !t.number.is_empty()
+                        && numbers.contains(&t.number.as_str()) {
+                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
+                        self.tpolygons.push(tp);
+                    } else if search == "ALL".to_string(){
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         self.tpolygons.push(tp);
                     } else if (search == "*".to_string() || search.trim() == "".to_string()) 
