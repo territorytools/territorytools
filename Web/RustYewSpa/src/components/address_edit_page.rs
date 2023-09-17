@@ -25,13 +25,13 @@ const DATA_API_PATH: &str = "/data/put_address.json";
 const DATA_API_PATH: &str = "/api/addresses/save";
 
 #[cfg(debug_assertions)]
-const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?id=";
+const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?slash=";
 
 #[cfg(not(debug_assertions))]
-const GET_ADDRESSES_API_PATH: &str = "/api/addresses/alba-address-id";
+const GET_ADDRESSES_API_PATH: &str = "/api/addresses/address-id";
 
 #[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
+const ASSIGN_METHOD: &str = "PUT";
 
 #[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "PUT";
@@ -40,7 +40,7 @@ const ASSIGN_METHOD: &str = "PUT";
 pub struct AddressEditModel {
     pub address: Address,
     // TODO: OriginalAddress (Used to compare by server)
-    pub alba_address_id: i32,
+    pub address_id: i32,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -56,12 +56,13 @@ pub struct AddressEditModel {
 
 // #[derive(Properties, PartialEq, Clone, Default)]
 // pub struct AddressEditProps {
-//     pub alba_address_id: i32,
+//     pub address_id: i32,
 // }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct AddressEditParameters {
-    pub alba_address_id: Option<i32>,
+    pub address_id: Option<i32>,
+    pub key: Option<String>,
 }
 
 // pub fn add_field(state: yew::UseStateHandle<AddressEditModel>, field: &str) {
@@ -76,7 +77,7 @@ pub fn address_edit_page() -> Html {
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: AddressEditParameters = location.query().expect("An object");
-    let alba_address_id: i32 = match parameters.alba_address_id {
+    let address_id: i32 = match parameters.address_id {
         Some(v) => v,
         _ => 0,
     };
@@ -323,14 +324,16 @@ pub fn address_edit_page() -> Html {
     };
 
     //let territories = use_state(|| vec![]);    
+    let key = parameters.key.clone().unwrap_or_default();
     let cloned_state = state.clone();
     use_effect_with_deps(move |_| {
         let cloned_state = cloned_state.clone();
+        let key = key.clone();
         wasm_bindgen_futures::spawn_local(async move {
             log!("Loading address...");
-            let alba_address_id: i32 = alba_address_id;
+            let address_id: i32 = address_id;
             let uri: String = format!(
-                "{base_path}/{alba_address_id}", 
+                "{base_path}/{address_id}?address_id={address_id}&mtk={key}", 
                 base_path = GET_ADDRESSES_API_PATH);
 
             let address_response = Request::get(uri.as_str())
@@ -353,7 +356,7 @@ pub fn address_edit_page() -> Html {
 
                 let model: AddressEditModel = AddressEditModel {
                     address: fetched_address,
-                    alba_address_id: alba_address_id,
+                    address_id: address_id,
                     save_success: false,
                     save_error: false,
                     load_error: false,
@@ -369,7 +372,7 @@ pub fn address_edit_page() -> Html {
             } else if address_response.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
                     address: Address::default(),
-                    alba_address_id: alba_address_id,
+                    address_id: address_id,
                     save_success: false,
                     save_error: false,
                     load_error: true,
@@ -387,23 +390,25 @@ pub fn address_edit_page() -> Html {
     //     event.prevent_default();
     // });
     let cloned_state = state.clone();
+    let key = parameters.key.clone().unwrap_or_default();
     let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
         event.prevent_default();
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
+        let key = key.clone();
         spawn_local(async move {
             log!("Spawing request for address change...");
             let model = cloned_state.clone();
-            let uri_string: String = format!("{path}", 
+            let uri_string: String = format!("{path}?mtk={key}", 
                 path = DATA_API_PATH);
 
             let uri: &str = uri_string.as_str();
             
-            let _method: Method = match ASSIGN_METHOD {
-                "PUT" => Method::PUT,
-                "GET" => Method::PUT,
-                &_ =>  Method::GET,
-            };
+            // let _method: Method = match ASSIGN_METHOD {
+            //     "PUT" => Method::GET,
+            //     "GET" => Method::PUT,
+            //     &_ =>  Method::GET,
+            // };
 
             let body_model = &model.deref();
             let data_serialized = serde_json::to_string_pretty(&body_model.address)
@@ -411,13 +416,22 @@ pub fn address_edit_page() -> Html {
 
             // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
             // https://yew.rs/docs/0.18.0/concepts/services/fetch
-            let resp = Request::new(uri)
-                .method(Method::PUT)
-                .header("Content-Type", "application/json")
-                .body(data_serialized)
-                .send()
-                .await
-                .expect("A result from the endpoint");
+            let resp = if ASSIGN_METHOD == "PUT" {
+                Request::new(uri)
+                    .method(Method::PUT)
+                    .header("Content-Type", "application/json")
+                    .body(data_serialized)
+                    .send()
+                    .await
+                    .expect("A result from the endpoint")
+            } else {
+                Request::new(uri)
+                    .method(Method::GET)
+                    .header("Content-Type", "application/json")
+                    .send()
+                    .await
+                    .expect("A result from the fake endpoint for debugging")
+            };
 
          
 
@@ -442,7 +456,7 @@ pub fn address_edit_page() -> Html {
             if resp.status() == 200 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    alba_address_id: alba_address_id,
+                    address_id: address_id,
                     save_success: true,
                     save_error: false,
                     load_error: false,
@@ -453,7 +467,7 @@ pub fn address_edit_page() -> Html {
             } else if resp.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    alba_address_id: alba_address_id,
+                    address_id: address_id,
                     save_success: false,
                     save_error: true,
                     load_error: false,
@@ -464,7 +478,7 @@ pub fn address_edit_page() -> Html {
             } else if resp.status() == 403 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    alba_address_id: alba_address_id,
+                    address_id: address_id,
                     save_success: false,
                     save_error: true,
                     load_error: false,
@@ -475,7 +489,7 @@ pub fn address_edit_page() -> Html {
             } else {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    alba_address_id: alba_address_id,
+                    address_id: address_id,
                     save_success: false,
                     save_error: true,
                     load_error: false,
@@ -492,6 +506,9 @@ pub fn address_edit_page() -> Html {
 
     let selected_language_id: i32 = state.address.language_id;
     let selected_status_id: i32 = state.address.status_id;
+    let _mtk = parameters.key.clone().unwrap_or_default();
+    let is_new_address: bool = state.address_id == 0;
+    let edit_verb = if is_new_address { "New" } else { "Edit" };
 
     html! {
         <>
@@ -508,7 +525,7 @@ pub fn address_edit_page() -> Html {
             </ul>
         </MenuBarV2>
         <div class="container">
-            <span><strong>{"Edit 地址 Address"}</strong></span>
+            <span><strong>{edit_verb}{" 地址 Address"}</strong></span>
             if state.save_success { 
                 <span class="mx-1 badge bg-success">{"Saved"}</span> 
             }
@@ -585,6 +602,9 @@ pub fn address_edit_page() -> Html {
                     <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
                     <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                 </div>
+                <div class="col-6 col-sm-4 col-md-4">
+                    <span style="color:gray;">{"Sorry no geocoding available yet"}</span>
+                </div>
                 <div class="col-12">
                     <label for="input-phone" class="form-label">{"电话 Phone"}</label>
                     <input value={state.address.telephone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
@@ -613,7 +633,7 @@ pub fn address_edit_page() -> Html {
                     }
                 </div>
                 <div class="col-12">
-                    <span><small>{"AAID: "}{state.address.alba_address_id}</small></span>
+                    <span><small>{"AAID: "}{state.address.alba_address_id}{" AID: "}{state.address.address_id}</small></span>
                 </div>
             </form>
         </div>

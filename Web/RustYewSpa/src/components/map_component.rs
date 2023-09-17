@@ -1,9 +1,9 @@
 use crate::libs::leaflet::{
-    DivIcon,
+    //DivIcon,
     LatLng, 
     LatLngBounds,
     Map,
-    Marker,
+    //Marker,
     Point,
     Polygon, 
     TileLayer, 
@@ -11,9 +11,9 @@ use crate::libs::leaflet::{
 };
 use crate::models::territories::Territory;
 use crate::components::map_component_functions::{
-    DivIconOptions,
+    //DivIconOptions,
     TerritoryPolygon,
-    MarkerOptions,
+    //MarkerOptions,
     polygon_from_territory_polygon,
     get_southwest_corner,
     get_northeast_corner,

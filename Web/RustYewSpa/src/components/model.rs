@@ -15,7 +15,7 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 use yew_router::prelude::LocationHandle;
-use gloo_console::log;
+//use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search

@@ -4,6 +4,7 @@ use yew::prelude::*;
 #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Address {
+    pub address_id: i32,
     pub alba_address_id: i32,
     pub territory_number: Option<String>,
     pub language: Option<String>,

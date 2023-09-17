@@ -174,7 +174,7 @@ pub fn territory_map() -> Html {
             }
         };
 
-        let group_id: String = {
+        let _group_id: String = {
             match &t.group_id {
                 Some(v) => v.to_string(),
                 None => "".to_string(),

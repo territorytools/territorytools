@@ -1,4 +1,4 @@
-use crate::libs::leaflet::{DivIcon, LatLng, Polygon};
+use crate::libs::leaflet::{LatLng, Polygon};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::Territory;
@@ -139,14 +139,14 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
         }
     };
 
-    let group_id: String = {
+    let _group_id: String = {
         match &t.group_id {
             Some(v) => v.to_string(),
             None => "".to_string(),
         }
     };
 
-    let area_code: String = {
+    let _area_code: String = {
         match t.area_code {
             Some(_) => t.area_code.clone().unwrap(),
             None => "".to_string(),
