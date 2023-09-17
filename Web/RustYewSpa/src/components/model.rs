@@ -36,6 +36,7 @@ pub struct Model {
     territory_map: MapModel,
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
+    search_error: String,
     last_key: Option<String>,
 }
 
@@ -72,6 +73,7 @@ impl Component for Model {
             // cities, // These are interesting dont' delete them yet
             territory_map: MapModel::default(), 
             search: "".to_string(), 
+            search_error: "".to_string(),
             tpolygons: vec![],
             last_key: None,
         }                
@@ -106,7 +108,7 @@ impl Component for Model {
             },
             Msg::Search(search) => {
                 self.search = search;
-                self.tpolygons.clear();
+                
                 let search: String = self.search.trim().to_string();
                 
                 let prefix_removed: String = if search.to_uppercase().trim().starts_with("NUMBERS:") {
@@ -118,48 +120,49 @@ impl Component for Model {
                     regex.split(prefix_removed.as_str()).collect::<Vec<&str>>()
                 } else { vec![] };
                                
+                let mut tpolygons: Vec<TerritoryPolygon> = vec![];
                 let search_text = Some(search.clone().to_uppercase().trim().to_string());
                 for t in self.territory_map.territories.iter() {
                     if numbers.len() > 0usize 
                         && !t.number.is_empty()
                         && numbers.contains(&t.number.as_str()) {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     } else if search == "ALL".to_string(){
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     } else if (search == "*".to_string() || search.trim() == "".to_string()) 
                         && t.group_id != Some("outer".to_string())  
                         && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     } else if search == "OUTER".to_string() && t.number == "OUTER".to_string() {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     } else if search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     // } else if search.starts_with('<') 
                     //     && t.signed_out.
                     //     && t.number != "OUTER".to_string() {
                     //     let tp = tpoly_from_territory(t);
-                    //     self.tpolygons.push(tp);    
+                    //     tpolygons.push(tp);    
                     } else if Some(format!("WHO:{}", t.signed_out_to.clone().unwrap_or("".to_string()).to_uppercase())) == search_text
                         && t.group_id != Some("outer".to_string())
                         && t.number != "OUTER".to_string() {
                             let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                            self.tpolygons.push(tp);                    
+                            tpolygons.push(tp);                    
                     } else if (Some(format!("STAGE:{}", t.stage.clone().unwrap_or_default().to_uppercase())) == search_text
                         || Some(format!("STAGE:{}", t.stage_id.unwrap_or(0))) == search_text)
                         && t.group_id != Some("outer".to_string())
                         && t.number != "OUTER".to_string() {
                             let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                            self.tpolygons.push(tp);                    
+                            tpolygons.push(tp);                    
                     } else if Some(format!("GROUP:{}", t.group_id.clone().unwrap_or("".to_string()).to_uppercase())) == search_text
                         && t.group_id != Some("outer".to_string())
                         && t.number != "OUTER".to_string() {
                             let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                            self.tpolygons.push(tp);
+                            tpolygons.push(tp);
                     } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
                       || Some(format!("group:{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
                       || Some(format!("stage:{}", t.stage.clone().unwrap_or_default())) == Some(search.clone())
@@ -170,9 +173,24 @@ impl Component for Model {
                       && t.group_id != Some("outer".to_string())
                       && t.number != "OUTER".to_string()  {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     } 
                 }
+
+                if tpolygons.len() > 0usize {
+                    self.tpolygons = tpolygons;
+                    self.search_error = "".to_string();
+                } else {
+                    self.search_error = "No matches!".to_string();
+                    if self.tpolygons.len() == 0 {
+                        // Just reload everything
+                        for t in self.territory_map.territories.iter() {
+                            let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
+                            self.tpolygons.push(tp);
+                        }
+                    }
+                }
+
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -282,6 +300,11 @@ impl Component for Model {
                                         // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>                                    
                                         <span class="p-2 flex-grow-3 ">
                                             {count}
+                                            {
+                                                if !self.search_error.clone().is_empty() {
+                                                    html! {<span style="padding-left:5px;color:red;">{self.search_error.clone()}</span>}
+                                                } else { html!{}}
+                                            }
                                         </span>
                                     </div>    
                                   

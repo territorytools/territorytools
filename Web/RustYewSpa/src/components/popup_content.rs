@@ -143,6 +143,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     let active = territory.addresses_active;
     let total = territory.addresses_total;
     let unvisited = territory.addresses_unvisited;
+    let visited = active-territory.addresses_unvisited;
     let status_letter = &status[..1];
 
     format!(
@@ -152,7 +153,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             <br/><span>Group {group_id}</span>
             <!--br/><span>Addresses: {address_count}</span-->
             <!--br/><span>{status}</span-->
-            <br/>Unvisited: {unvisited}/{active}            
+            <br/>Visited: {visited}/{active}            
             {stage_html}
             {assignee_line}<br/>
             {open_button_html}
