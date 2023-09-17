@@ -4,6 +4,8 @@ use crate::components::state_selector::SelectAddressState;
 use crate::models::addresses::Address;
 use crate::functions::document_functions::set_document_title;
 use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
+use crate::components::territory_editor::TerritoryEditorParameters;
+use crate::Route;
 //use std::fmt::Display;
 //use crate::models::territories::Territory;
 //use serde::{Deserialize, Serialize};
@@ -16,6 +18,7 @@ use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
+use yew_router::prelude::use_navigator;
 //use serde_json::ser::to_string;
 
 #[cfg(debug_assertions)]
@@ -64,6 +67,7 @@ pub struct AddressEditParameters {
     pub address_id: Option<i32>,
     pub key: Option<String>,
     pub territory_number: Option<String>,
+    pub features: Option<String>,
 }
 
 // pub fn add_field(state: yew::UseStateHandle<AddressEditModel>, field: &str) {
@@ -81,6 +85,13 @@ pub fn address_edit_page() -> Html {
     let address_id: i32 = match parameters.address_id {
         Some(v) => v,
         _ => 0,
+    };
+
+    let navigator = use_navigator().unwrap();
+    let close_onclick = {
+        Callback::from(move |_| {
+            navigator.back();
+        })
     };
 
     let language_onchange = {
@@ -150,6 +161,20 @@ pub fn address_edit_page() -> Html {
         })
     };
 
+    let territory_number = state.address.territory_number.clone().unwrap_or_default();
+    let navigator = use_navigator().unwrap();
+    let territory_open_onclick = {
+        let navigator = navigator.clone();
+        //let territory_number = territory_number.clone();
+        Callback::from(move |_| {
+            let query = TerritoryEditorParameters {
+                id: None,
+                number: Some(territory_number.clone()),
+            };
+            let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
+        })
+    };
+    
     let name_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
@@ -530,6 +555,10 @@ pub fn address_edit_page() -> Html {
             }
         });
     });
+    let features = parameters.features.clone().unwrap_or_default();
+    let features: Vec<_> = features.split(",").collect();
+    //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
+    let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
 
     let selected_language_id: i32 = state.address.language_id;
     let selected_status_id: i32 = state.address.status_id;
@@ -576,15 +605,6 @@ pub fn address_edit_page() -> Html {
                     <span>{"Edit 地址 Address"}</span>
                 }
             </strong></span>
-            if address_id != 0 {
-                <a class="btn btn-outline-primary ms-5" href={new_address_uri}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
-                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
-                    </svg>
-                    <span class="ms-1">{"New Address"}</span>
-                </a>
-            }
             if state.save_success { 
                 <span class="mx-1 badge bg-success">{"Saved"}</span> 
             }
@@ -600,7 +620,58 @@ pub fn address_edit_page() -> Html {
                 <p>{"Please do not change address if someone has moved, use this form to make address corrections, if someone has moved click new address."}</p>        
             }
             <hr/>
-            <form {onsubmit} class="row g-3">
+            <form {onsubmit} class="row g-3">      
+                <div class="col-12">
+                    <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                    <a onclick={close_onclick.clone()} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
+                    if address_id != 0 {
+                        <a class="mx-1 btn btn-outline-primary" href={new_address_uri.clone()}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
+                                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                                <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                            </svg>
+                            <span class="mx-1">{"New Address"}</span>
+                        </a>
+                    }
+                    if state.save_success { 
+                        <span class="mx-1 badge bg-success">{"Saved"}</span> 
+                    }
+                    if state.save_error { 
+                        <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
+                        <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+                    }                    
+                </div>   
+                <div class="col-12">
+                    <label for="inputName" class="form-label">{"姓名 Name"}</label>
+                    <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control shadow-sm" id="inputName" placeholder="Name"/>
+                </div>
+                <div class="col-12 col-md-9">
+                    <label for="inputAddress" class="form-label">{"地址 Address"}</label>
+                    <input value={state.address.street.clone()} onchange={street_onchange} type="text" class="form-control shadow-sm" id="inputAddress" placeholder="1234 Main St"/>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
+                    <input value={state.address.unit.clone()} onchange={unit_onchange} type="text" class="form-control shadow-sm" id="inputUnit" placeholder="Apartment, studio, or floor"/>
+                </div>
+                <div class="col-md-6">
+                    <label for="inputCity" class="form-label">{"城市 City"}</label>
+                    <input value={state.address.city.clone()} onchange={city_onchange} type="text" class="form-control shadow-sm" id="inputCity"/>
+                </div>
+                <div class="col-md-4">
+                    <SelectAddressState onchange={state_onchange}/>
+                </div>
+                <div class="col-md-2">
+                    <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
+                    <input value={state.address.postal_code.clone()} onchange={postal_code_onchange} type="text" class="form-control shadow-sm" id="input-postal-code"/>
+                </div>              
+                <div class="col-12">
+                    <label for="input-phone" class="form-label">{"电话 Phone"}</label>
+                    <input value={state.address.telephone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
+                </div>
+                <div class="col-12">
+                    <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
+                    <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
+                </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
                     <select onchange={language_onchange} id="input-language" class="form-select shadow-sm">
@@ -636,65 +707,44 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="inputTerritoryNumber" class="form-label">{"Territory Number"}</label>
-                    <input value={territory_number} onchange={territory_number_onchange} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory Number"/>
-                </div>
-                <div class="col-12 col-sm-6 col-md-4">
-                    <label for="inputAlbaAddressId" class="form-label">{"Alba Address Id"}</label>
-                    <input value={format!("{}",state.address.alba_address_id)} /*onchange={alba_address_id_onchange}*/ type="text" class="form-control shadow-sm" id="inputAlbaAddressId" placeholder="Alba Address Id" readonly={true} />
-                </div>
-                <div class="col-12">
-                    <label for="inputName" class="form-label">{"姓名 Name"}</label>
-                    <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control shadow-sm" id="inputName" placeholder="Name"/>
-                </div>
-                <div class="col-12 col-md-9">
-                    <label for="inputAddress" class="form-label">{"地址 Address"}</label>
-                    <input value={state.address.street.clone()} onchange={street_onchange} type="text" class="form-control shadow-sm" id="inputAddress" placeholder="1234 Main St"/>
-                </div>
-                <div class="col-12 col-md-3">
-                    <label for="inputUnit" class="form-label">{"单元号 Unit"}</label>
-                    <input value={state.address.unit.clone()} onchange={unit_onchange} type="text" class="form-control shadow-sm" id="inputUnit" placeholder="Apartment, studio, or floor"/>
-                </div>
-                <div class="col-md-6">
-                    <label for="inputCity" class="form-label">{"城市 City"}</label>
-                    <input value={state.address.city.clone()} onchange={city_onchange} type="text" class="form-control shadow-sm" id="inputCity"/>
-                </div>
-                <div class="col-md-4">
-                    <SelectAddressState onchange={state_onchange}/>
-                </div>
-                <div class="col-md-2">
-                    <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
-                    <input value={state.address.postal_code.clone()} onchange={postal_code_onchange} type="text" class="form-control shadow-sm" id="input-postal-code"/>
+                    <div class="input-group">
+                        <input value={territory_number} onchange={territory_number_onchange} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory Number"/>
+                        <button onclick={territory_open_onclick} class="btn btn-outline-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
                     <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
-                </div>
+                </div>                
                 <div class="col-6 col-sm-4 col-md-4">
                     <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
                     <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <span style="color:gray;">{"Sorry no geocoding available yet"}</span>
-                </div>
-                <div class="col-12">
-                    <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                    <input value={state.address.telephone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
-                </div>
-                <div class="col-12">
-                    <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                    <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
-                </div>
-                // <div class="col-12">
-                //     <div class="form-check">
-                //     <input class="form-check-input" type="checkbox" id="gridCheck"/>
-                //     <label class="form-check-label" for="gridCheck">
-                //         {"Check me out"}
-                //     </label>
-                //     </div>
-                // </div>
+                </div>                
+                if show_alba_address_id {
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <label for="inputAlbaAddressId" class="form-label">{"Alba Address Id"}</label>
+                        <input value={format!("{}",state.address.alba_address_id)} /*onchange={alba_address_id_onchange}*/ type="text" class="form-control shadow-sm" id="inputAlbaAddressId" placeholder="Alba Address Id" readonly={true} />
+                    </div>
+                }
                 <div class="col-12">
                     <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
-                    <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
+                    <a onclick={close_onclick} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
+                    if address_id != 0 {
+                        <a class="mx-1 btn btn-outline-primary" href={new_address_uri.clone()}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
+                                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                                <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                            </svg>
+                            <span class="mx-1">{"New Address"}</span>
+                        </a>
+                    }                    
                     if state.save_success { 
                         <span class="mx-1 badge bg-success">{"Saved"}</span> 
                     }

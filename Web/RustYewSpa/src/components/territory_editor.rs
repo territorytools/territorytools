@@ -72,9 +72,10 @@ pub struct TerritoryAssignerModel {
     // pub error_message: String,
 }
 
-#[derive(Clone, Debug, PartialEq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct TerritoryEditorParameters {
     pub id: Option<i32>,
+    pub number: Option<String>,
 }
 
 #[derive(Properties, PartialEq, Clone, Default)]
@@ -220,11 +221,13 @@ pub fn territory_editor_page() -> Html {
     let cloned_state = state.clone();
     use_effect_with_deps(move |_| {
         let cloned_state = cloned_state.clone();
+        let territory_number = parameters.number.clone().unwrap_or_default();
         wasm_bindgen_futures::spawn_local(async move {
             log!("Loading territory...");
             let territory_id: i32 = territory_id;
+            let territory_number = territory_number.clone();
             let uri: String = format!(
-                "{base_path}?id={territory_id}", 
+                "{base_path}?id={territory_id}&territoryNumber={territory_number}", 
                 base_path = GET_TERRITORY_API_PATH);
 
             let territory_response = Request::get(uri.as_str())
