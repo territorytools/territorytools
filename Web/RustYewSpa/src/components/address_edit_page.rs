@@ -63,6 +63,7 @@ pub struct AddressEditModel {
 pub struct AddressEditParameters {
     pub address_id: Option<i32>,
     pub key: Option<String>,
+    pub territory_number: Option<String>,
 }
 
 // pub fn add_field(state: yew::UseStateHandle<AddressEditModel>, field: &str) {
@@ -127,6 +128,24 @@ pub fn address_edit_page() -> Html {
         Callback::from(move |value: String| {
             let mut modification = state.deref().clone();
             modification.address.delivery_status_id = value.parse().unwrap();
+            state.set(modification);
+        })
+    };
+
+    let territory_number_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.territory_number = Some(value);
+
+            log!(format!("Territory number to {number:?}", number = modification.address.territory_number.clone()));
+
             state.set(modification);
         })
     };
@@ -323,68 +342,79 @@ pub fn address_edit_page() -> Html {
         })
     };
 
-    //let territories = use_state(|| vec![]);    
+    //let territories = use_state(|| vec![]);
+
     let key = parameters.key.clone().unwrap_or_default();
     let cloned_state = state.clone();
     use_effect_with_deps(move |_| {
         let cloned_state = cloned_state.clone();
         let key = key.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            log!("Loading address...");
-            let address_id: i32 = address_id;
-            let uri: String = format!(
-                "{base_path}/{address_id}?address_id={address_id}&mtk={key}", 
-                base_path = GET_ADDRESSES_API_PATH);
-
-            let address_response = Request::get(uri.as_str())
-                .send()
-                .await
-                .expect("Address response (raw) from API");
-            
-            if address_response.status() == 200 {
-                let fetched_address: Address = address_response
-                    .json()
-                    .await
-                    .expect("Valid address JSON from API");
-
-                log!(format!(
-                    "Fetched address 1, street: {street:?}",
-                    street = fetched_address.street
-                ));
-
-                //let fetched_address_clone = fetched_address.clone();
-
-                let model: AddressEditModel = AddressEditModel {
-                    address: fetched_address,
-                    address_id: address_id,
+            if address_id == 0 {            
+                log!("AddressId is zero, loading new empty address...");
+                cloned_state.set(AddressEditModel {
+                    address: Address::default(),
+                    address_id: 0,
                     save_success: false,
                     save_error: false,
                     load_error: false,
                     error_message: "".to_string(),
-                };
+                });
+            } else {
+                log!("Loading address...");
+                let uri: String = format!(
+                    "{base_path}/{address_id}?address_id={address_id}&mtk={key}", 
+                    base_path = GET_ADDRESSES_API_PATH);
 
-                log!(format!(
-                    "Fetched address 2, street: {street:?}",
-                    street = model.address.street
-                ));
+                let address_response = Request::get(uri.as_str())
+                    .send()
+                    .await
+                    .expect("Address response (raw) from API");
+                
+                if address_response.status() == 200 {
+                    let fetched_address: Address = address_response
+                        .json()
+                        .await
+                        .expect("Valid address JSON from API");
 
-                cloned_state.set(model);
-            } else if address_response.status() == 401 {
-                let model: AddressEditModel = AddressEditModel {
-                    address: Address::default(),
-                    address_id: address_id,
-                    save_success: false,
-                    save_error: false,
-                    load_error: true,
-                    error_message: "Unauthorized".to_string(),
-                };
+                    log!(format!(
+                        "Fetched address 1, street: {street:?}",
+                        street = fetched_address.street
+                    ));
 
-                cloned_state.set(model);
+                    //let fetched_address_clone = fetched_address.clone();
+
+                    let model: AddressEditModel = AddressEditModel {
+                        address: fetched_address,
+                        address_id: address_id,
+                        save_success: false,
+                        save_error: false,
+                        load_error: false,
+                        error_message: "".to_string(),
+                    };
+
+                    log!(format!(
+                        "Fetched address 2, street: {street:?}",
+                        street = model.address.street
+                    ));
+
+                    cloned_state.set(model);
+                } else if address_response.status() == 401 {
+                    let model: AddressEditModel = AddressEditModel {
+                        address: Address::default(),
+                        address_id: address_id,
+                        save_success: false,
+                        save_error: false,
+                        load_error: true,
+                        error_message: "Unauthorized".to_string(),
+                    };
+
+                    cloned_state.set(model);
+                }
             }
         });
         || ()
     }, ());
-    
 
     // let onsubmit = Callback::from(move |event: SubmitEvent| {
     //     event.prevent_default();
@@ -501,14 +531,18 @@ pub fn address_edit_page() -> Html {
         });
     });
 
-    // let selected_language: String = state.address.language.clone().unwrap_or_default();
-    // let selected_status: String = state.address.status.clone().unwrap_or_default();
-
     let selected_language_id: i32 = state.address.language_id;
     let selected_status_id: i32 = state.address.status_id;
-    let _mtk = parameters.key.clone().unwrap_or_default();
+    let key = parameters.key.clone().unwrap_or_default();
     let is_new_address: bool = state.address_id == 0;
-    let edit_verb = if is_new_address { "New" } else { "Edit" };
+    let territory_number_param = parameters.territory_number.clone().unwrap_or_default();
+    let new_address_uri = format!("?address_id=0&key={key}&territory_number={territory_number_param}");
+    let territory_number = state.address.territory_number.clone().unwrap_or_default();
+    let territory_number = if territory_number.is_empty() {
+        territory_number_param
+    } else {
+        territory_number.clone()
+    };
 
     html! {
         <>
@@ -522,10 +556,35 @@ pub fn address_edit_page() -> Html {
                         <span class="ms-1">{"Search"}</span>
                     </a>
                 </li> 
+                // <li class="nav-item">
+                //     <a class="nav-link active" href={new_address_uri}>
+                //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
+                //             <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                //             <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                //         </svg>
+                //         <span class="ms-1">{"New Address"}</span>
+                //     </a>
+                // </li> 
             </ul>
         </MenuBarV2>
         <div class="container">
-            <span><strong>{edit_verb}{" 地址 Address"}</strong></span>
+            <span><strong>
+                if is_new_address {
+                    <span>{"New 地址 Address"}</span>
+                    <span class="badge rounded-pill text-bg-success ms-3" style="background-color:green;">{"NEW"}</span>
+                } else {
+                    <span>{"Edit 地址 Address"}</span>
+                }
+            </strong></span>
+            if address_id != 0 {
+                <a class="btn btn-outline-primary ms-5" href={new_address_uri}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
+                        <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                        <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                    </svg>
+                    <span class="ms-1">{"New Address"}</span>
+                </a>
+            }
             if state.save_success { 
                 <span class="mx-1 badge bg-success">{"Saved"}</span> 
             }
@@ -536,7 +595,10 @@ pub fn address_edit_page() -> Html {
             if state.load_error { 
                 <span class="mx-1 badge bg-danger">{"Error"}</span> 
                 <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-            }        
+            }
+            if !is_new_address {
+                <p>{"Please do not change address if someone has moved, use this form to make address corrections, if someone has moved click new address."}</p>        
+            }
             <hr/>
             <form {onsubmit} class="row g-3">
                 <div class="col-12 col-sm-6 col-md-4">
@@ -567,9 +629,18 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
-                    <AddressDeliveryStatusSelector 
+                    <AddressDeliveryStatusSelector
+                        disabled={true}
                         onchange={delivery_status_onchange} 
                         id={state.address.delivery_status_id} />
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <label for="inputTerritoryNumber" class="form-label">{"Territory Number"}</label>
+                    <input value={territory_number} onchange={territory_number_onchange} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory Number"/>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <label for="inputAlbaAddressId" class="form-label">{"Alba Address Id"}</label>
+                    <input value={format!("{}",state.address.alba_address_id)} /*onchange={alba_address_id_onchange}*/ type="text" class="form-control shadow-sm" id="inputAlbaAddressId" placeholder="Alba Address Id" readonly={true} />
                 </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">{"姓名 Name"}</label>
@@ -596,11 +667,11 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
-                    <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
+                    <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
-                    <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
+                    <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                 </div>
                 <div class="col-6 col-sm-4 col-md-4">
                     <span style="color:gray;">{"Sorry no geocoding available yet"}</span>

@@ -135,8 +135,8 @@ impl Component for AddressSearchPage {
                     </div>
                     {
                         self.addresses.iter().map(|address| {   
-                            let alba_address_id = address.alba_address_id;
-                            let edit_uri = format!("/app/address-edit?alba_address_id={alba_address_id}");
+                            let address_id = address.address_id;
+                            let edit_uri = format!("/app/address-edit?address_id={address_id}");
                             let unit_text: String = match &address.unit {
                                 Some(v) => if v == "" { "".to_string() } else { format!(", {}", v.clone()) },
                                 None => "".to_string()
@@ -179,7 +179,7 @@ impl Component for AddressSearchPage {
                                     </div>
                                     <div class="row">
                                         <div class="col-2 col-md-1">
-                                            <small style="color:lightgray;">{address.alba_address_id}</small>
+                                            <small style="color:lightgray;">{address.address_id}</small>
                                         </div>
                                         <div class="col-10 col-md-11">
                                             {address.street.clone()}
