@@ -1,10 +1,12 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
-use crate::models::addresses::Address;
-use crate::functions::document_functions::set_document_title;
 use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
 use crate::components::territory_editor::TerritoryEditorParameters;
+use crate::models::addresses::Address;
+use crate::models::geocoding_coordinates::AddressToGeocode;
+use crate::models::geocoding_coordinates::GeocodingCoordinates;
+use crate::functions::document_functions::set_document_title;
 use crate::Route;
 //use std::fmt::Display;
 //use crate::models::territories::Territory;
@@ -22,6 +24,12 @@ use yew_router::prelude::use_navigator;
 //use serde_json::ser::to_string;
 
 #[cfg(debug_assertions)]
+const DEBUG_IS_ON: bool = true;
+
+#[cfg(not(debug_assertions))]
+const DEBUG_IS_ON: bool = false;
+
+#[cfg(debug_assertions)]
 const DATA_API_PATH: &str = "/data/put_address.json";
 
 #[cfg(not(debug_assertions))]
@@ -32,6 +40,12 @@ const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?slash=";
 
 #[cfg(not(debug_assertions))]
 const GET_ADDRESSES_API_PATH: &str = "/api/addresses/address-id";
+
+#[cfg(debug_assertions)]
+const GET_GEOCODING_API_PATH: &str = "/data/geocoding.json?slash=";
+
+#[cfg(not(debug_assertions))]
+const GET_GEOCODING_API_PATH: &str = "/api/geocoding";
 
 #[cfg(debug_assertions)]
 const ASSIGN_METHOD: &str = "PUT";
@@ -49,6 +63,8 @@ pub struct AddressEditModel {
     #[prop_or_default]
     pub load_error: bool,
     pub error_message: String,
+    pub geocoding_error: String,
+    pub geocoding_success: String,
 }
 
 
@@ -384,6 +400,7 @@ pub fn address_edit_page() -> Html {
                     save_error: false,
                     load_error: false,
                     error_message: "".to_string(),
+                    ..AddressEditModel::default()
                 });
             } else {
                 log!("Loading address...");
@@ -416,6 +433,7 @@ pub fn address_edit_page() -> Html {
                         save_error: false,
                         load_error: false,
                         error_message: "".to_string(),
+                        ..AddressEditModel::default()
                     };
 
                     log!(format!(
@@ -432,6 +450,7 @@ pub fn address_edit_page() -> Html {
                         save_error: false,
                         load_error: true,
                         error_message: "Unauthorized".to_string(),
+                        ..AddressEditModel::default()
                     };
 
                     cloned_state.set(model);
@@ -458,13 +477,6 @@ pub fn address_edit_page() -> Html {
                 path = DATA_API_PATH);
 
             let uri: &str = uri_string.as_str();
-            
-            // let _method: Method = match ASSIGN_METHOD {
-            //     "PUT" => Method::GET,
-            //     "GET" => Method::PUT,
-            //     &_ =>  Method::GET,
-            // };
-
             let body_model = &model.deref();
             let data_serialized = serde_json::to_string_pretty(&body_model.address)
                 .expect("Should be able to serialize address edit form into JSON");
@@ -516,6 +528,7 @@ pub fn address_edit_page() -> Html {
                     save_error: false,
                     load_error: false,
                     error_message: "".to_string(),
+                    ..AddressEditModel::default()
                 };
     
                 cloned_state.set(model);
@@ -527,6 +540,7 @@ pub fn address_edit_page() -> Html {
                     save_error: true,
                     load_error: false,
                     error_message: "Unauthorized".to_string(),
+                    ..AddressEditModel::default()
                 };
     
                 cloned_state.set(model);
@@ -538,6 +552,7 @@ pub fn address_edit_page() -> Html {
                     save_error: true,
                     load_error: false,
                     error_message: "Forbidden".to_string(),
+                    ..AddressEditModel::default()
                 };
     
                 cloned_state.set(model);
@@ -549,12 +564,113 @@ pub fn address_edit_page() -> Html {
                     save_error: true,
                     load_error: false,
                     error_message: format!("{}", resp.status()),
+                    ..AddressEditModel::default()
                 };
     
                 cloned_state.set(model);
             }
         });
     });
+
+    let cloned_state = state.clone();
+    let key = parameters.key.clone().unwrap_or_default();
+    let geocode_click = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let cloned_state = cloned_state.clone();
+        let key = key.clone();
+        spawn_local(async move {
+            log!("Spawing request for geocoding...");
+            let model = cloned_state.clone();
+            let uri_string: String = format!("{path}?mtk={key}", 
+                path = GET_GEOCODING_API_PATH);
+            let uri: &str = uri_string.as_str();
+
+            let address = &model.address;
+            let body_model = AddressToGeocode {
+                unit: address.unit.clone(),
+                address: address.street.clone(),
+                city: address.city.clone(),
+                state: address.state.clone(),
+                postal_code: address.postal_code.clone(),
+                country: address.country.clone(),
+            };
+
+            let data_serialized = serde_json::to_string_pretty(&body_model)
+                .expect("Should be able to serialize address for geocoding into JSON");
+
+            // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
+            // https://yew.rs/docs/0.18.0/concepts/services/fetch
+            let resp = if DEBUG_IS_ON {
+                Request::new(uri)
+                    .method(Method::GET) //POST)
+                    .header("Content-Type", "application/json")
+                    //.body(data_serialized)
+                    .send()
+                    .await
+                    .expect("A result from the fake endpoint for debugging")
+            } else {
+                Request::new(uri)
+                    .method(Method::POST)
+                    .header("Content-Type", "application/json")
+                    .body(data_serialized)
+                    .send()
+                    .await
+                    .expect("A result from the endpoint")                
+            };
+            
+            let mut latitude = cloned_state.address.latitude;
+            let mut longitude =  cloned_state.address.longitude;
+            let mut geocoding_success = "".to_string();
+            let mut geocoding_error = "".to_string();
+
+            if resp.status() == 200 {
+                let geocoding_result: GeocodingCoordinates = resp
+                    .json()
+                    .await
+                    .expect("Valid GeocodingCoordinates JSON from API");
+
+                if geocoding_result.score >= 5.0 {
+                    latitude = geocoding_result.latitude as f32;
+                    longitude = geocoding_result.longitude as f32;
+                    geocoding_success = "Geocoding Successful".to_string();
+                    geocoding_error = "".to_string();
+                } else {
+                    geocoding_success = "".to_string();
+                    geocoding_error = format!("Geocode Failure Score: {:0.1}", geocoding_result.score);
+                }
+            } else if resp.status() == 401 {
+                geocoding_success = "".to_string();
+                geocoding_error = "Authentication Error".to_string();
+            } else if resp.status() == 403 {
+                geocoding_success = "".to_string();
+                geocoding_error = "Unauthorized".to_string();               
+            } else {
+                geocoding_success = "".to_string();
+                geocoding_error = format!("Error {}", resp.status());
+            }
+
+            let address_model = Address {
+                latitude: latitude,
+                longitude: longitude,
+                ..cloned_state.address.clone()   
+            };
+
+            let cloned_state = cloned_state.clone();
+            let model: AddressEditModel = AddressEditModel {
+                address: address_model, //cloned_state.address.clone(), 
+                address_id: cloned_state.address_id,
+                save_success: cloned_state.save_success,
+                save_error: cloned_state.save_error,
+                load_error: cloned_state.load_error,
+                error_message: cloned_state.error_message.clone(),
+                geocoding_success: geocoding_success.clone(),
+                geocoding_error: geocoding_error.clone(),
+            };
+
+            cloned_state.set(model);
+        });
+    });
+
     let features = parameters.features.clone().unwrap_or_default();
     let features: Vec<_> = features.split(",").collect();
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
@@ -617,7 +733,7 @@ pub fn address_edit_page() -> Html {
                 <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
             }
             if !is_new_address {
-                <p>{"Please do not change address if someone has moved, use this form to make address corrections, if someone has moved click new address."}</p>        
+                <p>{"If someone has moved change Visit Status to 'Moved', save, click new address.  Use this form to make address corrections, changes names, or to add new addresses."}</p>        
             }
             <hr/>
             <form {onsubmit} class="row g-3">      
@@ -705,7 +821,7 @@ pub fn address_edit_page() -> Html {
                         onchange={delivery_status_onchange} 
                         id={state.address.delivery_status_id} />
                 </div>
-                <div class="col-12 col-sm-6 col-md-4">
+                <div class="col-6 col-sm-4 col-md-3">
                     <label for="inputTerritoryNumber" class="form-label">{"Territory Number"}</label>
                     <div class="input-group">
                         <input value={territory_number} onchange={territory_number_onchange} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory Number"/>
@@ -716,16 +832,28 @@ pub fn address_edit_page() -> Html {
                         </button>
                     </div>
                 </div>
-                <div class="col-6 col-sm-4 col-md-4">
-                    <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
-                    <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
-                </div>                
-                <div class="col-6 col-sm-4 col-md-4">
-                    <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
-                    <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
-                </div>
-                <div class="col-6 col-sm-4 col-md-4">
-                    <span style="color:gray;">{"Sorry no geocoding available yet"}</span>
+                // <div class="col-6 col-sm-4 col-md-4">
+                //     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
+                //     <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange.clone()} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
+                // </div>                
+                // <div class="col-6 col-sm-4 col-md-4">
+                //     <label for="input-longitude" class="form-label">{"经度 Longitude"}</label>
+                //     <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange.clone()} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
+                // </div>
+                
+                <div class="col-12 col-sm-8 col-md-6">
+                    <label for="input-longitude" class="form-label">{"纬度,经度 Latitude,Longitude"}</label>
+                    <div class="input-group">
+                        <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
+                        <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
+                        <button onclick={geocode_click} class="btn btn-primary">{"Geocode"}</button>
+                    </div>
+                    //if geocoding_success { 
+                        <span class="mx-1 badge bg-success">{state.geocoding_success.clone()}</span> 
+                    //}
+                    //if geocoding_error { 
+                        <span class="mx-1 badge bg-danger">{state.geocoding_error.clone()}</span> 
+                    //}      
                 </div>                
                 if show_alba_address_id {
                     <div class="col-12 col-sm-6 col-md-4">
