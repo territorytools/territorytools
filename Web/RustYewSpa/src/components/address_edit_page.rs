@@ -817,7 +817,7 @@ pub fn address_edit_page() -> Html {
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
                     <AddressDeliveryStatusSelector
-                        disabled={true}
+                        disabled={false}
                         onchange={delivery_status_onchange} 
                         id={state.address.delivery_status_id} />
                 </div>
@@ -841,7 +841,7 @@ pub fn address_edit_page() -> Html {
                 //     <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange.clone()} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                 // </div>
                 
-                <div class="col-12 col-sm-8 col-md-6">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-5">
                     <label for="input-longitude" class="form-label">{"纬度,经度 Latitude,Longitude"}</label>
                     <div class="input-group">
                         <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>

@@ -3,9 +3,9 @@ use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::Territory;
 
-use wasm_bindgen::{prelude::*};
+use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
-use yew::{html::ImplicitClone};
+use yew::html::ImplicitClone;
 //use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
@@ -128,7 +128,7 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
     //log!(format!("mcf: tpoly_from_territory_w_button: edit_territory_button_enabled: {edit_territory_button_enabled} territory_open_enabled:{territory_open_enabled}"));
     for v in &t.border {
         if v.len() > 1 {
-            polygon.push(TerritoryLatLng { lat: v[0].into(), lon: v[1].into()});
+            polygon.push(TerritoryLatLng { lat: v[0], lon: v[1]});
         }
     }
 
