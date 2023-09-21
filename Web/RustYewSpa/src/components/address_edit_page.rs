@@ -321,9 +321,9 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.telephone = Some(value);
+            modification.address.phone = Some(value);
 
-            log!(format!("Address phone set to {name:?}", name = modification.address.telephone.clone()));
+            log!(format!("Address phone set to {name:?}", name = modification.address.phone.clone()));
 
             state.set(modification);
         })
@@ -523,7 +523,7 @@ pub fn address_edit_page() -> Html {
             if resp.status() == 200 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    address_id: address_id,
+                    address_id,
                     save_success: true,
                     save_error: false,
                     load_error: false,
@@ -676,8 +676,11 @@ pub fn address_edit_page() -> Html {
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
 
-    let selected_language_id: i32 = state.address.language_id;
-    let selected_status_id: i32 = state.address.status_id;
+    let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
+    let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
+    log!(format!("selected_language_id: {}, selected_status_id: {}", selected_language_id, selected_status_id));
+
+
     let key = parameters.key.clone().unwrap_or_default();
     let is_new_address: bool = state.address_id == 0;
     let territory_number_param = parameters.territory_number.clone().unwrap_or_default();
@@ -688,6 +691,14 @@ pub fn address_edit_page() -> Html {
     } else {
         territory_number.clone()
     };
+
+    let map_uri = format!("https://www.google.com/maps/search/{lat},{lon}",
+        lat = state.address.latitude.to_string(),
+        lon = state.address.longitude.to_string());
+    
+    let phone = state.address.phone.clone().unwrap_or_default();
+    let phone_uri = format!("tel:{}", phone.clone());
+    let show_phone_button = !phone.is_empty();
 
     html! {
         <>
@@ -733,7 +744,7 @@ pub fn address_edit_page() -> Html {
                 <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
             }
             if !is_new_address {
-                <p>{"If someone has moved change Visit Status to 'Moved', save, click new address.  Use this form to make address corrections, changes names, or to add new addresses."}</p>        
+                <p>{"If someone has moved change Visit Status to 'Moved', save, click new address.  Use this form to make address corrections, to change names, or to add new addresses."}</p>        
             }
             <hr/>
             <form {onsubmit} class="row g-3">      
@@ -780,9 +791,18 @@ pub fn address_edit_page() -> Html {
                     <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>
                     <input value={state.address.postal_code.clone()} onchange={postal_code_onchange} type="text" class="form-control shadow-sm" id="input-postal-code"/>
                 </div>              
-                <div class="col-12">
+                <div class="col-6 col-sm-5 col-md-4 col-lg-3">
                     <label for="input-phone" class="form-label">{"电话 Phone"}</label>
-                    <input value={state.address.telephone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
+                    <div class="input-group">
+                        <input value={state.address.phone.clone()} onchange={phone_onchange} type="text" class="form-control shadow-sm" id="input-phone" placeholder="000-000-0000"/>
+                        if show_phone_button {
+                            <a href={phone_uri} class="btn btn-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone-fill" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                </svg>
+                            </a>
+                        }
+                    </div>
                 </div>
                 <div class="col-12">
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
@@ -791,7 +811,7 @@ pub fn address_edit_page() -> Html {
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
                     <select onchange={language_onchange} id="input-language" class="form-select shadow-sm">
-                        <option value="0">{"Select language"}</option>
+                        <option value="83">{"Select language"}</option>
                         <EnglishChineseIdOption id={83} english="Chinese" chinese="中文" selected={selected_language_id} />
                         <EnglishChineseIdOption id={5} english="Cantonese" chinese="广东话" selected={selected_language_id} />
                         <EnglishChineseIdOption id={188} english="Fukien" chinese="福建话" selected={selected_language_id} />
@@ -844,6 +864,12 @@ pub fn address_edit_page() -> Html {
                 <div class="col-12 col-sm-8 col-md-6 col-lg-5">
                     <label for="input-longitude" class="form-label">{"纬度,经度 Latitude,Longitude"}</label>
                     <div class="input-group">
+                        <a href={map_uri} class="btn btn-outline-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            </svg>
+                        </a>
                         <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
                         <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                         <button onclick={geocode_click} class="btn btn-primary">{"Geocode"}</button>

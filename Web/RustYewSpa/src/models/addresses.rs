@@ -22,7 +22,7 @@ pub struct Address {
     pub postal_code: Option<String>,
     pub latitude: f32,
     pub longitude: f32,
-    pub telephone: Option<String>,
+    pub phone: Option<String>,
     pub notes: Option<String>,
     pub notes_private: Option<String>,
 }
