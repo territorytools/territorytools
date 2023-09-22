@@ -168,9 +168,8 @@ impl Component for AddressSearchPage {
                                                 <span class="ms-2 badge bg-info">{address.delivery_status.clone()}</span> 
                                             } else if address.delivery_status.clone() == Some("Sent".to_string()) {
                                                 <span class="ms-2 badge bg-success">{address.delivery_status.clone()}</span> 
-                                            } else if address.delivery_status.clone() == Some("Returned".to_string()) {
-                                                <span class="ms-2 badge bg-warning">{address.delivery_status.clone()}</span> 
-                                            } else if address.delivery_status.clone() == Some("Undeliverable".to_string()) {
+                                            } else if address.delivery_status.clone() == Some("Returned".to_string())
+                                                || address.delivery_status.clone() == Some("Undeliverable".to_string()) {
                                                 <span class="ms-2 badge bg-warning">{address.delivery_status.clone()}</span> 
                                             } else {
                                                 <span class="ms-2 badge bg-dark">{address.delivery_status.clone()}</span> 

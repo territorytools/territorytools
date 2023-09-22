@@ -1,6 +1,6 @@
-use crate::models::addresses::{AddressDeliveryStatus};
+use crate::models::addresses::AddressDeliveryStatus;
 use wasm_bindgen::JsCast;
-use reqwasm::http::{Request};
+use reqwasm::http::Request;
 use yew::prelude::*;
 use web_sys::HtmlSelectElement;
 
