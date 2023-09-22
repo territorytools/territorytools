@@ -159,6 +159,22 @@ pub fn address_edit_page() -> Html {
         })
     };
 
+    //last_delivery_status_date_utc
+    let last_delivery_status_date_utc_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.address.last_delivery_status_date_utc = Some(value);
+            state.set(modification);
+        })
+    };
+
     let territory_number_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
@@ -672,9 +688,10 @@ pub fn address_edit_page() -> Html {
     });
 
     let features = parameters.features.clone().unwrap_or_default();
-    let features: Vec<_> = features.split(",").collect();
+    let features: Vec<_> = features.split(',').collect();
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
+    let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
 
     let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
@@ -841,6 +858,12 @@ pub fn address_edit_page() -> Html {
                         onchange={delivery_status_onchange} 
                         id={state.address.delivery_status_id} />
                 </div>
+                if show_delivery_status_date {
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <label for="input-last-delivery-status-date-utc" class="form-label">{"Last Delivery Status Date"}</label>
+                        <input value={state.address.last_delivery_status_date_utc.clone()} onchange={last_delivery_status_date_utc_onchange} type="text" class="form-control shadow-sm" id="input-last-delivery-status-date-utc"/>
+                    </div>
+                }
                 <div class="col-6 col-sm-4 col-md-3">
                     <label for="inputTerritoryNumber" class="form-label">{"Territory Number"}</label>
                     <div class="input-group">
