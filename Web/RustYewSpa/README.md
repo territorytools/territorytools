@@ -24,6 +24,18 @@ trunk build --release
 trunk build --release --public-url "/app/"
 ```
 
+## Deploy Rust Files (And Back Up Folder)
+This has been tested.  So if it doesn't work maybe there's a auth problem.
+```
+cd ./dist/
+host=root@host.domain
+folder=$(date +"%Y-%m-%d-%H%M%S")
+mkdir $folder
+scp $host:/var/www/tt-web-staging-wasm/* $folder
+scp -r $folder $host:/var/www/tt-web-staging-wasm/bak/
+scp ./* $host:/var/www/tt-web-staging-wasm/
+```
+
 ## Notes
 Check this out: (Source: https://docs.rs/yew/0.10.0/yew/services/fetch/struct.Request.html)
 
