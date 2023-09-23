@@ -1,7 +1,7 @@
 use crate::AddressEditPage;
 use crate::AddressSearchPage;
 use crate::components::address_shared_letter_page::AddressSharedLetter;
-use crate::components::territory_stage_report_page::TerritoryStageReportPage;
+use crate::components::territory_stage_report_page::TerritoryReportsPage;
 use crate::AssignPage;
 use crate::Secure;
 use crate::TerritoryEditPage;
@@ -68,8 +68,8 @@ pub enum Route {
     Secure,
     #[at("/app/territory/:id")]
     TerritoryView { id: String },
-    #[at("/app/territory-stage-reports/monthly-completion")]
-    TerritoryStageReportsMonthlyCompletion,
+    #[at("/app/territory-reports/monthly-completion")]
+    TerritoryReportsMonthlyCompletion,
     //#[at("/app/testmap")]
     // TestMap,
     #[at("/app/links")]
@@ -125,7 +125,7 @@ pub fn switch(route: Route) -> Html {
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearchPage /> },
         Route::TerritorySearchOld => html! { <TerritorySearchOld /> },
-        Route::TerritoryStageReportsMonthlyCompletion => html! { <TerritoryStageReportPage /> },
+        Route::TerritoryReportsMonthlyCompletion => html! { <TerritoryReportsPage /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },

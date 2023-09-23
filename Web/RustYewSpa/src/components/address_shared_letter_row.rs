@@ -11,9 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::models::addresses::Address;
 use gloo_console::log;
 use wasm_bindgen::JsCast;
-use web_sys::{
-    HtmlInputElement,
-};
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 

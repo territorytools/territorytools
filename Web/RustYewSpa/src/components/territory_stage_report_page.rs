@@ -18,13 +18,13 @@ pub enum Msg {
     Refresh(),
 }
 
-pub struct TerritoryStageReportPage {
+pub struct TerritoryReportsPage {
     _listener: LocationHandle,
     months: Vec<MonthCompletionSummary>,
     result: TerritoryStageReportResult,
 }
 
-impl Component for TerritoryStageReportPage {
+impl Component for TerritoryReportsPage {
     type Message = Msg;
     type Properties = ();
     
@@ -74,11 +74,11 @@ impl Component for TerritoryStageReportPage {
                     </ul>
                 </MenuBarV2>
                 <div class="container">
-                    <span><strong>{"Territory Stage Report - Monthly Completion"}</strong></span>
+                    <span><strong>{"Territory Reports - Monthly Completion"}</strong></span>
         
                     <hr/>
                     <div class="row py-1" style="border-top: 1px solid gray;">
-                        <div class="col-2 col-md-1"><strong>{"Month"}</strong></div>
+                        <div class="col-4 col-md-2"><strong>{"Month"}</strong></div>
                         //<div class="col-2 col-md-1"><strong>{"Visiting Done"}</strong></div>
                         // <div class="col-2 col-md-1"><strong>{"Done"}</strong></div>
                         // <div class="col-2 col-md-1"><strong>{"Cooling Off"}</strong></div>
@@ -89,7 +89,7 @@ impl Component for TerritoryStageReportPage {
                             html! {
                                  <a style="text-decoration:none;color:black;">
                                      <div class="row py-1" style="border-top: 1px solid lightgray;">
-                                         <div class="col-2 col-md-1" style="font-weight:bold;">
+                                         <div class="col-4 col-md-2" style="font-weight:bold;">
                                              {month.month.clone()}
                                          </div>
                                         //  <div class="col-2 col-md-1">
