@@ -135,6 +135,21 @@ impl Component for TerritorySearchPage {
                         self.territories.iter().map(|territory| {   
                             let territory_id: i32 = territory.id.unwrap_or_default();
                             let edit_uri = format!("/app/territory-edit?id={territory_id:?}");        
+                            let stage = territory.stage.clone().unwrap_or_default().clone();
+                            let is_removed = territory.status.clone() == Some("Removed".to_string()) ;
+                            let stage = if is_removed { "Removed" } else { stage.as_str() };
+                            let stage_color = match stage {
+                                "Available" => "green",
+                                "Out" => "magenta",
+                                "Visiting" => "magenta",
+                                "Removed" => "black",
+                                "Done" => "blue",
+                                "Cooling Off" => "blue",
+                                "Visiting Done" => "blue",
+                                "Visiting Started" => "red",
+                                _ => "gray"
+                            };
+
                             html! {
                                  <a href={edit_uri} style="text-decoration:none;color:black;">
                                      <div class="row py-1" style="border-top: 1px solid lightgray;">
@@ -145,20 +160,22 @@ impl Component for TerritorySearchPage {
                                              {territory.description.clone()}
                                          </div>
                                          <div class="col-4 col-md-2">
-                                             <span class="badge" style="border-radius:3px;border-width:1px;border-style:solid;border-color:green;color:black;">
-                                                 {territory.stage.clone()}
+                                             <span class="badge" style={format!("border-radius:3px;border-width:1px;border-style:solid;color:white;background-color:{stage_color}")}>
+                                                 {stage.clone()}
                                              </span>
-                                             <span style="ming-width:5px;">{" / "}</span>
-                                            if territory.status.clone() == Some("Available".to_string()) {
-                                                <span class="badge" style="background-color:green">{territory.status.clone()}</span> 
-                                            } else if territory.status.clone() == Some("Out".to_string()) {
-                                                <span class="badge" style="background-color:magenta">{territory.status.clone()}</span> 
-                                            } else if territory.status.clone() == Some("Removed".to_string()) {
-                                                <span class="badge" style="background-color:black">{territory.status.clone()}</span> 
-                                            } else if territory.status.clone() == Some("Done".to_string()) {
-                                                <span class="badge" style="background-color:blue">{territory.status.clone()}</span> 
-                                            } else {
-                                                <span class="badge" style="background-color:gray">{territory.status.clone()}</span> 
+                                             if false { // TODO: Maybe turn this back on later as a feature
+                                                    <span style="ming-width:5px;">{" / "}</span>
+                                                if territory.status.clone() == Some("Available".to_string()) {
+                                                    <span class="badge" style="background-color:green">{territory.status.clone()}</span> 
+                                                } else if territory.status.clone() == Some("Out".to_string()) {
+                                                    <span class="badge" style="background-color:magenta">{territory.status.clone()}</span> 
+                                                } else if territory.status.clone() == Some("Removed".to_string()) {
+                                                    <span class="badge" style="background-color:black">{territory.status.clone()}</span> 
+                                                } else if territory.status.clone() == Some("Done".to_string()) {
+                                                    <span class="badge" style="background-color:blue">{territory.status.clone()}</span> 
+                                                } else {
+                                                    <span class="badge" style="background-color:gray">{territory.status.clone()}</span> 
+                                                }
                                             }
                                         </div>
                                         <div class="col-8 col-md-3">

@@ -15,6 +15,7 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
 use yew_router::prelude::LocationHandle;
+//use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
@@ -35,6 +36,7 @@ pub struct Model {
     territory_map: MapModel,
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
+    search_error: String,
     last_key: Option<String>,
 }
 
@@ -52,7 +54,7 @@ impl Component for Model {
             )
             .unwrap();
 
-            // Convert host/key/1234 to host/app?key=1234
+        // Convert host/key/1234 to host/app?key=1234
         let navigator = ctx.link().navigator().unwrap();
         let key = ctx.props().link_key.clone().unwrap_or_default();
         if !key.is_empty() {
@@ -65,12 +67,13 @@ impl Component for Model {
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
         }
         
-        return Self {
+        Self {
             _listener: listener,
             // city, 
             // cities, // These are interesting dont' delete them yet
             territory_map: MapModel::default(), 
             search: "".to_string(), 
+            search_error: "".to_string(),
             tpolygons: vec![],
             last_key: None,
         }                
@@ -105,52 +108,69 @@ impl Component for Model {
             },
             Msg::Search(search) => {
                 self.search = search;
-                self.tpolygons.clear();
+                
                 let search: String = self.search.trim().to_string();
-                // TODO: Finish number finder github issue #18
-                // let has_whitespace_regex = Regex::new(r"\d+\s*\d+[\s\d]*").expect("Valid RegEx for digits");
-                // let whitespace_captures = regex.captures(search.as_str());                
-                // if whitespace_captures.is_some() && whitespace_captures.as_ref().unwrap().len() > 0usize {
-                //     _description_contains = caps
-                //         .as_ref()
-                //         .expect("description-contains in link_grants")
-                //         .get(1)
-                //         .map_or("".to_string(), |m| m.as_str().to_string());
-                //     self.search = _description_contains.clone();
-                // }
+                
+                let prefix_removed: String = if search.to_uppercase().trim().starts_with("NUMBERS:") {
+                    search["NUMBERS:".len()..].to_string().clone()
+                } else { "".to_string() };
 
+                let numbers = if !prefix_removed.is_empty() {
+                    let regex = Regex::new(r"[\s,]+").expect("Valid RegEx for separators");
+                    regex.split(prefix_removed.as_str()).collect::<Vec<&str>>()
+                } else { vec![] };
+                               
+                let mut tpolygons: Vec<TerritoryPolygon> = vec![];
+                let search_text = Some(search.clone().to_uppercase().trim().to_string());
                 for t in self.territory_map.territories.iter() {
-                    if search == "ALL".to_string(){
+                    if (!numbers.is_empty() 
+                            && !t.number.is_empty() 
+                            && numbers.contains(&t.number.as_str()) )
+                        || (search.as_str() == "ALL")
+                        || ((search.as_str() == "*" || search.trim().is_empty()) 
+                            && t.group_id != Some("outer".to_string())  
+                            && t.number.as_str() != "OUTER")
+                        || (search.as_str() == "OUTER" && t.number.as_str() == "OUTER")
+                        || (search.as_str() == "outer" && t.group_id == Some("outer".to_string()) && t.number.as_str() != "OUTER")
+                        || (Some(format!("WHO:{}", t.signed_out_to.clone().unwrap_or("".to_string()).to_uppercase())) == search_text
+                            && t.group_id != Some("outer".to_string())
+                            && t.number.as_str() != "OUTER")
+                        || ((Some(format!("STAGE:{}", t.stage.clone().unwrap_or_default().to_uppercase())) == search_text
+                        || Some(format!("STAGE:{}", t.stage_id.unwrap_or(0))) == search_text)
+                            && t.group_id != Some("outer".to_string())
+                            && t.number.as_str() != "OUTER")
+                        || (Some(format!("GROUP:{}", t.group_id.clone().unwrap_or("".to_string()).to_uppercase())) == search_text
+                            && t.group_id != Some("outer".to_string())
+                            && t.number.as_str() != "OUTER")
+                        || ((Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
+                            || Some(format!("group:{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
+                            || Some(format!("stage:{}", t.stage.clone().unwrap_or_default())) == Some(search.clone())
+                            || Some(format!("stage:{}", t.stage_id.unwrap_or(0))) == Some(search.clone())
+                            || (t.description.clone().is_some() && t.description.clone().unwrap().contains(&search.clone()))
+                            || t.number == search.clone()
+                            || t.signed_out_to == Some(search.clone()))
+                            && t.group_id != Some("outer".to_string())
+                            && t.number.as_str() != "OUTER")
+                        {
                         let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
-                    } else if (search == "*".to_string() || search.trim() == "".to_string()) 
-                        && t.group_id != Some("outer".to_string())  
-                        && t.number != "OUTER".to_string() {
-                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
-                    } else if search == "OUTER".to_string() && t.number == "OUTER".to_string() {
-                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
-                    } else if search == "outer".to_string() && t.group_id == Some("outer".to_string()) && t.number != "OUTER".to_string() {
-                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
-                    // } else if search.starts_with('<') 
-                    //     && t.signed_out.
-                    //     && t.number != "OUTER".to_string() {
-                    //     let tp = tpoly_from_territory(t);
-                    //     self.tpolygons.push(tp);    
-                    } else if (Some(format!("g{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
-                      || Some(format!("group{}", t.group_id.clone().unwrap_or("".to_string()))) == Some(search.clone())
-                      || Some(format!("stage{}", t.stage_id.unwrap_or(0))) == Some(search.clone())
-                      || (t.description.clone() != None && t.description.clone().unwrap().contains(&search.clone()))
-                      || t.number == search.clone()
-                      || t.signed_out_to == Some(search.clone()))
-                      && t.group_id != Some("outer".to_string())
-                      && t.number != "OUTER".to_string()  {
-                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
-                        self.tpolygons.push(tp);
+                        tpolygons.push(tp);
                     } 
                 }
+
+                if !tpolygons.is_empty() {
+                    self.tpolygons = tpolygons;
+                    self.search_error = "".to_string();
+                } else {
+                    self.search_error = "No matches!".to_string();
+                    if self.tpolygons.is_empty() {
+                        // Just reload everything
+                        for t in self.territory_map.territories.iter() {
+                            let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
+                            self.tpolygons.push(tp);
+                        }
+                    }
+                }
+
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -182,6 +202,20 @@ impl Component for Model {
                 }
                 false
             }          
+        }
+    }
+    
+    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+        if first_render {
+            let navigator = ctx.link().navigator().unwrap();
+            let key = ctx.search_query().key.clone().unwrap_or_default(); 
+            let query = MapSearchQuery {
+                search: Some("".to_string()),
+                key: Some(key.clone()),
+                ..MapSearchQuery::default()
+            };
+
+            let _ = navigator.push_with_query(&Route::MapComponent, &query);
         }
     }
 
@@ -260,6 +294,11 @@ impl Component for Model {
                                         // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>                                    
                                         <span class="p-2 flex-grow-3 ">
                                             {count}
+                                            {
+                                                if !self.search_error.clone().is_empty() {
+                                                    html! {<span style="padding-left:5px;color:red;">{self.search_error.clone()}</span>}
+                                                } else { html!{}}
+                                            }
                                         </span>
                                     </div>    
                                   

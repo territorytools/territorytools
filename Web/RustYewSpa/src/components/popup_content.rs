@@ -101,7 +101,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
 
     let edit_button_html = if options.edit_territory_button_enabled {
         //log!("edit_button_html yes");
-        format!("<br/><a 
+        format!("<a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
             href='/app/territory-edit?id={id}'>
@@ -116,7 +116,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     //log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
     let open_button_html = if options.territory_open_enabled {
         if assignee_link_key.is_empty() {
-            format!("<br/><a 
+            format!("<a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-secondary btn-sm'
                 disabled
@@ -124,7 +124,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
                 Open
             </a>")
         } else {
-            format!("<br/><a 
+            format!("<a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
                 href='https://mobile.territorytools.org/mtk/{assignee_link_key}'>
@@ -140,23 +140,33 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
         "".to_string() 
     };
 
+    let active = territory.addresses_active;
+    let total = territory.addresses_total;
+    let unvisited = territory.addresses_unvisited;
+    let visited = active-territory.addresses_unvisited;
+    let status_letter = &status[..1];
+
     format!(
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>
             <br/><span>{description}</span>
             <br/><span>Group {group_id}</span>
             <!--br/><span>Addresses: {address_count}</span-->
-            <br/><span>{status}</span>
+            <!--br/><span>{status}</span-->
+            <br/>Visited: {visited}/{active}            
             {stage_html}
-            {assignee_line}
+            {assignee_line}<br/>
             {open_button_html}
             {assign_button_html}
             {edit_button_html}
-            <br/><span><small><small>TID:{territory_id} SG:{stage_id}</small></small></span>
+            <br/><span><small><small>
+                TID:{territory_id} 
+                St:{status_letter} 
+                A:{unvisited}/{active}/{total}
+            </small></small></span>
         </div>",
         territory_number = territory.number,
         description = territory.description.clone().unwrap_or("".to_string()),
         address_count = territory.address_count,
-        stage_id = territory.stage_id.clone().unwrap_or(0),
     )
 }

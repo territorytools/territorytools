@@ -1,6 +1,6 @@
-use crate::models::addresses::{AddressDeliveryStatus};
+use crate::models::addresses::AddressDeliveryStatus;
 use wasm_bindgen::JsCast;
-use reqwasm::http::{Request};
+use reqwasm::http::Request;
 use yew::prelude::*;
 use web_sys::HtmlSelectElement;
 
@@ -15,6 +15,7 @@ const STATUSES_API_PATH: &str = "/api/addresses/delivery-statuses";
 pub struct Props {
     pub id: i32,
     pub onchange: Callback<String>,
+    pub disabled: bool,
 }
 
 #[function_component(AddressDeliveryStatusSelector)]
@@ -55,8 +56,8 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
     };
 
     html! {
-        <select id={"deliver-status-menu"} name={"delivery-status-id"} class={"form-select shadow-sm"} {onchange}>
-            <option value={"0"}>{"Select Mail Delivery Status"}</option>
+        <select disabled={props.disabled} id={"deliver-status-menu"} name={"delivery-status-id"} class={"form-select shadow-sm"} {onchange}>
+            <option value={"0"}>{"For letter writing only"}</option>
             {      
                 statuses.iter().map(|status| {   
                     let status_clone = status.clone();

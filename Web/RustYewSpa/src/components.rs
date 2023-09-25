@@ -34,3 +34,4 @@ pub mod map_component;
 pub mod map_component_functions;
 pub mod model;
 pub mod model_functions;
+pub mod territory_stage_report_page;

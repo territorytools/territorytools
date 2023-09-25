@@ -174,7 +174,7 @@ pub fn territory_map() -> Html {
             }
         };
 
-        let group_id: String = {
+        let _group_id: String = {
             match &t.group_id {
                 Some(v) => v.to_string(),
                 None => "".to_string(),
@@ -243,7 +243,7 @@ pub fn territory_map() -> Html {
                 leaflet_map.fitBounds(&bounds);
             }
 
-            let tooltip_text: String = format!("{group_id}: {area_code}: {}", t.number);
+            let tooltip_text: String = t.number.clone().to_string(); //format!("{group_id}: {area_code}: {}", t.number);
 
             let popup_options = PopupContentOptions {
                 edit_territory_button_enabled: true,
