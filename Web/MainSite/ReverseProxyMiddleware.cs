@@ -48,6 +48,22 @@ namespace TerritoryTools.Web.MainSite
             _logger.LogTrace($"ReverseProxy: Incoming: Path: {context.Request.Path} QueryString: {context.Request.QueryString}");
             Uri targetUri = BuildTargetUri(context.Request);
 
+            // Security bypass Starts:  Comment this block out
+            //if (targetUri != null)
+            //{
+            //    HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
+            //    using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
+            //    {
+            //        context.Response.StatusCode = (int)responseMessage.StatusCode;
+            //        CopyFromTargetResponseHeaders(context, responseMessage);
+            //        await responseMessage.Content.CopyToAsync(context.Response.Body);
+            //    }
+            //    return;
+            //}
+            //await _nextMiddleware(context);
+            //return;
+            // End of Security bypass.  Comment this block out
+
             if (targetUri != null)
             {
                 _logger.LogTrace($"ReverseProxy: Forwarded to: {targetUri}");
@@ -84,14 +100,14 @@ namespace TerritoryTools.Web.MainSite
                     return;
                 }
 
-                HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
+                //HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
 
-                using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
-                {
-                    context.Response.StatusCode = (int)responseMessage.StatusCode;
-                    CopyFromTargetResponseHeaders(context, responseMessage);
-                    await responseMessage.Content.CopyToAsync(context.Response.Body);
-                }
+                //using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
+                //{
+                //    context.Response.StatusCode = (int)responseMessage.StatusCode;
+                //    CopyFromTargetResponseHeaders(context, responseMessage);
+                //    await responseMessage.Content.CopyToAsync(context.Response.Body);
+                //}
 
                 _logger.LogTrace($"ReverseProxy: Done");
                 return;
@@ -148,7 +164,7 @@ namespace TerritoryTools.Web.MainSite
                 }
             }
 
-            requestMessage.Headers.Add("x-territory-tools-user", context.User.Identity.Name);
+            requestMessage.Headers.Add("x-territory-tools-user", "marcdurham@gmail.com");
             //requestMessage.Content?.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
         }
 
