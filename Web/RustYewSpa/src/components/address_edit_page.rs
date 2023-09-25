@@ -81,7 +81,7 @@ pub struct AddressEditModel {
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct AddressEditParameters {
     pub address_id: Option<i32>,
-    pub key: Option<String>,
+    pub mtk: Option<String>,
     pub territory_number: Option<String>,
     pub features: Option<String>,
 }
@@ -401,11 +401,11 @@ pub fn address_edit_page() -> Html {
 
     //let territories = use_state(|| vec![]);
 
-    let key = parameters.key.clone().unwrap_or_default();
+    let mtk = parameters.mtk.clone().unwrap_or_default();
     let cloned_state = state.clone();
     use_effect_with_deps(move |_| {
         let cloned_state = cloned_state.clone();
-        let key = key.clone();
+        let mtk = mtk.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if address_id == 0 {            
                 log!("AddressId is zero, loading new empty address...");
@@ -421,7 +421,7 @@ pub fn address_edit_page() -> Html {
             } else {
                 log!("Loading address...");
                 let uri: String = format!(
-                    "{base_path}/{address_id}?address_id={address_id}&mtk={key}", 
+                    "{base_path}/{address_id}?address_id={address_id}&mtk={mtk}", 
                     base_path = GET_ADDRESSES_API_PATH);
 
                 let address_response = Request::get(uri.as_str())
@@ -444,7 +444,7 @@ pub fn address_edit_page() -> Html {
 
                     let model: AddressEditModel = AddressEditModel {
                         address: fetched_address,
-                        address_id: address_id,
+                        address_id,
                         save_success: false,
                         save_error: false,
                         load_error: false,
@@ -480,16 +480,16 @@ pub fn address_edit_page() -> Html {
     //     event.prevent_default();
     // });
     let cloned_state = state.clone();
-    let key = parameters.key.clone().unwrap_or_default();
+    let mtk = parameters.mtk.clone().unwrap_or_default();
     let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
         event.prevent_default();
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
-        let key = key.clone();
+        let mtk = mtk.clone();
         spawn_local(async move {
             log!("Spawing request for address change...");
             let model = cloned_state.clone();
-            let uri_string: String = format!("{path}?mtk={key}", 
+            let uri_string: String = format!("{path}?mtk={mtk}", 
                 path = DATA_API_PATH);
 
             let uri: &str = uri_string.as_str();
@@ -551,7 +551,7 @@ pub fn address_edit_page() -> Html {
             } else if resp.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    address_id: address_id,
+                    address_id,
                     save_success: false,
                     save_error: true,
                     load_error: false,
@@ -563,7 +563,7 @@ pub fn address_edit_page() -> Html {
             } else if resp.status() == 403 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    address_id: address_id,
+                    address_id,
                     save_success: false,
                     save_error: true,
                     load_error: false,
@@ -575,7 +575,7 @@ pub fn address_edit_page() -> Html {
             } else {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
-                    address_id: address_id,
+                    address_id,
                     save_success: false,
                     save_error: true,
                     load_error: false,
@@ -589,16 +589,17 @@ pub fn address_edit_page() -> Html {
     });
 
     let cloned_state = state.clone();
-    let key = parameters.key.clone().unwrap_or_default();
+    let mtk = parameters.mtk.clone().unwrap_or_default();
     let geocode_click = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let cloned_state = cloned_state.clone();
-        let key = key.clone();
+        let mtk = mtk.clone();
         spawn_local(async move {
             log!("Spawing request for geocoding...");
             let model = cloned_state.clone();
-            let uri_string: String = format!("{path}?mtk={key}", 
+            let uri_string: String = format!("{path}?mtk={mtk}", 
                 path = GET_GEOCODING_API_PATH);
+                
             let uri: &str = uri_string.as_str();
 
             let address = &model.address;
@@ -698,10 +699,10 @@ pub fn address_edit_page() -> Html {
     log!(format!("selected_language_id: {}, selected_status_id: {}", selected_language_id, selected_status_id));
 
 
-    let key = parameters.key.clone().unwrap_or_default();
+    let mtk = parameters.mtk.clone().unwrap_or_default();
     let is_new_address: bool = state.address_id == 0;
     let territory_number_param = parameters.territory_number.clone().unwrap_or_default();
-    let new_address_uri = format!("?address_id=0&key={key}&territory_number={territory_number_param}");
+    let new_address_uri = format!("?address_id=0&mtk={mtk}&territory_number={territory_number_param}");
     let territory_number = state.address.territory_number.clone().unwrap_or_default();
     let territory_number = if territory_number.is_empty() {
         territory_number_param
@@ -710,14 +711,14 @@ pub fn address_edit_page() -> Html {
     };
 
     let map_uri = format!("https://www.google.com/maps/search/{lat},{lon}",
-        lat = state.address.latitude.to_string(),
-        lon = state.address.longitude.to_string());
+        lat = state.address.latitude,
+        lon = state.address.longitude);
     
     let phone = state.address.phone.clone().unwrap_or_default();
     let phone_uri = format!("tel:{}", phone.clone());
     let show_phone_button = !phone.is_empty();
 
-    let mtk = parameters.key.clone().unwrap_or_default();
+    let mtk = parameters.mtk.clone().unwrap_or_default();
 
     html! {
         <>
