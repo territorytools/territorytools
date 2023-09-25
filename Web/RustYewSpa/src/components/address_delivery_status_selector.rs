@@ -16,6 +16,7 @@ pub struct Props {
     pub id: i32,
     pub onchange: Callback<String>,
     pub disabled: bool,
+    pub mtk: Option<String>,
 }
 
 #[function_component(AddressDeliveryStatusSelector)]
@@ -23,12 +24,16 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
     let statuses = use_state(|| vec![]);
     {
         let statuses = statuses.clone();
+        let mtk = props.mtk.clone().unwrap_or_default();
         use_effect_with_deps(move |_| {
             let statuses = statuses.clone();
+            let mtk = mtk.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let uri: &str = STATUSES_API_PATH;
+                let uri: String = format!(
+                    "{base_path}?mtk={mtk}", 
+                    base_path = STATUSES_API_PATH);
 
-                let fetched_statuses: Vec<AddressDeliveryStatus> = Request::get(uri)
+                let fetched_statuses: Vec<AddressDeliveryStatus> = Request::get(&uri)
                     .send()
                     .await
                     .unwrap()
@@ -65,7 +70,7 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
                     let status_text = format!("{name}{description}",
                         name = status_clone.name.unwrap_or_default(),
                         description = 
-                            if status_description == "".to_string()
+                            if status_description.is_empty()
                             { 
                                 "".to_string() 
                             } else {

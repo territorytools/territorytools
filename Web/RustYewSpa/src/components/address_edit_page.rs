@@ -717,6 +717,8 @@ pub fn address_edit_page() -> Html {
     let phone_uri = format!("tel:{}", phone.clone());
     let show_phone_button = !phone.is_empty();
 
+    let mtk = parameters.key.clone().unwrap_or_default();
+
     html! {
         <>
         <MenuBarV2>
@@ -854,6 +856,7 @@ pub fn address_edit_page() -> Html {
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
                     <AddressDeliveryStatusSelector
+                        {mtk}
                         disabled={false}
                         onchange={delivery_status_onchange} 
                         id={state.address.delivery_status_id} />

@@ -153,13 +153,15 @@ impl Component for MapComponent {
                     }
 
                     let inside = is_inside_polygon(vertices, &GeoPoint {
-                        x: lat_lng.lng() as f64, 
-                        y: lat_lng.lat() as f64
+                        x: lat_lng.lng(), 
+                        y: lat_lng.lat()
                     });
     
                     if inside { 
-                        let path: Element = document().get_element_by_id(format!("territory-id-{}", tp.territory_id.clone()).as_str())
-                            .expect(format!("Cannot find path with territory-id-{}", tp.territory_id.clone()).as_str());
+                        let path: Element = document()
+                            .get_element_by_id(format!("territory-id-{}", tp.territory_id.clone()).as_str())
+                            .expect("Cannot find path with territory-id-x");
+                        
                         let path: SvgPathElement = path.dyn_into().unwrap();
                         
                         let territories = self
