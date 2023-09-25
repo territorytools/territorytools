@@ -1,13 +1,8 @@
-#[cfg(debug_assertions)]
-const API_ASSIGN_URL: &str = "/data/post_assignments.json";
+// Uncomment for debugging without an API server
+// const API_ASSIGN_URL: &str = "/data/post_assignments.json";
+// const ASSIGN_METHOD: &str = "GET";
 
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
-
-#[cfg(not(debug_assertions))]
 const API_ASSIGN_URL: &str = "/api/territory-assignment/assignments";
-
-#[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "POST";
 
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js

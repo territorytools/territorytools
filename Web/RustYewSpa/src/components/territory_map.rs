@@ -19,10 +19,9 @@ use yew::prelude::*;
 use web_sys::{Element, HtmlElement, HtmlInputElement, Node};
 use yew_router::hooks::use_location;
 
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-borders-all.json";
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/territory-borders-all.json";
 
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/borders";
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]

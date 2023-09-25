@@ -1,7 +1,5 @@
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/addresses_search.json";
-
-#[cfg(not(debug_assertions))]
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/addresses_search.json";
 const DATA_API_PATH: &str = "/api/addresses/search";
 
 use crate::components::menu_bar_v2::MenuBarV2;
@@ -10,7 +8,7 @@ use crate::models::addresses::Address;
 use crate::Route;
 
 use gloo_console::log;
-use reqwasm::http::{Request};
+use reqwasm::http::Request;
 use serde::Deserialize;
 use serde::Serialize;
 use wasm_bindgen::JsCast;

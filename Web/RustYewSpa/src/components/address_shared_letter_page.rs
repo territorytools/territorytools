@@ -7,7 +7,7 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::addresses::Address;
 use gloo_console::log;
-use gloo::timers::callback::{Interval};
+use gloo::timers::callback::Interval;
 use rand::Rng;
 use yew::prelude::*;
 use yew_router::scope_ext::RouterScopeExt;
@@ -34,7 +34,6 @@ pub enum Msg {
     //Search(String),
     SetCurrentPublisher(String),
 }
-
 
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {

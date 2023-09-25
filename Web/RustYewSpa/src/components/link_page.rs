@@ -1,7 +1,6 @@
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-links.json";
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/territory-links.json";
 
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territory-links";
 
 use crate::components::menu_bar::MenuBar;

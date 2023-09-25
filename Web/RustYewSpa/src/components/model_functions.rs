@@ -1,16 +1,13 @@
-use crate::components::{
-    map_component::{MapModel},
-};
+use crate::components::map_component::MapModel;
 use crate::models::territories::{Territory,BorderFilteredResult};
 use crate::components::popup_content::PopupContentOptions;
 
 use reqwasm::http::Request;
 use regex::Regex;
 
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-borders-filtered.json";
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/territory-borders-filtered.json";
 
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/borders-filtered";
 
 fn find_center(territories: &Vec<Territory>) -> (f64, f64) {    

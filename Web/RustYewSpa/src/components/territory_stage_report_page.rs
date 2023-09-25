@@ -1,7 +1,6 @@
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-stage-reports-monthly-completion.json";
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/territory-stage-reports-monthly-completion.json";
 
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territory-stage-reports/monthly-completion";
 
 use crate::{components::menu_bar_v2::MenuBarV2, models::territory_reports::MonthCompletionSummary};
@@ -21,7 +20,7 @@ pub enum Msg {
 pub struct TerritoryReportsPage {
     _listener: LocationHandle,
     months: Vec<MonthCompletionSummary>,
-    result: TerritoryStageReportResult,
+    _result: TerritoryStageReportResult,
 }
 
 impl Component for TerritoryReportsPage {
@@ -41,7 +40,7 @@ impl Component for TerritoryReportsPage {
         Self {
             _listener: listener,
             months: vec![],
-            result: TerritoryStageReportResult::default(),
+            _result: TerritoryStageReportResult::default(),
         }
     }
 

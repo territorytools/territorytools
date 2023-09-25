@@ -4,12 +4,9 @@ use reqwasm::http::Request;
 use yew::prelude::*;
 use web_sys::HtmlSelectElement;
 
-#[cfg(debug_assertions)]
-const STATUSES_API_PATH: &str = "/data/address_delivery_statuses.json";
-
-#[cfg(not(debug_assertions))]
+// Uncomment for debugging without an API server
+//const STATUSES_API_PATH: &str = "/data/address_delivery_statuses.json";
 const STATUSES_API_PATH: &str = "/api/addresses/delivery-statuses";
-
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {

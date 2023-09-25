@@ -1,7 +1,6 @@
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/territory-list.json";
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/territory-list.json";
 
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/list";
 
 use crate::components::menu_bar_v2::MenuBarV2;
@@ -10,7 +9,7 @@ use crate::models::territories::TerritorySummary;
 use crate::Route;
 
 use gloo_console::log;
-use reqwasm::http::{Request};
+use reqwasm::http::Request;
 use yew::prelude::*;
 use yew_router::prelude::LocationHandle;
 use yew_router::scope_ext::RouterScopeExt;

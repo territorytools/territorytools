@@ -1,13 +1,8 @@
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/put_territories.json";
+// Uncomment for debugging without an API server
+//const DATA_API_PATH: &str = "/data/put_territories.json";
+//const ASSIGN_METHOD: &str = "GET";
 
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
-
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/territories/save";
-
-#[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "PUT";
 
 // This is a good video: https://www.youtube.com/watch?v=2JNw-ftN6js

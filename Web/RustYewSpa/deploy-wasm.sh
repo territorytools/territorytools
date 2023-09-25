@@ -22,10 +22,11 @@ echo "Target Host: $host"
 echo "Folder: $bak_folder"
 echo "Target Folder: $target_folder"
 
-cd ./dist/ \
+cd ./dist \
   && mkdir $bak_folder \
   && scp $host:$target_folder/* $bak_folder \
-  && scp -r $bak_folder $host:$target_folder/bak/ \
-  && scp ./* $host:$target_folder/
-
+  && scp $bak_folder/* $host:$target_folder/bak/ \
+  && scp * $host:$target_folder/
+  
 echo "Done"
+

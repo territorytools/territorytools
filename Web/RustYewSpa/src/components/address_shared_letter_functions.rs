@@ -1,32 +1,19 @@
 use crate::components::address_shared_letter_page::AddressSharedLetterResult;
 
-use serde::{Deserialize};
+use serde::Deserialize;
 use reqwasm::http::{Request,Method};
 
-#[cfg(debug_assertions)]
-const API_SUFFIX: &str = ".json";
+// Uncomment for debugging without an API server
+// const POST_METHOD: Method = Method::GET;
+// const API_SUFFIX: &str = ".json";
+// const API_PREFIX: &str = "/data";
+// const API_SEPARATOR: &str = "-";
 
-#[cfg(not(debug_assertions))]
 const API_SUFFIX: &str = "";
-
-#[cfg(debug_assertions)]
-const API_PREFIX: &str = "/data";
-
-#[cfg(not(debug_assertions))]
 const API_PREFIX: &str = "/api";
-
-#[cfg(debug_assertions)]
-const API_SEPARATOR: &str = "-";
-
-#[cfg(not(debug_assertions))]
 const API_SEPARATOR: &str = "/";
-
 const API_SHARED_LETTER_PATH: &str = "addresses-shared-letter";
-
-#[cfg(not(debug_assertions))]
 const POST_METHOD: Method = Method::POST;
-#[cfg(debug_assertions)]
-const POST_METHOD: Method = Method::GET;
 
 pub async fn fetch_shared_letter_addresses(session_id: String, mtk: String) ->  AddressSharedLetterResult {    
     let uri: String = format!("{API_PREFIX}/{API_SHARED_LETTER_PATH}{API_SUFFIX}?sessionId={session_id}&mtk={mtk}");

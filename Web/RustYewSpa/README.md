@@ -13,6 +13,42 @@ trunk serve
 
 Then open http://localhost:8080
 
+## Run with Prox
+Replace 192.168.1.111 with your local machines IP address
+
+```
+trunk serve --port 2288 --proxy-insecure --proxy-backend http://192.168.1.111:5577/api
+```
+Make sure your API server is bound to 0.0.0.0, or your local ip address in the Properties/launchsettings.json
+I have started to bind to my auth (TerritoryTools MainSite) the
+ReverseProxyMiddleware will take anything starting with /api/ and forward it
+to http://localhost:5123
+But the ReverseProxyMiddleware has to be hacked with a hard-coded security bypass.
+```
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Territory.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      // launchUrl can also be: http://localhost:5577
+      // since the launch Url is what the browser opens
+      // and applicationUrl is what it is bound too
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "TimerIntervalSeconds": 0
+      },
+      "applicationUrl": "http://0.0.0.0:5577",
+      // I think this can also be "applicationUrl": "http://192.168.1.111:5577",
+      "dotnetRunMessages": true
+    }
+  }
+}
+```
+
+
+
 ## To build
 
 ```

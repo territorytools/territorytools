@@ -11,10 +11,9 @@ use yew::prelude::*;
 use yew_router::hooks::use_location;
 use urlencoding::decode;
 
-#[cfg(debug_assertions)]
-const GET_TERRITORY_API_PATH: &str = "/data/get_territory.json";
+// Uncomment for debugging without an API server
+//const GET_TERRITORY_API_PATH: &str = "/data/get_territory.json";
 
-#[cfg(not(debug_assertions))]
 const GET_TERRITORY_API_PATH: &str = "/api/territories/open";
 
 #[derive(Properties, Clone, PartialEq)]

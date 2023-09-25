@@ -16,35 +16,17 @@ use yew::prelude::*;
 use yew_router::hooks::use_location;
 //use serde_json::ser::to_string;
 
-#[cfg(debug_assertions)]
-const PUT_TERRITORY_API_PATH: &str = "/data/put_territories_id.json";
+// Uncomment for debugging without an API server
+// const PUT_TERRITORY_API_PATH: &str = "/data/put_territories_id.json";
+// const GET_TERRITORY_API_PATH: &str = "/data/territories_id_1020.json";
+// const ASSIGN_METHOD: &str = "GET";
+// const EDIT_METHOD: &str = "GET";
+// const API_ASSIGN_URL: &str = "/data/post_assignments.json";
 
-#[cfg(not(debug_assertions))]
 const PUT_TERRITORY_API_PATH: &str = "/api/territories/save";
-
-#[cfg(debug_assertions)]
-const GET_TERRITORY_API_PATH: &str = "/data/territories_id_1020.json";
-
-#[cfg(not(debug_assertions))]
 const GET_TERRITORY_API_PATH: &str = "/api/territories";
-
-#[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "POST";
-
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "GET";
-
-#[cfg(not(debug_assertions))]
 const EDIT_METHOD: &str = "PUT";
-
-#[cfg(debug_assertions)]
-const EDIT_METHOD: &str = "GET";
-
-
-#[cfg(debug_assertions)]
-const API_ASSIGN_URL: &str = "/data/post_assignments.json";
-
-#[cfg(not(debug_assertions))]
 const API_ASSIGN_URL: &str = "/api/territory-assignment/assignments";
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]

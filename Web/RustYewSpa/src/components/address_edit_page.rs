@@ -29,28 +29,14 @@ const DEBUG_IS_ON: bool = true;
 #[cfg(not(debug_assertions))]
 const DEBUG_IS_ON: bool = false;
 
-#[cfg(debug_assertions)]
-const DATA_API_PATH: &str = "/data/put_address.json";
+// Uncomment for debugging without an API server
+// const DATA_API_PATH: &str = "/data/put_address.json";
+// const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?slash=";
+// const GET_GEOCODING_API_PATH: &str = "/data/geocoding.json?slash=";
 
-#[cfg(not(debug_assertions))]
 const DATA_API_PATH: &str = "/api/addresses/save";
-
-#[cfg(debug_assertions)]
-const GET_ADDRESSES_API_PATH: &str = "/data/get_address.json?slash=";
-
-#[cfg(not(debug_assertions))]
 const GET_ADDRESSES_API_PATH: &str = "/api/addresses/address-id";
-
-#[cfg(debug_assertions)]
-const GET_GEOCODING_API_PATH: &str = "/data/geocoding.json?slash=";
-
-#[cfg(not(debug_assertions))]
 const GET_GEOCODING_API_PATH: &str = "/api/geocoding";
-
-#[cfg(debug_assertions)]
-const ASSIGN_METHOD: &str = "PUT";
-
-#[cfg(not(debug_assertions))]
 const ASSIGN_METHOD: &str = "PUT";
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
@@ -461,7 +447,7 @@ pub fn address_edit_page() -> Html {
                 } else if address_response.status() == 401 {
                     let model: AddressEditModel = AddressEditModel {
                         address: Address::default(),
-                        address_id: address_id,
+                        address_id,
                         save_success: false,
                         save_error: false,
                         load_error: true,
@@ -635,11 +621,12 @@ pub fn address_edit_page() -> Html {
                     .expect("A result from the endpoint")                
             };
             
-            let mut latitude = cloned_state.address.latitude;
-            let mut longitude =  cloned_state.address.longitude;
-            let mut geocoding_success = "".to_string();
-            let mut geocoding_error = "".to_string();
+            // let mut latitude = cloned_state.address.latitude;
+            // let mut longitude =  cloned_state.address.longitude;
+            // let mut geocoding_success = "".to_string();
+            // let mut geocoding_error = "".to_string();
 
+            let geocoding_result =
             if resp.status() == 200 {
                 let geocoding_result: GeocodingCoordinates = resp
                     .json()
@@ -647,28 +634,42 @@ pub fn address_edit_page() -> Html {
                     .expect("Valid GeocodingCoordinates JSON from API");
 
                 if geocoding_result.score >= 5.0 {
-                    latitude = geocoding_result.latitude as f32;
-                    longitude = geocoding_result.longitude as f32;
-                    geocoding_success = "Geocoding Successful".to_string();
-                    geocoding_error = "".to_string();
+                    GeocodingResultMessages {
+                        success: "Geocoding Successful".to_string(),
+                        error: "".to_string(),
+                        latitude: geocoding_result.latitude as f32,
+                        longitude: geocoding_result.longitude as f32,
+                    }
                 } else {
-                    geocoding_success = "".to_string();
-                    geocoding_error = format!("Geocode Failure Score: {:0.1}", geocoding_result.score);
+                    GeocodingResultMessages {
+                        success: "".to_string(),
+                        error: format!("Geocode Failure Score: {:0.1}", geocoding_result.score),
+                        ..Default::default()
+                    }
                 }
             } else if resp.status() == 401 {
-                geocoding_success = "".to_string();
-                geocoding_error = "Authentication Error".to_string();
+                GeocodingResultMessages {
+                    success: "".to_string(),
+                    error: "Authentication Error".to_string(),
+                    ..Default::default()
+                }
             } else if resp.status() == 403 {
-                geocoding_success = "".to_string();
-                geocoding_error = "Unauthorized".to_string();               
+                GeocodingResultMessages {
+                    success: "".to_string(),
+                    error: "Unauthorized".to_string(),
+                    ..Default::default()
+                }
             } else {
-                geocoding_success = "".to_string();
-                geocoding_error = format!("Error {}", resp.status());
-            }
+                GeocodingResultMessages {
+                    success: "".to_string(),
+                    error: format!("Error {}", resp.status()),
+                    ..Default::default()
+                }
+            };
 
             let address_model = Address {
-                latitude: latitude,
-                longitude: longitude,
+                latitude: geocoding_result.latitude,
+                longitude: geocoding_result.longitude,
                 ..cloned_state.address.clone()   
             };
 
@@ -680,8 +681,8 @@ pub fn address_edit_page() -> Html {
                 save_error: cloned_state.save_error,
                 load_error: cloned_state.load_error,
                 error_message: cloned_state.error_message.clone(),
-                geocoding_success: geocoding_success.clone(),
-                geocoding_error: geocoding_error.clone(),
+                geocoding_success: geocoding_result.success.clone(),
+                geocoding_error: geocoding_result.error.clone(),
             };
 
             cloned_state.set(model);
@@ -966,6 +967,26 @@ pub struct EnglishChineseIdOptionProps {
     pub chinese: String,
     pub selected: i32,
 }
+
+
+#[derive(Default)]
+pub struct GeocodingResultMessages {
+    pub success: String,
+    pub error: String,
+    pub latitude: f32,
+    pub longitude: f32,
+}
+
+// impl Default for GeocodingResultMessages {
+//     fn default() -> GeocodingResultMessages {
+//         GeocodingResultMessages {
+//             success: "".to_string(),
+//             error: "".to_string(),
+//             latitude: 0.0,
+//             longitude: 0.0,
+//         }
+//     }
+// }
 
 #[function_component]
 pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {

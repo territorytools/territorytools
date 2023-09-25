@@ -1,13 +1,12 @@
-use crate::models::users::{User};
+use crate::models::users::User;
 use wasm_bindgen::JsCast;
-use reqwasm::http::{Request};
+use reqwasm::http::Request;
 use yew::prelude::*;
 use web_sys::HtmlSelectElement;
 
-#[cfg(debug_assertions)]
-const DATA_USERS_API_PATH: &str = "/data/users.json";
+// Uncomment for debugging without an API server
+//const DATA_USERS_API_PATH: &str = "/data/users.json";
 
-#[cfg(not(debug_assertions))]
 const DATA_USERS_API_PATH: &str = "/api/users?active=true";
 
 
