@@ -396,7 +396,11 @@ pub fn address_edit_page() -> Html {
             if address_id == 0 {            
                 log!("AddressId is zero, loading new empty address...");
                 cloned_state.set(AddressEditModel {
-                    address: Address::default(),
+                    address: Address {
+                        state: Some("WA".to_string()),
+                        country: Some("us".to_string()),
+                        ..Address::default()
+                    },
                     address_id: 0,
                     save_success: false,
                     save_error: false,
@@ -605,9 +609,9 @@ pub fn address_edit_page() -> Html {
             // https://yew.rs/docs/0.18.0/concepts/services/fetch
             let resp = if DEBUG_IS_ON {
                 Request::new(uri)
-                    .method(Method::GET) //POST)
+                    .method(Method::POST)
                     .header("Content-Type", "application/json")
-                    //.body(data_serialized)
+                    .body(data_serialized)
                     .send()
                     .await
                     .expect("A result from the fake endpoint for debugging")
@@ -695,6 +699,7 @@ pub fn address_edit_page() -> Html {
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
 
+    // TODO: This language_id is a hack, this should be in some sort of configuration
     let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
     log!(format!("selected_language_id: {}, selected_status_id: {}", selected_language_id, selected_status_id));
@@ -806,7 +811,9 @@ pub fn address_edit_page() -> Html {
                     <input value={state.address.city.clone()} onchange={city_onchange} type="text" class="form-control shadow-sm" id="inputCity"/>
                 </div>
                 <div class="col-md-4">
-                    <SelectAddressState onchange={state_onchange}/>
+                    <SelectAddressState 
+                        value={state.address.state.clone()}
+                        onchange={state_onchange}/>
                 </div>
                 <div class="col-md-2">
                     <label for="input-postal-code" class="form-label">{"邮政编码 Zip"}</label>

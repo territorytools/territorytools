@@ -5,6 +5,7 @@ use yew::prelude::*;
 #[derive(Properties, Clone, PartialEq)]
 pub struct SelectAddressStateProps {
     pub onchange: Callback<String>,
+    pub value: Option<String>,
 }
 
 #[function_component]
@@ -27,7 +28,7 @@ pub fn SelectAddressState(props: &SelectAddressStateProps) -> Html {
     html! {
         <>
         <label for="inputState" class="form-label">{"省份 State"}</label>
-        <select {onchange} value="WA" id="inputState" name="state" class="form-select" autocomplete="address-level1">
+        <select {onchange} value={props.value.clone()} id="inputState" name="state" class="form-select" autocomplete="address-level1">
             <option value="">{"Unknown --"}</option>
             <option value="AL">{"阿拉巴马州 Alabama (AL)"}</option>
             <option value="AK">{"阿拉斯加州 Alaska (AK)"}</option>
