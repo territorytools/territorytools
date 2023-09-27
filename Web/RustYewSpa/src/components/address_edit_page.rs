@@ -51,6 +51,8 @@ pub struct AddressEditModel {
     pub error_message: String,
     pub geocoding_error: String,
     pub geocoding_success: String,
+    pub territory_was_changed: bool,
+    pub moved_to_territory_number: String,    
 }
 
 
@@ -527,12 +529,17 @@ pub fn address_edit_page() -> Html {
             
             // TODO: Check for errors
             if resp.status() == 200 {
+                let save_result: AddressSaveResult = resp.json().await
+                .expect("A valid AddressSaveResult JSON");
+
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(), //Address::default(),
                     address_id,
                     save_success: true,
                     save_error: false,
                     load_error: false,
+                    territory_was_changed: save_result.territory_was_changed,
+                    moved_to_territory_number: save_result.territory_number.unwrap_or_default(),
                     error_message: "".to_string(),
                     ..AddressEditModel::default()
                 };
@@ -545,6 +552,8 @@ pub fn address_edit_page() -> Html {
                     save_success: false,
                     save_error: true,
                     load_error: false,
+                    territory_was_changed: false,
+                    moved_to_territory_number: "".to_string(),
                     error_message: "Unauthorized".to_string(),
                     ..AddressEditModel::default()
                 };
@@ -557,6 +566,8 @@ pub fn address_edit_page() -> Html {
                     save_success: false,
                     save_error: true,
                     load_error: false,
+                    territory_was_changed: false,
+                    moved_to_territory_number: "".to_string(),
                     error_message: "Forbidden".to_string(),
                     ..AddressEditModel::default()
                 };
@@ -569,6 +580,8 @@ pub fn address_edit_page() -> Html {
                     save_success: false,
                     save_error: true,
                     load_error: false,
+                    territory_was_changed: false,
+                    moved_to_territory_number: "".to_string(),
                     error_message: format!("{}", resp.status()),
                     ..AddressEditModel::default()
                 };
@@ -637,7 +650,7 @@ pub fn address_edit_page() -> Html {
                     .await
                     .expect("Valid GeocodingCoordinates JSON from API");
 
-                if geocoding_result.score >= 5.0 {
+                if geocoding_result.score >= 9.0 {
                     GeocodingResultMessages {
                         success: "Geocoding Successful".to_string(),
                         error: "".to_string(),
@@ -663,6 +676,12 @@ pub fn address_edit_page() -> Html {
                     error: "Unauthorized".to_string(),
                     ..Default::default()
                 }
+            } else if resp.status() == 404 {
+                GeocodingResultMessages {
+                    success: "".to_string(),
+                    error: "Cannot find address!".to_string(),
+                    ..Default::default()
+                }
             } else {
                 GeocodingResultMessages {
                     success: "".to_string(),
@@ -684,6 +703,8 @@ pub fn address_edit_page() -> Html {
                 save_success: cloned_state.save_success,
                 save_error: cloned_state.save_error,
                 load_error: cloned_state.load_error,
+                territory_was_changed: false,
+                moved_to_territory_number: "".to_string(),
                 error_message: cloned_state.error_message.clone(),
                 geocoding_success: geocoding_result.success.clone(),
                 geocoding_error: geocoding_result.error.clone(),
@@ -758,17 +779,6 @@ pub fn address_edit_page() -> Html {
                     <span>{"Edit 地址 Address"}</span>
                 }
             </strong></span>
-            if state.save_success { 
-                <span class="mx-1 badge bg-success">{"Saved"}</span> 
-            }
-            if state.save_error { 
-                <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
-                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-            }      
-            if state.load_error { 
-                <span class="mx-1 badge bg-danger">{"Error"}</span> 
-                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-            }
             if !is_new_address {
                 <p>{"If someone has moved change Visit Status to 'Moved', save, click new address.  Use this form to make address corrections, to change names, or to add new addresses."}</p>        
             }
@@ -792,7 +802,11 @@ pub fn address_edit_page() -> Html {
                     if state.save_error { 
                         <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-                    }                    
+                    }
+                    if state.territory_was_changed { 
+                        <span class="mx-1 badge bg-warning">{"Moved"}</span> 
+                        <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
+                    }         
                 </div>   
                 <div class="col-12">
                     <label for="inputName" class="form-label">{"姓名 Name"}</label>
@@ -886,6 +900,10 @@ pub fn address_edit_page() -> Html {
                             </svg>
                         </button>
                     </div>
+                    if state.territory_was_changed { 
+                        <span class="mx-1 badge bg-warning">{"Moved"}</span> 
+                        <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
+                    }         
                 </div>
                 // <div class="col-6 col-sm-4 col-md-4">
                 //     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
@@ -982,6 +1000,17 @@ pub struct GeocodingResultMessages {
     pub error: String,
     pub latitude: f32,
     pub longitude: f32,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AddressSaveResult {
+     pub previous_territory_id: Option<i32>,
+     pub previous_territory_number: Option<String>,
+     pub territory_was_changed: bool,
+     pub territory_id: Option<i32>,
+     pub territory_number: Option<String>,
+     pub address: Option<Address>,
 }
 
 // impl Default for GeocodingResultMessages {
