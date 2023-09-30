@@ -132,7 +132,7 @@ impl Component for AddressSearchPage {
                         </div>
                     </div>
                     {
-                        self.addresses.iter().map(|address| {   
+                        self.addresses.iter().map(|address| {
                             let address_id = address.address_id;
                             let edit_uri = format!("/app/address-edit?address_id={address_id}");
                             let unit_text: String = match &address.unit {

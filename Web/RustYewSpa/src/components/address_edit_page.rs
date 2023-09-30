@@ -814,6 +814,8 @@ pub fn address_edit_page() -> Html {
     let phone_uri = format!("tel:{}", phone.clone());
     let show_phone_button = !phone.is_empty();
 
+    let visit_count = state.address.visits.len();
+
     let mtk = parameters.mtk.clone().unwrap_or_default();
 
     html! {
@@ -1042,6 +1044,24 @@ pub fn address_edit_page() -> Html {
                             <input value={address_mark_model.mark_date_utc.clone()} onchange={mark_date_onchange} type="text" class="form-control shadow-sm" id="input-mark-date" placeholder="Date" style="max-width:200px;"/>
                             <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Mark"}</button>
                         </div>
+                    </div>
+                    <div class="col-12">
+                        <span>{"Visits: "}{visit_count}</span>
+                    </div>
+                    <div class="col-12">
+                        <ul>
+                        {
+                            state.address.visits.iter().map(|visit| {   
+                            html! {
+                                <li>
+                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
+                                    {" "}
+                                    {visit.result.clone()}
+                                </li>
+                            }
+                            }).collect::<Html>()
+                        }
+                        </ul>
                     </div>
                 }
                 <div class="col-12">

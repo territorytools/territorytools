@@ -26,6 +26,18 @@ pub struct Address {
     pub phone: Option<String>,
     pub notes: Option<String>,
     pub notes_private: Option<String>,
+    pub visits: Vec<AddressVisit>,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AddressVisit {
+    pub id: i32,
+    pub address_id: i32,
+    pub alba_address_id: i32,
+    pub date_utc: String,
+    pub result: String,
+    pub mobile_territory_key: Option<String>,
 }
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize)]
