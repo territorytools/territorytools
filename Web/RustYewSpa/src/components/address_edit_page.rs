@@ -52,7 +52,9 @@ pub struct AddressEditModel {
     pub geocoding_error: String,
     pub geocoding_success: String,
     pub territory_was_changed: bool,
-    pub moved_to_territory_number: String,    
+    pub moved_to_territory_number: String,
+    pub show_visits: bool,
+    pub address_marking_error: String,
 }
 
 
@@ -434,24 +436,64 @@ pub fn address_edit_page() -> Html {
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
     let address_mark_model_clone = address_mark_model.clone();
+    let cloned_state = state.clone();
     let mark_onclick = {
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
             let mtk = mtk.clone();
             let mark_type = address_mark_model_clone.mark_type.to_string();
             let mark_date_utc = address_mark_model_clone.mark_date_utc.to_string();
+            let cloned_state = cloned_state.clone();
             spawn_local(async move {
                 let uri_string: String = format!("/api/address-marking?mtk={mtk}&addressId={address_id}&markType={mark_type}&dateTimeUtc={mark_date_utc}");
     
                 let uri: &str = uri_string.as_str();
                 
-                let _resp = Request::new(uri)
+                let resp = Request::new(uri)
                         .method(Method::POST)
                         .send()
                         .await
                         .expect("A result from the endpoint");
-                
+
+                if resp.status() == 200 {
+                    let mark_address_result: MarkAddressResult = resp
+                        .json()
+                        .await
+                        .expect("Valid MarkAddressResult JSON from API");
+
+                    let mut modification = cloned_state.deref().clone();
+        
+                    modification.address.visits = mark_address_result.address.unwrap_or_default().visits.clone();
+                    modification.address_marking_error = "".to_string();
+
+                    cloned_state.set(modification);
+                } else {
+                    // let mark_address_result: MarkAddressResult = resp
+                    // .json()
+                    // .await
+                    // .expect("Valid MarkAddressResult JSON from API");
+
+                    let mut modification = cloned_state.deref().clone();
+        
+                    modification.address_marking_error = 
+                        format!("Error {}",
+                            resp.status());
+        
+                    cloned_state.set(modification);
+                }
             })
+        })
+    };
+
+    let cloned_state = state.clone();
+    let visits_onclick = {
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
+            let mut modification = cloned_state.deref().clone();
+            
+            modification.show_visits = !cloned_state.show_visits;
+
+            cloned_state.set(modification);
         })
     };
 
@@ -776,6 +818,8 @@ pub fn address_edit_page() -> Html {
                 error_message: cloned_state.error_message.clone(),
                 geocoding_success: geocoding_result.success.clone(),
                 geocoding_error: geocoding_result.error.clone(),
+                show_visits: cloned_state.show_visits,
+                address_marking_error: cloned_state.address_marking_error.clone(),
             };
 
             cloned_state.set(model);
@@ -1031,7 +1075,10 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                     }
                 </div>
-                if show_address_marker {
+                <div class="col-12">
+                    <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Visits..."}</button>
+                </div>
+                if state.show_visits || show_address_marker {
                     <div class="col-12">
                         <label for="input-mark-address" class="form-label">{"Mark Address"}</label>
                         <div class="input-group">
@@ -1044,6 +1091,7 @@ pub fn address_edit_page() -> Html {
                             <input value={address_mark_model.mark_date_utc.clone()} onchange={mark_date_onchange} type="text" class="form-control shadow-sm" id="input-mark-date" placeholder="Date" style="max-width:200px;"/>
                             <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Mark"}</button>
                         </div>
+                        <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
                     </div>
                     <div class="col-12">
                         <span>{"Visits: "}{visit_count}</span>
@@ -1135,4 +1183,12 @@ pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
             {props.chinese.clone()}{" "}{props.english.clone()}
         </option>
     }
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkAddressResult {
+    pub id: i32,
+    pub message: String,
+    pub address: Option<Address>,
 }
