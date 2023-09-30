@@ -56,6 +56,14 @@ pub struct AddressEditModel {
 }
 
 
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+pub struct AddressMarkModel {
+    pub address_id: i32,
+    pub mark_type: String,
+    pub mark_date_utc: String,
+}
+
+
 // #[derive(Properties, PartialEq, Clone, Default, Deserialize, Serialize)]
 // pub struct AddressResponse {
 //     pub addresses: Vec<Address>,
@@ -83,6 +91,7 @@ pub fn address_edit_page() -> Html {
     set_document_title("Address Edit");
 
     let state: yew::UseStateHandle<AddressEditModel> = use_state(|| AddressEditModel::default());
+    let address_mark_model: yew::UseStateHandle<AddressMarkModel> = use_state(|| AddressMarkModel::default());
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: AddressEditParameters = location.query().expect("An object");
@@ -387,6 +396,65 @@ pub fn address_edit_page() -> Html {
         })
     };
 
+    let mark_type_onchange = {
+        let address_mark_model_clone = address_mark_model.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = address_mark_model_clone.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.mark_type = value.clone();
+
+            log!(format!("Mark type set to {:?}", value.clone()));
+
+            address_mark_model_clone.set(modification);
+        })
+    };
+
+    let mark_date_onchange = {
+        let address_mark_model_clone = address_mark_model.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = address_mark_model_clone.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.mark_date_utc = value.clone();
+
+            log!(format!("Mark date set to {:?}", value.clone()));
+
+            address_mark_model_clone.set(modification);
+        })
+    };
+
+    let mtk = parameters.mtk.clone().unwrap_or_default();
+    let address_mark_model_clone = address_mark_model.clone();
+    let mark_onclick = {
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
+            let mtk = mtk.clone();
+            let mark_type = address_mark_model_clone.mark_type.to_string();
+            let mark_date_utc = address_mark_model_clone.mark_date_utc.to_string();
+            spawn_local(async move {
+                let uri_string: String = format!("/api/address-marking?mtk={mtk}&addressId={address_id}&markType={mark_type}&dateTimeUtc={mark_date_utc}");
+    
+                let uri: &str = uri_string.as_str();
+                
+                let _resp = Request::new(uri)
+                        .method(Method::POST)
+                        .send()
+                        .await
+                        .expect("A result from the endpoint");
+                
+            })
+        })
+    };
+
     //let territories = use_state(|| vec![]);
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
@@ -650,7 +718,7 @@ pub fn address_edit_page() -> Html {
                     .await
                     .expect("Valid GeocodingCoordinates JSON from API");
 
-                if geocoding_result.score >= 9.0 {
+                if geocoding_result.score >= 4.0 {
                     GeocodingResultMessages {
                         success: "Geocoding Successful".to_string(),
                         error: "".to_string(),
@@ -719,6 +787,7 @@ pub fn address_edit_page() -> Html {
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
+    let show_address_marker = features.clone().contains(&"show-address-marker");
 
     // TODO: This language_id is a hack, this should be in some sort of configuration
     let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
@@ -939,7 +1008,7 @@ pub fn address_edit_page() -> Html {
                         <label for="inputAlbaAddressId" class="form-label">{"Alba Address Id"}</label>
                         <input value={format!("{}",state.address.alba_address_id)} /*onchange={alba_address_id_onchange}*/ type="text" class="form-control shadow-sm" id="inputAlbaAddressId" placeholder="Alba Address Id" readonly={true} />
                     </div>
-                }
+                }               
                 <div class="col-12">
                     <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
                     <a onclick={close_onclick} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
@@ -960,6 +1029,21 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                     }
                 </div>
+                if show_address_marker {
+                    <div class="col-12">
+                        <label for="input-mark-address" class="form-label">{"Mark Address"}</label>
+                        <div class="input-group">
+                            <select onchange={mark_type_onchange} id="input-mark-address" class="form-select shadow-sm" style="max-width:300px;">
+                                <option selected={true} value="">{"Select a Visit Result"}</option>
+                                <option value="nothome">{"Not Home"}</option>
+                                <option value="home-cc">{"Home Confirmed Chinese"}</option>
+                                <option value="home-nc">{"Home Not Chinese"}</option>
+                            </select>
+                            <input value={address_mark_model.mark_date_utc.clone()} onchange={mark_date_onchange} type="text" class="form-control shadow-sm" id="input-mark-date" placeholder="Date" style="max-width:200px;"/>
+                            <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Mark"}</button>
+                        </div>
+                    </div>
+                }
                 <div class="col-12">
                     <span><small>{"AAID: "}{state.address.alba_address_id}{" AID: "}{state.address.address_id}</small></span>
                 </div>

@@ -12,7 +12,7 @@ use crate::components::territory_edit_page_example::*;
 use crate::components::territory_search_page::*;
 use crate::components::territory_search_page_old::*;
 use crate::components::territory_map::TerritoryMap;
-use crate::components::model::{Model};
+use crate::components::model::Model;
 
 use yew::prelude::*;
 use yew_router::prelude::*;

@@ -94,6 +94,12 @@ impl Component for TerritorySearchPage {
 
         html!{
             <>
+                <script>{"
+                    var x = 1;
+                    console.log(\"This is Javascript!\");
+                    const myElement = document.getElementById(\"territory-title-span\");
+                    myElement.style.color = \"red\";
+                "}</script>
                 <MenuBarV2>
                     <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
                         <li class={"nav-item"}>
@@ -102,7 +108,7 @@ impl Component for TerritorySearchPage {
                     </ul>
                 </MenuBarV2>
                 <div class="container">
-                    <span><strong>{"Territory Search"}</strong></span>
+                    <span><strong id="territory-title-span">{"Territory Search"}</strong></span>
         
                     <hr/>
                     <form {onsubmit} >
