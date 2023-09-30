@@ -55,6 +55,7 @@ pub struct AddressEditModel {
     pub moved_to_territory_number: String,
     pub show_visits: bool,
     pub address_marking_error: String,
+    pub new_visit_id: i32,
 }
 
 
@@ -465,14 +466,10 @@ pub fn address_edit_page() -> Html {
         
                     modification.address.visits = mark_address_result.address.unwrap_or_default().visits.clone();
                     modification.address_marking_error = "".to_string();
+                    modification.new_visit_id = mark_address_result.new_visit_id;
 
                     cloned_state.set(modification);
                 } else {
-                    // let mark_address_result: MarkAddressResult = resp
-                    // .json()
-                    // .await
-                    // .expect("Valid MarkAddressResult JSON from API");
-
                     let mut modification = cloned_state.deref().clone();
         
                     modification.address_marking_error = 
@@ -820,6 +817,7 @@ pub fn address_edit_page() -> Html {
                 geocoding_error: geocoding_result.error.clone(),
                 show_visits: cloned_state.show_visits,
                 address_marking_error: cloned_state.address_marking_error.clone(),
+                new_visit_id: cloned_state.new_visit_id,
             };
 
             cloned_state.set(model);
@@ -1100,11 +1098,14 @@ pub fn address_edit_page() -> Html {
                         <ul>
                         {
                             state.address.visits.iter().map(|visit| {   
+                            let is_new_visit = state.new_visit_id == visit.id;
                             html! {
                                 <li>
                                     {visit.date_utc.clone().chars().take(10).collect::<String>()}
                                     {" "}
                                     {visit.result.clone()}
+                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
+                                  
                                 </li>
                             }
                             }).collect::<Html>()
@@ -1189,6 +1190,7 @@ pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
 #[serde(rename_all = "camelCase")]
 pub struct MarkAddressResult {
     pub id: i32,
+    pub new_visit_id: i32,
     pub message: String,
     pub address: Option<Address>,
 }
