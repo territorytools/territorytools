@@ -60,7 +60,7 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
             { 
                 links.iter().map(|link| 
                     {
-                        let uri = format!("https://mobile.territorytools.org/mtk/{id}", id = link.id.clone());
+                        let uri = format!("/mtk/{id}", id = link.id.clone());
 
                         html! {
                         <div class={"row border-bottom"}>

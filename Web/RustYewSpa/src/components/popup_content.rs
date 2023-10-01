@@ -127,7 +127,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             format!("<a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
-                href='https://mobile.territorytools.org/mtk/{assignee_link_key}'>
+                href='/mtk/{assignee_link_key}'>
                 Open
             </a>")
         }
