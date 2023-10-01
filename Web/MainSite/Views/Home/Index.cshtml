@@ -23,7 +23,7 @@
                 <div class="d-flex flex-column">
                     @*<a class="p-2 m-2 btn btn-outline-primary" asp-controller="Report" asp-action="Index">@Localizer["ReportsButton"]</a>*@
 
-                    <a class="p-2 m-2 btn btn-outline-primary" asp-controller="ManageTerritories" asp-action="Index">
+                    <a class="p-2 m-2 btn btn-outline-primary" href="ManageTerritories/Index">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
                       <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
                       <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0zM7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0z"/>
@@ -56,17 +56,17 @@
     }
     else
     {
-        <img src="mstile-144x144.png">
+        <img src="/main/mstile-144x144.png">
         <h1 class="display-4">@Localizer["LoginTerritoryTools"]</h1>
         <p>@Localizer["LoginGreeting"]</p>
         <p>@Localizer["LoginSignIn"]</p>
         <form id="external-account" action="~/Identity/Account/ExternalLogin?returnUrl=%2F" method="post" class="form-horizontal">
             <div>
                 <p>
-                    <button type="submit" class="btn p-0" name="provider" value="Google" title="Log in using your Google account"><img src="/btn_google_signin_dark_normal_web.png" /></button>
+                    <button type="submit" class="btn p-0" name="provider" value="Google" title="Log in using your Google account"><img src="/main/btn_google_signin_dark_normal_web.png" /></button>
                 </p>
                 <p>
-                    <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/ms-symbollockup_signin_light.png" /></button>
+                    <button type="submit" class="btn p-0" name="provider" value="Microsoft" title="Log in using your Microsoft account"><img src="/main/ms-symbollockup_signin_light.png" /></button>
                 </p>
             <p>
                     <a href="~/Identity/Account/LoginPassword" class="btn btn-info m-2">@Localizer["LoginAccountPassword"]</a>

@@ -49,19 +49,19 @@ namespace TerritoryTools.Web.MainSite
             Uri targetUri = BuildTargetUri(context.Request);
 
             // Security bypass Starts:  Comment this block out
-            //if (targetUri != null)
-            //{
-            //    HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
-            //    using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
-            //    {
-            //        context.Response.StatusCode = (int)responseMessage.StatusCode;
-            //        CopyFromTargetResponseHeaders(context, responseMessage);
-            //        await responseMessage.Content.CopyToAsync(context.Response.Body);
-            //    }
-            //    return;
-            //}
-            //await _nextMiddleware(context);
-            //return;
+            if (targetUri != null)
+            {
+                HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
+                using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
+                {
+                    context.Response.StatusCode = (int)responseMessage.StatusCode;
+                    CopyFromTargetResponseHeaders(context, responseMessage);
+                    await responseMessage.Content.CopyToAsync(context.Response.Body);
+                }
+                return;
+            }
+            await _nextMiddleware(context);
+            return;
             // End of Security bypass.  Comment this block out
 
             if (targetUri != null)

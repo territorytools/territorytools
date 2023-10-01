@@ -24,10 +24,10 @@
     <None Include="GoogleApi.secrets.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Include="wwwroot\webfonts\fa-brands-400.woff2" />
-    <None Include="wwwroot\webfonts\fa-regular-400.woff2" />
-    <None Include="wwwroot\webfonts\fa-solid-900.woff2" />
-    <None Include="wwwroot\webfonts\fa-v4compatibility.woff2" />
+    <None Include="wwwroot\main\webfonts\fa-brands-400.woff2" />
+    <None Include="wwwroot\main\webfonts\fa-regular-400.woff2" />
+    <None Include="wwwroot\main\webfonts\fa-solid-900.woff2" />
+    <None Include="wwwroot\main\webfonts\fa-v4compatibility.woff2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,7 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\fontawesome6\" />
+    <Folder Include="wwwroot\main\fontawesome6\" />
   </ItemGroup>
 
 </Project>
