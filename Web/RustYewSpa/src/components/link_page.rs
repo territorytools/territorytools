@@ -28,9 +28,9 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
             let links = links.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 
-                let uri: &str = DATA_API_PATH;
+                let uri = format!("{DATA_API_PATH}?activeOnly=false");
 
-                let fetched_links: Vec<TerritoryLinkContract> = Request::get(uri)
+                let fetched_links: Vec<TerritoryLinkContract> = Request::get(uri.as_str())
                     .send()
                     .await
                     .unwrap()
@@ -75,7 +75,7 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
                             <div class={"col-6 col-sm-4 col-lg-1"}>
                                 {link.territory_number.clone()}
                             </div>
-                            <div class={"col-6 col-sm-4 col-lg-3"}>
+                            <div class={"col-6 col-sm-4 col-lg-3"} style="text-overflow:clip;overflow:hidden;">
                                 {link.territory_description.clone()}
                             </div>
                             <div class={"col-6 col-sm-4 col-lg-2"}>
@@ -93,11 +93,15 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
 }
 
 pub fn format_date(text: Option<String>) -> String {
-    DateTime::parse_from_rfc3339( 
-        format!("{}Z", text.expect("String date"))
-        .to_string().as_str()
-    )
-    .expect("DateTime")
-    .format("%Y-%m-%d %H:%M:%S")
-    .to_string()
+    if text.is_none() {
+        "".to_string()
+    } else {
+        DateTime::parse_from_rfc3339( 
+            format!("{}Z", text.expect("String date"))
+            .to_string().as_str()
+        )
+        .expect("DateTime")
+        .format("%Y-%m-%d %H:%M:%S")
+        .to_string()
+    }
 }
