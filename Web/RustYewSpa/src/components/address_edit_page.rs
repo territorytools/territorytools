@@ -54,6 +54,7 @@ pub struct AddressEditModel {
     pub territory_was_changed: bool,
     pub moved_to_territory_number: String,
     pub show_visits: bool,
+    pub show_address_marker: bool,
     pub address_marking_error: String,
     pub new_visit_id: i32,
 }
@@ -467,6 +468,7 @@ pub fn address_edit_page() -> Html {
                     modification.address.visits = mark_address_result.address.unwrap_or_default().visits.clone();
                     modification.address_marking_error = "".to_string();
                     modification.new_visit_id = mark_address_result.new_visit_id;
+                    modification.show_visits = true;
 
                     cloned_state.set(modification);
                 } else {
@@ -491,6 +493,24 @@ pub fn address_edit_page() -> Html {
             modification.show_visits = !cloned_state.show_visits;
 
             cloned_state.set(modification);
+        })
+    };
+   
+    let cloned_state = state.clone();
+    let show_address_marker_onclick = {
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
+            let mut modification = cloned_state.deref().clone();
+            
+            modification.show_address_marker = !cloned_state.show_address_marker;
+
+            cloned_state.set(modification);
+        })
+    };
+   
+    let no_visits_onclick = {
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
         })
     };
 
@@ -575,12 +595,9 @@ pub fn address_edit_page() -> Html {
         || ()
     }, ());
 
-    // let onsubmit = Callback::from(move |event: SubmitEvent| {
-    //     event.prevent_default();
-    // });
     let cloned_state = state.clone();
     let mtk = parameters.mtk.clone().unwrap_or_default();
-    let onsubmit = Callback::from(move |event: SubmitEvent| {   //model: AddressEditModel| { //
+    let save_onclick = Callback::from(move |event: MouseEvent| {   //model: AddressEditModel| { //
         event.prevent_default();
         let cloned_state = cloned_state.clone();
         //let navigator = navigator.clone();
@@ -816,6 +833,7 @@ pub fn address_edit_page() -> Html {
                 geocoding_success: geocoding_result.success.clone(),
                 geocoding_error: geocoding_result.error.clone(),
                 show_visits: cloned_state.show_visits,
+                show_address_marker: cloned_state.show_address_marker,
                 address_marking_error: cloned_state.address_marking_error.clone(),
                 new_visit_id: cloned_state.new_visit_id,
             };
@@ -829,8 +847,7 @@ pub fn address_edit_page() -> Html {
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
-    let show_address_marker = features.clone().contains(&"show-address-marker");
-
+    
     // TODO: This language_id is a hack, this should be in some sort of configuration
     let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
@@ -863,7 +880,7 @@ pub fn address_edit_page() -> Html {
     html! {
         <>
         <MenuBarV2>
-            <ul class="navbar-nav ms-2 me-auto mb-05 mb-lg-0">
+            <div class="nav ms-2 me-auto mb-05 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/app/address-search">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -872,43 +889,124 @@ pub fn address_edit_page() -> Html {
                         <span class="ms-1">{"Search"}</span>
                     </a>
                 </li> 
-                // <li class="nav-item">
-                //     <a class="nav-link active" href={new_address_uri}>
-                //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
-                //             <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-                //             <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
-                //         </svg>
-                //         <span class="ms-1">{"New Address"}</span>
-                //     </a>
-                // </li> 
-            </ul>
+                <li class="nav-item">
+                    <a class="nav-link active" href={new_address_uri.clone()}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
+                            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                            <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                        </svg>
+                        <span class="ms-1">{"New"}</span>
+                    </a>
+                </li> 
+            </div>
         </MenuBarV2>
         <div class="container">
-            <span><strong>
-                if is_new_address {
-                    <span>{"New 地址 Address"}</span>
-                    <span class="badge rounded-pill text-bg-success ms-3" style="background-color:green;">{"NEW"}</span>
-                } else {
-                    <span>{"Edit 地址 Address"}</span>
-                }
-            </strong></span>
-            if !is_new_address {
-                <p>{"If someone has moved change Visit Status to 'Moved', save, click new address.  Use this form to make address corrections, to change names, or to add new addresses."}</p>        
-            }
-            <hr/>
-            <form {onsubmit} class="row g-3">      
+            <form class="row g-3">
                 <div class="col-12">
-                    <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
-                    <a onclick={close_onclick.clone()} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
-                    if address_id != 0 {
-                        <a class="mx-1 btn btn-outline-primary" href={new_address_uri.clone()}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
-                                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-                                <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
-                            </svg>
-                            <span class="mx-1">{"New Address"}</span>
-                        </a>
+                    <strong>{"地址 Address Editor"}</strong><br/>
+                    // <span>{state.address.name.clone()}</span><br/>
+                    // <span>{state.address.street.clone()}</span><br/>
+                    // if !state.address.unit.clone().unwrap_or_default().is_empty() {
+                    //     <span>{state.address.unit.clone()}<br/></span>
+                    // } 
+                    // <span>{state.address.city.clone()}{", "}{state.address.state.clone()}{" "}{state.address.postal_code.clone()}</span>
+                </div>
+                if state.show_address_marker {
+                    <div class="col-12 col-md-6">
+                        <label for="input-mark-address" class="form-label"><strong>{"Mark Address"}</strong></label>
+                        <div class="input-group">
+                            <select 
+                                onchange={mark_type_onchange} 
+                                id="input-mark-address" 
+                                class="form-select shadow-sm" 
+                                style="max-width:300px;">
+                                <option selected={true} value="">{"Select result"}</option>
+                                <option value="nothome">{"Not Home"}</option>
+                                <option value="home-cc">{"Home Confirmed Chinese"}</option>
+                                <option value="home-nc">{"Home Not Chinese"}</option>
+                                <option value="business-office">{"Business Office"}</option>
+                                <option value="business-shop">{"Business Shop"}</option>
+                                <option value="business-other">{"Business Other"}</option>
+                                <option value="inaccessible">{"Inaccessible"}</option>
+                                <option value="inaccessible-other">{"Inaccessible Other"}</option>
+                                <option value="locked-gate">{"Locked Gate"}</option>
+                                <option value="no-trespassing">{"No Trespassing"}</option>
+                                <option value="delivery-returned">{"Delivery Returned"}</option>
+                                <option value="delivery-sent">{"Delivery Sent"}</option>                                
+                            </select>
+                            <input value={address_mark_model.mark_date_utc.clone()} 
+                                onchange={mark_date_onchange} 
+                                type="text" 
+                                class="form-control shadow-sm" 
+                                id="input-mark-date" 
+                                placeholder="Date (optional)" 
+                                style="max-width:200px;"/>
+                            <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Mark"}</button>
+                        </div>
+                        <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
+                    </div>
+                }
+                <div class="col-12 col-md-6">
+                    if state.show_address_marker {
+                        <button onclick={show_address_marker_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"Hide Marker"}</button>
+                    } else {
+                        <button onclick={show_address_marker_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Mark"}</button>
                     }
+                    if visit_count > 0 {
+                        if state.show_visits {
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Hide Visits..."}</button>
+                        } else {
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{visit_count}{" Visits..."}</button>
+                        }
+                    } else {
+                        <button onclick={no_visits_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"No Visits"}</button>
+                    }
+                </div>
+                if state.show_visits {
+                    <div class="col-12">
+                        <ul>
+                        {
+                            state.address.visits.iter().map(|visit| {   
+                            let is_new_visit = state.new_visit_id == visit.id;
+                            html! {
+                                <li>
+                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
+                                    {" "}
+                                    {visit.result.clone()}
+                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
+                                  
+                                </li>
+                            }
+                            }).collect::<Html>()
+                        }
+                        </ul>
+                    </div>
+                }
+                <div>
+                    <hr/>
+                    <span>
+                        <strong>
+                            if is_new_address {
+                                <span>{"地址 New Address"}</span>
+                                <span class="badge rounded-pill text-bg-success ms-3" style="background-color:green;">{"NEW"}</span>
+                            } else {
+                                <span>{" 地址 Edit Address"}</span>
+                            }
+                        </strong>
+                    </span>         
+                </div>
+                <div class="col-12">
+                    // <button onclick={save_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                    // <a onclick={close_onclick.clone()} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
+                    // if address_id != 0 {
+                    //     <a class="mx-1 btn btn-outline-primary" href={new_address_uri.clone()}>
+                    //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
+                    //             <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                    //             <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
+                    //         </svg>
+                    //         <span class="mx-1">{"New"}</span>
+                    //     </a>
+                    // }
                     if state.save_success { 
                         <span class="mx-1 badge bg-success">{"Saved"}</span> 
                     }
@@ -920,7 +1018,7 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1 badge bg-warning">{"Moved"}</span> 
                         <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
                     }         
-                </div>   
+                </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">{"姓名 Name"}</label>
                     <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control shadow-sm" id="inputName" placeholder="Name"/>
@@ -1062,7 +1160,7 @@ pub fn address_edit_page() -> Html {
                                 <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
                                 <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
                             </svg>
-                            <span class="mx-1">{"New Address"}</span>
+                            <span class="mx-1">{"New"}</span>
                         </a>
                     }                    
                     if state.save_success { 
@@ -1072,47 +1170,7 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                     }
-                </div>
-                <div class="col-12">
-                    <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Visits..."}</button>
-                </div>
-                if state.show_visits || show_address_marker {
-                    <div class="col-12">
-                        <label for="input-mark-address" class="form-label">{"Mark Address"}</label>
-                        <div class="input-group">
-                            <select onchange={mark_type_onchange} id="input-mark-address" class="form-select shadow-sm" style="max-width:300px;">
-                                <option selected={true} value="">{"Select a Visit Result"}</option>
-                                <option value="nothome">{"Not Home"}</option>
-                                <option value="home-cc">{"Home Confirmed Chinese"}</option>
-                                <option value="home-nc">{"Home Not Chinese"}</option>
-                            </select>
-                            <input value={address_mark_model.mark_date_utc.clone()} onchange={mark_date_onchange} type="text" class="form-control shadow-sm" id="input-mark-date" placeholder="Date" style="max-width:200px;"/>
-                            <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Mark"}</button>
-                        </div>
-                        <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
-                    </div>
-                    <div class="col-12">
-                        <span>{"Visits: "}{visit_count}</span>
-                    </div>
-                    <div class="col-12">
-                        <ul>
-                        {
-                            state.address.visits.iter().map(|visit| {   
-                            let is_new_visit = state.new_visit_id == visit.id;
-                            html! {
-                                <li>
-                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
-                                    {" "}
-                                    {visit.result.clone()}
-                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
-                                  
-                                </li>
-                            }
-                            }).collect::<Html>()
-                        }
-                        </ul>
-                    </div>
-                }
+                </div>               
                 <div class="col-12">
                     <span><small>{"AAID: "}{state.address.alba_address_id}{" AID: "}{state.address.address_id}</small></span>
                 </div>

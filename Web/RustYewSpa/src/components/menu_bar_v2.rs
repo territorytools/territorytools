@@ -1,6 +1,7 @@
 //use crate::components::route_stuff::Route;
 //use yew_router::prelude::use_navigator;
 use yew::prelude::*;
+use std::ops::Deref;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct MenuBarV2Props {
@@ -8,17 +9,28 @@ pub struct MenuBarV2Props {
     pub children: Children,
 }
 
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct MenuBarV2Model {
+    pub show_extra_menu: bool,
+}
 
 #[function_component]
 pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
-    // let navigator = use_navigator().unwrap();
+    let model: yew::UseStateHandle<MenuBarV2Model> = use_state(|| MenuBarV2Model::default());
 
-    // let onclick = Callback::from(move |_| navigator.push(&Route::Assign));
+    // let model_clone = model.clone();
+    // let toggle_onclick = {
+    //     Callback::from(move |event: MouseEvent| {
+    //       let mut modification = model_clone.deref().clone();
+    //       modification.show_extra_menu = !model_clone.show_extra_menu;
+    //       model.set(modification);        })
+    // };
+
     html! {
-        <header>
+      //<header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm py-0 mb-3">
-        <div class="container">
-            <div class="container-fluid">
+          //div class="container">
+            <div class="container"> //-fluid">
               
               // TODO: Use this later, for now we don't need it to collapse
               // <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
@@ -27,14 +39,29 @@ pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
               // </button>
 
               //<div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-              <div class="navbar" id="navbarTogglerDemo01">
-                <a class="navbar-brand mb-0 mb-lg-0" href="/">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
-                  </svg>
-                    //<img src="/favicon-32x32.png" alt="Logo" class="mx-1" style="width:20px;" />
-                    //{"Territory Tools"}
-                </a>
+              //<div class="navbar" id="navbarTogglerDemo01">
+                // <div class="navbar-nav">
+                //   <button 
+                //       //onclick={toggle_onclick}
+                //       href="/"
+                //       class="navbar-toggler" 
+                //       type="button" 
+                //       data-bs-toggle="collapse" 
+                //       data-bs-target="#navbarNav" 
+                //       aria-controls="navbarNav" 
+                //       aria-expanded="false" 
+                //       aria-label="Toggle navigation">
+                //     <span class="navbar-toggler-icon"></span>
+                //   </button>
+                // </div>
+                // <a class="navbar-brand mb-0 mb-lg-0" href="/">
+                //   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                //     <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                //   </svg>
+                //     //<img src="/favicon-32x32.png" alt="Logo" class="mx-1" style="width:20px;" />
+                //     //"Territory Tools"
+                // </a>
+
                 // <ul class="navbar-nav mb-0 mb-lg-0">
                 //   <li class="nav-item">
                 //     <a class="nav-link active" aria-current="page" href="/">
@@ -46,20 +73,22 @@ pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
                 //     </a>
                 //   </li>
                 // </ul>
-                { for &mut props.children.iter() }
+               
+                 // <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                  { for &mut props.children.iter() }
+                // </div>
+               
 
                 // <form class="d-flex">
                 //   <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
                 //   <button class="btn btn-outline-primary" type="submit">{"Search"}</button>
                 // </form>
-               
+                
               </div>
-
-            </div>
-           
-            </div>
-          </nav>
-        </header>   
+            //</div>
+          //</div>
+        </nav>
+      //</header>   
     }
 }
 
