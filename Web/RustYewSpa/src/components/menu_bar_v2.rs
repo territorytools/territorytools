@@ -1,7 +1,6 @@
 //use crate::components::route_stuff::Route;
 //use yew_router::prelude::use_navigator;
 use yew::prelude::*;
-use std::ops::Deref;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct MenuBarV2Props {

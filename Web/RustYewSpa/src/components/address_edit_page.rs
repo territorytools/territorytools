@@ -497,7 +497,7 @@ pub fn address_edit_page() -> Html {
     };
    
     let cloned_state = state.clone();
-    let show_address_marker_onclick = {
+    let _show_address_marker_onclick = {
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
             let mut modification = cloned_state.deref().clone();
