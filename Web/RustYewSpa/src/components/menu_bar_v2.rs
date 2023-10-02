@@ -16,7 +16,7 @@ pub struct MenuBarV2Model {
 
 #[function_component]
 pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
-    let model: yew::UseStateHandle<MenuBarV2Model> = use_state(|| MenuBarV2Model::default());
+    //let model: yew::UseStateHandle<MenuBarV2Model> = use_state(|| MenuBarV2Model::default());
 
     // let model_clone = model.clone();
     // let toggle_onclick = {
