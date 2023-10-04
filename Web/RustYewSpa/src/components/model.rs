@@ -26,7 +26,7 @@ pub enum Msg {
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
     // If I name it just 'key' it doesn't work, it might be a reserved word
-    pub link_key: Option<String>,
+    pub mtk: Option<String>,
 }
 
 pub struct Model {
@@ -37,7 +37,7 @@ pub struct Model {
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
     search_error: String,
-    last_key: Option<String>,
+    last_mtk: Option<String>,
 }
 
 impl Component for Model {
@@ -54,14 +54,15 @@ impl Component for Model {
             )
             .unwrap();
 
-        // Convert host/key/1234 to host/app?key=1234
+        // Convert host/key/1234 to host/app?mtk=1234
         let navigator = ctx.link().navigator().unwrap();
-        let key = ctx.props().link_key.clone().unwrap_or_default();
-        if !key.is_empty() {
+        let mtk = ctx.props().mtk.clone().unwrap_or_default();
+        if !mtk.is_empty() {
             let query = MapSearchQuery {
-                search: None,
-                key: Some(key.clone()),
+                search: Some("".to_string()),
+                mtk: Some(mtk),
                 ..MapSearchQuery::default()
+                //as_of_date: Some("".to_string()),
             };
             
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -75,15 +76,15 @@ impl Component for Model {
             search: "".to_string(), 
             search_error: "".to_string(),
             tpolygons: vec![],
-            last_key: None,
+            last_mtk: None,
         }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::LoadBordersPath(map_model, key, search) => {
+            Msg::LoadBordersPath(map_model, mtk, search) => {
                 self.territory_map = map_model.clone();
-                self.last_key = Some(key); // TODO: Do I need this?
+                self.last_mtk = Some(mtk); // TODO: Do I need this?
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -175,24 +176,24 @@ impl Component for Model {
             },
             Msg::RefreshFromSearchText() => {
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
-                let key = if ctx.search_query().key.clone().unwrap_or_default().is_empty() 
-                    && ctx.props().link_key.clone().unwrap_or_default().is_empty() {
-                        self.last_key.clone().unwrap_or_default()
-                } else if ctx.props().link_key.clone().unwrap_or_default().is_empty() {
-                    ctx.search_query().key.clone().unwrap_or_default()
+                let mtk = if ctx.search_query().mtk.clone().unwrap_or_default().is_empty() 
+                    && ctx.props().mtk.clone().unwrap_or_default().is_empty() {
+                        self.last_mtk.clone().unwrap_or_default()
+                } else if ctx.props().mtk.clone().unwrap_or_default().is_empty() {
+                    ctx.search_query().mtk.clone().unwrap_or_default()
                 } else {
-                    ctx.props().link_key.clone().unwrap_or_default()
+                    ctx.props().mtk.clone().unwrap_or_default()
                 };
                 let as_of_date = ctx.search_query().as_of_date.clone();
 
                 // This one is weird because all the territories are preloaded and searchable                
-                if self.last_key != Some(key.to_string()) {
+                if self.last_mtk != Some(mtk.to_string()) {
                     ctx.link().send_future(async move {
                         Msg::LoadBordersPath(
-                            fetch_territory_map_w_key(
-                                &key.to_string(), 
+                            fetch_territory_map_w_mtk(
+                                &mtk.to_string(), 
                                 as_of_date).await, 
-                            key.to_string(), 
+                            mtk.to_string(), 
                             search_text.clone())
                     });
                 } else {
@@ -205,17 +206,17 @@ impl Component for Model {
         }
     }
     
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+    fn rendered(&mut self, _ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            let navigator = ctx.link().navigator().unwrap();
-            let key = ctx.search_query().key.clone().unwrap_or_default(); 
-            let query = MapSearchQuery {
-                search: Some("".to_string()),
-                key: Some(key.clone()),
-                ..MapSearchQuery::default()
-            };
+            // let navigator = ctx.link().navigator().unwrap();
+            // let mtk = ctx.search_query().mtk.clone().unwrap_or_default(); 
+            // let query = MapSearchQuery {
+            //     search: Some("".to_string()),
+            //     mtk: Some(mtk.clone()),
+            //     ..MapSearchQuery::default()
+            // };
 
-            let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            // let _ = navigator.push_with_query(&Route::MapComponent, &query);
         }
     }
 
@@ -225,7 +226,7 @@ impl Component for Model {
         });
 
         let navigator = ctx.link().navigator().unwrap();
-        let key = ctx.search_query().key.clone().unwrap_or_default();  
+        let mtk = ctx.search_query().mtk.clone().unwrap_or_default();  
         let search_text_onchange = {
             Callback::from(move |event: Event| {
                 let value = event
@@ -236,7 +237,7 @@ impl Component for Model {
 
                 let query = MapSearchQuery {
                     search: Some(value.clone()),
-                    key: Some(key.clone()),
+                    mtk: Some(mtk.clone()),
                     ..MapSearchQuery::default()
                 };
 
@@ -245,12 +246,12 @@ impl Component for Model {
         };
 
         let navigator = ctx.link().navigator().unwrap();
-        let key = ctx.search_query().key.clone().unwrap_or_default();  
+        let mtk = ctx.search_query().mtk.clone().unwrap_or_default();  
         let search_clear_onclick = {
             Callback::from(move |_event: MouseEvent| {
                 let query = MapSearchQuery {
                     search: Some("".to_string()),
-                    key: Some(key.clone()),
+                    mtk: Some(mtk.clone()),
                     ..MapSearchQuery::default()
                 };
 
@@ -264,7 +265,7 @@ impl Component for Model {
 
         html! {
            <div style="background-color:yellow;height:100%;">
-            <div id="menu-bar-header" style="height:57px;background-color:red;">
+            <div id="menu-bar-header" style="height:57px;background-color:white;">
                     <MenuBarV2>
                         <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
                             // <li class="nav-item">
@@ -322,7 +323,7 @@ impl Component for Model {
 #[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
 pub struct MapSearchQuery {
     pub search: Option<String>,
-    pub key: Option<String>,
+    pub mtk: Option<String>,
     pub as_of_date: Option<String>,
 }
 

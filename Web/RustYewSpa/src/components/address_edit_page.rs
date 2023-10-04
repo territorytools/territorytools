@@ -15,6 +15,7 @@ use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
 use std::ops::Deref;
+use js_sys::Date;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
@@ -875,6 +876,12 @@ pub fn address_edit_page() -> Html {
     let phone_uri = format!("tel:{}", phone.clone());
     let show_phone_button = !phone.is_empty();
 
+    let date = Date::new_0();
+    let date_string = format!("{}-{:02}-{:02}", 
+        date.get_full_year(), 
+        date.get_month() + 1, 
+        date.get_date());
+
     let visit_count = state.address.visits.len();
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
@@ -903,7 +910,7 @@ pub fn address_edit_page() -> Html {
         </MenuBarV2>
         <div class="container">
             <form class="row g-3">
-                <div class="col-12">
+                <div class="col-12 pt-3">
                     <strong>{"地址 Address Editor"}</strong>
                     if is_new_address {
                         <span class="badge rounded-pill text-bg-success ms-3" style="background-color:green;">{"NEW ADDRESS"}</span>
@@ -914,6 +921,17 @@ pub fn address_edit_page() -> Html {
                     //     <span>{state.address.unit.clone()}<br/></span>
                     // } 
                     // <span>{state.address.city.clone()}{", "}{state.address.state.clone()}{" "}{state.address.postal_code.clone()}</span>
+                    if state.save_success { 
+                        <span class="mx-1 badge bg-success">{"Saved"}</span> 
+                    }
+                    if state.save_error { 
+                        <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
+                        <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+                    }
+                    if state.territory_was_changed { 
+                        <span class="mx-1 badge bg-warning">{"Moved"}</span> 
+                        <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
+                    }       
                     <hr/>
                 </div>
                 // <div>
@@ -928,30 +946,6 @@ pub fn address_edit_page() -> Html {
                 //         </strong>
                 //     </span>         
                 // </div>
-                <div class="col-12">
-                    // <button onclick={save_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
-                    // <a onclick={close_onclick.clone()} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
-                    // if address_id != 0 {
-                    //     <a class="mx-1 btn btn-outline-primary" href={new_address_uri.clone()}>
-                    //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-add" viewBox="0 0 16 16">
-                    //             <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h4a.5.5 0 1 0 0-1h-4a.5.5 0 0 1-.5-.5V7.207l5-5 6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
-                    //             <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 1 0 1 0v-1h1a.5.5 0 1 0 0-1h-1v-1a.5.5 0 0 0-.5-.5Z"/>
-                    //         </svg>
-                    //         <span class="mx-1">{"New"}</span>
-                    //     </a>
-                    // }
-                    if state.save_success { 
-                        <span class="mx-1 badge bg-success">{"Saved"}</span> 
-                    }
-                    if state.save_error { 
-                        <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
-                        <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-                    }
-                    if state.territory_was_changed { 
-                        <span class="mx-1 badge bg-warning">{"Moved"}</span> 
-                        <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
-                    }         
-                </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">{"姓名 Name"}</label>
                     <input value={state.address.name.clone()} onchange={name_onchange} type="text" class="form-control shadow-sm" id="inputName" placeholder="Name"/>
@@ -1289,7 +1283,7 @@ pub fn address_edit_page() -> Html {
                         <input value={state.address.last_delivery_status_date_utc.clone()} onchange={last_delivery_status_date_utc_onchange} type="text" class="form-control shadow-sm" id="input-last-delivery-status-date-utc"/>
                     </div>
                 }
-                <div class="col-6 col-sm-4 col-md-3">
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                     <label for="inputTerritoryNumber" class="form-label">{"Territory Number"}</label>
                     <div class="input-group">
                         <input value={territory_number} onchange={territory_number_onchange} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory Number"/>
@@ -1313,12 +1307,16 @@ pub fn address_edit_page() -> Html {
                 //     <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange.clone()} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                 // </div>
                 
-                <div class="col-12 col-sm-8 col-md-6 col-lg-5">
+                <div class="col-12 col-sm-9 col-md-7 col-lg-5 col-xl-4">
                     <label for="input-longitude" class="form-label">{"纬度,经度 Latitude,Longitude"}</label>
                     <div class="input-group">
-                        <button onclick={geocode_click} class="btn btn-primary">{"Re-Geocode"}</button>
-                        <input value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
-                        <input value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
+                        if state.address.latitude == 0.0 && state.address.longitude == 0.0 {
+                            <button onclick={geocode_click} class="btn btn-primary">{"Geocode"}</button>
+                        } else {
+                            <button onclick={geocode_click} class="btn btn-outline-primary">{"Re-Geocode"}</button>
+                        }
+                        <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
+                        <input readonly={true} value={state.address.longitude.to_string()} onchange={longitude_onchange} type="text" class="form-control shadow-sm" id="input-longitude" placeholder="经度 Longitude"/>
                         <a href={map_uri} class="btn btn-outline-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
                                 <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
@@ -1391,7 +1389,7 @@ pub fn address_edit_page() -> Html {
                             type="text" 
                             class="form-control shadow-sm" 
                             id="input-mark-date" 
-                            placeholder="Date (optional)" 
+                            placeholder={date_string}
                             style="max-width:200px;"/>
                         <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
                     </div>
@@ -1407,7 +1405,7 @@ pub fn address_edit_page() -> Html {
                         if state.show_visits {
                             <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Hide Visits..."}</button>
                         } else {
-                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{visit_count}{" Visits..."}</button>
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Show "}{visit_count}{" Visits..."}</button>
                         }
                     } else {
                         <button onclick={no_visits_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"No Visits"}</button>

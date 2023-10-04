@@ -27,7 +27,7 @@ pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
 
     html! {
       //<header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm py-0 mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm py-0 mb-0">
           //div class="container">
             <div class="container"> //-fluid">
               
@@ -74,7 +74,7 @@ pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
                 // </ul>
                
                  // <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                  <div class="nav ms-0 me-auto mb-05 mt-0 mb-lg-0">
+                  <div class="nav py-2 ms-0 me-auto mb-0 mt-0 mb-lg-0">
                     <li class="nav-item ">
                       <a class="nav-link text-body active" aria-current="page" href="/">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">

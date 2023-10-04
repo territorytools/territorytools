@@ -14,8 +14,13 @@ trunk serve
 Then open http://localhost:8080
 
 ## Run with Prox
-Replace 192.168.1.111 with your local machines IP address
 
+Latest Method running with YARP TestingProxy in front of this
+```
+trunk serve --port 2288 --public-url "/app/"
+```
+
+Older Method: Replace 192.168.1.111 with your local machines IP address
 ```
 trunk serve --port 2288 --proxy-insecure --proxy-backend http://192.168.1.111:5577/api
 ```

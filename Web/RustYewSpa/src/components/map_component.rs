@@ -292,7 +292,6 @@ impl Component for MapComponent {
         let map_cover_click = {
             let link = link.clone();
             Callback::from(move |event: MouseEvent| {
-                ////log!(format!("mc:view: MouseEvent x,y: {}, {}", event.x(), event.y()-57));
                 // event.stop_propagation();
                 // event.prevent_default();
                 link.send_message(Msg::MouseClick(event.x(), event.y()-57));

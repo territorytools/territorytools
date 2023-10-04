@@ -18,7 +18,7 @@ use crate::Model;
 use yew_router::prelude::*;
 use yew::html;
 use yew::Html;
-use gloo_console::log;
+//use gloo_console::log;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -28,8 +28,8 @@ pub enum Route {
     Start,
     #[at("/app/map-old")]
     Map,
-    #[at("/key/:link_key")]
-    MapComponentKey { link_key: String },
+    #[at("/key/:mtk")]
+    MapComponentKey { mtk: String },
     #[at("/app/map")]
     MapComponent,
     #[at("/app/svg-map")]
@@ -112,13 +112,12 @@ pub fn switch(route: Route) -> Html {
             territory_number={territory_number}
         /> },
         Route::Map => html! { <TerritoryMap /> },
-        Route::MapComponentKey { link_key } => {
-            log!(format!("route_stuff:MapCompKey:link_key:{}", link_key.clone()));
-            html! { <Model link_key={link_key} /> }
+        Route::MapComponentKey { mtk } => {
+            html! { <Model mtk={mtk} /> }
         },
         Route::MapComponent => html! { <Model /> },
-        Route::SvgMap => html! { <SvgMap /> },
-        Route::CanvasMap => html! { <CanvasMap /> },
+        Route::SvgMap => html! { <SvgMap /> },        // Experiment
+        Route::CanvasMap => html! { <CanvasMap /> },  // Experiment
         Route::AddressSearch => html! { <AddressSearchPage /> },
         Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },

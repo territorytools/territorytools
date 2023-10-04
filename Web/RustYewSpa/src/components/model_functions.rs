@@ -33,8 +33,7 @@ fn territory_filter(t: &Territory) -> bool {
     t.border.len() > 2
 }
 
-pub async fn fetch_territory_map_w_key(access_key: &String, as_of_date: Option<String>) -> MapModel {
-    //log!(format!("fetch_territory_map_w_key: access_key: {access_key}"));
+pub async fn fetch_territory_map_w_mtk(access_key: &String, as_of_date: Option<String>) -> MapModel {
     let fetched_result: BorderFilteredResult = fetch_territories_w_key(&access_key).await;       
     let map_center = find_center(&fetched_result.territories);
 
