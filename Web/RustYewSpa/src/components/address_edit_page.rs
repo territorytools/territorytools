@@ -58,6 +58,7 @@ pub struct AddressEditModel {
     pub show_address_marker: bool,
     pub address_marking_error: String,
     pub new_visit_id: i32,
+    pub confirming_save_address: bool,
 }
 
 
@@ -596,10 +597,28 @@ pub fn address_edit_page() -> Html {
         || ()
     }, ());
 
+    let cloned_state = state.clone();
+    let save_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let cloned_state = cloned_state.clone();
+        let mut modification = cloned_state.deref().clone();
+        modification.confirming_save_address = true;
+        cloned_state.set(modification);
+    });
+   
+    let cloned_state = state.clone();
+    let save_cancelled_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let cloned_state = cloned_state.clone();
+        let mut modification = cloned_state.deref().clone();
+        modification.confirming_save_address = false;
+        cloned_state.set(modification);
+    });
+
     let navigator = use_navigator().unwrap();
     let cloned_state = state.clone();
     let mtk = parameters.mtk.clone().unwrap_or_default();
-    let save_onclick = Callback::from(move |event: MouseEvent| {   //model: AddressEditModel| { //
+    let save_confirmed_onclick = Callback::from(move |event: MouseEvent| {   //model: AddressEditModel| { //
         event.prevent_default();
         let cloned_state = cloned_state.clone();
         let navigator = navigator.clone();
@@ -839,6 +858,7 @@ pub fn address_edit_page() -> Html {
                 show_address_marker: cloned_state.show_address_marker,
                 address_marking_error: cloned_state.address_marking_error.clone(),
                 new_visit_id: cloned_state.new_visit_id,
+                confirming_save_address: cloned_state.confirming_save_address,
             };
 
             cloned_state.set(model);
@@ -1338,7 +1358,13 @@ pub fn address_edit_page() -> Html {
                     </div>
                 }               
                 <div class="col-12">
-                    <button onclick={save_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                    if state.confirming_save_address {
+                        <span class="px-3">{"Are you sure?"}</span>
+                        <button onclick={save_confirmed_onclick} class="me-1 btn btn-success shadow-sm">{"Yes"}</button>
+                        <button onclick={save_cancelled_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"Cancel"}</button>
+                    } else {
+                        <button onclick={save_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                    }
                     <a onclick={close_onclick} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
                     // if address_id != 0 {
                     //     <a class="mx-1 btn btn-outline-primary" href={new_address_uri.clone()}>
