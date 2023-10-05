@@ -260,6 +260,6 @@ pub trait SearchQuery {
 impl SearchQuery for &Context<TerritorySearchPage> {
     fn search_query(&self) -> TerritorySearchQuery {
         let location = self.link().location().expect("Location or URI");
-        location.query().unwrap_or(TerritorySearchQuery::default())    
+        location.query::<TerritorySearchQuery>().unwrap_or(TerritorySearchQuery::default())    
     }
 }

@@ -1,5 +1,5 @@
 use crate::components::{
-    bb_button::BBButton,
+    //bb_button::BBButton,
 };
 use crate::models::territories::Territory;
 use crate::functions::document_functions::set_document_title;
@@ -41,7 +41,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
     set_document_title("Letter Writing Territory");
 
     let location = use_location().expect("Should be a location to get query string");
-    let parameters: TerritoryEditFormExampleParameters = location.query().expect("An object");
+    let parameters = location.query::<TerritoryEditFormExampleParameters>().expect("An object");
     let territory_number: String = parameters.territory_number.to_string();
 
     let state = use_state(||TerritoryModification {
@@ -51,7 +51,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
     });
 
     let cloned_state = state.clone();
-    use_effect_with_deps(move |_| {
+    use_effect_with((), move |_| {
         let _cloned_state = cloned_state.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let territory_number: String = territory_number;
@@ -94,7 +94,7 @@ pub fn territory_edit_form(props: &Props) -> Html {
             }
         });
         || ()
-    }, ());
+    });
     
     let _territory_number: String = format!("{}", decode(&props.territory_number).expect("UTF-8"));
     let description: String = format!("{}", decode(&props.description).expect("UTF-8"));
@@ -223,7 +223,8 @@ pub fn territory_edit_form(props: &Props) -> Html {
             </div>
         </div>
         <br/>
-        <BBButton label={"完成了 Complete"} class={"btn btn-primary"} data_test="submit" />
+        //<BBButton label={"完成了 Complete"} class={"btn btn-primary"} data_test="submit" />
+        <button class="btn btn-primary" type="submit">{"完成了 Complete"}</button>
         </div>
         </>
     }

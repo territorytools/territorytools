@@ -22,7 +22,7 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
     {
         let statuses = statuses.clone();
         let mtk = props.mtk.clone().unwrap_or_default();
-        use_effect_with_deps(move |_| {
+        use_effect_with((), move |_| {
             let statuses = statuses.clone();
             let mtk = mtk.clone();
             wasm_bindgen_futures::spawn_local(async move {
@@ -41,7 +41,7 @@ pub fn address_delivery_status_selector(props: &Props) -> Html {
                 statuses.set(fetched_statuses);
             });
             || ()
-        }, ());
+        });
     }
 
     let onchange = {

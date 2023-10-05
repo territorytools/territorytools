@@ -26,7 +26,7 @@ pub fn user_selector(props: &Props) -> Html {
     let users = use_state(|| vec![]);
     {
         let users = users.clone();
-        use_effect_with_deps(move |_| {
+        use_effect_with((), move |_| {
             let users = users.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let uri: &str = DATA_USERS_API_PATH;
@@ -41,7 +41,7 @@ pub fn user_selector(props: &Props) -> Html {
                     users.set(fetched_users);
             });
             || ()
-        }, ());
+        });
     }
     // users.iter().map(|user| { 
     //     let user_full_name: String = {

@@ -100,7 +100,7 @@ pub fn address_edit_page() -> Html {
     let address_mark_model: yew::UseStateHandle<AddressMarkModel> = use_state(|| AddressMarkModel::default());
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
-    let parameters: AddressEditParameters = location.query().expect("An object");
+    let parameters: AddressEditParameters = location.query::<AddressEditParameters>().expect("An object");
     let address_id: i32 = match parameters.address_id {
         Some(v) => v,
         _ => 0,
@@ -520,7 +520,7 @@ pub fn address_edit_page() -> Html {
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
     let cloned_state = state.clone();
-    use_effect_with_deps(move |_| {
+    use_effect_with((), move |_| {
         let cloned_state = cloned_state.clone();
         let mtk = mtk.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -595,7 +595,7 @@ pub fn address_edit_page() -> Html {
             }
         });
         || ()
-    }, ());
+    });
 
     let cloned_state = state.clone();
     let save_onclick = Callback::from(move |event: MouseEvent| {

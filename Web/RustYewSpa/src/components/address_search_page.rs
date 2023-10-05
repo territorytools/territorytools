@@ -265,6 +265,6 @@ pub trait SearchQuery {
 impl SearchQuery for &Context<AddressSearchPage> {
     fn search_query(&self) -> AddressSearchQuery {
         let location = self.link().location().expect("Location or URI");
-        location.query().unwrap_or(AddressSearchQuery::default())    
+        location.query::<AddressSearchQuery>().unwrap_or(AddressSearchQuery::default())    
     }
 }

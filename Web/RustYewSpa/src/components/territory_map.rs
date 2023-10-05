@@ -69,7 +69,7 @@ pub fn territory_map() -> Html {
     let model: UseStateHandle<TerritoryMapModel> = use_state(|| TerritoryMapModel::default());
     let location = use_location().expect("Should be a location to get query string");
     //log!("territory_map Query: {}", location.query_str());
-    let parameters: TerritoryMapParameters = location.query().expect("An object");
+    let parameters = location.query::<TerritoryMapParameters>().expect("An object");
     let group_id: String = match &parameters.group_id {
         Some(v) => v.to_string(),
         _ => "".to_string(),
@@ -92,7 +92,7 @@ pub fn territory_map() -> Html {
     //let territories = use_state(|| vec![]);
 
     let model_clone = model.clone();
-    use_effect_with_deps(
+    use_effect_with((),
         move |_| {
             let model_clone = model_clone.clone();
             wasm_bindgen_futures::spawn_local(async move {
@@ -127,8 +127,7 @@ pub fn territory_map() -> Html {
                 }
             });
             || ()
-        },
-        (),
+        }
     );
 
     let model_clone = model.clone();

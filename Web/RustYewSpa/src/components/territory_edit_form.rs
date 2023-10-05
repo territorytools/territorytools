@@ -1,5 +1,5 @@
 use crate::components::{
-    bb_button::BBButton,
+    //bb_button::BBButton,
     bb_text_input::{BBTextInput, InputType},
 };
 
@@ -84,7 +84,12 @@ pub fn territory_edit_form(props: &Props) -> Html {
                     // <UserSelector onchange={assignee_onchange} />
                     // <BBButton label={"Assign"} data_test="submit" />
                     // </div>
-                    <BBButton label={"Save"} data_test="submit" class={"btn btn-primary"}/>
+                    //<BBButton label={"Save"} data_test="submit" class={"btn btn-primary"}/>
+                    <button 
+                        type="submit"
+                        class="btn btn-primary">
+                        {"Save"}
+                    </button>
                     <a class="btn btn-secondary" href="/app/map">{"Close"}</a>
                 </div>
             </form>

@@ -1,5 +1,5 @@
 use crate::components::{
-    bb_button::BBButton,
+    //bb_button::BBButton,
     bb_text_input::{BBTextInput, InputType},
     user_selector::UserSelector,
 };
@@ -93,12 +93,13 @@ pub fn assign_form(props: &Props) -> Html {
                             onchange={description_onchange} />
                         <label>{"委派给 Assign to"}</label>
                         <div class={"input-group-append"}>
-                        <UserSelector onchange={assignee_onchange} />
-                        <BBButton label={"Assign"} data_test="submit" class={"btn btn-primary"} />
+                            <UserSelector onchange={assignee_onchange} />
+                            //<BBButton label={"Assign"} data_test="submit" class={"btn btn-primary"} />
+                            <button type="submit" class="btn btn-primary">{"Assign"}</button>
                         </div>
                     </div>
                 </form>
-                </div>
+            </div>
 
         </>
     }

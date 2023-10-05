@@ -115,7 +115,7 @@ pub fn switch(route: Route) -> Html {
         Route::MapComponentKey { mtk } => {
             html! { <Model mtk={mtk} /> }
         },
-        Route::MapComponent => html! { <Model /> },
+        Route::MapComponent => html! { <Model mtk={""} /> },
         Route::SvgMap => html! { <SvgMap /> },        // Experiment
         Route::CanvasMap => html! { <CanvasMap /> },  // Experiment
         Route::AddressSearch => html! { <AddressSearchPage /> },

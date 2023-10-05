@@ -24,7 +24,7 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
     let links = use_state(|| vec![]);
     {
         let links = links.clone();
-        use_effect_with_deps(move |_| {
+        use_effect_with((), move |_| {
             let links = links.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 
@@ -42,7 +42,7 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
                     links.set(fetched_links);                    
             });
             || ()
-        }, ());
+        });
     }
 
     html! {

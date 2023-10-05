@@ -8,7 +8,7 @@ use crate::components::{
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::Route;
 
-use std::ops::Deref;
+use chrono::DateTime;
 use regex::Regex;
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::JsCast;
@@ -260,9 +260,6 @@ impl Component for Model {
         };
 
         let navigator = ctx.link().navigator().unwrap();
-        //let mtk = ctx.search_query().mtk.clone().unwrap_or_default();
-        // let as_of_date = ctx.search_query().as_of_date.clone();
-        // let search_text = ctx.search_query().search.clone();
         let query_clone = ctx.search_query().clone();
         let asof_text_onchange = {
             Callback::from(move |event: Event| {
@@ -279,6 +276,36 @@ impl Component for Model {
                 };
 
                 log!(format!("AdOfDateChanged to : {}", value.clone()));
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            })
+        };
+
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let asof_forward_click = {
+            Callback::from(move |_event: MouseEvent| {
+                
+                log!(format!("Parsing Date: '{}'", query_clone.as_of_date.clone().unwrap_or_default()));
+                
+                let next_day_result 
+                    = DateTime::parse_from_str(
+                        //query_clone.as_of_date.clone().unwrap_or_default().as_str(),
+                        "2023-09-05",
+                        "%Y-%m-%d");
+                                
+                let next_day = next_day_result.clone().unwrap();
+                // match next_day_result {
+                //     Ok(dt) => dt.clone(),
+                //     Err(_) => panic!("bad date")
+                // };
+                        
+                let query = MapSearchQuery {
+                    mtk: query_clone.mtk.clone(), //Some(mtk.clone()),
+                    search: query_clone.search.clone(),
+                    as_of_date: Some(next_day.to_string()),
+                };
+
+                //log!(format!("AdOfDateChanged to : {}", value.clone()));
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
         };
@@ -344,14 +371,18 @@ impl Component for Model {
                                             id="menu-button"
                                             onclick={menu_button_onclick}
                                             class="btn btn-outline-primary">
-                                            {"..."}
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                                            </svg>
                                         </button>
                                         if self.show_menu == 2 {
                                              <button 
                                                 id="date-back-button"
                                                 //onclick={menu_button_onclick}
                                                 class="btn btn-outline-primary">
-                                                {"<"}
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                                                    <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z"/>
+                                                </svg>
                                             </button>
                                             <input 
                                                 id="asof-text-box"
@@ -363,9 +394,11 @@ impl Component for Model {
                                                 placeholder="As of Date"  />
                                             <button 
                                                 id="date-forward-button"
-                                                //onclick={menu_button_onclick}
+                                                onclick={asof_forward_click}
                                                 class="btn btn-outline-primary">
-                                                {">"}
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                                                    <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"/>
+                                                </svg>
                                             </button>
                                         } else if self.show_menu == 1 {
                                              <button 
@@ -449,7 +482,7 @@ pub trait SearchQuery {
 impl SearchQuery for &Context<Model> {
     fn search_query(&self) -> MapSearchQuery {
         let location = self.link().location().expect("Location or URI");
-        location.query().unwrap_or(MapSearchQuery::default())    
+        location.query::<MapSearchQuery>().unwrap_or(MapSearchQuery::default())    
     }
 }
 

@@ -83,7 +83,7 @@ pub fn territory_editor_page() -> Html {
     let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
-    let parameters: TerritoryEditorParameters = location.query().expect("An object");
+    let parameters: TerritoryEditorParameters = location.query::<TerritoryEditorParameters>().expect("An object");
     let territory_id: i32 = match parameters.id {
         Some(v) => v,
         _ => 0,
@@ -201,7 +201,7 @@ pub fn territory_editor_page() -> Html {
     // };
 
     let cloned_state = state.clone();
-    use_effect_with_deps(move |_| {
+    use_effect_with((), move |_| {
         let cloned_state = cloned_state.clone();
         let territory_number = parameters.number.clone().unwrap_or_default();
         wasm_bindgen_futures::spawn_local(async move {
@@ -255,7 +255,7 @@ pub fn territory_editor_page() -> Html {
             }
         });
         || ()
-    }, ());
+    });
     
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |event: SubmitEvent| { 

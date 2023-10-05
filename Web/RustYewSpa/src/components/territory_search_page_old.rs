@@ -35,7 +35,7 @@ pub struct TerritorySearchPageOld {
 pub fn address_search_page_old() -> Html {     
     let navigator = use_navigator().unwrap();
     let location = use_location().expect("Location with query parameters");
-    let query: TerritorySearchQueryOld = location.query().expect("A TerritorySearchQueryOld struct"); 
+    let query: TerritorySearchQueryOld = location.query::<TerritorySearchQueryOld>().expect("A TerritorySearchQueryOld struct"); 
     
     let state = use_state(|| TerritorySearchPageOld::default());
 
@@ -83,7 +83,7 @@ pub fn address_search_page_old() -> Html {
     let search_text = query.search_text.clone().unwrap_or_default();
 
     let cloned_state = state.clone();
-    use_effect_with_deps(move |_| {
+    use_effect_with((), move |_| {
         let cloned_state = cloned_state.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let search_text = cloned_state.search_text.clone();
@@ -91,7 +91,7 @@ pub fn address_search_page_old() -> Html {
             cloned_state.set(result);
         });
         || ()
-    }, ());
+    });
 
     html! {
         <>

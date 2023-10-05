@@ -118,7 +118,7 @@ impl Component for AddressSharedLetterRow {
         //}
 
         let location = ctx.link().location().expect("Location or URI");
-        let query: LetterQuery = location.query().unwrap_or(LetterQuery::default());
+        let query: LetterQuery = location.query::<LetterQuery>().unwrap_or(LetterQuery::default());
 
         return Self {
             address: ctx.props().address.clone(),

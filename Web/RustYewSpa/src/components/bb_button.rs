@@ -52,8 +52,8 @@ pub fn bb_button(props: &Props) -> Html {
     };
 
     html! {
-      <span class={stylesheet}>
-        <button data-test={props.data_test.clone()} {onclick} {class}>{&props.label}</button>
-      </span>
+    //   <span class={stylesheet}>
+    //     <button data-test={props.data_test.clone()} {onclick} {class}>{&props.label}</button>
+    //   </span>
     }
 }

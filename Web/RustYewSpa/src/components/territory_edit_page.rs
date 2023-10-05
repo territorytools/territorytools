@@ -53,7 +53,7 @@ pub fn territory_edit_page(props: &TerritoryEditPageProps) -> Html {
     //let parameters = use_context::<TerritoryEditPageParameters>().expect("no ctx found");
     let location = use_location().expect("Should be a location");
     log!("Query: {}", location.query_str());
-    let parameters: TerritoryEditPageParameters = location.query().expect("An object");
+    let parameters: TerritoryEditPageParameters = location.query::<TerritoryEditPageParameters>().expect("An object");
     log!("Query.groupid: {}", &parameters.group_id);
     //let parameters = user
 

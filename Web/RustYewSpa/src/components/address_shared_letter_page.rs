@@ -74,7 +74,7 @@ impl Component for AddressSharedLetter {
         // .unwrap();
 
         let location = ctx.link().location().expect("Location or URI");
-        let query = location.query().unwrap_or(LetterQuery::default());
+        let query = location.query::<LetterQuery>().unwrap_or(LetterQuery::default());
 
         let session_id_clone = session_id.clone();
         let mtk = query.mtk.clone().unwrap_or_default();
@@ -119,7 +119,7 @@ impl Component for AddressSharedLetter {
                 
 
                 let location = ctx.link().location().expect("Location or URI");
-                let mut query = location.query().unwrap_or(LetterQuery::default());
+                let mut query = location.query::<LetterQuery>().unwrap_or(LetterQuery::default());
                 query.current_publisher = Some(publisher);
                     
                 let navigator = ctx.link().navigator().unwrap();
