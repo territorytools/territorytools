@@ -1360,10 +1360,25 @@ pub fn address_edit_page() -> Html {
                 <div class="col-12">
                     if state.confirming_save_address {
                         <span class="px-3">{"Are you sure?"}</span>
-                        <button onclick={save_confirmed_onclick} class="me-1 btn btn-success shadow-sm">{"Yes"}</button>
-                        <button onclick={save_cancelled_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"Cancel"}</button>
+                        <button 
+                            id="confirm-save-button"
+                            onclick={save_confirmed_onclick} 
+                            class="me-1 btn btn-success shadow-sm">
+                            {"Yes"}
+                        </button>
+                        <button 
+                            id="cancel-save-button"
+                            onclick={save_cancelled_onclick} 
+                            class="me-1 btn btn-outline-secondary shadow-sm">
+                            {"Cancel"}
+                        </button>
                     } else {
-                        <button onclick={save_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                        <button 
+                            id="save-button"
+                            onclick={save_onclick} 
+                            class="me-1 btn btn-primary shadow-sm">
+                            {"Save"}
+                        </button>
                     }
                     <a onclick={close_onclick} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
                     // if address_id != 0 {

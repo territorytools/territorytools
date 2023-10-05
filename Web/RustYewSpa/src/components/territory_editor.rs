@@ -486,7 +486,14 @@ pub fn territory_editor_page() -> Html {
                 // </div>
                 <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                     <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
-                    <input readonly=true value={state.territory.number.clone()} onchange={number_onchange} type="text" class="form-control shadow-sm" id="inputNumber" placeholder="Number"/>
+                    <input 
+                        id="territory-number-input" 
+                        readonly=true 
+                        value={state.territory.number.clone()} 
+                        onchange={number_onchange} 
+                        type="text" 
+                        class="form-control shadow-sm" 
+                        placeholder="Number"/>
                 </div>
                 <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                     <label for="input-group-id" class="form-label">{"Group ID"}</label>
@@ -495,7 +502,10 @@ pub fn territory_editor_page() -> Html {
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <label for="input-stage" class="form-label">{"Stage"}</label>
                     // TODO: Load this dynamically, it has already changed
-                    <select onchange={stage_id_onchange} id="input-stage" class="form-select shadow-sm">
+                    <select 
+                        id="input-stage" 
+                        onchange={stage_id_onchange} 
+                        class="form-select shadow-sm">
                         <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
                         <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
