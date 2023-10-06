@@ -21,6 +21,7 @@ pub fn sms_section(props: &SmsSectionProps) -> Html {
             <label for={"sms-number"}>{"Send as email message:"}</label>
             <div class={"input-group-append"}>
                 <input 
+                    id="assignee-phone-input"
                     value={props.assignee_phone.clone()} 
                     type={"text"} 
                     class={"form-control"} 
@@ -29,7 +30,7 @@ pub fn sms_section(props: &SmsSectionProps) -> Html {
                 <a 
                     class={"btn btn-primary"} 
                     href={sms_link_href} 
-                    target="_blamk"
+                    target="_blank"
                 >
                 {"Send"}
                 </a>

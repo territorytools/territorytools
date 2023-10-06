@@ -100,7 +100,7 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
         <>
             <MenuBarV2>
                 <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
-                    <li class={"nav-item"}>
+                    <li class="nav-item">
                         <MapPageLink />
                     </li>  
                 </ul>
@@ -112,12 +112,12 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
             />
 
             if state.completed {
-                <div class={"container"}>
+                <div class="container">
                     if state.success {
                         <div>
-                            <p style={"color:blue;"}>{"Success"}</p>
+                            <p style="color:blue;">{"Success"}</p>
                             <a 
-                                style={"color:blue;margin-bottom:10px;"} 
+                                style="color:blue;margin-bottom:10px;"
                                 href={state.link_contract.territory_uri.clone()}>
                                 {state.link_contract.territory_uri.clone()}
                             </a>
@@ -133,7 +133,7 @@ pub fn assign_form(props: &AssignPageProps) -> Html {
                             />
                         </div>
                     } else {
-                        <div style={"color:red;"}>{"Failed"}</div>
+                        <div id="assign-failed-result" style="color:red;">{"Failed"}</div>
                     }
                 </div>
             }

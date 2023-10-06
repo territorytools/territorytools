@@ -93,9 +93,9 @@ pub fn assign_form(props: &Props) -> Html {
                             onchange={description_onchange} />
                         <label>{"委派给 Assign to"}</label>
                         <div class={"input-group-append"}>
-                            <UserSelector onchange={assignee_onchange} />
+                            <UserSelector id="user-selector" onchange={assignee_onchange} />
                             //<BBButton label={"Assign"} data_test="submit" class={"btn btn-primary"} />
-                            <button type="submit" class="btn btn-primary">{"Assign"}</button>
+                            <button id="assign-button" type="submit" class="btn btn-primary">{"Assign"}</button>
                         </div>
                     </div>
                 </form>

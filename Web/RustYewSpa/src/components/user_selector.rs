@@ -13,7 +13,7 @@ const DATA_USERS_API_PATH: &str = "/api/users?active=true";
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
     // pub data_test: String,
-    // pub id: String,
+    pub id: String,
     // pub label: String,
     // pub options: Vec<SelectOption>,
     pub onchange: Callback<String>,
@@ -66,7 +66,7 @@ pub fn user_selector(props: &Props) -> Html {
     };
 
     html! {
-        <select id={"user-menu"} name={"albaUserId"} class={"form-select shadow-sm"} {onchange}>
+        <select id={props.id.clone()} name={"albaUserId"} class={"form-select shadow-sm"} {onchange}>
             <option value={"0"}>{"Select User"}</option>
             {                
                 users.iter().map(|user| {   

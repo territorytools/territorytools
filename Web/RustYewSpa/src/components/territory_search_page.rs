@@ -111,12 +111,24 @@ impl Component for TerritorySearchPage {
                     <span><strong id="territory-title-span">{"Territory Search"}</strong></span>
         
                     <hr/>
-                    <form {onsubmit} >
+                    <form id="search-form" {onsubmit} >
                         <div class="d-flex flex-row">
                             <div class="d-flex flex-colum mb-2 shadow-sm">
-                                <input {onchange} type="text" value={search_text} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
+                                <input 
+                                    id="search-input"
+                                    {onchange} 
+                                    type="text" 
+                                    value={search_text} 
+                                    style="max-width:400px;" 
+                                    placeholder="Enter search text" 
+                                    class="form-control" />
                                 // TODO: Add an onclick and send the RefreshFromSearchText() message?
-                                <button type="submit" class="btn btn-primary">{"Search"}</button>
+                                <button 
+                                    id="search-button"
+                                    type="submit" 
+                                    class="btn btn-primary">
+                                    {"Search"}
+                                </button>
                                 if self.result.load_error { 
                                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
                                     <span class="mx-1" style="color:red;">{self.result.load_error_message.clone()}</span>
@@ -126,7 +138,7 @@ impl Component for TerritorySearchPage {
                     </form>
                     <div class="row">
                         <div class="col">
-                            <span><strong>{count}</strong>{" Territories Found"}</span>
+                            <span id="territories-found-summary"><strong>{count}</strong>{" Territories Found"}</span>
                         </div>
                     </div>
                     <div class="row py-1" style="border-top: 1px solid gray;">
