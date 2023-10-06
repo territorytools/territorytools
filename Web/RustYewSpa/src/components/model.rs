@@ -8,7 +8,7 @@ use crate::components::{
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::Route;
 
-use chrono::DateTime;
+use chrono::{NaiveDate,DateTime,Duration};
 use regex::Regex;
 use serde::{Serialize, Deserialize};
 use wasm_bindgen::JsCast;
@@ -288,12 +288,14 @@ impl Component for Model {
                 log!(format!("Parsing Date: '{}'", query_clone.as_of_date.clone().unwrap_or_default()));
                 
                 let next_day_result 
-                    = DateTime::parse_from_str(
-                        //query_clone.as_of_date.clone().unwrap_or_default().as_str(),
-                        "2023-09-05",
+                    = NaiveDate::parse_from_str(
+                        query_clone.as_of_date.clone().unwrap_or_default().as_str(),
+                        //"2023-09-05",
                         "%Y-%m-%d");
                                 
                 let next_day = next_day_result.clone().unwrap();
+                let day_after = next_day + Duration::days(1);
+                log!(format!("Day After: {}", day_after.clone().format("%Y-%m-%d")));
                 // match next_day_result {
                 //     Ok(dt) => dt.clone(),
                 //     Err(_) => panic!("bad date")
@@ -302,7 +304,7 @@ impl Component for Model {
                 let query = MapSearchQuery {
                     mtk: query_clone.mtk.clone(), //Some(mtk.clone()),
                     search: query_clone.search.clone(),
-                    as_of_date: Some(next_day.to_string()),
+                    as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
                 };
 
                 //log!(format!("AdOfDateChanged to : {}", value.clone()));
