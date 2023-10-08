@@ -2,6 +2,7 @@ use crate::components::map_component::MapModel;
 use crate::models::territories::{Territory,BorderFilteredResult};
 use crate::components::popup_content::PopupContentOptions;
 
+use gloo_net::http::QueryParams;
 use reqwasm::http::Request;
 use regex::Regex;
 
@@ -33,8 +34,11 @@ fn territory_filter(t: &Territory) -> bool {
     t.border.len() > 2
 }
 
-pub async fn fetch_territory_map_w_mtk(access_key: &String, as_of_date: Option<String>) -> MapModel {
-    let fetched_result: BorderFilteredResult = fetch_territories_w_key(&access_key).await;       
+pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>) -> MapModel {
+    let fetched_result: BorderFilteredResult = fetch_territories_w_mtk(
+        mtk, 
+        as_of_date.clone().unwrap_or_default().as_str()).await;       
+
     let map_center = find_center(&fetched_result.territories);
 
     // edit-territory-button-enabled Section
@@ -89,7 +93,7 @@ pub async fn fetch_territory_map_w_mtk(access_key: &String, as_of_date: Option<S
         user_roles: fetched_result.user_roles.clone(),
         popup_content_options: PopupContentOptions {
             //edit_territory_button_enabled: edit_territory_button_enabled.parse().unwrap_or(true),
-            edit_territory_button_enabled: edit_territory_button_enabled,
+            edit_territory_button_enabled,
             territory_open_enabled: territory_open_enabled.parse().unwrap_or(false),
             show_stage: show_stage.parse().unwrap_or(false),
             as_of_date: as_of_date.clone(),
@@ -98,8 +102,12 @@ pub async fn fetch_territory_map_w_mtk(access_key: &String, as_of_date: Option<S
     }
 }
 
-pub async fn fetch_territories_w_key(access_key: &String) ->  BorderFilteredResult {
-    let uri: String = format!("{DATA_API_PATH}?mtk={access_key}");
+pub async fn fetch_territories_w_mtk(mtk: &str, as_of_date: &str) ->  BorderFilteredResult {
+    let params = QueryParams::new();
+    params.append("mtk", mtk);
+    params.append("asOfDate", as_of_date);
+    let query_string = params.to_string();    
+    let uri: String = format!("{DATA_API_PATH}?{query_string}");
     Request::get(uri.as_str())
         .send()
         .await

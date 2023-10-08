@@ -24,6 +24,7 @@ pub struct Territory {
     pub status: String,
     pub stage_id: Option<i32>,
     pub stage: Option<String>,
+    pub stage_changes: Vec<TerritoryStageChange>,
     pub last_visiting_started: Option<String>,
     pub last_visiting_done: Option<String>,
     pub description: Option<String>,
@@ -97,4 +98,12 @@ pub struct TerritorySummary {
     // pub sub_group_id: Option<String>,
     // #[serde(default)]
     // pub is_active: bool,
+}
+
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct TerritoryStageChange {
+    pub change_date_utc: String,
+    pub stage_id: i32,
+    pub stage: Option<String>,
 }

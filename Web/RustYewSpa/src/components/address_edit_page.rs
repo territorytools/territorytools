@@ -43,6 +43,7 @@ const ASSIGN_METHOD: &str = "PUT";
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct AddressEditModel {
     pub address: Address,
+    pub address_original: Address,
     // TODO: OriginalAddress (Used to compare by server)
     pub address_id: i32,
     pub save_success: bool,
@@ -196,15 +197,14 @@ pub fn address_edit_page() -> Html {
         })
     };
 
-    let territory_number = state.address.territory_number.clone().unwrap_or_default();
+    let territory_id = state.address.territory_id;
     let navigator = use_navigator().unwrap();
     let territory_open_onclick = {
         let navigator = navigator.clone();
-        //let territory_number = territory_number.clone();
         Callback::from(move |_| {
             let query = TerritoryEditorParameters {
-                id: None,
-                number: Some(territory_number.clone()),
+                id: Some(territory_id),
+                number: None,
             };
             let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
         })
@@ -540,7 +540,6 @@ pub fn address_edit_page() -> Html {
                     ..AddressEditModel::default()
                 });
             } else {
-                log!("Loading address...");
                 let uri: String = format!(
                     "{base_path}/{address_id}?address_id={address_id}&mtk={mtk}", 
                     base_path = GET_ADDRESSES_API_PATH);
@@ -556,15 +555,9 @@ pub fn address_edit_page() -> Html {
                         .await
                         .expect("Valid address JSON from API");
 
-                    log!(format!(
-                        "Fetched address 1, street: {street:?}",
-                        street = fetched_address.street
-                    ));
-
-                    //let fetched_address_clone = fetched_address.clone();
-
                     let model: AddressEditModel = AddressEditModel {
-                        address: fetched_address,
+                        address: fetched_address.clone(),
+                        address_original: fetched_address.clone(),
                         address_id,
                         save_success: false,
                         save_error: false,
@@ -572,11 +565,6 @@ pub fn address_edit_page() -> Html {
                         error_message: "".to_string(),
                         ..AddressEditModel::default()
                     };
-
-                    log!(format!(
-                        "Fetched address 2, street: {street:?}",
-                        street = model.address.street
-                    ));
 
                     cloned_state.set(model);
                 } else if address_response.status() == 401 {
@@ -633,6 +621,11 @@ pub fn address_edit_page() -> Html {
             let body_model = &model.deref();
             let data_serialized = serde_json::to_string_pretty(&body_model.address)
                 .expect("Should be able to serialize address edit form into JSON");
+
+            log!(format!("Changing address notes from: {} to: {}", 
+                model.address_original.street.clone().unwrap_or_default(),
+                model.address.street.clone().unwrap_or_default(), 
+            ));
 
             // TODO: FetchService::fetch accepts two parameters: a Request object and a Callback.
             // https://yew.rs/docs/0.18.0/concepts/services/fetch
@@ -845,6 +838,7 @@ pub fn address_edit_page() -> Html {
             let cloned_state = cloned_state.clone();
             let model: AddressEditModel = AddressEditModel {
                 address: address_model, //cloned_state.address.clone(), 
+                address_original: cloned_state.address_original.clone(),
                 address_id: cloned_state.address_id,
                 save_success: cloned_state.save_success,
                 save_error: cloned_state.save_error,

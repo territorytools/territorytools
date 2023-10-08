@@ -17,6 +17,8 @@ use crate::components::map_component_functions::{
     polygon_from_territory_polygon,
     get_southwest_corner,
     get_northeast_corner,
+    stage_as_of_date,
+    territory_stage_color_v2,
     territory_color,
 };
 use crate::components::popup_content::PopupContentOptions;
@@ -172,7 +174,9 @@ impl Component for MapComponent {
                             .filter(|t| t.number == tp.territory_id.clone())
                             .collect::<Vec<_>>();
 
-                        let territory_color = territory_color(&territories[0], as_of_date);
+                        //let territory_color = territory_color(&territories[0], as_of_date);
+                        let stage = stage_as_of_date(&territories[0], as_of_date.clone().unwrap_or_default());
+                        let territory_color = territory_stage_color_v2(stage.as_str());
 
                         if self.selected.contains(&tp.territory_id.clone()) {
                             let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();

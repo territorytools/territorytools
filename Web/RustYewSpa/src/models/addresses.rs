@@ -6,6 +6,7 @@ use yew::prelude::*;
 pub struct Address {
     pub address_id: i32,
     pub alba_address_id: i32,
+    pub territory_id: i32,
     pub territory_number: Option<String>,
     pub language: Option<String>,
     pub language_id : i32,

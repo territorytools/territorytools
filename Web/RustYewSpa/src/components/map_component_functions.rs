@@ -153,7 +153,10 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
         }
     };
 
-    let territory_color: String = territory_color(&t, options.as_of_date.clone());
+    let stage = stage_as_of_date(&t, options.as_of_date.clone().unwrap_or_default());
+    let territory_color = territory_stage_color_v2(stage.clone().as_str());
+
+    //let territory_color: String = territory_color(&t, options.as_of_date.clone());
     let opacity: f32 = 1.0;
     // {
     //     if t.is_active {
@@ -234,27 +237,38 @@ pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
     TerritoryLatLng { lat: north, lon: east }
 }
 
-pub fn territory_color(t: &Territory, as_of_date: Option<String>) -> String {
+pub fn territory_color(territory: &Territory, as_of_date: Option<String>) -> String {
     let completed_by: String = {
-        match t.last_completed_by {
+        match territory.last_completed_by {
             Some(_) => "yes".to_string(),
             None => "no".to_string(),
         }
     };
 
-    let stage = if as_of_date.is_none() || as_of_date.clone().unwrap_or_default().is_empty() {
-        t.stage.clone()
-    } else {
-        if  !t.last_visiting_done.clone().unwrap_or_default().is_empty() 
-            && t.last_visiting_done.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default() {
-            Some("Visiting Done".to_string())
-        } else if !t.last_visiting_started.clone().unwrap_or_default().is_empty() 
-            && t.last_visiting_started.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default()  {
-            Some("Visiting Started".to_string())
-        } else {
-            Some("Ready to Visit".to_string())
-        }
-    };
+    // let stage = if as_of_date.is_none() || as_of_date.clone().unwrap_or_default().is_empty() {
+    //     territory.stage.clone()
+    // } else if  !territory.last_visiting_done.clone().unwrap_or_default().is_empty() 
+    //     && territory.last_visiting_done.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default() {
+    //     Some("Visiting Done".to_string())
+    // } else if !territory.last_visiting_started.clone().unwrap_or_default().is_empty() 
+    //     && territory.last_visiting_started.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default()  {
+    //     Some("Visiting Started".to_string())
+    // } else {
+    //     Some("Ready to Visit".to_string())
+    // };
+    let as_of_date_value = as_of_date.unwrap_or_default();
+    let stage = territory.stage_changes
+        .iter()
+        .filter(|c| c.change_date_utc <= as_of_date_value)
+        .collect::<Vec<_>>()
+        .last()
+        .unwrap().stage.clone();
+
+    // let last_stage = if last_stage_result.is_some() {
+    //     last_stage_result.unwrap() 
+    // } else { };
+
+    //let stage = territory.stage.clone();
 
     if stage == Some("Visiting".to_string()) {
         "magenta".to_string()
@@ -264,11 +278,46 @@ pub fn territory_color(t: &Territory, as_of_date: Option<String>) -> String {
         "#55F".to_string()    
     } else if stage == Some("Ready to Visit".to_string()) {
         "magenta".to_string()    
-    } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
+    } else if territory.status == "Completed" || territory.status == "Available" && completed_by == "yes" {
         "blue".to_string() // Completed
-    } else if t.status == "Available" {
+    } else if territory.status == "Available" {
         "black".to_string()
     } else {
         "#090".to_string()
     }
+}
+
+
+
+pub fn territory_stage_color_v2(stage: &str) -> String {
+    if stage == "Visiting" {
+        "magenta".to_string()
+    } else if stage == "Ready to Visit" {
+        "rebeccapurple".to_string()    
+    } else if stage == "Visiting Started" {
+        "red".to_string()    
+    } else if stage == "Visiting Done" {
+        "#55F".to_string()    
+    } else if stage == "Cooling Off" {
+        "#33F".to_string()         
+    } else if stage == "Completed" {
+        "blue".to_string() 
+    } else if stage == "Available" {
+        "black".to_string()
+    } else {
+        "#990".to_string()
+    }
+}
+
+
+pub fn stage_as_of_date(territory: &Territory, as_of_date: String) -> String {
+    //let as_of_date_value = as_of_date.unwrap_or_default();
+    let stage = territory.stage_changes
+        .iter()
+        .filter(|c| c.change_date_utc <= as_of_date)
+        .collect::<Vec<_>>()
+        .last()
+        .unwrap().stage.clone();
+    
+    stage.unwrap_or_default()
 }
