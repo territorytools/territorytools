@@ -132,72 +132,21 @@ pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions
         }
     }
 
-    let _completed_by: String = {
-        match t.last_completed_by {
-            Some(_) => "yes".to_string(),
-            None => "no".to_string(),
-        }
-    };
-
-    let _group_id: String = {
-        match &t.group_id {
-            Some(v) => v.to_string(),
-            None => "".to_string(),
-        }
-    };
-
-    let _area_code: String = {
-        match t.area_code {
-            Some(_) => t.area_code.clone().unwrap(),
-            None => "".to_string(),
-        }
-    };
-
     let stage = stage_as_of_date(&t, options.as_of_date.clone().unwrap_or_default());
-    let territory_color = territory_stage_color_v2(stage.clone().as_str());
+    let territory_color = stage_color(stage.clone().as_str());
+   
+    let mut modified_territory = t.clone();
+    modified_territory.stage = Some(stage.clone());
 
-    //let territory_color: String = territory_color(&t, options.as_of_date.clone());
-    let opacity: f32 = 1.0;
-    // {
-    //     if t.is_active {
-    //         1.0
-    //     } else {
-    //         0.01
-    //     }
-    // };
-
-    // if area_code == "TER" {
-    //     let polyline = Polyline::new_with_options(
-    //         polygon.iter().map(JsValue::from).collect(),
-    //         &serde_wasm_bindgen::to_value(&PolylineOptions {
-    //             color: territory_color.into(),
-    //             opacity: 1.0,
-    //         })
-    //         .expect("Unable to serialize polygon options"),
-    //     );
-        
-    //     log!("NOT Fitting bounds 2...");
-    //     let bounds = polyline.getBounds();
-    //     //self.map.fitBounds(&bounds);
-    
-    //     // // //polyline.addTo(&self.map);
-    //     return polyline
-    // } else {
-        let poly = TerritoryPolygon {
-            territory_id: t.number.clone(),
-            layer_id: 0,
-            color: territory_color.into(),
-            opacity: opacity.into(),
-            border: polygon, //.iter().map().collect(),
-            tooltip_text: t.number.clone().to_string(), //format!("{group_id}: {area_code}: {}", t.number),
-            popup_html: popup_content_w_button(&t, options.clone()),
-        };
-
-        //if !t.is_hidden && t.group_id.clone().unwrap_or("".to_string()) != "outer".to_string() {
-            //poly.addTo(&self.map);
-            return poly
-        //}
-    //}
+    TerritoryPolygon {
+        territory_id: t.number.clone(),
+        layer_id: 0,
+        color: territory_color.into(),
+        opacity: 1.0,
+        border: polygon,
+        tooltip_text: t.number.clone().to_string(),
+        popup_html: popup_content_w_button(&modified_territory, options.clone()),
+    }
 }
 
 pub fn get_southwest_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng {
@@ -218,7 +167,6 @@ pub fn get_southwest_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
     TerritoryLatLng { lat: south, lon: west }
 }
 
-
 pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng {
     let mut north: f32 = 0.0;
     let mut east: f32 = 0.0;
@@ -237,59 +185,7 @@ pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
     TerritoryLatLng { lat: north, lon: east }
 }
 
-pub fn territory_color(territory: &Territory, as_of_date: Option<String>) -> String {
-    let completed_by: String = {
-        match territory.last_completed_by {
-            Some(_) => "yes".to_string(),
-            None => "no".to_string(),
-        }
-    };
-
-    // let stage = if as_of_date.is_none() || as_of_date.clone().unwrap_or_default().is_empty() {
-    //     territory.stage.clone()
-    // } else if  !territory.last_visiting_done.clone().unwrap_or_default().is_empty() 
-    //     && territory.last_visiting_done.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default() {
-    //     Some("Visiting Done".to_string())
-    // } else if !territory.last_visiting_started.clone().unwrap_or_default().is_empty() 
-    //     && territory.last_visiting_started.clone().unwrap_or_default() <= as_of_date.clone().unwrap_or_default()  {
-    //     Some("Visiting Started".to_string())
-    // } else {
-    //     Some("Ready to Visit".to_string())
-    // };
-    let as_of_date_value = as_of_date.unwrap_or_default();
-    let stage = territory.stage_changes
-        .iter()
-        .filter(|c| c.change_date_utc <= as_of_date_value)
-        .collect::<Vec<_>>()
-        .last()
-        .unwrap().stage.clone();
-
-    // let last_stage = if last_stage_result.is_some() {
-    //     last_stage_result.unwrap() 
-    // } else { };
-
-    //let stage = territory.stage.clone();
-
-    if stage == Some("Visiting".to_string()) {
-        "magenta".to_string()
-    } else if stage == Some("Visiting Started".to_string()) {
-        "red".to_string()    
-    } else if stage == Some("Visiting Done".to_string()) {
-        "#55F".to_string()    
-    } else if stage == Some("Ready to Visit".to_string()) {
-        "magenta".to_string()    
-    } else if territory.status == "Completed" || territory.status == "Available" && completed_by == "yes" {
-        "blue".to_string() // Completed
-    } else if territory.status == "Available" {
-        "black".to_string()
-    } else {
-        "#090".to_string()
-    }
-}
-
-
-
-pub fn territory_stage_color_v2(stage: &str) -> String {
+pub fn stage_color(stage: &str) -> String {
     if stage == "Visiting" {
         "magenta".to_string()
     } else if stage == "Ready to Visit" {
@@ -309,9 +205,7 @@ pub fn territory_stage_color_v2(stage: &str) -> String {
     }
 }
 
-
 pub fn stage_as_of_date(territory: &Territory, as_of_date: String) -> String {
-    //let as_of_date_value = as_of_date.unwrap_or_default();
     let stage = territory.stage_changes
         .iter()
         .filter(|c| c.change_date_utc <= as_of_date)

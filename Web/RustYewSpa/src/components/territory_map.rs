@@ -249,6 +249,7 @@ pub fn territory_map() -> Html {
                 show_stage: false,
                 as_of_date: None,
             };
+
             let popup_text = popup_content_w_button(&t, popup_options); //true, false);
 
             if t.border.len() > 2 {
