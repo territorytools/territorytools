@@ -39,7 +39,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     };
     
     let assign_button_html = 
-        if territory.status == "Available".to_string() && status != "Completed".to_string() {
+        if territory.status.as_str() == "Available" && status != "Completed" {
         let description: String = match &territory.description {
             Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
             None => "(empty)".to_string()
@@ -113,17 +113,6 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
         "".to_string() 
     };
 
-    let mut stage_changes = territory
-        .stage_changes
-        .iter()
-        .map(|c| format!("{}: {}", 
-            c.change_date_utc.clone(), 
-            c.stage.clone().unwrap_or_default()))
-        .collect::<Vec<_>>();
-   
-    stage_changes.sort();
-    let stage_changes_string = stage_changes.join(",");
-
     let active = territory.addresses_active;
     let total = territory.addresses_total;
     let unvisited = territory.addresses_unvisited;
@@ -139,7 +128,6 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             <!--br/><span>{status}</span-->
             <br/>Visited: {visited}/{active}            
             {stage_html}
-            <br/><span>Changes: {stage_changes_string}</span>
             {assignee_line}<br/>
             {open_button_html}
             {assign_button_html}

@@ -224,8 +224,7 @@ impl Component for Model {
             let query = MapSearchQuery {
                 search: Some("".to_string()),
                 mtk: Some(mtk.clone()),
-                as_of_date: as_of_date,
-                ..MapSearchQuery::default()
+                as_of_date,
             };
 
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -276,6 +275,29 @@ impl Component for Model {
                 };
 
                 log!(format!("AdOfDateChanged to : {}", value.clone()));
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            })
+        };
+
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let asof_back_click = {
+            Callback::from(move |_event: MouseEvent| {
+                let next_day_result 
+                    = NaiveDate::parse_from_str(
+                        query_clone.as_of_date.clone().unwrap_or_default().as_str(),
+                        "%Y-%m-%d");
+                                
+                let next_day = next_day_result.clone().unwrap();
+                let day_after = next_day - Duration::days(1);
+                log!(format!("Day After: {}", day_after.clone().format("%Y-%m-%d")));
+                        
+                let query = MapSearchQuery {
+                    mtk: query_clone.mtk.clone(),
+                    search: query_clone.search.clone(),
+                    as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
+                };
+
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
         };
@@ -380,7 +402,7 @@ impl Component for Model {
                                         if self.show_menu == 2 {
                                              <button 
                                                 id="date-back-button"
-                                                //onclick={menu_button_onclick}
+                                                onclick={asof_back_click}
                                                 class="btn btn-outline-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
                                                     <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z"/>
