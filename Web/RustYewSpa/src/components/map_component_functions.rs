@@ -6,7 +6,7 @@ use crate::models::territories::Territory;
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use yew::html::ImplicitClone;
-//use gloo_console::log;
+use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -206,7 +206,29 @@ pub fn stage_color(stage: &str) -> String {
 }
 
 pub fn stage_as_of_date(territory: &Territory, as_of_date: String) -> String {
-    let stage = territory.stage_changes
+    let mut stage_changes = territory
+        .stage_changes
+        .iter()
+        // .map(|c| format!("{}: {}", 
+        //     c.change_date_utc.clone(), 
+        //     c.stage.clone().unwrap_or_default()))
+        .collect::<Vec<_>>();
+
+    stage_changes.sort_by(|a,b| a.change_date_utc.cmp(&b.change_date_utc));
+
+    if territory.number.clone().as_str() == "11186" {
+        let stage_changes_one = stage_changes
+        .iter()
+        .map(|c| format!("{}: {}", 
+            c.change_date_utc.clone(), 
+            c.stage.clone().unwrap_or_default()))
+        .collect::<Vec<_>>();
+        
+        let stage_changes_string = stage_changes_one.join(",");
+        
+        log!(format!("stage_changes_string: {stage_changes_string}"));
+    }
+    let stage = stage_changes
         .iter()
         .filter(|c| c.change_date_utc <= as_of_date)
         .collect::<Vec<_>>()

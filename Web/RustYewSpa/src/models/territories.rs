@@ -101,7 +101,7 @@ pub struct TerritorySummary {
     // pub is_active: bool,
 }
 
-#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[derive(Ord, Clone, Debug, Default, Deserialize, Eq, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TerritoryStageChange {
     pub change_date_utc: String,

@@ -63,44 +63,19 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     } else { "".to_string() };
 
     let group_id: String = match &territory.group_id {
-        Some(v) => if v == "" { "".to_string() } else { v.clone() },
+        Some(v) => if v.is_empty() { "".to_string() } else { v.clone() },
         None => "".to_string()
     };
     
-    let territory_id: i32 = match territory.id {
-        Some(v) => v,
-        None => 0
-    };
+    let territory_id: i32 = territory.id.unwrap_or(0);
  
     let id = territory.id.unwrap_or_default();
     let _description: String = match &territory.description {
-        Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
+        Some(v) => if v.is_empty() { "(empty)".to_string() } else { v.clone() },
         None => "(empty)".to_string()
     };
 
-    // let edit_button_html = if id == 0 {
-    //     format!("<br/><a 
-    //         style='margin-top:5px;color:white;'
-    //         class='btn btn-primary btn-sm'
-    //         href='/app/territories/{territory_number}/edit?description={description}&group_id={group_id}'>
-    //         Edit
-    //     </a>",
-    //     territory_number = territory.number,
-    //     description = &description,
-    //     group_id = group_id)
-    // } else { 
-    //     if edit_territory_button_enabled {
-    //         format!("<br/><a 
-    //             style='margin-top:5px;color:white;'
-    //             class='btn btn-primary btn-sm'
-    //             href='/app/territory-edit?id={id}'>
-    //             Edit
-    //         </a>")
-    //     } else { "".to_string() }
-    //};
-
     let edit_button_html = if options.edit_territory_button_enabled {
-        //log!("edit_button_html yes");
         format!("<a 
             style='margin-top:5px;color:white;'
             class='btn btn-primary btn-sm'
@@ -108,28 +83,26 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             Edit
         </a>")
     } else { 
-        //log!("edit_button_html no");
         "".to_string() 
     };
 
     let assignee_link_key = territory.assignee_link_key.clone().unwrap_or("".to_string());
-    //log!(format!("popup_content: territory_open_enabled: {}", territory_open_enabled));
     let open_button_html = if options.territory_open_enabled {
         if assignee_link_key.is_empty() {
-            format!("<a 
+           "<a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-secondary btn-sm'
                 disabled
                 href='#'>
                 Open
-            </a>")
+            </a>".to_string()
         } else {
-            format!("<a 
+            "<a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
                 href='/mtk/{assignee_link_key}'>
                 Open
-            </a>")
+            </a>".to_string()
         }
     } else { 
         "".to_string()
@@ -139,6 +112,17 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     } else { 
         "".to_string() 
     };
+
+    let mut stage_changes = territory
+        .stage_changes
+        .iter()
+        .map(|c| format!("{}: {}", 
+            c.change_date_utc.clone(), 
+            c.stage.clone().unwrap_or_default()))
+        .collect::<Vec<_>>();
+   
+    stage_changes.sort();
+    let stage_changes_string = stage_changes.join(",");
 
     let active = territory.addresses_active;
     let total = territory.addresses_total;
@@ -155,6 +139,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             <!--br/><span>{status}</span-->
             <br/>Visited: {visited}/{active}            
             {stage_html}
+            <br/><span>Changes: {stage_changes_string}</span>
             {assignee_line}<br/>
             {open_button_html}
             {assign_button_html}
