@@ -382,6 +382,20 @@ impl Component for Model {
             })
         };
 
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let as_of_date_clear_onclick = {
+            Callback::from(move |_event: MouseEvent| {
+                let query = MapSearchQuery {
+                    search: query_clone.search.clone(),
+                    mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
+                    as_of_date: Some("".to_string()),
+                };
+
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            })
+        };
+
         let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();  
         let search_text = ctx.search_query().search.clone().unwrap_or_default();  
         let count = self.tpolygons.len();
@@ -399,16 +413,29 @@ impl Component for Model {
                                 <div class="container pt-2 ps-4">
                                 //<div class="row">
                                 <div class="row row-cols-auto">
-                                <div class="col px-1">
-                                    <button 
-                                            id="menu-button"
-                                            onclick={menu_button_onclick}
-                                            class="btn btn-outline-primary">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                                                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                                            </svg>
-                                        </button>
-                                </div>
+                                if self.show_menu != MapMenu::Menu {
+                                    <div class="col px-1">
+                                        <button 
+                                                id="menu-button"
+                                                onclick={menu_button_onclick}
+                                                class="btn btn-outline-primary">
+                               
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                                                </svg>    
+
+                               
+                                                    // <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                                    //     <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                                                    // </svg>
+                                                // } else {
+                                                //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                                //         <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                                                //     </svg>
+                                                // }
+                                            </button>
+                                    </div>
+                                }
                                 <div class="col px-1">
                                     //<div class="input-group">
                                        
@@ -431,6 +458,14 @@ impl Component for Model {
                                                     class="form-control"
                                                     placeholder="As of Date"  />
                                                 <button 
+                                                    id="clear-as-of-date-button"
+                                                    onclick={as_of_date_clear_onclick} 
+                                                    class="btn btn-outline-primary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                                    </svg>
+                                                </button>                                                    
+                                                <button 
                                                     id="date-forward-button"
                                                     onclick={asof_forward_click}
                                                     class="btn btn-outline-primary">
@@ -444,21 +479,42 @@ impl Component for Model {
                                                 href="/"
                                                 id="home-menu-button"
                                                 class="btn btn-outline-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
-                                                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
-                                                </svg>                                                
+                                                // <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                                                //     <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                                                // </svg>   
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-90deg-up" viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd" d="M4.854 1.146a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L4 2.707V12.5A2.5 2.5 0 0 0 6.5 15h8a.5.5 0 0 0 0-1h-8A1.5 1.5 0 0 1 5 12.5V2.707l3.146 3.147a.5.5 0 1 0 .708-.708l-4-4z"/>
+                                                </svg>                                             
                                             </a>
                                              <button 
                                                 id="search-menu-button"
                                                 onclick={search_menu_onclick}
-                                                class="btn btn-outline-primary">
-                                                {"Search"}
+                                                class="btn btn-outline-primary position-relative">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                                </svg>                                                
+                                               // {" Search"}
+                                               if !search_text.is_empty() {
+                                                    <span class="position-absolute bottom-0 start-50 translate-middle-x p-1 bg-success border border-light rounded-circle"/> 
+                                                }
                                             </button>
                                             <button 
                                                 id="history-menu-button"
                                                 onclick={history_menu_onclick}
-                                                class="btn btn-outline-primary">
-                                                {"History"}
+                                                class="btn btn-outline-primary position-relative">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
+                                                    <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+                                                    <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+                                                </svg>  
+                                                if !as_of_date.is_empty() {
+                                                    <span class="position-absolute bottom-0 start-50 translate-middle-x p-1 bg-success border border-light rounded-circle"/> 
+                                                }
+                                            //                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
+                                            // <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                                            // <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+                                            // </svg>                                              
+                                                //{" History"}
                                             </button>
                                         } else {
                                             //<form onsubmit={search_text_onsubmit} id="search-form">
