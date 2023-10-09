@@ -97,12 +97,12 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
                 Open
             </a>".to_string()
         } else {
-            "<a 
+            format!("<a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
                 href='/mtk/{assignee_link_key}'>
                 Open
-            </a>".to_string()
+            </a>")
         }
     } else { 
         "".to_string()

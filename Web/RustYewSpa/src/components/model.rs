@@ -3,9 +3,12 @@ use crate::components::{
     model_functions::*,
     map_component_functions::{
         TerritoryPolygon,
-        tpoly_from_territory_w_button},
+        tpoly_from_territory_w_button,
+        stage_color,
+        stage_as_of_date,
+    },
 };
-use crate::components::menu_bar_v2::MenuBarV2;
+//use crate::components::menu_bar_v2::MenuBarV2;
 use crate::Route;
 
 use chrono::{NaiveDate,Duration};
@@ -20,9 +23,16 @@ use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
-    Search(String),
+    Search(String, String),
     RefreshFromSearchText(), // Search what's already downloaded
-    ToggleMenu(i32),
+    ToggleMenu(MapMenu),
+}
+
+#[derive(PartialEq, Clone, Copy)]
+pub enum MapMenu {
+    Menu,
+    Search,
+    History,
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -39,7 +49,7 @@ pub struct Model {
     tpolygons: Vec<TerritoryPolygon>,
     search: String,
     search_error: String,
-    show_menu: i32,
+    show_menu: MapMenu,
     last_mtk: Option<String>,
 }
 
@@ -81,15 +91,17 @@ impl Component for Model {
             search_error: "".to_string(),
             tpolygons: vec![],
             last_mtk: None,
-            show_menu: 0,
+            show_menu: MapMenu::Search,
         }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::LoadBordersPath(map_model, mtk, search) => {
+                log!(format!("model::Msg::LoadBordersPath(mtk: {}, search: {})", mtk.clone(), search.clone()));
                 self.territory_map = map_model.clone();
                 self.last_mtk = Some(mtk); // TODO: Do I need this?
+                let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -109,10 +121,11 @@ impl Component for Model {
 
                     self.search = _description_contains.clone();
                 }
-                ctx.link().send_message(Msg::Search(search.clone()));
+                ctx.link().send_message(Msg::Search(search.clone(), as_of_date.clone()));
                 true
             },
-            Msg::Search(search) => {
+            Msg::Search(search, as_of_date) => {
+                log!(format!("model::Msg::Search(search: {}, as_of_date: {})", search.clone(), as_of_date.clone()));
                 self.search = search;
                 
                 let search: String = self.search.trim().to_string();
@@ -158,7 +171,8 @@ impl Component for Model {
                             && t.group_id != Some("outer".to_string())
                             && t.number.as_str() != "OUTER")
                         {
-                        let tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
+                        let mut tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
+                        tp.color = stage_color(stage_as_of_date(t, as_of_date.clone()).as_str());
                         tpolygons.push(tp);
                     } 
                 }
@@ -177,9 +191,15 @@ impl Component for Model {
                     }
                 }
 
+                if !as_of_date.is_empty() {
+                    //self.show_menu = MapMenu::History;
+                    ctx.link().clone().send_message(Msg::ToggleMenu(MapMenu::History));
+                }
+
                 true
             },
             Msg::RefreshFromSearchText() => {
+                log!("RefreshFromSearchText called");
                 let search_text = ctx.search_query().search.clone().unwrap_or_default();  
                 let mtk = if ctx.search_query().mtk.clone().unwrap_or_default().is_empty() 
                     && ctx.props().mtk.clone().unwrap_or_default().is_empty() {
@@ -189,7 +209,9 @@ impl Component for Model {
                 } else {
                     ctx.props().mtk.clone().unwrap_or_default()
                 };
+
                 let as_of_date = ctx.search_query().as_of_date.clone();
+                self.show_menu = if !as_of_date.clone().unwrap_or_default().is_empty() { MapMenu::History } else { self.show_menu };
 
                 // This one is weird because all the territories are preloaded and searchable                
                 if self.last_mtk != Some(mtk.to_string()) {
@@ -197,19 +219,19 @@ impl Component for Model {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_mtk(
                                 &mtk.to_string(), 
-                                as_of_date).await, 
+                                as_of_date.clone()).await, 
                             mtk.to_string(), 
                             search_text.clone())
                     });
                 } else {
                     ctx.link().send_future(async move {
-                        Msg::Search(search_text.clone())
+                        Msg::Search(search_text.clone(), as_of_date.clone().unwrap_or_default())
                     });                    
                 }
                 false
             },
-            Msg::ToggleMenu(menu_index) => {
-                self.show_menu = menu_index;
+            Msg::ToggleMenu(menu) => {
+                self.show_menu = menu;
                 true
             }          
         }
@@ -236,10 +258,10 @@ impl Component for Model {
         let link = ctx.link().clone(); 
         let menu_button_onclick = {
             Callback::from(move |_event: MouseEvent| {
-                if show_menu == 1 {
-                    link.send_message(Msg::ToggleMenu(0));
+                if show_menu == MapMenu::Menu {
+                    link.send_message(Msg::ToggleMenu(MapMenu::Search));
                 } else {
-                    link.send_message(Msg::ToggleMenu(1));
+                    link.send_message(Msg::ToggleMenu(MapMenu::Menu));
                 }
             })
         };
@@ -247,14 +269,14 @@ impl Component for Model {
         let link = ctx.link().clone(); 
         let search_menu_onclick = {
             Callback::from(move |_event: MouseEvent| {
-                link.send_message(Msg::ToggleMenu(0));
+                link.send_message(Msg::ToggleMenu(MapMenu::Search));
             })
         };
 
         let link = ctx.link().clone(); 
         let history_menu_onclick = {
             Callback::from(move |_event: MouseEvent| {
-                link.send_message(Msg::ToggleMenu(2));
+                link.send_message(Msg::ToggleMenu(MapMenu::History));
             })
         };
 
@@ -290,8 +312,6 @@ impl Component for Model {
                                 
                 let next_day = next_day_result.clone().unwrap();
                 let day_after = next_day - Duration::days(1);
-                log!(format!("Day After: {}", day_after.clone().format("%Y-%m-%d")));
-                        
                 let query = MapSearchQuery {
                     mtk: query_clone.mtk.clone(),
                     search: query_clone.search.clone(),
@@ -306,37 +326,23 @@ impl Component for Model {
         let query_clone = ctx.search_query().clone();
         let asof_forward_click = {
             Callback::from(move |_event: MouseEvent| {
-                
-                log!(format!("Parsing Date: '{}'", query_clone.as_of_date.clone().unwrap_or_default()));
-                
                 let next_day_result 
                     = NaiveDate::parse_from_str(
                         query_clone.as_of_date.clone().unwrap_or_default().as_str(),
-                        //"2023-09-05",
                         "%Y-%m-%d");
                                 
                 let next_day = next_day_result.clone().unwrap();
                 let day_after = next_day + Duration::days(1);
-                log!(format!("Day After: {}", day_after.clone().format("%Y-%m-%d")));
-                // match next_day_result {
-                //     Ok(dt) => dt.clone(),
-                //     Err(_) => panic!("bad date")
-                // };
-                        
                 let query = MapSearchQuery {
                     mtk: query_clone.mtk.clone(), //Some(mtk.clone()),
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
                 };
 
-                //log!(format!("AdOfDateChanged to : {}", value.clone()));
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
         };
 
-        let search_text_onsubmit = Callback::from(move |event: SubmitEvent| {
-            event.prevent_default(); // Keep this here to prevent 2 searches
-        });
 
         let navigator = ctx.link().navigator().unwrap();
         // let mtk = ctx.search_query().mtk.clone().unwrap_or_default();  
@@ -382,16 +388,19 @@ impl Component for Model {
 
         html! {
            <div style="background-color:yellow;height:100%;">
-            <div id="menu-bar-header" style="height:57px;background-color:white;">
-                    <MenuBarV2>
-                        <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
+                <div id="menu-bar-header" style="height:57px;background-color:white;">
+                                    //<form onsubmit={search_text_onsubmit} id="search-form">
+                    //<MenuBarV2>
+                        //<ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
                             // <li class="nav-item">
                             //     <TerritorySearchLink />
                             // </li>
-                            <li class="nav-item">
-                                <div class="d-flex flex-column">
-                                    <div class="input-group">
-                                        <button 
+                            //<li class="nav-item">
+                                <div class="container pt-2 ps-4">
+                                //<div class="row">
+                                <div class="row row-cols-auto">
+                                <div class="col px-1">
+                                    <button 
                                             id="menu-button"
                                             onclick={menu_button_onclick}
                                             class="btn btn-outline-primary">
@@ -399,32 +408,46 @@ impl Component for Model {
                                                 <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                                             </svg>
                                         </button>
-                                        if self.show_menu == 2 {
-                                             <button 
-                                                id="date-back-button"
-                                                onclick={asof_back_click}
+                                </div>
+                                <div class="col px-1">
+                                    //<div class="input-group">
+                                       
+                                        if self.show_menu == MapMenu::History {
+                                            <div class="input-group">
+                                                <button 
+                                                    id="date-back-button"
+                                                    onclick={asof_back_click}
+                                                    class="btn btn-outline-primary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                                                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z"/>
+                                                    </svg>
+                                                </button>
+                                                <input 
+                                                    id="asof-text-box"
+                                                    style="max-width:130px;"
+                                                    onchange={asof_text_onchange}
+                                                    value={as_of_date.clone()}
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="As of Date"  />
+                                                <button 
+                                                    id="date-forward-button"
+                                                    onclick={asof_forward_click}
+                                                    class="btn btn-outline-primary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                                                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        } else if self.show_menu == MapMenu::Menu {
+                                            <a 
+                                                href="/"
+                                                id="home-menu-button"
                                                 class="btn btn-outline-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                                                    <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z"/>
-                                                </svg>
-                                            </button>
-                                            <input 
-                                                id="asof-text-box"
-                                                style="max-width:130px;"
-                                                onchange={asof_text_onchange}
-                                                value={as_of_date.clone()}
-                                                type="text"
-                                                class="form-control"
-                                                placeholder="As of Date"  />
-                                            <button 
-                                                id="date-forward-button"
-                                                onclick={asof_forward_click}
-                                                class="btn btn-outline-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                                                    <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"/>
-                                                </svg>
-                                            </button>
-                                        } else if self.show_menu == 1 {
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                                                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+                                                </svg>                                                
+                                            </a>
                                              <button 
                                                 id="search-menu-button"
                                                 onclick={search_menu_onclick}
@@ -438,47 +461,65 @@ impl Component for Model {
                                                 {"History"}
                                             </button>
                                         } else {
-                                            <form onsubmit={search_text_onsubmit} id="search-form" style="max-width:150px;">
+                                            //<form onsubmit={search_text_onsubmit} id="search-form">
+                                            <div class="input-group">
                                                 <input 
                                                     id="search-text-box"
                                                     onchange={search_text_onchange}
                                                     value={search_text}
                                                     type="text"
                                                     class="form-control"
+                                                    style="max-width:120px;min-width:100px;"
                                                     placeholder="Search"  />
-                                            </form>
-                                            <button 
-                                                id="clear-search-button"
-                                                onclick={search_clear_onclick} 
-                                                class="btn btn-outline-primary">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                                                </svg>
-                                            </button>
-                                            <button 
-                                                id="submit-search-button"
-                                                form="search-form" class="btn btn-primary" type="submit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                                                </svg>
-                                            </button>
+                                                //</form>
+                                                <button 
+                                                    id="clear-search-button"
+                                                    onclick={search_clear_onclick} 
+                                                    class="btn btn-outline-primary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                                    </svg>
+                                                </button>
+                                                <button 
+                                                    id="submit-search-button"
+                                                    form="search-form" class="btn btn-primary" type="submit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                             // <span>{"  Mouse: "}{mouse_click_model.mouse_click_x}{","}{mouse_click_model.mouse_click_y}</span>
                                             // <span>{"  LatLng: "}{format!("{:.4},{:.4}",latLng.lat(),latLng.lng())}</span>                                    
-                                            <span id="search-result-summary" class="p-2 flex-grow-3 ">
-                                                {count}
-                                                {
-                                                    if !self.search_error.clone().is_empty() {
-                                                        html! {<span style="padding-left:5px;color:red;">{self.search_error.clone()}</span>}
-                                                    } else { html!{}}
-                                                }
-                                            </span>
+                                          
+                                            // <span id="search-result-summary" class="p-2 flex-grow-3 ">
+                                            //     {count}                                 
+                                            // </span>
+                                            
                                         }
-                                    </div>    
-                                  
+                                    </div>
+                                    <div class="col px-1 pt-2">
+                                        <span id="search-result-summary" class="py-2 flex-grow-3 ">
+                                            {count}     
+                                        </span>
+                                    </div>
+                                //</div>                            
+                                if !self.search_error.clone().is_empty() {
+                                    <div class="col px-0 pt-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-slash-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="col px-0 pt-2">
+                                        <span style="padding-left:5px;color:red;">{self.search_error.clone()}</span>
+                                    </div>
+                                } 
                                 </div>
-                            </li>
-                        </ul>
-                    </MenuBarV2>
+                                </div>
+                            //</li>
+                        //</ul>
+                    //</MenuBarV2>
+                           //</form>    
                 </div>
                 <MapComponent 
                     territory_map={&self.territory_map} 

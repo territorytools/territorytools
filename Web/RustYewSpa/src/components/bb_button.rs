@@ -32,7 +32,7 @@ pub struct Props {
 
 #[styled_component(BBButton)]
 pub fn bb_button(props: &Props) -> Html {
-    let stylesheet = Style::new(css!(
+    let _stylesheet = Style::new(css!(
         r#"
           margin-right:3px;
         "#
@@ -40,9 +40,9 @@ pub fn bb_button(props: &Props) -> Html {
     .unwrap();
 
     //let color = props.color.clone().unwrap_or_default();
-    let class = props.class.clone();
+    let _class = props.class.clone();
 
-    let onclick = {
+    let _onclick = {
         let props_onclick = props.onclick.clone();
         Callback::from(move |event: MouseEvent| {
             if let Some(props_onclick) = props_onclick.clone() {

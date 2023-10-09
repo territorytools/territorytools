@@ -1,10 +1,7 @@
-use crate::components::{
-    //bb_button::BBButton,
-};
 use crate::models::territories::Territory;
 use crate::functions::document_functions::set_document_title;
 
-use reqwasm::http::{Request};
+use reqwasm::http::Request;
 use serde::Deserialize;
 use std::ops::Deref;
 use yew::prelude::*;

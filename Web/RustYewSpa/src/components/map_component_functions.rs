@@ -1,12 +1,11 @@
 use crate::libs::leaflet::{LatLng, Polygon};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
-use crate::models::territories::Territory;
-
+use crate::models::territories::{Territory,TerritoryStageChange};
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use yew::html::ImplicitClone;
-use gloo_console::log;
+//use gloo_console::log;
 
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -215,10 +214,15 @@ pub fn stage_as_of_date(territory: &Territory, as_of_date: String) -> String {
 
     let stage = stage_changes
         .iter()
-        .filter(|c| c.change_date_utc <= as_of_date)
+        .filter(|c| as_of_date.is_empty() || c.change_date_utc <= as_of_date)
         .collect::<Vec<_>>()
         .last()
-        .unwrap().stage.clone();
+        .unwrap_or(
+            &&&TerritoryStageChange {
+                change_date_utc: "".to_string(),
+                stage_id: 1,
+                stage: Some("Error".to_string()),
+             }).stage.clone();
     
     stage.unwrap_or_default()
 }

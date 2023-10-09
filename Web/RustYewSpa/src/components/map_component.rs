@@ -21,6 +21,7 @@ use crate::components::map_component_functions::{
 use crate::components::popup_content::PopupContentOptions;
 
 use wasm_bindgen::{prelude::*, JsCast};
+use gloo_console::log;
 use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node, SvgPathElement};
 use yew::{html::ImplicitClone, prelude::*};
@@ -190,7 +191,9 @@ impl Component for MapComponent {
                             }
                         }
 
-                        //log!(format!("mc:update:MouseClick: inside:yes: self.selected.len() {}", self.selected.len()));
+                        log!(format!("mc:update:MouseClick: inside:yes: self.selected.len() {}", self.selected.len()));
+                        let selected_string = self.selected.join(",");
+                        log!(format!("selected_string: {}", selected_string.clone()));
 
                         return true;
                     } 
