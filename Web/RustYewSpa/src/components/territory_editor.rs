@@ -1,10 +1,12 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::menu_bar::{TerritorySearchLink,MapPageLink};
+use crate::components::menu_bar::MapPageLink;
 use crate::components::user_selector::UserSelector;
 use crate::models::territories::{Territory, TerritoryEditRequest};
 use crate::models::territory_links::TerritoryLinkContract;
 use crate::functions::document_functions::set_document_title;
+use crate::components::email_section::EmailSection;
+use crate::components::sms_section::SmsSection;
 
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
@@ -606,6 +608,30 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 </div>
             }
+            if assignment_result_state.success {
+                    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                        <p style="color:blue;">{"Success"}</p>
+                        <a 
+                            style="color:blue;margin-bottom:10px;"
+                            href={assignment_result_state.link_contract.territory_uri.clone()}>
+                            {assignment_result_state.link_contract.territory_uri.clone()}
+                        </a>
+                        <SmsSection
+                            territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                            assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
+                            territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                        />
+                        <EmailSection 
+                            territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                            assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
+                            territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                        />
+                    </div>
+                } else {
+                    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                        <div id="assign-failed-result" style="color:red;">{"Failed"}</div>
+                    </div>
+                }
             <div class="row g-3 pt-3">
                 <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <label for="input-stage" class="form-label">{"Stage"}</label>
