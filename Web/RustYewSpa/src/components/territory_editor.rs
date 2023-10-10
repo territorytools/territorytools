@@ -1,6 +1,6 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::menu_bar::TerritorySearchLink;
+use crate::components::menu_bar::{TerritorySearchLink,MapPageLink};
 use crate::components::user_selector::UserSelector;
 use crate::models::territories::{Territory, TerritoryEditRequest};
 use crate::models::territory_links::TerritoryLinkContract;
@@ -391,6 +391,7 @@ pub fn territory_editor_page() -> Html {
                 let mut modified_state = cloned_state.deref().clone();
                 modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
                 modified_state.territory.signed_out = link_contract.clone().created;
+                modified_state.territory.stage_id = Some(4000); // TODO: Pull this from result instead
                 cloned_state.set(modified_state);
             }
         });
@@ -438,7 +439,57 @@ pub fn territory_editor_page() -> Html {
                 let mut modified_state = cloned_state.deref().clone();
                 modified_state.territory.signed_out_to = None;
                 modified_state.territory.signed_out = None;
+                modified_state.territory.stage_id = Some(1000); // TODO: Get a value from the return body
                 cloned_state.set(modified_state);
+            }
+        });
+    });
+
+    let cloned_state = state.clone();
+    let assigner_state_clone = assigner_state.clone();
+    let assignment_result_state_clone = assignment_result_state.clone();
+    let save_stage_onclick = Callback::from(move |event: MouseEvent| { 
+        event.prevent_default();
+        
+        let cloned_state = cloned_state.clone();
+        let assigner_state_clone = assigner_state_clone.clone();
+        let assignment_result_state_clone = assignment_result_state_clone.clone();
+        let territory_id = cloned_state.territory.id.unwrap_or_default();
+        let to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
+        spawn_local(async move {
+            let _model = assigner_state_clone.clone();
+            let uri_string: String = format!("{path}?territoryId={territory_id}&stageId={to_stage_id}&assignee={assignee}", 
+                path = "/api/territory-marking/stages",
+                assignee = cloned_state.territory.signed_out_to.clone().unwrap_or_default(),
+            );
+
+            let uri: &str = uri_string.as_str();
+            let resp = Request::new(uri)
+                .method(Method::POST)
+                //.header("Content-Type", "application/json")
+                .send()
+                .await
+                .expect("A result from the endpoint");
+            
+            let result = AssignmentResult {
+                success: (resp.status() == 200),
+                load_failed: (resp.status() != 200),
+                load_failed_message: match resp.status() {
+                    405 => "Bad Method".to_string(),
+                    _ => "Error".to_string(),
+                },
+                link_contract: TerritoryLinkContract::default(),
+                status: resp.status(),
+                completed: true,
+            };
+
+            //assignment_result_state_clone.set(result);
+
+            if resp.status() == 200 {
+                // let mut modified_state = cloned_state.deref().clone();
+                // modified_state.territory.signed_out_to = None;
+                // modified_state.territory.signed_out = None;
+                // cloned_state.set(modified_state);
             }
         });
     });
@@ -456,35 +507,51 @@ pub fn territory_editor_page() -> Html {
     let _assign_uri = format!("/app/assign/{territory_number}/{description}/Current+Assignee", 
         territory_number = state.territory.number.clone(),
         description = state.territory.description.clone().unwrap_or("".to_string()));
+    
+    let link_key = state.territory.assignee_link_key.clone().unwrap_or_default();
+    let active_link = format!("/mtk/{}", state.territory.assignee_link_key.clone().unwrap_or_default());
+    let has_active_link = !link_key.is_empty();
 
     html! {
         <>
         <MenuBarV2>
             <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
                 <li class={"nav-item"}>
-                    <TerritorySearchLink />
-                </li>  
+                    <MapPageLink />
+                </li> 
             </ul>
         </MenuBarV2>
-        <div class="container">
-            <span><strong>{"委派给 Assign Territory"}</strong></span>
+        <div class="container pt-3">
+            <div class="row g-3">
+                <div class="col-12">
+                    if has_active_link {
+                        <a href={active_link} class="btn btn-outline-primary">{"Open Territory"}</a>
+                    } else {
+                        <button class="btn btn-outline-secondary">{"Cannot Open Territory"}</button>
+                    }
+                </div>
+            </div>
             <hr/>
-            
+            <div class="row g-3 pt-3">
+                <span><strong>{"委派给 Territory Assignment Status"}</strong></span>
+            </div>
+           
             // <a 
             //     style="margin-top:5px;color:white;"
             //     class="btn btn-primary btn-sm"
             //     href={assign_uri}>
             //     {"Open Territory Assign Page"}
             // </a>
-            <form onsubmit={assigner_onsubmit} class="row g-3">
+            <form onsubmit={assigner_onsubmit} class="row g-3 pt-3">
+                
                 if is_assigned {
-                    //<div class="row g-3">
                         // <div class="col">
                         //     <span class="mx-1 mb-2">{"Assigned to: "}{state.territory.signed_out_to.clone()}</span>
                         //     //<span class="mx-1">{" "}{state.territory.signed_out.clone()}</span>
                         // </div>
-                        <div class="col-9 col-sm-6 col-md-4 col-lg-3">
-                            <label class="form-label">{"Assigned to:"}</label>
+
+                        <div class="col-9 col-sm-6 col-md-6 col-lg-3">
+                            <label class="form-label">{"Assigned to"}</label>
                             <div class="input-group">
                                 <input 
                                     id="assigned-to-input" 
@@ -501,8 +568,8 @@ pub fn territory_editor_page() -> Html {
                                 </button>
                             </div>
                         </div>
-                        <div class="col-3 col-sm-6 col-md-4 col-lg-3">
-                            <label class="form-label">{"Assigned Date:"}</label>
+                        <div class="col-6 col-sm-6 col-md-3 col-lg-3">
+                            <label class="form-label">{"Assigned Date"}</label>
                             <input 
                                 id="assigned-date-input" 
                                 readonly=true 
@@ -510,15 +577,15 @@ pub fn territory_editor_page() -> Html {
                                 type="text" 
                                 class="form-control shadow-sm" />
                         </div>
-                    //</div>
+                    
                 }
 
                 <div class="col-12 col-sm-9 col-md-6">
-                    <label for="assignTo" class="form-label">{if is_assigned { "Reassign" } else { "Assign" }}</label>
+                    <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
                     <div class="input-group">
                             <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
                             <button type="submit" class={ if is_assigned { "btn btn-outline-primary" } else { "btn btn-primary"}}>
-                                {if is_assigned { "Reassign" } else { "Assign" }}
+                                {if is_assigned { "Reassign to" } else { "Assign to" }}
                             </button>
                     </div>
                 </div>
@@ -532,8 +599,41 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 </div>
             }
+            <div class="row g-3 pt-3">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                    <label for="input-stage" class="form-label">{"Stage"}</label>
+                    // TODO: Load this dynamically, it has already changed
+                    <div class="input-group">
+                        <select 
+                            id="input-stage" 
+                            onchange={stage_id_onchange} 
+                            class="form-select shadow-sm">
+                            <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={2100} english="Letter: Sent" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4000} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4005} english="Door-to-Door: Visiting Started" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4010} english="Door-to-Door: Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4020} english="Door-to-Door: Visiting Done" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4100} english="Reserved: Done" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={5000} english="Reserved: Cooling Off" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
+                        </select>
+                        <button 
+                            onclick={save_stage_onclick}
+                            class="btn btn-outline-primary">
+                            {"Save"}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <hr/>
-            <span><strong>{"Edit Territory"}</strong></span>
+            <span><strong>{"Edit Territory Details"}</strong></span>
             if state.save_success { 
                 <span class="mx-1 badge bg-success">{"Saved"}</span> 
             }
@@ -545,8 +645,7 @@ pub fn territory_editor_page() -> Html {
                 <span class="mx-1 badge bg-danger">{"Error"}</span> 
                 <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
             }        
-            <hr/>
-            <form {onsubmit} class="row g-3">
+            <form {onsubmit} class="row g-3 pt-3">
                 // <div class="col-12 col-sm-6 col-md-4">
                 //     <label for="input-status" class="form-label">{"Status"}</label>
                 //     <select onchange={status_onchange} id="input-status" class="form-select shadow-sm">
@@ -568,31 +667,7 @@ pub fn territory_editor_page() -> Html {
                 <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                     <label for="input-group-id" class="form-label">{"Group ID"}</label>
                     <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <label for="input-stage" class="form-label">{"Stage"}</label>
-                    // TODO: Load this dynamically, it has already changed
-                    <select 
-                        id="input-stage" 
-                        onchange={stage_id_onchange} 
-                        class="form-select shadow-sm">
-                        <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={2100} english="Letter: Sent" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4000} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4005} english="Door-to-Door: Visiting Started" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4010} english="Door-to-Door: Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4020} english="Door-to-Door: Visiting Done" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={4100} english="Reserved: Done" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={5000} english="Reserved: Cooling Off" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
-                        <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
-                    </select>
-                </div>
+                </div>                
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 // NOT DONE YET
                 //<label for="input-status" class="form-label">{"Status"}</label>
@@ -621,7 +696,7 @@ pub fn territory_editor_page() -> Html {
                 </div>
 
                 <div class="col-12">
-                    <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
+                    <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save Details"}</button>
                     <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
                     if state.save_success { 
                         <span class="mx-1 badge bg-success">{"Saved"}</span> 

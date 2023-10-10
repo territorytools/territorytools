@@ -50,10 +50,10 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             format!("<br/><a 
                 style='margin-top:5px;color:white;'
                 class='btn btn-primary btn-sm'
-                href='/app/assign/{territory_number}/{description}/Current+Assignee'>
+                href='/app/territory-edit?id={id}'>
                 Assign
                 </a>",
-                territory_number = territory.number,
+                id = territory.id.unwrap_or_default(),
             )
         } else { 
             "".to_string()
