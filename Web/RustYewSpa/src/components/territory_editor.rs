@@ -343,20 +343,20 @@ pub fn territory_editor_page() -> Html {
     
    
     let cloned_state = state.clone();
-    let assigner_state = assigner_state.clone();
+    let assigner_state_clone = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
     let assigner_onsubmit = Callback::from(move |event: SubmitEvent| { 
         event.prevent_default();
         
         let cloned_state = cloned_state.clone();
-        let assigner_state = assigner_state.clone();
+        let assigner_state_clone = assigner_state_clone.clone();
         let assignment_result_state_clone = assignment_result_state_clone.clone();
         spawn_local(async move {
-            let _model = assigner_state.clone();
+            let _model = assigner_state_clone.clone();
             let uri_string: String = format!("{path}?territoryNumber={number}&assignee={assignee}&assigner=check-session", 
                 path = "/api/territory-assignment/assignments",
                 number = cloned_state.territory.number.clone(),
-                assignee = assigner_state.assignee.clone()
+                assignee = assigner_state_clone.assignee.clone()
             );
 
             let uri: &str = uri_string.as_str();
@@ -390,10 +390,65 @@ pub fn territory_editor_page() -> Html {
             if resp.status() == 200 {
                 let mut modified_state = cloned_state.deref().clone();
                 modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
+                modified_state.territory.signed_out = link_contract.clone().created;
                 cloned_state.set(modified_state);
             }
         });
     });
+   
+    let cloned_state = state.clone();
+    let assigner_state_clone = assigner_state.clone();
+    let assignment_result_state_clone = assignment_result_state.clone();
+    let unassign_onclick = Callback::from(move |event: MouseEvent| { 
+        event.prevent_default();
+        
+        let cloned_state = cloned_state.clone();
+        let assigner_state_clone = assigner_state_clone.clone();
+        let assignment_result_state_clone = assignment_result_state_clone.clone();
+        spawn_local(async move {
+            let _model = assigner_state_clone.clone();
+            let uri_string: String = format!("{path}?territoryNumber={number}&assignerEmail=check-session", 
+                path = "/api/territory-assignment/assignments",
+                number = cloned_state.territory.number.clone()
+            );
+
+            let uri: &str = uri_string.as_str();
+            let resp = Request::new(uri)
+                .method(Method::DELETE)
+                .header("Content-Type", "application/json")
+                .send()
+                .await
+                .expect("A result from the endpoint");
+            
+            let result = AssignmentResult {
+                success: (resp.status() == 200),
+                load_failed: (resp.status() != 200),
+                load_failed_message: match resp.status() {
+                    405 => "Bad Method".to_string(),
+                    _ => "Error".to_string(),
+                },
+                link_contract: TerritoryLinkContract::default(),
+                status: resp.status(),
+                completed: true,
+            };
+
+            assignment_result_state_clone.set(result);
+
+            if resp.status() == 200 {
+                let mut modified_state = cloned_state.deref().clone();
+                modified_state.territory.signed_out_to = None;
+                modified_state.territory.signed_out = None;
+                cloned_state.set(modified_state);
+            }
+        });
+    });
+
+    let full_signed_out = state.territory.signed_out.clone().unwrap_or_default();
+    let signed_out_date = if full_signed_out.is_empty() || full_signed_out.len() < 10 { 
+        "".to_string() 
+    } else {
+        full_signed_out.clone().chars().take(10).collect::<String>()
+    };
 
     let _assignment_result_state = assignment_result_state.clone();
     let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
@@ -428,15 +483,32 @@ pub fn territory_editor_page() -> Html {
                         //     <span class="mx-1 mb-2">{"Assigned to: "}{state.territory.signed_out_to.clone()}</span>
                         //     //<span class="mx-1">{" "}{state.territory.signed_out.clone()}</span>
                         // </div>
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                            <label for="alreadyAssignedTo" class="form-label">{"Assigned to:"}</label>
+                        <div class="col-9 col-sm-6 col-md-4 col-lg-3">
+                            <label class="form-label">{"Assigned to:"}</label>
+                            <div class="input-group">
+                                <input 
+                                    id="assigned-to-input" 
+                                    readonly=true 
+                                    value={state.territory.signed_out_to.clone()} 
+                                    type="text" 
+                                    class="form-control shadow-sm" />
+                                <button 
+                                    id="unassign-button" 
+                                    class="btn btn-outline-primary"
+                                    onclick={unassign_onclick}
+                                    >
+                                    {"Unassign"}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-3 col-sm-6 col-md-4 col-lg-3">
+                            <label class="form-label">{"Assigned Date:"}</label>
                             <input 
-                                id="assigned-to-input" 
+                                id="assigned-date-input" 
                                 readonly=true 
-                                value={state.territory.signed_out_to.clone()} 
+                                value={signed_out_date.clone()} 
                                 type="text" 
-                                class="form-control shadow-sm" 
-                                placeholder="Assigned to..."/>
+                                class="form-control shadow-sm" />
                         </div>
                     //</div>
                 }
