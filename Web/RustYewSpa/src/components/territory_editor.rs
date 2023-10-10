@@ -533,6 +533,11 @@ pub fn territory_editor_page() -> Html {
             </div>
             <hr/>
             <div class="row g-3 pt-3">
+                <div class="col-12">
+                    <ButtonWithConfirm button_text="Test" />
+                </div>
+            </div>
+            <div class="row g-3 pt-3">
                 <span><strong>{"委派给 Territory Assignment Status"}</strong></span>
             </div>
            
@@ -746,5 +751,54 @@ pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
         <option value={props.id.to_string()} selected={props.id == props.selected}>
             {props.chinese.clone()}{" "}{props.english.clone()}
         </option>
+    }
+}
+
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+pub struct ButtonWithConfirmModel {
+    pub is_confirming: bool,
+}
+
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct ButtonWithConfirmProps {
+    pub button_text: String,
+}
+
+#[function_component]
+pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
+    let state: yew::UseStateHandle<ButtonWithConfirmModel> = use_state(|| ButtonWithConfirmModel::default());
+    let cloned_state = state.clone();
+    let action_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let cloned_state = cloned_state.clone();
+        let mut modification = cloned_state.deref().clone();
+        modification.is_confirming = true;
+        cloned_state.set(modification);
+    });
+
+    html! {
+     if state.is_confirming {
+            <span class="px-3">{"Are you sure?"}</span>
+            <button 
+                id="confirm-button"
+                //onclick={confirm_onclick} 
+                class="me-1 btn btn-success shadow-sm">
+                {"Yes"}
+            </button>
+            <button 
+                id="cancel-button"
+                //onclick={cancel_onclick} 
+                class="me-1 btn btn-outline-secondary shadow-sm">
+                {"Cancel"}
+            </button>
+        } else {
+            <button 
+                id="action-button"
+                onclick={action_onclick} 
+                class="me-1 btn btn-primary shadow-sm">
+                {props.button_text.clone()}
+            </button>
+        }
     }
 }
