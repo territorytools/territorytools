@@ -1,21 +1,17 @@
 use crate::models::users::User;
-use wasm_bindgen::JsCast;
 use reqwasm::http::Request;
-use yew::prelude::*;
+use wasm_bindgen::JsCast;
 use web_sys::HtmlSelectElement;
+use yew::prelude::*;
 
-// Uncomment for debugging without an API server
-//const DATA_USERS_API_PATH: &str = "/data/users.json";
-
-const DATA_USERS_API_PATH: &str = "/api/users?active=true";
-
-
-#[derive(Properties, Clone, PartialEq)]
+#[derive(Properties, Default, Clone, PartialEq)]
 pub struct Props {
     // pub data_test: String,
     pub id: String,
     // pub label: String,
     // pub options: Vec<SelectOption>,
+    #[prop_or_default]
+    pub email_as_value: bool,
     pub onchange: Callback<String>,
 }
 
@@ -29,7 +25,7 @@ pub fn user_selector(props: &Props) -> Html {
         use_effect_with((), move |_| {
             let users = users.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let uri: &str = DATA_USERS_API_PATH;
+                let uri: &str = "/api/users?active=true";
 
                 let fetched_users: Vec<User> = Request::get(uri)
                     .send()
@@ -76,13 +72,16 @@ pub fn user_selector(props: &Props) -> Html {
                             None => "".to_string()
                         }
                     };
-                    let alba_user_id: String = {
-                        match user.alba_user_id {
-                            Some(_) => user.alba_user_id.clone().unwrap(),
-                            None => "".to_string()
-                        }
-                    };  
-                    html!{<option value={alba_user_id.to_string()}>{user_full_name}</option>}
+                    
+                    let value = if props.email_as_value {
+                        user.normalized_email.clone().unwrap_or_default()
+                    }  else {
+                        user.alba_user_id.clone().unwrap_or_default()
+                    };
+
+                    html!{
+                        <option value={value}>{user_full_name}</option>
+                    }
                 }).collect::<Html>()
             }
         </select>
