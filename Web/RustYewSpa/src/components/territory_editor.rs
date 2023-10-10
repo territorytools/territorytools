@@ -400,8 +400,9 @@ pub fn territory_editor_page() -> Html {
     let cloned_state = state.clone();
     let assigner_state_clone = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
-    let unassign_onclick = Callback::from(move |event: MouseEvent| { 
-        event.prevent_default();
+    //let unassign_onclick = Callback::from(move |event: MouseEvent| { 
+    let unassign_onclick = Callback::from(move |_| { 
+        //event.prevent_default();
         
         let cloned_state = cloned_state.clone();
         let assigner_state_clone = assigner_state_clone.clone();
@@ -534,7 +535,7 @@ pub fn territory_editor_page() -> Html {
             <hr/>
             <div class="row g-3 pt-3">
                 <div class="col-12">
-                    <ButtonWithConfirm button_text="Test" />
+                    <ButtonWithConfirm id="test-button" button_text="Test" on_confirm={unassign_onclick.clone()} />
                 </div>
             </div>
             <div class="row g-3 pt-3">
@@ -564,13 +565,14 @@ pub fn territory_editor_page() -> Html {
                                     value={state.territory.signed_out_to.clone()} 
                                     type="text" 
                                     class="form-control shadow-sm" />
-                                <button 
-                                    id="unassign-button" 
-                                    class="btn btn-outline-primary"
-                                    onclick={unassign_onclick}
-                                    >
-                                    {"Unassign"}
-                                </button>
+                                // <button 
+                                //     id="unassign-button" 
+                                //     class="btn btn-outline-primary"
+                                //     onclick={unassign_onclick.clone()}
+                                //     >
+                                //     {"Unassign"}
+                                // </button>
+                                <ButtonWithConfirm id="unassign-button" button_text="Unassign" on_confirm={unassign_onclick.clone()} />
                             </div>
                         </div>
                         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
@@ -762,43 +764,63 @@ pub struct ButtonWithConfirmModel {
 
 #[derive(Properties, PartialEq, Clone, Default)]
 pub struct ButtonWithConfirmProps {
+    pub id: String,
     pub button_text: String,
+    pub on_confirm: Callback<MouseEvent>,
 }
 
 #[function_component]
 pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
     let state: yew::UseStateHandle<ButtonWithConfirmModel> = use_state(|| ButtonWithConfirmModel::default());
+
     let cloned_state = state.clone();
-    let action_onclick = Callback::from(move |event: MouseEvent| {
-        event.prevent_default();
-        let cloned_state = cloned_state.clone();
+    let action_onclick = Callback::from(move |_: MouseEvent| {
+        log!("click main button");
+        //event.prevent_default();
+        //let cloned_state = cloned_state.clone();
         let mut modification = cloned_state.deref().clone();
         modification.is_confirming = true;
         cloned_state.set(modification);
     });
 
+    let cloned_state = state.clone();
+    let cancel_onclick = Callback::from(move |_: MouseEvent| {
+        log!("click cancel button");
+        //event.prevent_default();
+        //let cloned_state = cloned_state.clone();
+        let mut modification = cloned_state.deref().clone();
+        modification.is_confirming = false;
+        cloned_state.set(modification);
+    });
+
+    let confirm_button_id = format!("{}-confirm", props.id.clone());
+    let cancel_button_id = format!("{}-cancel", props.id.clone());
+
     html! {
-     if state.is_confirming {
+    <>
+       if state.is_confirming {
             <span class="px-3">{"Are you sure?"}</span>
             <button 
-                id="confirm-button"
-                //onclick={confirm_onclick} 
+                id={confirm_button_id}
+                onclick={props.on_confirm.clone()} 
                 class="me-1 btn btn-success shadow-sm">
                 {"Yes"}
             </button>
             <button 
-                id="cancel-button"
-                //onclick={cancel_onclick} 
+                id={cancel_button_id}
+                onclick={cancel_onclick} 
                 class="me-1 btn btn-outline-secondary shadow-sm">
                 {"Cancel"}
             </button>
         } else {
             <button 
-                id="action-button"
+                id={props.id.clone()}
                 onclick={action_onclick} 
                 class="me-1 btn btn-primary shadow-sm">
+                // TODO: Put a call back here that sets the is_confirming back to false, and then calls the callback
                 {props.button_text.clone()}
             </button>
         }
+       </>
     }
 }
