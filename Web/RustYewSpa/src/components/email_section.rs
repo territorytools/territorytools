@@ -17,9 +17,9 @@ pub fn email_section(props: &EmailSectionProps) -> Html {
     );
 
     html! {
-        <div class={"form-group"}>
-            <label for={"email-address"}>{"Send as text message:"}</label>
-            <div class={"input-group-append"}>
+        <>
+            <label for={"email-address"}>{"Send as email message:"}</label>
+            <div class={"input-group"}>
                 <input 
                     id="assignee-email-input"
                     value={props.assignee_email.clone()} 
@@ -35,6 +35,6 @@ pub fn email_section(props: &EmailSectionProps) -> Html {
                 {"Send"}
                 </a>
             </div>
-        </div>
+        </>
     }
 }

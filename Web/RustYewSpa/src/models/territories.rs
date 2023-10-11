@@ -33,6 +33,7 @@ pub struct Territory {
     pub address_count: i32,
     pub area_code: Option<String>,
     pub last_completed_by: Option<String>,
+    pub last_completed: Option<String>,
     pub signed_out_to: Option<String>,
     pub signed_out: Option<String>,
     pub assignee_link_key: Option<String>,
