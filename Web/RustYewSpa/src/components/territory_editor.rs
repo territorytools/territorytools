@@ -642,7 +642,7 @@ pub fn territory_editor_page() -> Html {
                         //     //<span class="mx-1">{" "}{state.territory.signed_out.clone()}</span>
                         // </div>
 
-                        <div class="col-9 col-sm-6 col-md-6 col-lg-3">
+                        <div class="col-9 col-sm-6 col-md-6 col-lg-4">
                             <label class="form-label">{"Assigned to"}</label>
                             <div class="input-group">
                                 <input 
