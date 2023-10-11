@@ -16,6 +16,7 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+use yew_hooks::use_clipboard;
 use yew_router::hooks::use_location;
 //use serde_json::ser::to_string;
 
@@ -78,6 +79,9 @@ pub fn territory_editor_page() -> Html {
     let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(|| TerritoryEditorModel::default());
     let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(|| TerritoryAssignerModel::default());
     let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
+    let unassignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
+    let stage_change_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
+    let clipboard = use_clipboard();
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: TerritoryEditorParameters = location.query::<TerritoryEditorParameters>().expect("An object");
@@ -342,19 +346,20 @@ pub fn territory_editor_page() -> Html {
             assigner_state.set(assigner);
         })
     };
-    
    
     let cloned_state = state.clone();
     let assigner_state_clone = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
-    let assigner_onsubmit = Callback::from(move |event: SubmitEvent| { 
-        event.prevent_default();
+    let unassignment_result_state_clone = unassignment_result_state.clone();
+    let assigner_onsubmit = Callback::from(move |_: i32| { 
+        //event.prevent_default();
         
         let cloned_state = cloned_state.clone();
         let assigner_state_clone = assigner_state_clone.clone();
         let assignment_result_state_clone = assignment_result_state_clone.clone();
+        let unassignment_result_state_clone = unassignment_result_state_clone.clone();
         spawn_local(async move {
-            let _model = assigner_state_clone.clone();
+            log!("Posting Assignment or Reassignment...");
             let uri_string: String = format!("{path}?territoryNumber={number}&assignee={assignee}&assigner=check-session", 
                 path = "/api/territory-assignment/assignments",
                 number = cloned_state.territory.number.clone(),
@@ -364,7 +369,7 @@ pub fn territory_editor_page() -> Html {
             let uri: &str = uri_string.as_str();
             let resp = Request::new(uri)
                 .method(Method::POST)
-                .header("Content-Type", "application/json")
+                //.header("Content-Type", "application/json")
                 .send()
                 .await
                 .expect("A result from the endpoint");
@@ -388,12 +393,13 @@ pub fn territory_editor_page() -> Html {
             };
 
             assignment_result_state_clone.set(result);
+            unassignment_result_state_clone.set(AssignmentResult::default());
 
             if resp.status() == 200 {
                 let mut modified_state = cloned_state.deref().clone();
                 modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
-                modified_state.territory.signed_out = link_contract.clone().created;
-                modified_state.territory.stage_id = Some(4000); // TODO: Pull this from result instead
+                modified_state.territory.signed_out = link_contract.clone().assigned_date_utc;
+                modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
                 cloned_state.set(modified_state);
             }
         });
@@ -402,6 +408,7 @@ pub fn territory_editor_page() -> Html {
     let cloned_state = state.clone();
     let assigner_state_clone = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
+    let unassignment_result_state_clone = unassignment_result_state.clone();
     //let unassign_onclick = Callback::from(move |event: MouseEvent| { 
     let unassign_onclick = Callback::from(move |_| { 
         //event.prevent_default();
@@ -409,8 +416,9 @@ pub fn territory_editor_page() -> Html {
         let cloned_state = cloned_state.clone();
         let assigner_state_clone = assigner_state_clone.clone();
         let assignment_result_state_clone = assignment_result_state_clone.clone();
+        let unassignment_result_state_clone = unassignment_result_state_clone.clone();
         spawn_local(async move {
-            let _model = assigner_state_clone.clone();
+            log!("Deleting Assignment (Unassigning)...");
             let uri_string: String = format!("{path}?territoryNumber={number}&assignerEmail=check-session", 
                 path = "/api/territory-assignment/assignments",
                 number = cloned_state.territory.number.clone()
@@ -419,7 +427,7 @@ pub fn territory_editor_page() -> Html {
             let uri: &str = uri_string.as_str();
             let resp = Request::new(uri)
                 .method(Method::DELETE)
-                .header("Content-Type", "application/json")
+                //.header("Content-Type", "application/json")
                 .send()
                 .await
                 .expect("A result from the endpoint");
@@ -436,7 +444,8 @@ pub fn territory_editor_page() -> Html {
                 completed: true,
             };
 
-            assignment_result_state_clone.set(result);
+            assignment_result_state_clone.set(AssignmentResult::default());
+            unassignment_result_state_clone.set(result);
 
             if resp.status() == 200 {
                 let mut modified_state = cloned_state.deref().clone();
@@ -451,12 +460,14 @@ pub fn territory_editor_page() -> Html {
     let cloned_state = state.clone();
     let assigner_state_clone = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
-    let save_stage_onclick = Callback::from(move |event: MouseEvent| { 
-        event.prevent_default();
+    let stage_change_result_state_clone = stage_change_result_state.clone();
+    let save_stage_onclick = Callback::from(move |_: i32| { 
+        //event.prevent_default();
         
         let cloned_state = cloned_state.clone();
         let assigner_state_clone = assigner_state_clone.clone();
-        let assignment_result_state_clone = assignment_result_state_clone.clone();
+        //let assignment_result_state_clone = assignment_result_state_clone.clone();
+        let stage_change_result_state_clone = stage_change_result_state_clone.clone();
         let territory_id = cloned_state.territory.id.unwrap_or_default();
         let to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
         spawn_local(async move {
@@ -486,7 +497,62 @@ pub fn territory_editor_page() -> Html {
                 completed: true,
             };
 
-            //assignment_result_state_clone.set(result);
+            stage_change_result_state_clone.set(result);
+
+            if resp.status() == 200 {
+                // let mut modified_state = cloned_state.deref().clone();
+                // modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
+                // modified_state.territory.signed_out = link_contract.clone().assigned_date_utc;
+                // modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
+                // modified_state.territory.last_completed_by = link_contract.clone().territory_last_completed_by;
+                // modified_state.territory.last_completed_date = link_contract.clone().territory_last_completed_date;
+                // cloned_state.set(modified_state);
+            }
+        });
+    });
+
+    let cloned_state = state.clone();
+    let assigner_state_clone = assigner_state.clone();
+    let assignment_result_state_clone = assignment_result_state.clone();
+    let stage_change_result_state_clone = stage_change_result_state.clone();
+    let confirm_complete_click = Callback::from(move |_: i32| { 
+        //event.prevent_default();
+        
+        let cloned_state = cloned_state.clone();
+        let assigner_state_clone = assigner_state_clone.clone();
+        //let assignment_result_state_clone = assignment_result_state_clone.clone();
+        let stage_change_result_state_clone = stage_change_result_state_clone.clone();
+        let territory_id = cloned_state.territory.id.unwrap_or_default();
+        let to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
+        spawn_local(async move {
+            /*
+            let _model = assigner_state_clone.clone();
+            let uri_string: String = format!("{path}?territoryId={territory_id}&stageId={to_stage_id}&assignee={assignee}", 
+                path = "/api/territory-marking/stages",
+                assignee = cloned_state.territory.signed_out_to.clone().unwrap_or_default(),
+            );
+
+            let uri: &str = uri_string.as_str();
+            let resp = Request::new(uri)
+                .method(Method::POST)
+                //.header("Content-Type", "application/json")
+                .send()
+                .await
+                .expect("A result from the endpoint");
+            
+            let result = AssignmentResult {
+                success: (resp.status() == 200),
+                load_failed: (resp.status() != 200),
+                load_failed_message: match resp.status() {
+                    405 => "Bad Method".to_string(),
+                    _ => "Error".to_string(),
+                },
+                link_contract: TerritoryLinkContract::default(),
+                status: resp.status(),
+                completed: true,
+            };
+
+            stage_change_result_state_clone.set(result);
 
             if resp.status() == 200 {
                 // let mut modified_state = cloned_state.deref().clone();
@@ -494,6 +560,24 @@ pub fn territory_editor_page() -> Html {
                 // modified_state.territory.signed_out = None;
                 // cloned_state.set(modified_state);
             }
+            */
+        });
+    });
+
+    let cloned_state = state.clone();
+    let clipboard_clone = clipboard.clone();
+    let copy_link_onclick = Callback::from(move |event: MouseEvent| { 
+        event.prevent_default();
+        
+        let cloned_state = cloned_state.clone();
+        let clipboard_clone = clipboard_clone.clone();
+        spawn_local(async move {
+           
+            let active_link = format!("/mtk/{}", cloned_state.territory.assignee_link_key.clone().unwrap_or_default());
+            //stage_change_result_state_clone.set(result);
+
+            clipboard_clone.write_text(active_link.to_owned());
+    
         });
     });
 
@@ -535,11 +619,11 @@ pub fn territory_editor_page() -> Html {
                 </div>
             </div>
             <hr/>
-            <div class="row g-3 pt-3">
-                <div class="col-12">
-                    <ButtonWithConfirm id="test-button" button_text="Test" on_confirm={unassign_onclick.clone()} />
-                </div>
-            </div>
+            // <div class="row g-3 pt-3">
+            //     <div class="col-12">
+            //         <ButtonWithConfirm id="test-button" button_text="Test" on_confirm={unassign_onclick.clone()} />
+            //     </div>
+            // </div>
             <div class="row g-3 pt-3">
                 <span><strong>{"委派给 Territory Assignment Status"}</strong></span>
             </div>
@@ -550,8 +634,8 @@ pub fn territory_editor_page() -> Html {
             //     href={assign_uri}>
             //     {"Open Territory Assign Page"}
             // </a>
-            <form onsubmit={assigner_onsubmit} class="row g-3 pt-3">
-                
+            //<form onsubmit={assigner_onsubmit} class="row g-3 pt-3">
+            <div class="row g-3 pt-3">    
                 if is_assigned {
                         // <div class="col">
                         //     <span class="mx-1 mb-2">{"Assigned to: "}{state.territory.signed_out_to.clone()}</span>
@@ -574,9 +658,22 @@ pub fn territory_editor_page() -> Html {
                                 //     >
                                 //     {"Unassign"}
                                 // </button>
-                                <ButtonWithConfirm id="unassign-button" button_text="Unassign" on_confirm={unassign_onclick.clone()} />
+                                <ButtonWithConfirm 
+                                    id="unassign-button" 
+                                    button_text="Unassign" 
+                                    on_confirm={unassign_onclick.clone()} 
+                                />
                             </div>
                         </div>
+                        if unassignment_result_state.load_failed { 
+                            <div class="row">
+                                <div class="col">
+                                    <span class="mx-1 badge bg-danger">{"Unassignment Error"}</span> 
+                                    <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+                                    <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                                </div>
+                            </div>
+                        } //                        
                         <div class="col-6 col-sm-6 col-md-3 col-lg-3">
                             <label class="form-label">{"Assigned Date"}</label>
                             <input 
@@ -593,45 +690,54 @@ pub fn territory_editor_page() -> Html {
                     <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
                     <div class="input-group">
                             <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
-                            <button type="submit" class={ if is_assigned { "btn btn-outline-primary" } else { "btn btn-primary"}}>
-                                {if is_assigned { "Reassign to" } else { "Assign to" }}
-                            </button>
+                            // <button type="submit" class={ if is_assigned { "btn btn-outline-primary" } else { "btn btn-primary"}}>
+                            //     {if is_assigned { "Reassign" } else { "Assign" }}
+                            // </button>
+                            <ButtonWithConfirm 
+                                id="assign-button" 
+                                button_text={if is_assigned { "Reassign" } else { "Assign" }}
+                                on_confirm={assigner_onsubmit.clone()} 
+                            />
                     </div>
                 </div>
-            </form>
+            //</form>
+            </div>
             if assignment_result_state.load_failed { 
                 <div class="row">
                     <div class="col">
-                        <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                        <span class="mx-1 badge bg-danger">{"Assignment Error"}</span> 
                         <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
                         <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
                     </div>
                 </div>
-            }
+            } //
             if assignment_result_state.success {
-                    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                        <p style="color:blue;">{"Success"}</p>
-                        <a 
-                            style="color:blue;margin-bottom:10px;"
-                            href={assignment_result_state.link_contract.territory_uri.clone()}>
-                            {assignment_result_state.link_contract.territory_uri.clone()}
-                        </a>
-                        <SmsSection
-                            territory_number={assignment_result_state.link_contract.territory_number.clone()}
-                            assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
-                            territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
-                        />
-                        <EmailSection 
-                            territory_number={assignment_result_state.link_contract.territory_number.clone()}
-                            assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
-                            territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
-                        />
-                    </div>
-                } else {
-                    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                        <div id="assign-failed-result" style="color:red;">{"Failed"}</div>
-                    </div>
-                }
+                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                    //<p style="color:blue;">{"Success"}</p>
+                    <span class="mx-1 badge bg-success">{"Success"}</span><br/>
+                    <a 
+                        style="color:blue;margin-bottom:10px;"
+                        href={assignment_result_state.link_contract.territory_uri.clone()}>
+                        {assignment_result_state.link_contract.territory_uri.clone()}
+                    </a>
+                    //<button onclick={copy_link_onclick} class="btn btn-outline-primary">{"Copy"}</button>
+                    <SmsSection
+                        territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                        assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
+                        territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                    />
+                    <EmailSection 
+                        territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                        assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
+                        territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                    />
+                </div>
+            } 
+            // else {
+            //     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+            //         <div id="assign-failed-result" style="color:red;">{"Failed"}</div>
+            //     </div>
+            // }
             <div class="row g-3 pt-3">
                 <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <label for="input-stage" class="form-label">{"Stage"}</label>
@@ -657,13 +763,43 @@ pub fn territory_editor_page() -> Html {
                             <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
                             <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
                         </select>
-                        <button 
-                            onclick={save_stage_onclick}
-                            class="btn btn-outline-primary">
-                            {"Save"}
-                        </button>
+                        // <button 
+                        //     onclick={save_stage_onclick}
+                        //     class="btn btn-outline-primary">
+                        //     {"Save"}
+                        // </button>
+                        <ButtonWithConfirm 
+                            id="unassign-button" 
+                            button_text="Save" 
+                            on_confirm={save_stage_onclick.clone()} 
+                        />
                     </div>
+                    if stage_change_result_state.success {
+                        <div class="row">
+                            <div class="col">
+                                <span class="mx-1 badge bg-success">{"Stage Change Saved"}</span> 
+                            </div>
+                        </div>
+                    }
+                    if stage_change_result_state.load_failed {
+                        <div class="row">
+                            <div class="col">
+                                <span class="mx-1 badge bg-danger">{"Stage Change Error"}</span> 
+                                <span class="mx-1" style="color:red;">{stage_change_result_state.load_failed_message.clone()}</span>
+                                <span class="mx-1 badge bg-danger">{stage_change_result_state.status.clone()}</span>
+                            </div>
+                        </div>
+                    }
                 </div>
+                // if state.territory.stage_id == Some(4020) { // Visiting Ready to Complete
+                //     <div class="col-4 col-sm-3 col-md-2 col-lg-1">
+                //         <ButtonWithConfirm 
+                //             id="confirm-completion" 
+                //             button_text="Confirm Complete"
+                //             on_confirm={confirm_complete_click.clone()}
+                //         />
+                //     </div>
+                // }
             </div>
             <hr/>
             <span><strong>{"Edit Territory Details"}</strong></span>
@@ -744,6 +880,18 @@ pub fn territory_editor_page() -> Html {
                     <span><small>{" ATID: "}{state.territory.id}</small></span>
                 </div>
             </form>
+            <div class="row g-3 pt-3">
+                <hr/>
+                <span><strong>{"History"}</strong></span>
+                <div class="col-6 col-sm-5 col-md-5">
+                    <label class="form-label">{"Last Completed By"}</label>
+                    <input readonly={true} value={state.territory.last_completed_by.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Name"/>
+                </div>
+                <div class="col-6 col-sm-5 col-md-5">
+                    <label class="form-label">{"Last Completed Date"}</label>
+                    <input readonly={true} value={state.territory.last_completed.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Date"/>
+                </div>
+            </div>
         </div>
         </>
     }
@@ -792,7 +940,7 @@ pub struct ButtonWithConfirmModel {
 pub struct ButtonWithConfirmProps {
     pub id: String,
     pub button_text: String,
-    pub on_confirm: Callback<MouseEvent>,
+    pub on_confirm: Callback<i32>,
 }
 
 #[function_component]
@@ -800,9 +948,9 @@ pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
     let state: yew::UseStateHandle<ButtonWithConfirmModel> = use_state(|| ButtonWithConfirmModel::default());
 
     let cloned_state = state.clone();
-    let action_onclick = Callback::from(move |_: MouseEvent| {
-        log!("click main button");
-        //event.prevent_default();
+    let action_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        log!("clicked main button");
         //let cloned_state = cloned_state.clone();
         let mut modification = cloned_state.deref().clone();
         modification.is_confirming = true;
@@ -810,10 +958,23 @@ pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
     });
 
     let cloned_state = state.clone();
-    let cancel_onclick = Callback::from(move |_: MouseEvent| {
-        log!("click cancel button");
-        //event.prevent_default();
+    let cancel_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        log!("clicked cancel button");
         //let cloned_state = cloned_state.clone();
+        let mut modification = cloned_state.deref().clone();
+        modification.is_confirming = false;
+        cloned_state.set(modification);
+    });
+    
+    let cloned_state = state.clone();
+    let props_clone = props.clone();
+    let confirm_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        log!("clicked confirm button");
+        
+        props_clone.on_confirm.emit(0);
+
         let mut modification = cloned_state.deref().clone();
         modification.is_confirming = false;
         cloned_state.set(modification);
@@ -825,10 +986,11 @@ pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
     html! {
     <>
        if state.is_confirming {
-            <span class="px-3">{"Are you sure?"}</span>
+            <span class="px-3 pt-2">{"Confirm:"}</span>
             <button 
                 id={confirm_button_id}
-                onclick={props.on_confirm.clone()} 
+                //onclick={props.on_confirm.clone()} 
+                onclick={confirm_onclick}
                 class="me-1 btn btn-success shadow-sm">
                 {"Yes"}
             </button>

@@ -16,9 +16,17 @@ pub struct TerritoryLinkContract
     #[serde(default)]
     pub expired: bool,
     // pub AssigneeId: String,
+    #[serde(default)]
+    pub assigned_date_utc: Option<String>,
     pub assignee_name: String,
     pub assignee_email: Option<String>,
     pub assignee_phone: Option<String>,
+    #[serde(default)]
+    pub territory_last_completed_by: Option<String>,
+    #[serde(default)]
+    pub territory_last_completed_date: Option<String>,
+    #[serde(default)]
+    pub stage_id: i32,
     // pub GroupId: String,
     pub successful: bool,
 }

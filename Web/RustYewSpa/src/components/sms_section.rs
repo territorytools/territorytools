@@ -17,9 +17,10 @@ pub fn sms_section(props: &SmsSectionProps) -> Html {
     );
 
     html! {
-        <div class={"form-group"}>
-            <label for={"sms-number"}>{"Send as email message:"}</label>
-            <div class={"input-group-append"}>
+        <>
+        //<div class={"form-group"}>
+            <label for={"sms-number"}>{"Send as test message:"}</label>
+            <div class={"input-group"}>
                 <input 
                     id="assignee-phone-input"
                     value={props.assignee_phone.clone()} 
@@ -35,6 +36,7 @@ pub fn sms_section(props: &SmsSectionProps) -> Html {
                 {"Send"}
                 </a>
             </div>
-        </div>
+        //</div>
+        </>
     }
 }
