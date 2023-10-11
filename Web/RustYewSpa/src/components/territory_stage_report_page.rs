@@ -78,10 +78,10 @@ impl Component for TerritoryReportsPage {
                     <hr/>
                     <div class="row py-1" style="border-top: 1px solid gray;">
                         <div class="col-4 col-md-2"><strong>{"Month"}</strong></div>
-                        //<div class="col-2 col-md-1"><strong>{"Visiting Done"}</strong></div>
-                        // <div class="col-2 col-md-1"><strong>{"Done"}</strong></div>
-                        // <div class="col-2 col-md-1"><strong>{"Cooling Off"}</strong></div>
-                        <div class="col-2 col-md-1"><strong>{"Completed"}</strong></div>
+                        <div class="col-2 col-md-1"><strong>{"Visiting Done"}</strong></div>
+                        <div class="col-2 col-md-1"><strong>{"Done"}</strong></div>
+                        <div class="col-2 col-md-1"><strong>{"Cooling Off"}</strong></div>
+                        //<div class="col-2 col-md-1"><strong>{"Completed"}</strong></div>
                     </div>
                     {
                         self.months.iter().map(|month| {   
@@ -91,18 +91,18 @@ impl Component for TerritoryReportsPage {
                                          <div class="col-4 col-md-2" style="font-weight:bold;">
                                              {month.month.clone()}
                                          </div>
-                                        //  <div class="col-2 col-md-1">
-                                        //      {month.visiting_done}
-                                        //  </div>
-                                        //  <div class="col-2 col-md-1">
-                                        //     {month.done}
-                                        // </div>
-                                        // <div class="col-2 col-md-1">
-                                        //     {month.cooling_off}
-                                        // </div>
-                                        <div class="col-2 col-md-1">
-                                            {month.total}
+                                         <div class="col-2 col-md-1">
+                                             {month.visiting_done}
+                                         </div>
+                                         <div class="col-2 col-md-1">
+                                            {month.done}
                                         </div>
+                                        <div class="col-2 col-md-1">
+                                            {month.cooling_off}
+                                        </div>
+                                        // <div class="col-2 col-md-1">
+                                        //     {month.total}
+                                        // </div>
                                     </div>
                                  </a>
                            }

@@ -40,7 +40,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     
     let assign_button_html = 
         if territory.status.as_str() == "Available" && status != "Completed" {
-        let description: String = match &territory.description {
+        let _description: String = match &territory.description {
             Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
             None => "(empty)".to_string()
         };
@@ -113,10 +113,10 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
         "".to_string() 
     };
 
-    let active = territory.addresses_active;
-    let total = territory.addresses_total;
-    let unvisited = territory.addresses_unvisited;
-    let visited = active-territory.addresses_unvisited;
+    let active = territory.addresses_active.unwrap_or_default();
+    let total = territory.addresses_total.unwrap_or_default();
+    let unvisited = territory.addresses_unvisited.unwrap_or_default();
+    let visited = active-unvisited;
     let status_letter = &status[..1];
 
     format!(

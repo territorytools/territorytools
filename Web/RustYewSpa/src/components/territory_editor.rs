@@ -459,7 +459,7 @@ pub fn territory_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let assigner_state_clone = assigner_state.clone();
-    let assignment_result_state_clone = assignment_result_state.clone();
+
     let stage_change_result_state_clone = stage_change_result_state.clone();
     let save_stage_onclick = Callback::from(move |_: i32| { 
         //event.prevent_default();

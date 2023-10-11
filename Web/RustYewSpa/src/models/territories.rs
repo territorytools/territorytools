@@ -47,11 +47,11 @@ pub struct Territory {
     #[serde(default)]
     pub addresses: Vec<Address>,
     #[serde(default)]
-    pub addresses_total: i32,
+    pub addresses_total: Option<i32>,
     #[serde(default)]
-    pub addresses_active: i32,
+    pub addresses_active:  Option<i32>,
     #[serde(default)]
-    pub addresses_unvisited: i32,
+    pub addresses_unvisited:  Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
