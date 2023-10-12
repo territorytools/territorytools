@@ -1,4 +1,4 @@
-use crate::libs::leaflet::{LatLng, Polygon};
+use crate::libs::leaflet::{LatLng, Polygon, Polyline};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
 use crate::models::territories::{Territory,TerritoryStageChange};
@@ -41,6 +41,19 @@ struct PolylineOptions {
     color: String,
     opacity: f32,
     path_id: String,
+    no_clip: bool,
+    fill: bool,
+    fill_color: String,
+    fill_opacity: f32,
+    interactive: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PolygonOptions {
+    color: String,
+    opacity: f32,
+    path_id: String,
 }
 
 #[derive(PartialEq, Clone, Default)]
@@ -51,6 +64,12 @@ pub struct TerritoryLatLng {
 
 impl ImplicitClone for TerritoryLatLng {}
 
+#[derive(Clone,Default,PartialEq)]
+pub enum TerritoryPolygonType {
+    #[default]
+    Filled,
+    Border,
+}
 #[derive(PartialEq, Clone, Default)]
 pub struct TerritoryPolygon {
     pub territory_id: String,
@@ -60,9 +79,69 @@ pub struct TerritoryPolygon {
     pub border: Vec<TerritoryLatLng>,
     pub popup_html: String,
     pub tooltip_text: String,
+    pub center_marker_text: String,
+    pub polygon_type: TerritoryPolygonType,
 }
 
 impl ImplicitClone for TerritoryPolygon {}
+
+pub fn polyline_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) -> Polyline {
+    let mut vertices: Vec<LatLng> = Vec::new();
+    for v in &tpoly.border {
+        vertices.push(LatLng::new(v.lat.into(), v.lon.into()));
+    }
+
+    let polyline = Polyline::new_with_options(
+        vertices.iter().map(JsValue::from).collect(),
+        &serde_wasm_bindgen::to_value(&PolylineOptions {
+            color: "yellow".to_string(), //if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+            opacity: tpoly.opacity,
+            path_id: format!("territory-id-{}", tpoly.territory_id.clone()),
+            no_clip: true,
+            fill: false,
+            fill_color: "yellow".to_string(),
+            fill_opacity: 0.0,
+            interactive: true,
+        })
+        .expect("Unable to serialize polyline options"),
+    );
+
+    // let marker_point = LatLng::new(tpoly.border[0].lat.into(), tpoly.border[0].lon.into());
+    // let marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+    //     //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+    // });
+    // let marker = Marker::new_with_options(
+    //     &marker_point, 
+    //     &serde_wasm_bindgen::to_value(&MarkerOptions {
+    //         //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
+    //     }).expect("Unable to serialize marker options")
+    // );
+    // marker.addTo(self.map);
+
+    // TODO: Don't bind this is 'select' mode
+    // if tpoly.border.len() > 2 && !tpoly.tooltip_text.is_empty() {
+    //     polyline.bindTooltip(
+    //         &JsValue::from_str(tpoly.tooltip_text.as_str()),
+    //         &serde_wasm_bindgen::to_value(&TooltipOptions {
+    //             sticky: true,
+    //             permanent: false,
+    //             opacity: 0.9,
+    //         })
+    //         .expect("Unable to serialize tooltip options"),
+    //     );
+    // }
+
+    // TODO: Don't bind this is 'select' mode
+    // if tpoly.border.len() > 2 && !tpoly.popup_html.is_empty() {
+    //     polyline.bindPopup(
+    //         &JsValue::from_str(tpoly.popup_html.as_str()),
+    //         &serde_wasm_bindgen::to_value(&PopupOptions { auto_close: true })
+    //             .expect("Unable to serialize popup options"),
+    //     );
+    // }
+
+    polyline
+}
 
 pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) -> Polygon {
     let mut vertices: Vec<LatLng> = Vec::new();
@@ -72,7 +151,7 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
 
     let poly = Polygon::new_with_options(
         vertices.iter().map(JsValue::from).collect(),
-        &serde_wasm_bindgen::to_value(&PolylineOptions {
+        &serde_wasm_bindgen::to_value(&PolygonOptions {
             color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
             opacity: tpoly.opacity,
             path_id: format!("territory-id-{}", tpoly.territory_id.clone()),
@@ -122,29 +201,37 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
 //     tpoly_from_territory_w_button(t, true, false)
 // }
 
-pub fn tpoly_from_territory_w_button(t: &Territory, options: PopupContentOptions) -> TerritoryPolygon {
+pub fn tpoly_from_territory_w_button(territory: &Territory, options: PopupContentOptions) -> TerritoryPolygon {
     let mut polygon: Vec<TerritoryLatLng> = Vec::new();
     //log!(format!("mcf: tpoly_from_territory_w_button: edit_territory_button_enabled: {edit_territory_button_enabled} territory_open_enabled:{territory_open_enabled}"));
-    for v in &t.border {
+    for v in &territory.border {
         if v.len() > 1 {
             polygon.push(TerritoryLatLng { lat: v[0], lon: v[1]});
         }
     }
 
-    let stage = stage_as_of_date(&t, options.as_of_date.clone().unwrap_or_default());
+    let stage = stage_as_of_date(&territory, options.as_of_date.clone().unwrap_or_default());
     let territory_color = stage_color(stage.clone().as_str());
    
-    let mut modified_territory = t.clone();
+    let mut modified_territory = territory.clone();
     modified_territory.stage = Some(stage.clone());
 
+    let polygon_type = if territory.group_id.clone().unwrap_or_default() == "borders" {
+        TerritoryPolygonType::Border
+    } else {
+        TerritoryPolygonType::Filled
+    };
+
     TerritoryPolygon {
-        territory_id: t.number.clone(),
+        territory_id: territory.number.clone(),
         layer_id: 0,
-        color: territory_color.into(),
-        opacity: 1.0,
+        color: territory_color,
+        opacity: 0.9,
         border: polygon,
-        tooltip_text: t.number.clone().to_string(),
+        tooltip_text: territory.number.clone().to_string(),
+        center_marker_text: territory.description.clone().unwrap_or_default(),
         popup_html: popup_content_w_button(&modified_territory, options.clone()),
+        polygon_type,
     }
 }
 
@@ -154,11 +241,13 @@ pub fn get_southwest_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
 
     for tp in tpolygons {
         for v in tp.border {
-            if south > v.lat || south == 0.0 {
-                south = v.lat;
-            }
-            if west > v.lon  || west  == 0.0 {
-                west = v.lon ;
+            if tp.polygon_type == TerritoryPolygonType::Filled {
+                if south > v.lat || south == 0.0 {
+                    south = v.lat;
+                }
+                if west > v.lon  || west  == 0.0 {
+                    west = v.lon ;
+                }
             }
         }
     }
@@ -172,11 +261,13 @@ pub fn get_northeast_corner(tpolygons: Vec<TerritoryPolygon>) -> TerritoryLatLng
 
     for tp in tpolygons {
         for v in tp.border {
-            if north < v.lat || north == 0.0 {
-                north = v.lat;
-            }          
-            if east < v.lon || east == 0.0 {
-                east = v.lon ;
+            if tp.polygon_type == TerritoryPolygonType::Filled {
+                if north < v.lat || north == 0.0 {
+                    north = v.lat;
+                }          
+                if east < v.lon || east == 0.0 {
+                    east = v.lon ;
+                }
             }
         }
     }
@@ -200,7 +291,7 @@ pub fn stage_color(stage: &str) -> String {
     } else if stage == "Available" {
         "black".to_string()
     } else {
-        "#990".to_string()
+        "#990".to_string() // ugly greenish yellow
     }
 }
 

@@ -170,6 +170,7 @@ impl Component for Model {
                             || t.signed_out_to == Some(search.clone()))
                             && t.group_id != Some("outer".to_string())
                             && t.number.as_str() != "OUTER")
+                        || t.group_id == Some("borders".to_string())
                         {
                         let mut tp = tpoly_from_territory_w_button(t, self.territory_map.popup_content_options.clone());
                         tp.color = stage_color(stage_as_of_date(t, as_of_date.clone()).as_str());

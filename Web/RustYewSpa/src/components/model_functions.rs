@@ -6,11 +6,6 @@ use gloo_net::http::QueryParams;
 use reqwasm::http::Request;
 use regex::Regex;
 
-// Uncomment for debugging without an API server
-//const DATA_API_PATH: &str = "/data/territory-borders-filtered.json";
-
-const DATA_API_PATH: &str = "/api/territories/borders-filtered";
-
 fn find_center(territories: &Vec<Territory>) -> (f64, f64) {    
     let filtered_territories = territories.iter().filter(|&t| territory_filter(t)).collect::<Vec<_>>();
     let latitude_sum: f64 = filtered_territories.iter().map(|t| find_border_center(&t.border).0).sum();
@@ -107,7 +102,7 @@ pub async fn fetch_territories_w_mtk(mtk: &str, as_of_date: &str) ->  BorderFilt
     params.append("mtk", mtk);
     params.append("asOfDate", as_of_date);
     let query_string = params.to_string();    
-    let uri: String = format!("{DATA_API_PATH}?{query_string}");
+    let uri: String = format!("/api/territories/borders-filtered?{query_string}");
     Request::get(uri.as_str())
         .send()
         .await

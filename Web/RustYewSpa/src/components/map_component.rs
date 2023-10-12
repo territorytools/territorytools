@@ -1,9 +1,9 @@
 use crate::libs::leaflet::{
-    //DivIcon,
+    DivIcon,
     LatLng, 
     LatLngBounds,
     Map,
-    //Marker,
+    Marker,
     Point,
     Polygon, 
     TileLayer, 
@@ -12,6 +12,9 @@ use crate::libs::leaflet::{
 use crate::models::territories::Territory;
 use crate::components::map_component_functions::{
     TerritoryPolygon,
+    TerritoryPolygonType,
+    MarkerOptions,
+    DivIconOptions,
     polygon_from_territory_polygon,
     get_southwest_corner,
     get_northeast_corner,
@@ -26,6 +29,8 @@ use gloo_utils::document;
 use web_sys::{Element, HtmlElement, Node, SvgPathElement};
 use yew::{html::ImplicitClone, prelude::*};
 use serde::{Deserialize, Serialize};
+
+use super::map_component_functions::polyline_from_territory_polygon;
 
 #[derive(Serialize, Deserialize)]
 struct PolylineOptions {
@@ -95,6 +100,7 @@ pub struct MapComponent {
     territory_map: MapModel,
     polygons: Vec<Polygon>,
     tpolygons: Vec<TerritoryPolygon>,
+    tpolylines: Vec<TerritoryPolygon>,
     id_list: Vec<i32>,
     layer_group: LayerGroup,
     selected: Vec<String>, // TODO: Use territory ids (ints) instead of tags
@@ -124,6 +130,7 @@ impl Component for MapComponent {
             territory_map: MapModel::default(),
             polygons: vec![],
             tpolygons: vec![],
+            tpolylines: vec![],
             id_list: vec![],
             layer_group: LayerGroup::new(),
             selected: vec![],     
@@ -176,7 +183,7 @@ impl Component for MapComponent {
                         let stage = stage_as_of_date(&territories[0], as_of_date.clone().unwrap_or_default());
                         let territory_color = stage_color(stage.as_str());
 
-                        if self.selected.contains(&tp.territory_id.clone()) {
+                        if self.selected.contains(&tp.territory_id.clone()) && tp.polygon_type == TerritoryPolygonType::Filled {
                             let index = self.selected.iter().position(|x| *x == tp.territory_id.clone()).unwrap();
                             self.selected.remove(index);
                             let _ = path.set_attribute("fill", territory_color.as_str());
@@ -184,7 +191,7 @@ impl Component for MapComponent {
                         } else {
                             self.selected.push(tp.territory_id.clone());
                             // TODO: New feature, only when selecting, no button yet
-                            if self.multi_select {
+                            if self.multi_select && tp.polygon_type == TerritoryPolygonType::Filled {
                                 let _ = path.set_attribute("fill", "black");
                                 let _ = path.set_attribute("stroke", "white");
                                 // TODO: Bring it to the front with z?
@@ -233,21 +240,37 @@ impl Component for MapComponent {
         self.polygons.clear();
         self.id_list.clear();
         self.layer_group = LayerGroup::new();
-
+        let mut border_count = 0;
+        let mut filled_count = 0;
         for tp in self.tpolygons.iter() {
             let selected: bool = self.selected.contains(&tp.tooltip_text.clone());
-            let p = polygon_from_territory_polygon(&tp, selected);
-            self.polygons.push(p); // TODO: I don't think we need this
 
-            //tp.color = "red".to_string();
-            let p = polygon_from_territory_polygon(&tp, selected);
-            p.addTo_LayerGroup(&self.layer_group);
+            if tp.polygon_type == TerritoryPolygonType::Filled {
+                filled_count += 1;
+                
+                // let p = polygon_from_territory_polygon(&tp, selected);
+                // self.polygons.push(p); // TODO: I don't think we need this
 
-            let layer_id = self.layer_group.getLayerId(&p);
-            self.id_list.push(layer_id);
+                let p = polygon_from_territory_polygon(&tp, selected);
+                p.addTo_LayerGroup(&self.layer_group);
+                
+                let layer_id = self.layer_group.getLayerId(&p);
+                
+                self.id_list.push(layer_id);
+            }
             
-            /*
-            if tp.border.len() > 0 {
+            if tp.polygon_type == TerritoryPolygonType::Border {
+                border_count += 1;
+                let p = polyline_from_territory_polygon(&tp, selected);
+                p.addTo_LayerGroup(&self.layer_group);
+                
+                let layer_id = self.layer_group.getLayerId_polyline(&p);
+                
+                self.id_list.push(layer_id);
+            }
+            
+            
+            if tp.border.len() > 0 && tp.polygon_type == TerritoryPolygonType::Border {
                 let avg_lat: f32 = tp.border.iter().map(|v| v.lat as f32).sum::<f32>() / tp.border.len() as f32;
                 let avg_lon: f32 = tp.border.iter().map(|v| v.lon as f32).sum::<f32>() / tp.border.len() as f32;
                 //let marker_point = LatLng::new(tp.border[0].lat.into(), tp.border[0].lon.into());
@@ -255,7 +278,9 @@ impl Component for MapComponent {
 
                 let icon = DivIcon::new({
                     &serde_wasm_bindgen::to_value( &DivIconOptions {
-                        html: format!("<div style='pointer-events:none;'><span style='background-color:yellow;'>{}</span></div>", &tp.tooltip_text.clone()),
+                        html: format!(
+                            "<div style='pointer-events:none;width:75px;'><span style='background-color:yellow;padding:2px;'>{}</span></div>", 
+                            &tp.center_marker_text.clone()),
                         class_name: "tt-map-marker".to_string()
                     }).expect("Unable to serialzie DivIcon options")
                 });
@@ -264,7 +289,7 @@ impl Component for MapComponent {
                     //icon: icon,
                     //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
                 });
-                let marker = Marker::new_with_options(
+                let marker: Marker = Marker::new_with_options(
                     &marker_point, 
                     &serde_wasm_bindgen::to_value(&MarkerOptions {
                         //icon: icon,
@@ -273,8 +298,11 @@ impl Component for MapComponent {
                 );
                 marker.setIcon(&icon);
                 marker.addTo(&self.map);
-            }*/
+            }
         }
+
+        log!(format!("mc:foreach:filled_count: {filled_count}"));
+        log!(format!("mc:foreach:border_count: {border_count}"));
 
         self.layer_group.addTo(&self.map);
 

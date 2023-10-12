@@ -217,7 +217,12 @@ extern "C" {
     pub fn clearLayers(this: &LayerGroup);
 
     #[wasm_bindgen(method)]
+    #[wasm_bindgen(js_name = getLayerId)]
     pub fn getLayerId(this: &LayerGroup, polygon: &Polygon) -> i32;
+    
+    #[wasm_bindgen(method)]
+    #[wasm_bindgen(js_name = getLayerId)]
+    pub fn getLayerId_polyline(this: &LayerGroup, polyline: &Polyline) -> i32;
 
     #[wasm_bindgen(method)]
     pub fn getLayer(this: &LayerGroup, id: i32) -> Layer;
