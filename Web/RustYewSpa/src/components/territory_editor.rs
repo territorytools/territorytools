@@ -865,7 +865,12 @@ pub fn territory_editor_page() -> Html {
                 </div>
 
                 <div class="col-12">
-                    <button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save Details"}</button>
+                    //<button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save Details"}</button>
+                    <ButtonWithConfirm 
+                        id="save-details-button" 
+                        button_text="Save Details" 
+                        on_confirm={save_stage_onclick.clone()} 
+                    />
                     <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
                     if state.save_success { 
                         <span class="mx-1 badge bg-success">{"Saved"}</span> 

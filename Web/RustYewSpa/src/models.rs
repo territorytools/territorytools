@@ -1,3 +1,4 @@
+pub mod areas;
 pub mod addresses;
 pub mod territories;
 pub mod territory_links;

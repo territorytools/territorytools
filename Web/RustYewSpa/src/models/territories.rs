@@ -1,4 +1,5 @@
 use crate::models::addresses::Address;
+use crate::models::areas::Area;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Clone)]
@@ -13,6 +14,7 @@ pub struct BorderFilteredResult {
     pub user_roles: Option<String>,
     pub link_grants: Option<String>,
     pub territories: Vec<Territory>,
+    pub areas: Vec<Area>,
 }
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
