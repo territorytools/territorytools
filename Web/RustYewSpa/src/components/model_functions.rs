@@ -29,7 +29,7 @@ fn territory_filter(t: &Territory) -> bool {
     t.border.len() > 2
 }
 
-pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>) -> MapModel {
+pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>, show_areas: bool) -> MapModel {
     let fetched_result: BorderFilteredResult = fetch_territories_w_mtk(
         mtk, 
         as_of_date.clone().unwrap_or_default().as_str()).await;       
@@ -77,7 +77,7 @@ pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>) ->
 
     MapModel {
         territories: fetched_result.territories.clone(),
-        areas: fetched_result.areas.clone(),
+        areas: if show_areas { fetched_result.areas.clone() } else { vec![] },
         // TODO: add search enabled
         territories_is_loaded: true,
         local_load: false,

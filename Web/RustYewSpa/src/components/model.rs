@@ -218,6 +218,7 @@ impl Component for Model {
                 };
 
                 let as_of_date = ctx.search_query().as_of_date.clone();
+                let show_areas = ctx.search_query().show_areas;
                 self.show_menu = if !as_of_date.clone().unwrap_or_default().is_empty() { MapMenu::History } else { self.show_menu };
 
                 // This one is weird because all the territories are preloaded and searchable                
@@ -226,7 +227,9 @@ impl Component for Model {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_mtk(
                                 &mtk.to_string(), 
-                                as_of_date.clone()).await, 
+                                as_of_date.clone(),
+                                show_areas
+                            ).await, 
                             mtk.to_string(), 
                             search_text.clone())
                     });
@@ -249,11 +252,12 @@ impl Component for Model {
             log!("Map not loaded after create, loading...");
             let navigator = ctx.link().navigator().unwrap();
             let mtk = ctx.search_query().mtk.clone().unwrap_or_default(); 
-            let as_of_date = ctx.search_query().as_of_date.clone();
+            let as_of_date = ctx.search_query().as_of_date.clone();            
             let query = MapSearchQuery {
                 search: Some("".to_string()),
                 mtk: Some(mtk.clone()),
                 as_of_date,
+                show_areas: ctx.search_query().show_areas,
             };
 
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -301,6 +305,7 @@ impl Component for Model {
                     mtk: query_clone.mtk.clone(), //Some(mtk.clone()),
                     search: query_clone.search.clone(),
                     as_of_date: Some(value.clone()),
+                    show_areas: query_clone.show_areas,
                 };
 
                 log!(format!("AdOfDateChanged to : {}", value.clone()));
@@ -323,6 +328,7 @@ impl Component for Model {
                     mtk: query_clone.mtk.clone(),
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
+                    show_areas: query_clone.show_areas,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -344,6 +350,7 @@ impl Component for Model {
                     mtk: query_clone.mtk.clone(), //Some(mtk.clone()),
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
+                    show_areas: query_clone.show_areas,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -367,6 +374,7 @@ impl Component for Model {
                     search: Some(value.clone()),
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: query_clone.as_of_date.clone(),
+                    show_areas: query_clone.show_areas,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -383,6 +391,7 @@ impl Component for Model {
                     search: Some("".to_string()),
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: query_clone.as_of_date.clone(),
+                    show_areas: query_clone.show_areas,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -397,6 +406,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: Some("".to_string()),
+                    show_areas: query_clone.show_areas,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -601,6 +611,7 @@ pub struct MapSearchQuery {
     pub search: Option<String>,
     pub mtk: Option<String>,
     pub as_of_date: Option<String>,
+    pub show_areas: bool,
 }
 
 pub trait SearchQuery {
