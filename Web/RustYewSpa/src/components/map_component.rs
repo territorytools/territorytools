@@ -9,6 +9,7 @@ use crate::libs::leaflet::{
     TileLayer, 
     LayerGroup
 };
+use crate::models::areas::Area;
 use crate::models::territories::Territory;
 use crate::components::map_component_functions::{
     TerritoryPolygon,
@@ -41,6 +42,7 @@ struct PolylineOptions {
 #[derive(Properties, PartialEq, Clone)]
 pub struct MapModel {
     pub territories: Vec<Territory>,
+    pub areas: Vec<Area>,
     pub territories_is_loaded: bool,
     pub local_load: bool,
     pub zoom: f64,
@@ -56,6 +58,7 @@ impl Default for MapModel {
     fn default() -> Self {
         MapModel {
             territories: vec![],
+            areas: vec![],
             territories_is_loaded: false,
             local_load: false,
             zoom: 1.0,
@@ -215,6 +218,7 @@ impl Component for MapComponent {
         let props = ctx.props();
         self.territory_map = MapModel {
             territories: props.territory_map.territories.clone(),
+            areas: props.territory_map.areas.clone(),
             territories_is_loaded: true,
             local_load: false,
             lat:  props.territory_map.lat,

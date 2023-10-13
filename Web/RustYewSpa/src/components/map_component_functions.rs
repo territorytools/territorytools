@@ -1,6 +1,7 @@
 use crate::libs::leaflet::{LatLng, Polygon, Polyline};
 use crate::components::popup_content::popup_content_w_button;
 use crate::components::popup_content::PopupContentOptions;
+use crate::models::areas::Area;
 use crate::models::territories::{Territory,TerritoryStageChange};
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -200,6 +201,40 @@ pub fn polygon_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) 
 // pub fn tpoly_from_territory(t: &Territory) -> TerritoryPolygon {
 //     tpoly_from_territory_w_button(t, true, false)
 // }
+
+pub fn tpoly_from_area_w_button(area: &Area) -> TerritoryPolygon {
+    let mut polygon: Vec<TerritoryLatLng> = Vec::new();
+    
+    for v in &area.border {
+        if v.len() > 1 {
+            polygon.push(TerritoryLatLng { lat: v[0], lon: v[1]});
+        }
+    }
+
+    //let stage = stage_as_of_date(&territory, options.as_of_date.clone().unwrap_or_default());
+    //let territory_color = stage_color(stage.clone().as_str());
+   
+    let mut modified_area = area.clone();
+    //modified_area.stage = Some(stage.clone());
+
+    // let polygon_type = if territory.group_id.clone().unwrap_or_default() == "borders" {
+    //     TerritoryPolygonType::Border
+    // } else {
+    //     TerritoryPolygonType::Filled
+    // };
+
+    TerritoryPolygon {
+        territory_id: area.number.clone(),
+        layer_id: 0,
+        color: "orange".to_string(),
+        opacity: 0.9,
+        border: polygon,
+        tooltip_text: area.number.clone().to_string(),
+        center_marker_text: area.name.clone().unwrap_or_default(),
+        popup_html: "".to_string(),
+        polygon_type: TerritoryPolygonType::Border,
+    }
+}
 
 pub fn tpoly_from_territory_w_button(territory: &Territory, options: PopupContentOptions) -> TerritoryPolygon {
     let mut polygon: Vec<TerritoryLatLng> = Vec::new();
