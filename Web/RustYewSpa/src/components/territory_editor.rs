@@ -259,8 +259,8 @@ pub fn territory_editor_page() -> Html {
     });
     
     let cloned_state = state.clone();
-    let onsubmit = Callback::from(move |event: SubmitEvent| { 
-        event.prevent_default();
+    let onsubmit = Callback::from(move |event: i32 /*SubmitEvent*/| { 
+        //event.prevent_default();
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
             log!("Spawing request for territory change...");
@@ -754,12 +754,12 @@ pub fn territory_editor_page() -> Html {
                             <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
                             <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
                             <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4000} english="Door-to-Door: Visiting" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4005} english="Door-to-Door: Visiting Started" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4010} english="Door-to-Door: Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4020} english="Door-to-Door: Visiting Done" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4100} english="Reserved: Done" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={5000} english="Reserved: Cooling Off" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4000} english="Visiting" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4005} english="Visiting Started" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4010} english="Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4020} english="Visiting Done" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={4100} english="Territory Done" chinese="" selected={selected_stage_id} />
+                            <EnglishChineseIdOption id={5000} english="Territory Cooling Off" chinese="" selected={selected_stage_id} />
                             <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
                             <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
                         </select>
@@ -814,7 +814,7 @@ pub fn territory_editor_page() -> Html {
                 <span class="mx-1 badge bg-danger">{"Error"}</span> 
                 <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
             }        
-            <form {onsubmit} class="row g-3 pt-3">
+            <div class="row g-3 pt-3">
                 // <div class="col-12 col-sm-6 col-md-4">
                 //     <label for="input-status" class="form-label">{"Status"}</label>
                 //     <select onchange={status_onchange} id="input-status" class="form-select shadow-sm">
@@ -869,7 +869,7 @@ pub fn territory_editor_page() -> Html {
                     <ButtonWithConfirm 
                         id="save-details-button" 
                         button_text="Save Details" 
-                        on_confirm={save_stage_onclick.clone()} 
+                        on_confirm={onsubmit.clone()} 
                     />
                     <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
                     if state.save_success { 
@@ -884,7 +884,7 @@ pub fn territory_editor_page() -> Html {
                     <span><small>{"TID: "}{state.territory.id}</small></span>
                     <span><small>{" ATID: "}{state.territory.id}</small></span>
                 </div>
-            </form>
+            </div>
             <div class="row g-3 pt-3">
                 <hr/>
                 <span><strong>{"History"}</strong></span>

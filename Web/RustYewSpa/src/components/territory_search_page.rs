@@ -98,7 +98,7 @@ impl Component for TerritorySearchPage {
                     var x = 1;
                     console.log(\"This is Javascript!\");
                     const myElement = document.getElementById(\"territory-title-span\");
-                    myElement.style.color = \"blue\";
+                    myElement.style.color = \"black\";
                 "}</script>
                 <MenuBarV2>
                     <ul class="navbar-nav ms-2 me-auto mb-0 mb-lg-0">
@@ -107,7 +107,7 @@ impl Component for TerritorySearchPage {
                         </li>  
                     </ul>
                 </MenuBarV2>
-                <div class="container">
+                <div class="container pt-3">
                     <span><strong id="territory-title-span">{"Territory Search"}</strong></span>
         
                     <hr/>

@@ -357,6 +357,26 @@ impl Component for Model {
             })
         };
 
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let show_areas_onchange = {
+            Callback::from(move |event: Event| {
+                let value = event
+                    .target()
+                    .expect("An input value for an HtmlInputElement")
+                    .unchecked_into::<HtmlInputElement>()
+                    .value();
+
+                let query = MapSearchQuery {
+                    search: Some(value.clone()),
+                    mtk: query_clone.mtk.clone(),
+                    as_of_date: query_clone.as_of_date.clone(),
+                    show_areas: if value == "show_areas".to_string() { true } else { false },
+                };
+
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            })
+        };
 
         let navigator = ctx.link().navigator().unwrap();
         // let mtk = ctx.search_query().mtk.clone().unwrap_or_default();  
