@@ -77,7 +77,7 @@ pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>, sh
 
     MapModel {
         territories: fetched_result.territories.clone(),
-        areas: if show_areas { fetched_result.areas.clone() } else { vec![] },
+        areas: fetched_result.areas.clone(), //if show_areas { fetched_result.areas.clone() } else { vec![] },
         // TODO: add search enabled
         territories_is_loaded: true,
         local_load: false,

@@ -23,7 +23,7 @@ use gloo_console::log;
 
 pub enum Msg {
     LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
-    Search(String, String),
+    Search(String, String, bool),
     RefreshFromSearchText(), // Search what's already downloaded
     ToggleMenu(MapMenu),
 }
@@ -33,6 +33,7 @@ pub enum MapMenu {
     Menu,
     Search,
     History,
+    Options,
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -102,6 +103,7 @@ impl Component for Model {
                 self.territory_map = map_model.clone();
                 self.last_mtk = Some(mtk); // TODO: Do I need this?
                 let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();
+                let show_areas = ctx.search_query().show_areas;
 
                 let link_grants = self.territory_map.link_grants.clone().unwrap_or("null".to_string());
 
@@ -121,10 +123,10 @@ impl Component for Model {
 
                     self.search = _description_contains.clone();
                 }
-                ctx.link().send_message(Msg::Search(search.clone(), as_of_date.clone()));
+                ctx.link().send_message(Msg::Search(search.clone(), as_of_date.clone(), show_areas));
                 true
             },
-            Msg::Search(search, as_of_date) => {
+            Msg::Search(search, as_of_date, show_areas) => {
                 log!(format!("model::Msg::Search(search: {}, as_of_date: {})", search.clone(), as_of_date.clone()));
                 self.search = search;
                 
@@ -178,10 +180,12 @@ impl Component for Model {
                     } 
                 }
 
-                for area in self.territory_map.areas.iter() {
-                    let mut tp = tpoly_from_area_w_button(area);
-                    tp.color = "orange".to_string();
-                    tpolygons.push(tp);
+                if show_areas {
+                    for area in self.territory_map.areas.iter() {
+                        let mut tp = tpoly_from_area_w_button(area);
+                        tp.color = "orange".to_string();
+                        tpolygons.push(tp);
+                    }
                 }
 
                 if !tpolygons.is_empty() {
@@ -235,7 +239,7 @@ impl Component for Model {
                     });
                 } else {
                     ctx.link().send_future(async move {
-                        Msg::Search(search_text.clone(), as_of_date.clone().unwrap_or_default())
+                        Msg::Search(search_text.clone(), as_of_date.clone().unwrap_or_default(), show_areas)
                     });                    
                 }
                 false
@@ -288,6 +292,29 @@ impl Component for Model {
         let history_menu_onclick = {
             Callback::from(move |_event: MouseEvent| {
                 link.send_message(Msg::ToggleMenu(MapMenu::History));
+            })
+        };
+        
+        let link = ctx.link().clone(); 
+        let options_menu_onclick = {
+            Callback::from(move |_event: MouseEvent| {
+                link.send_message(Msg::ToggleMenu(MapMenu::Options));
+            })
+        };
+
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let show_areas = ctx.search_query().clone().show_areas;
+        let areas_toggle_onclick = {
+            Callback::from(move |_event: MouseEvent| {
+                let query = MapSearchQuery {
+                    mtk: query_clone.mtk.clone(),
+                    search: query_clone.search.clone(),
+                    as_of_date: query_clone.as_of_date.clone(),
+                    show_areas: !show_areas,
+                };
+
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
             })
         };
 
@@ -433,6 +460,7 @@ impl Component for Model {
             })
         };
 
+        let show_areas = ctx.search_query().clone().show_areas;
         let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();  
         let search_text = ctx.search_query().search.clone().unwrap_or_default();  
         let count = self.tpolygons.len();
@@ -547,12 +575,31 @@ impl Component for Model {
                                                 if !as_of_date.is_empty() {
                                                     <span id="as-of-date-exists-notification" class="position-absolute bottom-0 start-50 translate-middle-x p-1 bg-success border border-light rounded-circle"/> 
                                                 }
-                                            //                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
-                                            // <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
-                                            // <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
-                                            // </svg>                                              
-                                                //{" History"}
-                                            </button>
+                                             </button>
+                                             <button 
+                                                id="options-menu-button"
+                                                onclick={options_menu_onclick}
+                                                class="btn btn-outline-primary position-relative">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggles" viewBox="0 0 16 16">
+                                                    <path d="M4.5 9a3.5 3.5 0 1 0 0 7h7a3.5 3.5 0 1 0 0-7h-7zm7 6a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm-7-14a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm2.45 0A3.49 3.49 0 0 1 8 3.5 3.49 3.49 0 0 1 6.95 6h4.55a2.5 2.5 0 0 0 0-5H6.95zM4.5 0h7a3.5 3.5 0 1 1 0 7h-7a3.5 3.5 0 1 1 0-7z"/>
+                                                </svg>
+                                            </button>                                             
+                                        } else if self.show_menu == MapMenu::Options {
+                                            <button 
+                                                id="areas-toggle-button"
+                                                onclick={areas_toggle_onclick}
+                                                class="btn btn-outline-primary position-relative">
+                                                if show_areas {
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-on" viewBox="0 0 16 16">
+                                                        <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                                                    </svg>
+                                                } else {
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggle-off" viewBox="0 0 16 16">
+                                                        <path d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4h3zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5z"/>
+                                                    </svg>
+                                                }
+                                                {" Areas"}
+                                            </button>                     
                                         } else {
                                             //<form onsubmit={search_text_onsubmit} id="search-form">
                                             <div class="input-group">

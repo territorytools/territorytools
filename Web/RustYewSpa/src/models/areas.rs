@@ -1,4 +1,3 @@
-use crate::models::addresses::Address;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
