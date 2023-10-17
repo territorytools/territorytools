@@ -8,6 +8,7 @@ use crate::functions::document_functions::set_document_title;
 use crate::components::email_section::EmailSection;
 use crate::components::sms_section::SmsSection;
 
+use chrono::{DateTime,Local,TimeZone};
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
@@ -27,7 +28,7 @@ use yew_router::hooks::use_location;
 
 const GET_TERRITORY_API_PATH: &str = "/api/territories";
 
-#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+#[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct TerritoryEditorModel {
     pub territory: Territory,
     // pub number: Option<String>,
@@ -39,6 +40,24 @@ pub struct TerritoryEditorModel {
     #[prop_or_default]
     pub load_error: bool,
     pub error_message: String,
+    #[prop_or_default]
+    pub show_changes: bool,
+    #[prop_or_default]
+    pub show_reassign: bool,
+}
+
+impl Default for TerritoryEditorModel {
+    fn default() -> Self {
+        TerritoryEditorModel {
+            territory: Territory::default(),
+            save_success: false,
+            save_error: false,
+            load_error: false,
+            error_message: "".to_string(),
+            show_changes: false,
+            show_reassign: false,
+        }
+    }
 }
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
@@ -231,10 +250,7 @@ pub fn territory_editor_page() -> Html {
 
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: fetched_territory,
-                    save_success: false,
-                    save_error: false,
-                    load_error: false,
-                    error_message: "".to_string(),
+                    ..TerritoryEditorModel::default()
                 };
 
                 log!(format!(
@@ -246,10 +262,9 @@ pub fn territory_editor_page() -> Html {
             } else if territory_response.status() == 401 {
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: Territory::default(),
-                    save_success: false,
-                    save_error: false,
                     load_error: true,
                     error_message: "Unauthorized".to_string(),
+                    ..TerritoryEditorModel::default()
                 };
 
                 cloned_state.set(model);
@@ -259,7 +274,7 @@ pub fn territory_editor_page() -> Html {
     });
     
     let cloned_state = state.clone();
-    let onsubmit = Callback::from(move |event: i32 /*SubmitEvent*/| { 
+    let onsubmit = Callback::from(move |_event: i32 /*SubmitEvent*/| { 
         //event.prevent_default();
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
@@ -294,9 +309,7 @@ pub fn territory_editor_page() -> Html {
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: cloned_state.territory.clone(),
                     save_success: true,
-                    save_error: false,
-                    load_error: false,
-                    error_message: "".to_string(),
+                    ..TerritoryEditorModel::default()
                 };
     
                 cloned_state.set(model);
@@ -307,6 +320,7 @@ pub fn territory_editor_page() -> Html {
                     save_error: true,
                     load_error: false,
                     error_message: "Unauthorized".to_string(),
+                    ..TerritoryEditorModel::default()
                 };
     
                 cloned_state.set(model);
@@ -317,6 +331,7 @@ pub fn territory_editor_page() -> Html {
                     save_error: true,
                     load_error: false,
                     error_message: "Forbidden".to_string(),
+                    ..TerritoryEditorModel::default()
                 };
     
                 cloned_state.set(model);
@@ -327,6 +342,7 @@ pub fn territory_editor_page() -> Html {
                     save_error: true,
                     load_error: false,
                     error_message: format!("{}", resp.status()),
+                    ..TerritoryEditorModel::default()
                 };
     
                 cloned_state.set(model);
@@ -400,6 +416,7 @@ pub fn territory_editor_page() -> Html {
                 modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
                 modified_state.territory.signed_out = link_contract.clone().assigned_date_utc;
                 modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
+                modified_state.show_reassign = false;
                 cloned_state.set(modified_state);
             }
         });
@@ -414,7 +431,7 @@ pub fn territory_editor_page() -> Html {
         //event.prevent_default();
         
         let cloned_state = cloned_state.clone();
-        let assigner_state_clone = assigner_state_clone.clone();
+        let _assigner_state_clone = assigner_state_clone.clone();
         let assignment_result_state_clone = assignment_result_state_clone.clone();
         let unassignment_result_state_clone = unassignment_result_state_clone.clone();
         spawn_local(async move {
@@ -452,6 +469,7 @@ pub fn territory_editor_page() -> Html {
                 modified_state.territory.signed_out_to = None;
                 modified_state.territory.signed_out = None;
                 modified_state.territory.stage_id = Some(1000); // TODO: Get a value from the return body
+                modified_state.show_reassign = false;
                 cloned_state.set(modified_state);
             }
         });
@@ -513,17 +531,17 @@ pub fn territory_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let assigner_state_clone = assigner_state.clone();
-    let assignment_result_state_clone = assignment_result_state.clone();
+    let _assignment_result_state_clone = assignment_result_state.clone();
     let stage_change_result_state_clone = stage_change_result_state.clone();
-    let confirm_complete_click = Callback::from(move |_: i32| { 
+    let _confirm_complete_click = Callback::from(move |_: i32| { 
         //event.prevent_default();
         
         let cloned_state = cloned_state.clone();
-        let assigner_state_clone = assigner_state_clone.clone();
+        let _assigner_state_clone = assigner_state_clone.clone();
         //let assignment_result_state_clone = assignment_result_state_clone.clone();
-        let stage_change_result_state_clone = stage_change_result_state_clone.clone();
-        let territory_id = cloned_state.territory.id.unwrap_or_default();
-        let to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
+        let _stage_change_result_state_clone = stage_change_result_state_clone.clone();
+        let _territory_id = cloned_state.territory.id.unwrap_or_default();
+        let _to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
         spawn_local(async move {
             /*
             let _model = assigner_state_clone.clone();
@@ -566,7 +584,7 @@ pub fn territory_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let clipboard_clone = clipboard.clone();
-    let copy_link_onclick = Callback::from(move |event: MouseEvent| { 
+    let _copy_link_onclick = Callback::from(move |event: MouseEvent| { 
         event.prevent_default();
         
         let cloned_state = cloned_state.clone();
@@ -581,8 +599,25 @@ pub fn territory_editor_page() -> Html {
         });
     });
 
-    let full_signed_out = state.territory.signed_out.clone().unwrap_or_default();
-    let signed_out_date = if full_signed_out.is_empty() || full_signed_out.len() < 10 { 
+    let cloned_state = state.clone();
+    let show_changes_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let mut modification = cloned_state.deref().clone();
+        modification.show_changes = !cloned_state.show_changes;
+        cloned_state.set(modification);
+    });
+
+    let cloned_state = state.clone();
+    let show_reassign_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let mut modification = cloned_state.deref().clone();
+        modification.show_reassign = !cloned_state.show_reassign;
+        cloned_state.set(modification);
+    });
+
+    let cloned_state = state.clone();
+    let full_signed_out = cloned_state.territory.signed_out.clone().unwrap_or_default();
+    let _signed_out_date = if full_signed_out.is_empty() || full_signed_out.len() < 10 { 
         "".to_string() 
     } else {
         full_signed_out.clone().chars().take(10).collect::<String>()
@@ -590,6 +625,28 @@ pub fn territory_editor_page() -> Html {
 
     let _assignment_result_state = assignment_result_state.clone();
     let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
+    
+    log!(format!("teditor:signed_out (date): {}", state.territory.signed_out.clone().unwrap_or_default()));
+
+    //let assigned_date = format_date_only(state.territory.signed_out.clone());
+    let assigned_date = if state.territory.signed_out.clone().is_some() {
+        state.territory.signed_out.clone().unwrap_or_default().as_str()[0..10].to_string()
+    } else {
+        "".to_string()
+    };
+    
+    let assigned_to = format!("{}   {}",
+        state.territory.signed_out_to.clone().unwrap_or_default(),
+        assigned_date.clone());
+
+    let last_completed_date = if state.territory.last_completed.clone().is_some() {
+        state.territory.last_completed.clone().unwrap_or_default().as_str()[0..10].to_string()
+    } else {
+        "".to_string()
+    };
+    let last_completed_by = format!("{}   {}",
+        state.territory.last_completed_by.clone().unwrap_or_default(),
+        last_completed_date.clone());
 
     let _assign_uri = format!("/app/assign/{territory_number}/{description}/Current+Assignee", 
         territory_number = state.territory.number.clone(),
@@ -642,27 +699,25 @@ pub fn territory_editor_page() -> Html {
                         //     //<span class="mx-1">{" "}{state.territory.signed_out.clone()}</span>
                         // </div>
 
-                        <div class="col-9 col-sm-6 col-md-6 col-lg-4">
+                        <div class="col-12 col-sm-12 col-md-6">
                             <label class="form-label">{"Assigned to"}</label>
                             <div class="input-group">
                                 <input 
                                     id="assigned-to-input" 
                                     readonly=true 
-                                    value={state.territory.signed_out_to.clone()} 
+                                    value={assigned_to} 
                                     type="text" 
                                     class="form-control shadow-sm" />
-                                // <button 
-                                //     id="unassign-button" 
-                                //     class="btn btn-outline-primary"
-                                //     onclick={unassign_onclick.clone()}
-                                //     >
-                                //     {"Unassign"}
-                                // </button>
-                                <ButtonWithConfirm 
-                                    id="unassign-button" 
-                                    button_text="Unassign" 
-                                    on_confirm={unassign_onclick.clone()} 
-                                />
+                                if state.show_reassign {
+                                    <ButtonWithConfirm 
+                                        id="unassign-button" 
+                                        button_text="Unassign" 
+                                        on_confirm={unassign_onclick.clone()} 
+                                        class="me-1 btn btn-danger shadow-sm"
+                                    />
+                                } else {
+                                    <button onclick={show_reassign_onclick.clone()} class="btn btn-outline-primary">{"Change"}</button>
+                                }
                             </div>
                         </div>
                         if unassignment_result_state.load_failed { 
@@ -674,32 +729,41 @@ pub fn territory_editor_page() -> Html {
                                 </div>
                             </div>
                         } //                        
-                        <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-                            <label class="form-label">{"Assigned Date"}</label>
-                            <input 
-                                id="assigned-date-input" 
-                                readonly=true 
-                                value={signed_out_date.clone()} 
-                                type="text" 
-                                class="form-control shadow-sm" />
-                        </div>
+                        // <div class="col-6 col-sm-6 col-md-3 col-lg-3">
+                        //     <label class="form-label">{"Assigned Date"}</label>
+                        //     <input 
+                        //         id="assigned-date-input" 
+                        //         readonly=true 
+                        //         value={signed_out_date.clone()} 
+                        //         type="text" 
+                        //         class="form-control shadow-sm" />
+                        // </div>
                     
                 }
 
-                <div class="col-12 col-sm-9 col-md-6">
-                    <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
-                    <div class="input-group">
-                            <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
-                            // <button type="submit" class={ if is_assigned { "btn btn-outline-primary" } else { "btn btn-primary"}}>
-                            //     {if is_assigned { "Reassign" } else { "Assign" }}
-                            // </button>
-                            <ButtonWithConfirm 
-                                id="assign-button" 
-                                button_text={if is_assigned { "Reassign" } else { "Assign" }}
-                                on_confirm={assigner_onsubmit.clone()} 
-                            />
+                if !is_assigned || state.show_reassign {
+                    <div class="col-12 col-sm-9 col-md-6">
+                        <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
+                        <div class="input-group">
+                                <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
+                                // <button type="submit" class={ if is_assigned { "btn btn-outline-primary" } else { "btn btn-primary"}}>
+                                //     {if is_assigned { "Reassign" } else { "Assign" }}
+                                // </button>
+
+                                <ButtonWithConfirm 
+                                    id="assign-button" 
+                                    button_text={if is_assigned { "Reassign" } else { "Assign" }}
+                                    on_confirm={assigner_onsubmit.clone()} 
+                                    class={if is_assigned {"me-1 btn btn-success shadow-sm"} else {"me-1 btn btn-primary shadow-sm"}}
+                                />
+                        </div>
                     </div>
-                </div>
+                    if state.show_reassign {
+                        <div class="col-12 col-sm-9 col-md-6">
+                            <button onclick={show_reassign_onclick.clone()} class="btn btn-secondary">{"Cancel Assignment Change"}</button>
+                        </div>
+                    }
+                }
             //</form>
             </div>
             if assignment_result_state.load_failed { 
@@ -786,7 +850,7 @@ pub fn territory_editor_page() -> Html {
                             <div class="col">
                                 <span class="mx-1 badge bg-danger">{"Stage Change Error"}</span> 
                                 <span class="mx-1" style="color:red;">{stage_change_result_state.load_failed_message.clone()}</span>
-                                <span class="mx-1 badge bg-danger">{stage_change_result_state.status.clone()}</span>
+                                <span class="mx-1 badge bg-danger">{stage_change_result_state.status}</span>
                             </div>
                         </div>
                     }
@@ -881,22 +945,87 @@ pub fn territory_editor_page() -> Html {
                     }
                 // </div>
                 // <div class="col-12">
-                    <span><small>{"TID: "}{state.territory.id}</small></span>
+                    <br/><span><small>{"TID: "}{state.territory.id}</small></span>
                     <span><small>{" ATID: "}{state.territory.id}</small></span>
                 </div>
             </div>
             <div class="row g-3 pt-3">
                 <hr/>
                 <span><strong>{"History"}</strong></span>
-                <div class="col-6 col-sm-5 col-md-5">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <label class="form-label">{"Last Completed By"}</label>
-                    <input readonly={true} value={state.territory.last_completed_by.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Name"/>
+                    <input readonly={true} value={last_completed_by.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Name"/>
                 </div>
-                <div class="col-6 col-sm-5 col-md-5">
-                    <label class="form-label">{"Last Completed Date"}</label>
-                    <input readonly={true} value={state.territory.last_completed.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Date"/>
+                // <div class="col-6 col-sm-5 col-md-5">
+                //     <label class="form-label">{"Last Completed Date"}</label>
+                //     <input readonly={true} value={state.territory.last_completed.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Date"/>
+                // </div>
+            </div>
+            <div class="row g-3 pt-3">
+                <div class="col-12">
+                    <button onclick={show_changes_onclick} class="btn btn-outline-primary">
+                    if state.show_changes {
+                        {"Hide Changes"}
+                    } else {
+                        {"Show Changes"}
+                    }
+                    </button>
                 </div>
             </div>
+            if state.show_changes {
+                <div class="row g-3 pt-3">
+                    <div class="col-12 table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">{"Changed"}</th>
+                                //<th scope="col">{"Formatted"}</th>
+                                //<th scope="col">{"Stage Id"}</th>
+                                <th scope="col">{"Stage"}</th>
+                                <th scope="col">{"Assignee Name"}</th>
+                                //<th scope="col">{"Email"}</th>
+                                <th scope="col">{"Changed by"}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {
+                            state.territory.stage_changes.iter().map(|change| {   
+                                let _change_date = change.change_date_utc.clone().chars().take(10).collect::<String>();
+                                let _change_time = change.change_date_utc.clone().as_str()[11..16].to_string();
+                                let assignee = if change.assignee_name.clone() == None {
+                                    change.assignee_normalized_email.clone()
+                                } else {
+                                    change.assignee_name.clone() 
+                                };
+
+                                let formatted_date_time = format_date(Some(change.change_date_utc.clone()));
+
+                                html! {
+                                        
+                                        // <div class="col-6 col-sm-5 col-md-5">{change_date}</div>
+                                        // <div class="col-6 col-sm-5 col-md-5">{change.stage_id}</div>
+                                        // <div class="col-6 col-sm-5 col-md-5">{change.stage.clone()}</div>
+                                        // <div class="col-6 col-sm-5 col-md-5">{change.assignee_name.clone()}</div>
+                                        // <div class="col-6 col-sm-5 col-md-5">{change.assignee_normalized_email.clone()}</div>
+                                        // <div class="col-6 col-sm-5 col-md-5">{change.created_by_user_id.clone()}</div>
+                                        <tr>
+                                            //<td scope="row">{change_date}{" "}{change_time}</td>
+                                            <td>{formatted_date_time}</td>
+                                            //<td>{change.stage_id}</td>
+                                            <td>{change.stage.clone()}</td>
+                                            <td>{assignee}</td>
+                                            //<td>{change.assignee_normalized_email.clone()}</td>
+                                            <td>{change.created_by_user_id.clone()}</td>
+                                        </tr>
+                                        
+                                }
+                            }).collect::<Html>()
+                        }
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            }
         </div>
         </>
     }
@@ -946,6 +1075,8 @@ pub struct ButtonWithConfirmProps {
     pub id: String,
     pub button_text: String,
     pub on_confirm: Callback<i32>,
+    #[prop_or_default]
+    pub class: Option<String>,
 }
 
 #[function_component]
@@ -987,6 +1118,11 @@ pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
 
     let confirm_button_id = format!("{}-confirm", props.id.clone());
     let cancel_button_id = format!("{}-cancel", props.id.clone());
+    let button_class = if props.class.clone().is_none() {
+        "me-1 btn btn-primary shadow-sm".to_string()
+    } else {
+        props.class.clone().unwrap_or_default()
+    };
 
     html! {
     <>
@@ -1009,11 +1145,52 @@ pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
             <button 
                 id={props.id.clone()}
                 onclick={action_onclick} 
-                class="me-1 btn btn-primary shadow-sm">
+                class={button_class}>
                 // TODO: Put a call back here that sets the is_confirming back to false, and then calls the callback
                 {props.button_text.clone()}
             </button>
         }
        </>
+    }
+}
+
+pub fn format_date(text: Option<String>) -> String {
+    if text.is_none() {
+        "".to_string()
+    } else {
+        let utc = DateTime::parse_from_rfc3339( 
+            format!("{}Z", text.expect("String date"))
+            //.parse::<DateTime<Utc>>()
+            .to_string().as_str()
+        )
+        .expect("DateTime");
+        
+        let local = Local.from_utc_datetime(&utc.naive_utc());
+
+        local
+        .format("%Y-%m-%d %H:%M:%S")
+        .to_string()
+    }
+}
+
+
+pub fn format_date_only(text: Option<String>) -> String {
+    if text.is_none() {
+        "".to_string()
+    } else {
+        let utc = DateTime::parse_from_rfc3339( 
+            //format!("{}Z", text.expect("String date"))
+            //.parse::<DateTime<Utc>>()
+            text
+            .unwrap_or_default()
+            .as_str()
+        )
+        .expect("DateTime");
+        
+        let local = Local.from_utc_datetime(&utc.naive_utc());
+
+        local
+        .format("%Y-%m-%d")
+        .to_string()
     }
 }

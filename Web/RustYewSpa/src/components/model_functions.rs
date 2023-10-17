@@ -29,7 +29,7 @@ fn territory_filter(t: &Territory) -> bool {
     t.border.len() > 2
 }
 
-pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>, show_areas: bool) -> MapModel {
+pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>, _show_areas: bool) -> MapModel {
     let fetched_result: BorderFilteredResult = fetch_territories_w_mtk(
         mtk, 
         as_of_date.clone().unwrap_or_default().as_str()).await;       

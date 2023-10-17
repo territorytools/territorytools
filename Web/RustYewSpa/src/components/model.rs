@@ -386,7 +386,7 @@ impl Component for Model {
 
         let navigator = ctx.link().navigator().unwrap();
         let query_clone = ctx.search_query().clone();
-        let show_areas_onchange = {
+        let _show_areas_onchange = {
             Callback::from(move |event: Event| {
                 let value = event
                     .target()

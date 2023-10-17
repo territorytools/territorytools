@@ -86,7 +86,7 @@ pub struct TerritoryPolygon {
 
 impl ImplicitClone for TerritoryPolygon {}
 
-pub fn polyline_from_territory_polygon(tpoly: &TerritoryPolygon, selected: bool) -> Polyline {
+pub fn polyline_from_territory_polygon(tpoly: &TerritoryPolygon, _selected: bool) -> Polyline {
     let mut vertices: Vec<LatLng> = Vec::new();
     for v in &tpoly.border {
         vertices.push(LatLng::new(v.lat.into(), v.lon.into()));
@@ -214,7 +214,7 @@ pub fn tpoly_from_area_w_button(area: &Area) -> TerritoryPolygon {
     //let stage = stage_as_of_date(&territory, options.as_of_date.clone().unwrap_or_default());
     //let territory_color = stage_color(stage.clone().as_str());
    
-    let mut modified_area = area.clone();
+    //let mut modified_area = area.clone();
     //modified_area.stage = Some(stage.clone());
 
     // let polygon_type = if territory.group_id.clone().unwrap_or_default() == "borders" {
@@ -348,6 +348,10 @@ pub fn stage_as_of_date(territory: &Territory, as_of_date: String) -> String {
                 change_date_utc: "".to_string(),
                 stage_id: 1,
                 stage: Some("Error".to_string()),
+                assignee_normalized_email: None,
+                assignee_name: None,
+                created_by_user_id: None,
+
              }).stage.clone();
     
     stage.unwrap_or_default()

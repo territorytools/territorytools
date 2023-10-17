@@ -103,7 +103,7 @@ pub struct MapComponent {
     territory_map: MapModel,
     polygons: Vec<Polygon>,
     tpolygons: Vec<TerritoryPolygon>,
-    tpolylines: Vec<TerritoryPolygon>,
+    //tpolylines: Vec<TerritoryPolygon>,
     id_list: Vec<i32>,
     layer_group: LayerGroup,
     selected: Vec<String>, // TODO: Use territory ids (ints) instead of tags
@@ -133,7 +133,7 @@ impl Component for MapComponent {
             territory_map: MapModel::default(),
             polygons: vec![],
             tpolygons: vec![],
-            tpolylines: vec![],
+            //tpolylines: vec![],
             id_list: vec![],
             layer_group: LayerGroup::new(),
             selected: vec![],     
@@ -289,7 +289,7 @@ impl Component for MapComponent {
                     }).expect("Unable to serialzie DivIcon options")
                 });
 
-                let marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
+                let _marker_options =  &serde_wasm_bindgen::to_value(&MarkerOptions {
                     //icon: icon,
                     //color: if selected { "#00A".to_string() } else { tpoly.color.to_string() },
                 });

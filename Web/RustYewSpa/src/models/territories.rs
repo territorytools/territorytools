@@ -110,4 +110,7 @@ pub struct TerritoryStageChange {
     pub change_date_utc: String,
     pub stage_id: i32,
     pub stage: Option<String>,
+    pub assignee_normalized_email: Option<String>,
+    pub assignee_name: Option<String>,
+    pub created_by_user_id: Option<String>,
 }
