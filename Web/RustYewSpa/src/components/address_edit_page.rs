@@ -1,7 +1,9 @@
 use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
+use crate::components::address_status_selector::AddressStatusSelector;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
+use crate::components::selector_option_bilingual::EnglishChineseIdOption;
 use crate::components::language_selector::LanguageSelector;
 use crate::components::territory_editor::TerritoryEditorParameters;
 use crate::models::addresses::Address;
@@ -427,20 +429,11 @@ pub fn address_edit_page() -> Html {
         })
     };
 
-    let mark_type_onchange = {
+    let address_status_onchange = {
         let address_mark_model_clone = address_mark_model.clone();
-        Callback::from(move |event: Event| {
+        Callback::from(move |value: String| {
             let mut modification = address_mark_model_clone.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.mark_type = value.clone();
-
-            log!(format!("Mark type set to {:?}", value.clone()));
-
+            modification.mark_type = value;
             address_mark_model_clone.set(modification);
         })
     };
@@ -725,7 +718,7 @@ pub fn address_edit_page() -> Html {
                 navigator.back();
             } else if resp.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
-                    address: cloned_state.address.clone(), //Address::default(),
+                    address: cloned_state.address.clone(),
                     address_id,
                     save_success: false,
                     save_error: true,
@@ -739,7 +732,7 @@ pub fn address_edit_page() -> Html {
                 cloned_state.set(model);
             } else if resp.status() == 403 {
                 let model: AddressEditModel = AddressEditModel {
-                    address: cloned_state.address.clone(), //Address::default(),
+                    address: cloned_state.address.clone(),
                     address_id,
                     save_success: false,
                     save_error: true,
@@ -753,7 +746,7 @@ pub fn address_edit_page() -> Html {
                 cloned_state.set(model);
             } else {
                 let model: AddressEditModel = AddressEditModel {
-                    address: cloned_state.address.clone(), //Address::default(),
+                    address: cloned_state.address.clone(),
                     address_id,
                     save_success: false,
                     save_error: true,
@@ -957,33 +950,14 @@ pub fn address_edit_page() -> Html {
         </MenuBarV2>
         <div class="container">
             <div class="row g-3 mt-3">
-                <div class="col-8 col-md-6 col-lg-4">
+                <div class="col-12 col-md-8 col-lg-6">
                     <label for="input-mark-address" class="form-label"><strong>{"Address Status"}</strong></label>
                     <div class="input-group">
-                        <select 
-                            onchange={mark_type_onchange} 
+                        <AddressStatusSelector
                             id="input-mark-address" 
-                            class="form-select shadow-sm" 
-                        >
-                            <option selected={true} value="">{"Select status"}</option>
-                            <option value="nothome">{"Not Home"}</option>
-                            <option value="home-cc">{"Home Confirmed Chinese"}</option>
-                            // TODO: If this is selected, select a dialect
-                            <option value="home-nc">{"Home Not Chinese"}</option>
-                            // TODO: If this is selected, select another language
-                            // <option value="duplicate">{"Duplicate"}</option>                                
-                            // <option value="moved">{"Moved"}</option>                                
-                            // <option value="do-not-call">{"Do Not Call"}</option>                                
-                            <option value="business-office">{"Business Office"}</option>
-                            <option value="business-shop">{"Business Shop"}</option>
-                            <option value="business-other">{"Business Other"}</option>
-                            <option value="inaccessible">{"Inaccessible"}</option>
-                            <option value="inaccessible-other">{"Inaccessible Other"}</option>
-                            <option value="locked-gate">{"Locked Gate"}</option>
-                            <option value="no-trespassing">{"No Trespassing"}</option>
-                            <option value="delivery-returned">{"Delivery Returned"}</option>
-                            <option value="delivery-sent">{"Delivery Sent"}</option>                                
-                        </select>
+                            onchange={address_status_onchange}
+                            value={address_mark_model.mark_type.clone()}
+                        />                      
                         if !address_mark_model.mark_type.is_empty() {
                             <button onclick={mark_date_onclick} class="btn btn-outline-secondary shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
@@ -1254,31 +1228,6 @@ pub fn address_edit_page() -> Html {
     }
 }
 
-#[derive(Properties, PartialEq, Clone, Default)]
-pub struct EnglishChineseOptionProps {
-    pub english: String,
-    pub chinese: String,
-    pub selected: String,
-}
-
-#[function_component]
-pub fn EnglishChineseOption(props: &EnglishChineseOptionProps) -> Html {
-    html! {
-        <option value={props.english.clone()} selected={props.english.clone() == props.selected.clone()}>
-            {props.chinese.clone()}{" "}{props.english.clone()}
-        </option>
-    }
-}
-
-#[derive(Properties, PartialEq, Clone, Default)]
-pub struct EnglishChineseIdOptionProps {
-    pub id: i32,
-    pub english: String,
-    pub chinese: String,
-    pub selected: i32,
-}
-
-
 #[derive(Default)]
 pub struct GeocodingResultMessages {
     pub success: String,
@@ -1308,15 +1257,6 @@ pub struct AddressSaveResult {
 //         }
 //     }
 // }
-
-#[function_component]
-pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
-    html! {
-        <option value={props.id.to_string()} selected={props.id == props.selected}>
-            {props.chinese.clone()}{" "}{props.english.clone()}
-        </option>
-    }
-}
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

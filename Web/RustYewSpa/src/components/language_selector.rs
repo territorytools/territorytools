@@ -1,7 +1,5 @@
-use crate::models::users::User;
-use crate::components::address_edit_page::EnglishChineseIdOption;
+use crate::components::selector_option_bilingual::EnglishChineseIdOption;
 
-use reqwasm::http::Request;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlSelectElement;
 use yew::prelude::*;
@@ -13,30 +11,9 @@ pub struct Props {
     pub value: i32,
 }
 
-
 #[function_component(LanguageSelector)]
 pub fn language_selector(props: &Props) -> Html {
-    
-    /*let users = use_state(|| vec![]);
-    {
-        let users = users.clone();
-        use_effect_with((), move |_| {
-            let users = users.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                let uri: &str = "/api/languages?active=true";
-
-                let fetched_users: Vec<User> = Request::get(uri)
-                    .send()
-                    .await
-                    .unwrap()
-                    .json()
-                    .await
-                    .unwrap();
-                    users.set(fetched_users);
-            });
-            || ()
-        });
-    }*/
+   
 
     let onchange = {
         let props_onchange = props.onchange.clone();
@@ -100,16 +77,7 @@ pub fn language_selector(props: &Props) -> Html {
                 <EnglishChineseIdOption id={58} english="Cebuano" chinese="" selected={selected_language_id} />
                 <EnglishChineseIdOption id={151} english="Chavacano" chinese="" selected={selected_language_id} />
                 <EnglishChineseIdOption id={233} english="Cherokee" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={160} english="Chichewa" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={83} english="Chinese" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={5} english="Chinese Cantonese" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={188} english="Chinese Fukien" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={258} english="Chinese (Fuzhounese)" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={190} english="Chinese Hakka" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={4} english="Chinese Mandarin" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={189} english="Chinese Teochew" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={73} english="Chinese Toisan" chinese="" selected={selected_language_id} />
-                <EnglishChineseIdOption id={259} english="Chinese (Wenzhounese)" chinese="" selected={selected_language_id} />
+                <EnglishChineseIdOption id={160} english="Chichewa" chinese="" selected={selected_language_id} />               
                 <EnglishChineseIdOption id={231} english="Choctaw" chinese="" selected={selected_language_id} />
                 <EnglishChineseIdOption id={173} english="Chuj" chinese="" selected={selected_language_id} />
                 <EnglishChineseIdOption id={157} english="Chuukese" chinese="" selected={selected_language_id} />
