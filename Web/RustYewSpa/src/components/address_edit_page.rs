@@ -1,16 +1,14 @@
-//use crate::components::menu_bar::MenuBar;
+use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
+use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
-use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
 use crate::components::territory_editor::TerritoryEditorParameters;
 use crate::models::addresses::Address;
 use crate::models::geocoding_coordinates::AddressToGeocode;
 use crate::models::geocoding_coordinates::GeocodingCoordinates;
 use crate::functions::document_functions::set_document_title;
 use crate::Route;
-//use std::fmt::Display;
-//use crate::models::territories::Territory;
-//use serde::{Deserialize, Serialize};
+
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
@@ -22,7 +20,6 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
 use yew_router::prelude::use_navigator;
-//use serde_json::ser::to_string;
 
 #[cfg(debug_assertions)]
 const DEBUG_IS_ON: bool = true;
@@ -68,6 +65,7 @@ pub struct AddressMarkModel {
     pub address_id: i32,
     pub mark_type: String,
     pub mark_date_utc: String,
+    pub mark_date_editing: bool,
 }
 
 
@@ -98,7 +96,18 @@ pub fn address_edit_page() -> Html {
     set_document_title("Address Edit");
 
     let state: yew::UseStateHandle<AddressEditModel> = use_state(|| AddressEditModel::default());
-    let address_mark_model: yew::UseStateHandle<AddressMarkModel> = use_state(|| AddressMarkModel::default());
+    
+    let date = Date::new_0();
+    let date_string = format!("{}-{:02}-{:02}", 
+        date.get_full_year(), 
+        date.get_month() + 1, 
+        date.get_date());
+
+    let address_mark_model: yew::UseStateHandle<AddressMarkModel> = use_state(|| AddressMarkModel {
+        mark_date_utc: date_string,
+        ..AddressMarkModel::default()
+    });
+
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: AddressEditParameters = location.query::<AddressEditParameters>().expect("An object");
@@ -442,9 +451,9 @@ pub fn address_edit_page() -> Html {
     let address_mark_model_clone = address_mark_model.clone();
     let cloned_state = state.clone();
     let mark_onclick = {
-        Callback::from(move |event: MouseEvent| {
-            event.prevent_default();
+        Callback::from(move |_: i32| {
             let mtk = mtk.clone();
+            let address_mark_model_clone = address_mark_model_clone.clone();
             let mark_type = address_mark_model_clone.mark_type.to_string();
             let mark_date_utc = address_mark_model_clone.mark_date_utc.to_string();
             let cloned_state = cloned_state.clone();
@@ -469,13 +478,18 @@ pub fn address_edit_page() -> Html {
         
                     modification.address.visits = mark_address_result.address.unwrap_or_default().visits.clone();
                     modification.address_marking_error = "".to_string();
-                    modification.new_visit_id = mark_address_result.new_visit_id;
+                    modification.new_visit_id = mark_address_result.new_visit_id;                  
                     modification.show_visits = true;
 
                     cloned_state.set(modification);
+
+                    let mut modification = address_mark_model_clone.deref().clone();
+                    modification.mark_date_editing = false;
+                    modification.mark_type = "".to_string();
+                    address_mark_model_clone.set(modification);
                 } else {
                     let mut modification = cloned_state.deref().clone();
-        
+
                     modification.address_marking_error = 
                         format!("Error {}",
                             resp.status());
@@ -601,6 +615,15 @@ pub fn address_edit_page() -> Html {
         let mut modification = cloned_state.deref().clone();
         modification.confirming_save_address = false;
         cloned_state.set(modification);
+    });
+   
+    let cloned_address_mark_model = address_mark_model.clone();
+    let mark_date_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let cloned_address_mark_model = cloned_address_mark_model.clone();
+        let mut modification = cloned_address_mark_model.deref().clone();
+        modification.mark_date_editing = !cloned_address_mark_model.mark_date_editing;
+        cloned_address_mark_model.set(modification);
     });
 
     let navigator = use_navigator().unwrap();
@@ -890,12 +913,6 @@ pub fn address_edit_page() -> Html {
     let phone_uri = format!("tel:{}", phone.clone());
     let show_phone_button = !phone.is_empty();
 
-    let date = Date::new_0();
-    let date_string = format!("{}-{:02}-{:02}", 
-        date.get_full_year(), 
-        date.get_month() + 1, 
-        date.get_date());
-
     let visit_count = state.address.visits.len();
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
@@ -923,6 +940,93 @@ pub fn address_edit_page() -> Html {
             //</div>
         </MenuBarV2>
         <div class="container">
+            <div class="row g-3 mt-3">
+                <div class="col-8">
+                    <label for="input-mark-address" class="form-label"><strong>{"Address Status"}</strong></label>
+                    <div class="input-group">
+                        <select 
+                            onchange={mark_type_onchange} 
+                            id="input-mark-address" 
+                            class="form-select shadow-sm" 
+                            
+                            >
+                            <option selected={true} value="">{"Select status"}</option>
+                            <option value="nothome">{"Not Home"}</option>
+                            <option value="home-cc">{"Home Confirmed Chinese"}</option>
+                            // TODO: If this is selected, select a dialect
+                            <option value="home-nc">{"Home Not Chinese"}</option>
+                            // TODO: If this is selected, select another language
+                            // <option value="duplicate">{"Duplicate"}</option>                                
+                            // <option value="moved">{"Moved"}</option>                                
+                            // <option value="do-not-call">{"Do Not Call"}</option>                                
+                            <option value="business-office">{"Business Office"}</option>
+                            <option value="business-shop">{"Business Shop"}</option>
+                            <option value="business-other">{"Business Other"}</option>
+                            <option value="inaccessible">{"Inaccessible"}</option>
+                            <option value="inaccessible-other">{"Inaccessible Other"}</option>
+                            <option value="locked-gate">{"Locked Gate"}</option>
+                            <option value="no-trespassing">{"No Trespassing"}</option>
+                            <option value="delivery-returned">{"Delivery Returned"}</option>
+                            <option value="delivery-sent">{"Delivery Sent"}</option>                                
+                        </select>
+                        if !address_mark_model.mark_type.is_empty() {
+                            <button onclick={mark_date_onclick} class="btn btn-outline-secondary shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
+                                    <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+                                    <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+                                </svg>
+                            </button>
+                            if address_mark_model.mark_date_editing {
+                                <input value={address_mark_model.mark_date_utc.clone()} 
+                                    onchange={mark_date_onchange}        
+                                    type="date"
+                                    class="form-control shadow-sm" 
+                                    id="input-mark-date" 
+                                    style="max-width:200px;"/>                                
+                            }                            
+                            <ButtonWithConfirm 
+                                id="save-status-button" 
+                                button_text="Save Status" 
+                                on_confirm={mark_onclick} 
+                                class="btn btn-primary shadow-sm" 
+                            />
+                        }
+                    </div>
+                    <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
+                </div>
+                <div class="col-12">
+                    if visit_count > 0 {
+                        if state.show_visits {
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Hide Visits..."}</button>
+                        } else {
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Show "}{visit_count}{" Visits..."}</button>
+                        }
+                    } else {
+                        <button onclick={no_visits_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"No Visits"}</button>
+                    }
+                </div>
+                if state.show_visits {
+                    <div class="col-12">
+                        <ul>
+                        {
+                            state.address.visits.iter().map(|visit| {   
+                            let is_new_visit = state.new_visit_id == visit.id;
+                            html! {
+                                <li>
+                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
+                                    {" "}
+                                    {visit.result.clone()}
+                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
+                                </li>
+                            }
+                            }).collect::<Html>()
+                        }
+                        </ul>
+                    </div>
+                }                
+            </div>
+            <hr/>
             <form class="row g-3">
                 <div class="col-12 pt-3">
                     <strong>{"地址 Address Editor"}</strong>
@@ -946,7 +1050,7 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1 badge bg-warning">{"Moved"}</span> 
                         <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
                     }       
-                    <hr/>
+                    
                 </div>
                 // <div>
                 //     <span>
@@ -1371,7 +1475,7 @@ pub fn address_edit_page() -> Html {
                             id="save-button"
                             onclick={save_onclick} 
                             class="me-1 btn btn-primary shadow-sm">
-                            {"Save"}
+                            {"Save Address"}
                         </button>
                     }
                     <a onclick={close_onclick} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
@@ -1391,80 +1495,7 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                     }
-                </div>
-                <div class="col-12">
-                    <label for="input-mark-address" class="form-label"><strong>{"Address Status"}</strong></label>
-                    <div class="input-group">
-                        <select 
-                            onchange={mark_type_onchange} 
-                            id="input-mark-address" 
-                            class="form-select shadow-sm" 
-                            style="max-width:300px;">
-                            <option selected={true} value="">{"Select result"}</option>
-                            <option value="nothome">{"Not Home"}</option>
-                            <option value="home-cc">{"Home Confirmed Chinese"}</option>
-                            // TODO: If this is selected, select a dialect
-                            <option value="home-nc">{"Home Not Chinese"}</option>
-                            // TODO: If this is selected, select another language
-                            // <option value="duplicate">{"Duplicate"}</option>                                
-                            // <option value="moved">{"Moved"}</option>                                
-                            // <option value="do-not-call">{"Do Not Call"}</option>                                
-                            <option value="business-office">{"Business Office"}</option>
-                            <option value="business-shop">{"Business Shop"}</option>
-                            <option value="business-other">{"Business Other"}</option>
-                            <option value="inaccessible">{"Inaccessible"}</option>
-                            <option value="inaccessible-other">{"Inaccessible Other"}</option>
-                            <option value="locked-gate">{"Locked Gate"}</option>
-                            <option value="no-trespassing">{"No Trespassing"}</option>
-                            <option value="delivery-returned">{"Delivery Returned"}</option>
-                            <option value="delivery-sent">{"Delivery Sent"}</option>                                
-                        </select>
-                        <input value={address_mark_model.mark_date_utc.clone()} 
-                            onchange={mark_date_onchange} 
-                            type="text" 
-                            class="form-control shadow-sm" 
-                            id="input-mark-date" 
-                            placeholder={date_string}
-                            style="max-width:200px;"/>
-                        <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
-                    </div>
-                    <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
-                </div>
-                <div class="col-12">
-                    // if state.show_address_marker {
-                    //     <button onclick={show_address_marker_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"Hide Marker"}</button>
-                    // } else {
-                    //     <button onclick={show_address_marker_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Mark"}</button>
-                    // }
-                    if visit_count > 0 {
-                        if state.show_visits {
-                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Hide Visits..."}</button>
-                        } else {
-                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Show "}{visit_count}{" Visits..."}</button>
-                        }
-                    } else {
-                        <button onclick={no_visits_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"No Visits"}</button>
-                    }
-                </div>
-                if state.show_visits {
-                    <div class="col-12">
-                        <ul>
-                        {
-                            state.address.visits.iter().map(|visit| {   
-                            let is_new_visit = state.new_visit_id == visit.id;
-                            html! {
-                                <li>
-                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
-                                    {" "}
-                                    {visit.result.clone()}
-                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
-                                </li>
-                            }
-                            }).collect::<Html>()
-                        }
-                        </ul>
-                    </div>
-                }
+                </div>                
                 <div class="col-12">
                     <span><small>{"AAID: "}{state.address.alba_address_id}{" AID: "}{state.address.address_id}</small></span>
                 </div>

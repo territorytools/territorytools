@@ -8,6 +8,7 @@ pub mod assign_form;
 pub mod assign_page;
 pub mod bb_button;
 pub mod bb_text_input;
+pub mod button_with_confirm;
 pub mod email_section;
 pub mod link_page;
 pub mod map_menu;
