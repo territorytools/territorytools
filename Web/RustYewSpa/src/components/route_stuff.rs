@@ -18,6 +18,8 @@ use crate::Model;
 use yew_router::prelude::*;
 use yew::html;
 use yew::Html;
+
+use super::my_territories_page::MyTerritoriesPage;
 //use gloo_console::log;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -62,6 +64,8 @@ pub enum Route {
     TerritoryEditor,
     #[at("/app/territory-search")]
     TerritorySearch,    
+    #[at("/app/my-territories")]
+    MyTerritoriesPage,    
     #[at("/app/territory-search-old")]
     TerritorySearchOld,    
     #[at("/app/secure")]
@@ -123,6 +127,7 @@ pub fn switch(route: Route) -> Html {
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearchPage /> },
+        Route::MyTerritoriesPage => html! { <MyTerritoriesPage /> },
         Route::TerritorySearchOld => html! { <TerritorySearchOld /> },
         Route::TerritoryReportsMonthlyCompletion => html! { <TerritoryReportsPage /> },
         Route::Secure => html! { // TODO: Delete this

@@ -24,9 +24,21 @@ echo "Target Folder: $target_folder"
 
 cd ./dist \
   && mkdir $bak_folder \
-  && scp $host:$target_folder/* $bak_folder \
-  && scp $bak_folder/* $host:$target_folder/bak/ \
-  && scp * $host:$target_folder/
+  && echo "Done making new folder..." \
+  && scp $host:$target_folder/favicon* $bak_folder \
+  && scp $host:$target_folder/index.html $bak_folder \
+  && scp $host:$target_folder/territory-tools-component-* $bak_folder \
+  && scp $host:$target_folder/style-* $bak_folder \
+  && scp $host:$target_folder/leaflet-* $bak_folder \
+  && echo "Done copying down..." \
+  && scp -r $bak_folder $host:$target_folder/bak \
+  && echo "Done copying up..." \
+  && scp ./favicon* $host:$target_folder/ \
+  && scp ./index.html $host:$target_folder/ \
+  && scp ./territory-tools-component-* $host:$target_folder/ \
+  && scp ./style-* $host:$target_folder/ \
+  && scp ./app/leaflet-* $host:$target_folder/app/ \
+  && echo "Done copying int target..."
   
 echo "Done"
 

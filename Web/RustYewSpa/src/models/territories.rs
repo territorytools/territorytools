@@ -94,6 +94,10 @@ pub struct TerritorySummary {
     pub stage: Option<String>,
     pub publisher: Option<String>,
     pub view_link: Option<String>,
+    #[serde(default)]
+    pub addresses_unvisited: i32,
+    #[serde(default)]
+    pub addresses_active: i32,
     // pub stage_id: Option<i32>,
     // pub notes: Option<String>,
     // pub address_count: i32,

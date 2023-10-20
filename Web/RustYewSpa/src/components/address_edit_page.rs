@@ -959,21 +959,21 @@ pub fn address_edit_page() -> Html {
                             value={address_mark_model.mark_type.clone()}
                         />                      
                         if !address_mark_model.mark_type.is_empty() {
-                            <button onclick={mark_date_onclick} class="btn btn-outline-secondary shadow-sm">
+                            <button onclick={mark_date_onclick.clone()} class="btn btn-outline-secondary shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
                                     <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
                                     <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
                                     <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
                                 </svg>
                             </button>
-                            if address_mark_model.mark_date_editing {
-                                <input value={address_mark_model.mark_date_utc.clone()} 
-                                    onchange={mark_date_onchange}        
-                                    type="date"
-                                    class="form-control shadow-sm" 
-                                    id="input-mark-date" 
-                                    style="max-width:200px;"/>                                
-                            }                            
+                            // if address_mark_model.mark_date_editing {
+                            //     <input value={address_mark_model.mark_date_utc.clone()} 
+                            //         onchange={mark_date_onchange}        
+                            //         type="date"
+                            //         class="form-control shadow-sm" 
+                            //         id="input-mark-date" 
+                            //         style="max-width:200px;"/>           #ebe3d3 light brown  #f0f8ff  blue                     
+                            // }                            
                             <ButtonWithConfirm 
                                 id="save-status-button" 
                                 button_text="Save Status" 
@@ -984,6 +984,25 @@ pub fn address_edit_page() -> Html {
                     </div>
                     <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
                 </div>
+                if address_mark_model.mark_date_editing && !address_mark_model.mark_type.is_empty() {
+                    <div class="col-12 col-md-4 col-lg-3">
+                        <label for="input-mark-date" class="form-label">{"Status Date (optional)"}</label>
+                        <div class="input-group">
+                            <button onclick={mark_date_onclick.clone()} class="btn btn-outline-secondary shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                                </svg>
+                            </button>
+                            <input value={address_mark_model.mark_date_utc.clone()} 
+                                onchange={mark_date_onchange}        
+                                type="date"
+                                class="form-control shadow-sm" 
+                                id="input-mark-date" 
+                                style="max-width:200px;"
+                            />  
+                        </div>       
+                    </div>
+                }      
                 <div class="col-12">
                     if visit_count > 0 {
                         if state.show_visits {
