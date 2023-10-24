@@ -1,6 +1,7 @@
 use serde::Serialize;
 use std::ops::Deref;
 use yew::prelude::*;
+use stdweb::js;
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct ButtonWithConfirmModel {
@@ -85,5 +86,14 @@ pub fn ButtonWithConfirm(props: &ButtonWithConfirmProps) -> Html {
             </button>
         }
        </>
+    }
+}
+
+
+#[function_component]
+pub fn SomeJsThing() -> Html {
+    let something = "Hello".to_string();
+    js! {
+        var why = "hello";
     }
 }
