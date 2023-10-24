@@ -834,7 +834,7 @@ pub fn territory_editor_page() -> Html {
                         //     {"Save"}
                         // </button>
                         <ButtonWithConfirm 
-                            id="unassign-button" 
+                            id="save-stage-button" 
                             button_text="Save" 
                             on_confirm={save_stage_onclick.clone()} 
                         />
