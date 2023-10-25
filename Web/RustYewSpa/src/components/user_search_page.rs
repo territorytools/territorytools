@@ -1,10 +1,6 @@
-// Uncomment for debugging without an API server
-//const DATA_API_PATH: &str = "/data/addresses_search.json";
-const DATA_API_PATH: &str = "/api/addresses/search";
-
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
-use crate::models::users::User;
+use crate::models::users::UserSummary;
 use crate::Route;
 
 use gloo_console::log;
@@ -25,7 +21,7 @@ pub enum Msg {
 //#[derive(Properties, PartialEq, Clone, Default)]
 pub struct UserSearchPage {
     _listener: LocationHandle,
-    pub users: Vec<User>,
+    pub users: Vec<UserSummary>,
     pub result: UserSearchPageResult    
 }
 
@@ -90,7 +86,7 @@ impl Component for UserSearchPage {
             })
         };
     
-        let _count = self.users.len();
+        let count = self.users.len();
         let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
       
         html! {
@@ -109,7 +105,7 @@ impl Component for UserSearchPage {
                     <form {onsubmit} >
                     <div class="d-flex flex-row">
                         <div class="d-flex flex-colum mb-2 shadow-sm">
-                            <input {onchange} type="text" value={search_text} style="max-width:400px;" placeholder="Enter part of address" class="form-control" />
+                            <input {onchange} type="text" value={search_text} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
                             <button type="submit" class="btn btn-primary">{"Search"}</button>
                             if self.result.load_error { 
                                 <span class="mx-1 badge bg-danger">{"Error"}</span> 
@@ -120,7 +116,7 @@ impl Component for UserSearchPage {
                     </form>
                     <div class="row">
                         <div class="col">
-                            <span>{"Count: "}{self.result.count}</span>
+                            <span>{"Count: "}{count}</span>
                             <span class="ms-2 badge mb-2 bg-secondary">{"Language"}</span> 
                             <span class="ms-2 badge mb-2 bg-secondary">{"Visit Status"}</span> 
                             <span class="ms-2 badge mb-2 bg-secondary">{"Mail Status"}</span> 
@@ -128,27 +124,27 @@ impl Component for UserSearchPage {
                     </div>
                     {
                         self.users.iter().map(|user| {
-                            let _user_id = user.user_id;
-                          
-        
+                            let _user_id = user.id;
+                            let full_name = user.alba_full_name.clone();
+                            let my_territories_link = format!("/app/my-territories?impersonate={}", full_name.clone().unwrap_or_default());
+                            
                             html! {
-                                <a href="#" style="text-decoration:none;color:black;">
+                                <a href={my_territories_link} style="text-decoration:none;color:black;">
                                     <div class="row" style="border-top: 1px solid lightgray;">
-                                        <div class="col-2 col-md-1">
-                                           
+                                        <div class="col-4 col-md-2">
+                                            <strong>{user.alba_full_name.clone()}</strong>
                                         </div>
-                                        <div class="col-10 col-md-11" style="font-weight:bold;">
-                                           
+                                        <div class="col-2 col-md-2">
+                                            {user.group_id.clone().unwrap_or_default()}
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-2 col-md-1">
-                                            <small style="color:lightgray;"></small>
+                                        <div class="col-3 col-md-2">
+                                            {user.normalized_email.clone().unwrap_or_default().to_lowercase()}
                                         </div>
-                                        <div class="col-10 col-md-11">
-                                           
+                                        <div class="col-12 col-md-12">
+                                            {user.territory_summary.clone().unwrap_or_default()}
                                         </div>
                                     </div>
+      
                                 </a>
                             }
                         }).collect::<Html>()
@@ -163,7 +159,7 @@ impl Component for UserSearchPage {
 #[serde(rename_all = "camelCase")]
 pub struct UserSearchResults {
     pub count: i32,
-    pub users: Vec<User>,
+    pub users: Vec<UserSummary>,
 }
 
 #[derive(Properties, PartialEq, Clone, Default)]
@@ -171,13 +167,14 @@ pub struct UserSearchPageResult {
     pub success: bool,
     pub count: i32,
     pub search_text: String,
-    pub users: Vec<User>,
+    pub users: Vec<UserSummary>,
     pub load_error: bool,
     pub load_error_message: String,
 }
 
 async fn get_users(search_text: String) -> UserSearchPageResult {
-    let uri_string: String = format!("{path}?text={search_text}", path = DATA_API_PATH);
+    let search_text = search_text.clone();
+    let uri_string: String = format!("/api/users/list?filter={search_text}");
     let uri: &str = uri_string.as_str();
     let resp = Request::get(uri)
         .header("Content-Type", "application/json")
