@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
@@ -100,14 +99,14 @@ namespace TerritoryTools.Web.MainSite
                     return;
                 }
 
-                //HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
+                HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
 
-                //using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
-                //{
-                //    context.Response.StatusCode = (int)responseMessage.StatusCode;
-                //    CopyFromTargetResponseHeaders(context, responseMessage);
-                //    await responseMessage.Content.CopyToAsync(context.Response.Body);
-                //}
+                using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
+                {
+                    context.Response.StatusCode = (int)responseMessage.StatusCode;
+                    CopyFromTargetResponseHeaders(context, responseMessage);
+                    await responseMessage.Content.CopyToAsync(context.Response.Body);
+                }
 
                 _logger.LogTrace($"ReverseProxy: Done");
                 return;
@@ -160,12 +159,11 @@ namespace TerritoryTools.Web.MainSite
                 // Don't allow this header to be added by the client
                 if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
                 {
-                    requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                    requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
                 }
             }
 
-            requestMessage.Headers.Add("x-territory-tools-user", "marcdurham@gmail.com");
-            //requestMessage.Content?.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
+            requestMessage.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
         }
 
         private void CopyFromTargetResponseHeaders(HttpContext context, HttpResponseMessage responseMessage)
