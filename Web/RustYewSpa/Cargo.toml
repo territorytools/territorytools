@@ -34,7 +34,7 @@ serde-wasm-bindgen = "0.6.0"
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
 urlencoding = "2.1.2"
-stylist = { version = "0.12.1", features = ["yew"] }
+stylist = { version = "0.13.0", features = ["yew"] }
 substring = "1.4.5"
 chrono = "0.4.23"
 date_time_parser = "0.2.0"

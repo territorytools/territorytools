@@ -1,16 +1,17 @@
-//use crate::components::menu_bar::MenuBar;
+use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
+use crate::components::address_status_selector::AddressStatusSelector;
+use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
-use crate::components::address_delivery_status_selector::AddressDeliveryStatusSelector;
+use crate::components::selector_option_bilingual::EnglishChineseIdOption;
+use crate::components::language_selector::LanguageSelector;
 use crate::components::territory_editor::TerritoryEditorParameters;
 use crate::models::addresses::Address;
 use crate::models::geocoding_coordinates::AddressToGeocode;
 use crate::models::geocoding_coordinates::GeocodingCoordinates;
 use crate::functions::document_functions::set_document_title;
 use crate::Route;
-//use std::fmt::Display;
-//use crate::models::territories::Territory;
-//use serde::{Deserialize, Serialize};
+
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
@@ -22,7 +23,6 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
 use yew_router::prelude::use_navigator;
-//use serde_json::ser::to_string;
 
 #[cfg(debug_assertions)]
 const DEBUG_IS_ON: bool = true;
@@ -68,6 +68,7 @@ pub struct AddressMarkModel {
     pub address_id: i32,
     pub mark_type: String,
     pub mark_date_utc: String,
+    pub mark_date_editing: bool,
 }
 
 
@@ -98,7 +99,18 @@ pub fn address_edit_page() -> Html {
     set_document_title("Address Edit");
 
     let state: yew::UseStateHandle<AddressEditModel> = use_state(|| AddressEditModel::default());
-    let address_mark_model: yew::UseStateHandle<AddressMarkModel> = use_state(|| AddressMarkModel::default());
+    
+    let date = Date::new_0();
+    let date_string = format!("{}-{:02}-{:02}", 
+        date.get_full_year(), 
+        date.get_month() + 1, 
+        date.get_date());
+
+    let address_mark_model: yew::UseStateHandle<AddressMarkModel> = use_state(|| AddressMarkModel {
+        mark_date_utc: date_string,
+        ..AddressMarkModel::default()
+    });
+
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: AddressEditParameters = location.query::<AddressEditParameters>().expect("An object");
@@ -123,6 +135,21 @@ pub fn address_edit_page() -> Html {
                 .unwrap()
                 .unchecked_into::<HtmlInputElement>()
                 .value();
+
+            modification.address.language_id = value.parse().unwrap();
+            // Clear the status string to prevent confusion about which one is right
+            modification.address.language = Some("".to_string());
+
+            log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
+
+            state.set(modification);
+        })
+    };
+
+    let language_onchange_2 = {
+        let state = cloned_state.clone();
+        Callback::from(move |value: String| {
+            let mut modification = state.deref().clone();
 
             modification.address.language_id = value.parse().unwrap();
             // Clear the status string to prevent confusion about which one is right
@@ -402,20 +429,11 @@ pub fn address_edit_page() -> Html {
         })
     };
 
-    let mark_type_onchange = {
+    let address_status_onchange = {
         let address_mark_model_clone = address_mark_model.clone();
-        Callback::from(move |event: Event| {
+        Callback::from(move |value: String| {
             let mut modification = address_mark_model_clone.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.mark_type = value.clone();
-
-            log!(format!("Mark type set to {:?}", value.clone()));
-
+            modification.mark_type = value;
             address_mark_model_clone.set(modification);
         })
     };
@@ -442,9 +460,9 @@ pub fn address_edit_page() -> Html {
     let address_mark_model_clone = address_mark_model.clone();
     let cloned_state = state.clone();
     let mark_onclick = {
-        Callback::from(move |event: MouseEvent| {
-            event.prevent_default();
+        Callback::from(move |_: i32| {
             let mtk = mtk.clone();
+            let address_mark_model_clone = address_mark_model_clone.clone();
             let mark_type = address_mark_model_clone.mark_type.to_string();
             let mark_date_utc = address_mark_model_clone.mark_date_utc.to_string();
             let cloned_state = cloned_state.clone();
@@ -469,13 +487,18 @@ pub fn address_edit_page() -> Html {
         
                     modification.address.visits = mark_address_result.address.unwrap_or_default().visits.clone();
                     modification.address_marking_error = "".to_string();
-                    modification.new_visit_id = mark_address_result.new_visit_id;
+                    modification.new_visit_id = mark_address_result.new_visit_id;                  
                     modification.show_visits = true;
 
                     cloned_state.set(modification);
+
+                    let mut modification = address_mark_model_clone.deref().clone();
+                    modification.mark_date_editing = false;
+                    modification.mark_type = "".to_string();
+                    address_mark_model_clone.set(modification);
                 } else {
                     let mut modification = cloned_state.deref().clone();
-        
+
                     modification.address_marking_error = 
                         format!("Error {}",
                             resp.status());
@@ -602,6 +625,15 @@ pub fn address_edit_page() -> Html {
         modification.confirming_save_address = false;
         cloned_state.set(modification);
     });
+   
+    let cloned_address_mark_model = address_mark_model.clone();
+    let mark_date_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let cloned_address_mark_model = cloned_address_mark_model.clone();
+        let mut modification = cloned_address_mark_model.deref().clone();
+        modification.mark_date_editing = !cloned_address_mark_model.mark_date_editing;
+        cloned_address_mark_model.set(modification);
+    });
 
     let navigator = use_navigator().unwrap();
     let cloned_state = state.clone();
@@ -686,7 +718,7 @@ pub fn address_edit_page() -> Html {
                 navigator.back();
             } else if resp.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
-                    address: cloned_state.address.clone(), //Address::default(),
+                    address: cloned_state.address.clone(),
                     address_id,
                     save_success: false,
                     save_error: true,
@@ -700,7 +732,7 @@ pub fn address_edit_page() -> Html {
                 cloned_state.set(model);
             } else if resp.status() == 403 {
                 let model: AddressEditModel = AddressEditModel {
-                    address: cloned_state.address.clone(), //Address::default(),
+                    address: cloned_state.address.clone(),
                     address_id,
                     save_success: false,
                     save_error: true,
@@ -714,7 +746,7 @@ pub fn address_edit_page() -> Html {
                 cloned_state.set(model);
             } else {
                 let model: AddressEditModel = AddressEditModel {
-                    address: cloned_state.address.clone(), //Address::default(),
+                    address: cloned_state.address.clone(),
                     address_id,
                     save_success: false,
                     save_error: true,
@@ -890,12 +922,6 @@ pub fn address_edit_page() -> Html {
     let phone_uri = format!("tel:{}", phone.clone());
     let show_phone_button = !phone.is_empty();
 
-    let date = Date::new_0();
-    let date_string = format!("{}-{:02}-{:02}", 
-        date.get_full_year(), 
-        date.get_month() + 1, 
-        date.get_date());
-
     let visit_count = state.address.visits.len();
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
@@ -923,6 +949,92 @@ pub fn address_edit_page() -> Html {
             //</div>
         </MenuBarV2>
         <div class="container">
+            <div class="row g-3 mt-3">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <label for="input-mark-address" class="form-label"><strong>{"Address Status"}</strong></label>
+                    <div class="input-group">
+                        <AddressStatusSelector
+                            id="input-mark-address" 
+                            onchange={address_status_onchange}
+                            value={address_mark_model.mark_type.clone()}
+                        />                      
+                        if !address_mark_model.mark_type.is_empty() {
+                            <button onclick={mark_date_onclick.clone()} class="btn btn-outline-secondary shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
+                                    <path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+                                    <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+                                </svg>
+                            </button>
+                            // if address_mark_model.mark_date_editing {
+                            //     <input value={address_mark_model.mark_date_utc.clone()} 
+                            //         onchange={mark_date_onchange}        
+                            //         type="date"
+                            //         class="form-control shadow-sm" 
+                            //         id="input-mark-date" 
+                            //         style="max-width:200px;"/>           #ebe3d3 light brown  #f0f8ff  blue                     
+                            // }                            
+                            <ButtonWithConfirm 
+                                id="save-status-button" 
+                                button_text="Save Status" 
+                                on_confirm={mark_onclick} 
+                                class="btn btn-primary shadow-sm" 
+                            />
+                        }
+                    </div>
+                    <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
+                </div>
+                if address_mark_model.mark_date_editing && !address_mark_model.mark_type.is_empty() {
+                    <div class="col-12 col-md-4 col-lg-3">
+                        <label for="input-mark-date" class="form-label">{"Status Date (optional)"}</label>
+                        <div class="input-group">
+                            <button onclick={mark_date_onclick.clone()} class="btn btn-outline-secondary shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                                </svg>
+                            </button>
+                            <input value={address_mark_model.mark_date_utc.clone()} 
+                                onchange={mark_date_onchange}        
+                                type="date"
+                                class="form-control shadow-sm" 
+                                id="input-mark-date" 
+                                style="max-width:200px;"
+                            />  
+                        </div>       
+                    </div>
+                }      
+                <div class="col-12">
+                    if visit_count > 0 {
+                        if state.show_visits {
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Hide Visits..."}</button>
+                        } else {
+                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Show "}{visit_count}{" Visits..."}</button>
+                        }
+                    } else {
+                        <button onclick={no_visits_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"No Visits"}</button>
+                    }
+                </div>
+                if state.show_visits {
+                    <div class="col-12">
+                        <ul>
+                        {
+                            state.address.visits.iter().map(|visit| {   
+                            let is_new_visit = state.new_visit_id == visit.id;
+                            html! {
+                                <li>
+                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
+                                    {" "}
+                                    {visit.result.clone()}
+                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
+                                </li>
+                            }
+                            }).collect::<Html>()
+                        }
+                        </ul>
+                    </div>
+                }                
+            </div>
+            <hr/>
             <form class="row g-3">
                 <div class="col-12 pt-3">
                     <strong>{"地址 Address Editor"}</strong>
@@ -946,7 +1058,7 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1 badge bg-warning">{"Moved"}</span> 
                         <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
                     }       
-                    <hr/>
+                    
                 </div>
                 // <div>
                 //     <span>
@@ -1004,275 +1116,9 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <select onchange={language_onchange} id="input-language" class="form-select shadow-sm">
-                        <option value="83">{"Select language"}</option>
-                        <EnglishChineseIdOption id={10} english="English" chinese="" selected={selected_language_id} />
-                        <optgroup label="Chinese Languages">
-                            <EnglishChineseIdOption id={83} english="Chinese" chinese="中文" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={5} english="Cantonese" chinese="广东话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={188} english="Fukien" chinese="福建话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={258} english="Fuzhounese" chinese="福州话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={190} english="Hakka" chinese="客家话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={4} english="Mandarin" chinese="普通话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={189} english="Teochew" chinese="潮州话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={73} english="Toisan" chinese="台山话" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={259} english="Wenzhounese" chinese="温州话" selected={selected_language_id} />
-                        </optgroup>
-
-                        <optgroup label="Non-Chinese Languages">    
-                            <EnglishChineseIdOption id={161} english="Afrikaans" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={246} english="Akateko" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={123} english="Albanian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={82} english="American Sign Language (ASL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={12} english="Amharic" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={13} english="Arabic" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={257} english="Arabic (Maghrebi)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={87} english="Armenian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={124} english="Armenian (Western)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={118} english="Assyrian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={51} english="Awadhi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={46} english="Azerbaijani" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={71} english="Belarusian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={220} english="Belize Kriol" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={19} english="Bengali" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={45} english="Bhojpuri" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={142} english="Bicol" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={187} english="Bissau Guinean Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={94} english="Blackfoot" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={158} english="Bosnian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={166} english="Botswana Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={268} english="Braille" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={205} english="British Sign Language (BSL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={56} english="Bulgarian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={105} english="Bulgarian Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={84} english="Cambodian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={245} english="Cambodian Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={226} english="Catalan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={58} english="Cebuano" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={151} english="Chavacano" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={233} english="Cherokee" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={160} english="Chichewa" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={83} english="Chinese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={5} english="Chinese Cantonese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={188} english="Chinese Fukien" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={258} english="Chinese (Fuzhounese)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={190} english="Chinese Hakka" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={4} english="Chinese Mandarin" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={189} english="Chinese Teochew" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={73} english="Chinese Toisan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={259} english="Chinese (Wenzhounese)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={231} english="Choctaw" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={173} english="Chuj" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={157} english="Chuukese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={249} english="Country Sign (KS)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={86} english="Cree" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={119} english="Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={88} english="Croatian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={66} english="Czech" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={180} english="Damara" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={68} english="Danish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={75} english="Dinka" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={53} english="Dutch" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={241} english="Dutch Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={254} english="Ecuadorian Sign Language" chinese="" selected={selected_language_id} />                            
-                            <EnglishChineseIdOption id={70} english="Estonian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={176} english="Ewe" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={115} english="Faroese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={76} english="Farsi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={14} english="Finnish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={126} english="Flemish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={3} english="French" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={230} english="Fula" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={107} english="Georgian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={24} english="German" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={222} english="German Sign Language (GSL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={64} english="Greek" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={199} english="Greek Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={156} english="Guarani" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={35} english="Gujarati" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={72} english="Haitian Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={139} english="Hakha Chin" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={48} english="Hausa" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={238} english="Hawaiian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={269} english="Hawai’i Pidgin" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={101} english="Hebrew" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={145} english="Hiligaynon" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={8} english="Hindi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={203} english="Hmong (Green)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={99} english="Hmong (White)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={244} english="Honduran Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={63} english="Hungarian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={150} english="Ibanag" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={114} english="Icelandic" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={152} english="Ifugao" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={225} english="Igbo" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={95} english="Iloko" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={194} english="Indian Sign Language (ISL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={77} english="Indonesian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={242} english="Indonesian Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={228} english="Inuktitut" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={200} english="Irish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={207} english="Irish Sign Language (ISL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={33} english="Italian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={153} english="Itawit" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={149} english="Ivatan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={234} english="Jamaican Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={211} english="Jamaican Sign Language (JSL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={23} english="Japanese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={25} english="Javanese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={250} english="Kabuverdianu" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={40} english="Kannada" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={97} english="Karen" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={104} english="Karen Sgaw" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={237} english="Kayah Li" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={65} english="Kazakh" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={251} english="Kekchi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={148} english="Kinaray-a" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={132} english="Kinyarwanda" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={131} english="Kirundi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={229} english="Konkani (Roman)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={26} english="Korean" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={255} english="Kosraean" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={102} english="Krio" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={272} english="Kunama" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={59} english="Kurdish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={215} english="Kurdish Behdînî" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={213} english="Kurdish Kurmanji" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={214} english="Kurdish Sorani" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={179} english="Kwangali" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={178} english="Kwanyama" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={108} english="Kyrgyz" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={140} english="Lakota" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={78} english="Laotian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={109} english="Latvian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={127} english="Lingala" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={110} english="Lithuanian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={106} english="Low German" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={135} english="Lu Mien" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={116} english="Macedonian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={239} english="Macuxi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={47} english="Maithili" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={155} english="Malagasy" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={79} english="Malay" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={39} english="Malayalam" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={217} english="Maltese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={218} english="Maltese Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={129} english="Mam" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={31} english="Marathi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={182} english="Marshallese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={195} english="Mauritian Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={201} english="Mauritian Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={136} english="Mayan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={197} english="Mexican Sign Language (LSM)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={100} english="Mien" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={128} english="Mixtec" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={192} english="Mohawk" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={111} english="Moldovan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={7} english="Mongolian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={266} english="Mortlockese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={49} english="Myanmar" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={154} english="Nahuatl" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={181} english="Navajo" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={61} english="Nepali" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={253} english="Nicaraguan Sign Language (ISN)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={113} english="Norwegian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={11} english="Nuer" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={15} english="Ojibwe" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={41} english="Oriya" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={177} english="Otjiherero" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={143} english="Pangasinan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={141} english="Papiamento" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={196} english="Pashto" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={186} english="Pennsylvania German" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={38} english="Persian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={235} english="Pidgin English (Hawaiian)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={216} english="Pidgin English (West African)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={243} english="Pohnpeian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={36} english="Polish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={262} english="Poptí" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={22} english="Portuguese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={175} english="Portuguese Sign Language (LGP)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={42} english="Punjabi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={208} english="Punjabi (Shahmukhi)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={261} english="Purépecha" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={130} english="Q'anjob'al" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={236} english="Qingtianhua" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={121} english="Quebec Sign Language (LSQ)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={103} english="Quechua" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={171} english="Quiché" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={232} english="Quichua" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={264} english="Quichua (Cañar)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={263} english="Quichua (Chimborazo)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={265} english="Quichua (Quisapincha)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={223} english="Romani" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={44} english="Romanian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={193} english="Romanian Sign Language (LSR)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={2} english="Russian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={221} english="Russian Sign Language (RSL)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={267} english="Saint Lucian Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={98} english="Samoan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={60} english="Saraiki" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={92} english="Serbian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={224} english="Shilha" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={159} english="Shona" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={247} english="Sicilian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={55} english="Sindhi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={62} english="Sinhalese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={122} english="Slovak" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={93} english="Slovakian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={89} english="Slovenian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={80} english="Somali" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={134} english="Soussou" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={165} english="South African Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={16} english="Spanish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={138} english="Spanish Sign Language (LSE)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={204} english="Sranan Tongo" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={43} english="Sunda" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={147} english="Surigaonon" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={81} english="Swahili" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={185} english="Swati" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={67} english="Swedish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={74} english="Tagalog" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={202} english="Tajik" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={212} english="Tajik (Northern)" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={32} english="Tamil" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={146} english="Tausug" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={210} english="Tedim" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={30} english="Telugu" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={227} english="Tetum Dili" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={52} english="Thai" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={9} english="Tigrinya" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={174} english="Tlicho" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={120} english="Tongan" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={252} english="Trinidadian Creole" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={260} english="Triqui" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={183} english="Tsonga" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={198} english="Tsostil" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={164} english="Tswana" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={28} english="Turkish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={219} english="Turkmen" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={96} english="Twi" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={172} english="Tzotzil" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={270} english="Uighur" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={37} english="Ukrainian" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={1} english="Unknown" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={34} english="Urdu" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={112} english="Uzbek" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={184} english="Venda" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={6} english="Vietnamese" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={209} english="Vietnamese Sign Language" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={240} english="Wapishana" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={144} english="Waray-Waray" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={133} english="Wolof" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={163} english="Xhosa" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={248} english="Yiddish" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={54} english="Yoruba" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={191} english="Zapotec" chinese="" selected={selected_language_id} />
-                            <EnglishChineseIdOption id={162} english="Zulu" chinese="" selected={selected_language_id} />
-                            </optgroup>
-                        </select>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
+                    <LanguageSelector id="input-language" onchange={language_onchange_2} value={selected_language_id} />
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
                         <label for="input-status" class="form-label">{"Visit Status"}</label>
                         <select onchange={status_onchange} id="input-status" class="form-select shadow-sm">
                             <EnglishChineseIdOption id={1} english="New" chinese="不确定" selected={selected_status_id} />
@@ -1371,7 +1217,7 @@ pub fn address_edit_page() -> Html {
                             id="save-button"
                             onclick={save_onclick} 
                             class="me-1 btn btn-primary shadow-sm">
-                            {"Save"}
+                            {"Save Address"}
                         </button>
                     }
                     <a onclick={close_onclick} href="#" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
@@ -1391,80 +1237,7 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                     }
-                </div>
-                <div class="col-12">
-                    <label for="input-mark-address" class="form-label"><strong>{"Address Status"}</strong></label>
-                    <div class="input-group">
-                        <select 
-                            onchange={mark_type_onchange} 
-                            id="input-mark-address" 
-                            class="form-select shadow-sm" 
-                            style="max-width:300px;">
-                            <option selected={true} value="">{"Select result"}</option>
-                            <option value="nothome">{"Not Home"}</option>
-                            <option value="home-cc">{"Home Confirmed Chinese"}</option>
-                            // TODO: If this is selected, select a dialect
-                            <option value="home-nc">{"Home Not Chinese"}</option>
-                            // TODO: If this is selected, select another language
-                            // <option value="duplicate">{"Duplicate"}</option>                                
-                            // <option value="moved">{"Moved"}</option>                                
-                            // <option value="do-not-call">{"Do Not Call"}</option>                                
-                            <option value="business-office">{"Business Office"}</option>
-                            <option value="business-shop">{"Business Shop"}</option>
-                            <option value="business-other">{"Business Other"}</option>
-                            <option value="inaccessible">{"Inaccessible"}</option>
-                            <option value="inaccessible-other">{"Inaccessible Other"}</option>
-                            <option value="locked-gate">{"Locked Gate"}</option>
-                            <option value="no-trespassing">{"No Trespassing"}</option>
-                            <option value="delivery-returned">{"Delivery Returned"}</option>
-                            <option value="delivery-sent">{"Delivery Sent"}</option>                                
-                        </select>
-                        <input value={address_mark_model.mark_date_utc.clone()} 
-                            onchange={mark_date_onchange} 
-                            type="text" 
-                            class="form-control shadow-sm" 
-                            id="input-mark-date" 
-                            placeholder={date_string}
-                            style="max-width:200px;"/>
-                        <button onclick={mark_onclick} class="me-1 btn btn-primary shadow-sm">{"Save"}</button>
-                    </div>
-                    <span class="mx-1 badge bg-danger">{state.address_marking_error.clone()}</span>
-                </div>
-                <div class="col-12">
-                    // if state.show_address_marker {
-                    //     <button onclick={show_address_marker_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"Hide Marker"}</button>
-                    // } else {
-                    //     <button onclick={show_address_marker_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Mark"}</button>
-                    // }
-                    if visit_count > 0 {
-                        if state.show_visits {
-                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Hide Visits..."}</button>
-                        } else {
-                            <button onclick={visits_onclick} class="me-1 btn btn-outline-primary shadow-sm">{"Show "}{visit_count}{" Visits..."}</button>
-                        }
-                    } else {
-                        <button onclick={no_visits_onclick} class="me-1 btn btn-outline-secondary shadow-sm">{"No Visits"}</button>
-                    }
-                </div>
-                if state.show_visits {
-                    <div class="col-12">
-                        <ul>
-                        {
-                            state.address.visits.iter().map(|visit| {   
-                            let is_new_visit = state.new_visit_id == visit.id;
-                            html! {
-                                <li>
-                                    {visit.date_utc.clone().chars().take(10).collect::<String>()}
-                                    {" "}
-                                    {visit.result.clone()}
-                                    <span class="mx-1 badge bg-success">{if is_new_visit {"New"} else {""}}</span>
-                                </li>
-                            }
-                            }).collect::<Html>()
-                        }
-                        </ul>
-                    </div>
-                }
+                </div>                
                 <div class="col-12">
                     <span><small>{"AAID: "}{state.address.alba_address_id}{" AID: "}{state.address.address_id}</small></span>
                 </div>
@@ -1473,31 +1246,6 @@ pub fn address_edit_page() -> Html {
         </>
     }
 }
-
-#[derive(Properties, PartialEq, Clone, Default)]
-pub struct EnglishChineseOptionProps {
-    pub english: String,
-    pub chinese: String,
-    pub selected: String,
-}
-
-#[function_component]
-pub fn EnglishChineseOption(props: &EnglishChineseOptionProps) -> Html {
-    html! {
-        <option value={props.english.clone()} selected={props.english.clone() == props.selected.clone()}>
-            {props.chinese.clone()}{" "}{props.english.clone()}
-        </option>
-    }
-}
-
-#[derive(Properties, PartialEq, Clone, Default)]
-pub struct EnglishChineseIdOptionProps {
-    pub id: i32,
-    pub english: String,
-    pub chinese: String,
-    pub selected: i32,
-}
-
 
 #[derive(Default)]
 pub struct GeocodingResultMessages {
@@ -1528,15 +1276,6 @@ pub struct AddressSaveResult {
 //         }
 //     }
 // }
-
-#[function_component]
-pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
-    html! {
-        <option value={props.id.to_string()} selected={props.id == props.selected}>
-            {props.chinese.clone()}{" "}{props.english.clone()}
-        </option>
-    }
-}
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

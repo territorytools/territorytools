@@ -12,6 +12,8 @@ pub struct Props {
     // pub options: Vec<SelectOption>,
     #[prop_or_default]
     pub email_as_value: bool,
+    #[prop_or_default]
+    pub name_as_value: bool,
     pub onchange: Callback<String>,
 }
 
@@ -75,6 +77,8 @@ pub fn user_selector(props: &Props) -> Html {
                     
                     let value = if props.email_as_value {
                         user.normalized_email.clone().unwrap_or_default()
+                    } else if props.name_as_value {
+                        user_full_name.clone()
                     }  else {
                         user.alba_user_id.clone().unwrap_or_default()
                     };
