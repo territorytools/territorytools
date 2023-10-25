@@ -137,7 +137,8 @@ impl Component for UserSearchPage {
                         self.users.iter().map(|user| {
                             let _user_id = user.id;
                             let full_name = user.alba_full_name.clone();
-                            let my_territories_link = format!("/app/my-territories?impersonate={}", full_name.clone().unwrap_or_default());
+                            //let my_territories_link = format!("/app/my-territories?impersonate={}", full_name.clone().unwrap_or_default());
+                            let my_territories_link = format!("/app/user-edit?user_id={}", user.id);
                             
                             html! {
                                 <a href={my_territories_link} style="text-decoration:none;color:black;">

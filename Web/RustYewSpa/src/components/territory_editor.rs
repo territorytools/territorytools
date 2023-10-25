@@ -236,7 +236,7 @@ pub fn territory_editor_page() -> Html {
             let territory_response = Request::get(uri.as_str())
                 .send()
                 .await
-                .expect("Address response (raw) from API");
+                .expect("Territory response (raw) from API");
             
             if territory_response.status() == 200 {
                 let fetched_territory: Territory = territory_response

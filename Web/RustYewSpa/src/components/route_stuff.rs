@@ -3,6 +3,8 @@ use crate::AddressSearchPage;
 use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::components::territory_stage_report_page::TerritoryReportsPage;
 use crate::components::user_search_page::UserSearchPage;
+use crate::components::user_editor::UserEditorPage;
+
 use crate::AssignPage;
 use crate::Secure;
 use crate::TerritoryEditPage;
@@ -65,6 +67,8 @@ pub enum Route {
     AddressEdit,
     #[at("/app/territory-edit")]
     TerritoryEditor,
+    #[at("/app/user-edit")]
+    UserEditor,
     #[at("/app/territory-search")]
     TerritorySearch,    
     #[at("/app/my-territories")]
@@ -130,6 +134,7 @@ pub fn switch(route: Route) -> Html {
         Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
+        Route::UserEditor => html! { <UserEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearchPage /> },
         Route::MyTerritoriesPage => html! { <MyTerritoriesPage /> },
         Route::TerritorySearchOld => html! { <TerritorySearchOld /> },

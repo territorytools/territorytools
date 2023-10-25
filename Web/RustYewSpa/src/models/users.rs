@@ -11,7 +11,7 @@ pub struct User {
 
 // TODO: This is good: https://yew.rs/docs/0.18.0/concepts/wasm-bindgen/web-sys
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSummary {
     pub id: i32,
