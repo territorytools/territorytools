@@ -117,9 +117,20 @@ impl Component for UserSearchPage {
                     <div class="row">
                         <div class="col">
                             <span>{"Count: "}{count}</span>
-                            <span class="ms-2 badge mb-2 bg-secondary">{"Language"}</span> 
-                            <span class="ms-2 badge mb-2 bg-secondary">{"Visit Status"}</span> 
-                            <span class="ms-2 badge mb-2 bg-secondary">{"Mail Status"}</span> 
+                        </div>
+                    </div>
+                    <div class="row" style="border-top: 1px solid lightgray;">
+                        <div class="col-4 col-md-3 col-lg-2">
+                            <strong>{"Name"}</strong>
+                        </div>
+                        <div class="col-2 col-md-2 col-lg-1">
+                            <strong>{"Group"}</strong>
+                        </div>
+                        <div class="col-3 col-md-3 col-lg-3">
+                            <strong>{"Email"}</strong>
+                        </div>
+                        <div class="col-12 col-md-12 col-lg-6">
+                            <strong>{"Summary"}</strong>
                         </div>
                     </div>
                     {
@@ -131,16 +142,16 @@ impl Component for UserSearchPage {
                             html! {
                                 <a href={my_territories_link} style="text-decoration:none;color:black;">
                                     <div class="row" style="border-top: 1px solid lightgray;">
-                                        <div class="col-4 col-md-2">
+                                        <div class="col-4 col-md-3 col-lg-2">
                                             <strong>{user.alba_full_name.clone()}</strong>
                                         </div>
-                                        <div class="col-2 col-md-2">
+                                        <div class="col-4 col-md-2 col-lg-1">
                                             {user.group_id.clone().unwrap_or_default()}
                                         </div>
-                                        <div class="col-3 col-md-2">
+                                        <div class="col-4 col-md-3 col-lg-3">
                                             {user.normalized_email.clone().unwrap_or_default().to_lowercase()}
                                         </div>
-                                        <div class="col-12 col-md-12">
+                                        <div class="col-12 col-md-12 col-lg-6">
                                             {user.territory_summary.clone().unwrap_or_default()}
                                         </div>
                                     </div>
