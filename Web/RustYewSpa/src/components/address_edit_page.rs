@@ -126,7 +126,7 @@ pub fn address_edit_page() -> Html {
         })
     };
 
-    let language_onchange = {
+    let _language_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
             let mut modification = state.deref().clone();

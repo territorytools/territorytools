@@ -8,6 +8,7 @@ pub struct GeocodingCoordinates {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct AddressToGeocode {
     pub unit: Option<String>,
     pub address: Option<String>,

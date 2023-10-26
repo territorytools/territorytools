@@ -66,14 +66,14 @@ impl Component for MyTerritoriesPage {
     fn view(&self, ctx: &Context<Self>) -> Html {
         //set_document_title("Territory Search");
         
-        let onsubmit = Callback::from(move |event: SubmitEvent| {
+        let _onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
             // If we don't prevent_default() it will clear the box and search again
         });
 
         let impersonate = ctx.search_query().impersonate.clone().unwrap_or_default();  
         let navigator = ctx.link().navigator().unwrap();
-        let onchange = {
+        let _onchange = {
             Callback::from(move |event: Event| {
                 let value = event
                     .target()
@@ -107,7 +107,7 @@ impl Component for MyTerritoriesPage {
         };
     
         let count = self.territories.len();
-        let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
+        let _search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
         let full_name = self.result.contract.full_name.clone();
         let can_impersonate = self.result.contract.can_impersonate;
 
