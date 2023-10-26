@@ -159,11 +159,11 @@ namespace TerritoryTools.Web.MainSite
                 // Don't allow this header to be added by the client
                 if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
                 {
-                    requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                    requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
                 }
             }
 
-            requestMessage.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
+            requestMessage.Content?.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
         }
 
         private void CopyFromTargetResponseHeaders(HttpContext context, HttpResponseMessage responseMessage)
