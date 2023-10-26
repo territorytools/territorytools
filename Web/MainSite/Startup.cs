@@ -93,33 +93,31 @@ namespace TerritoryTools.Web.MainSite
             {
                 //options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
+            .AddGoogle(options =>
+            {
+                options.ClientId = Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            })
             //.AddGoogle(options =>
             //{
             //    options.ClientId = Configuration["Authentication:Google:ClientId"];
             //    options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            //    options.Scope.Add("profile");
+            //    options.Events.OnCreatingTicket = (context) =>
+            //    {
+            //        if(context.User.TryGetProperty("image", out JsonElement imageElement))
+            //        {
+            //            if(imageElement.TryGetProperty("url", out JsonElement urlElement))
+            //            {
+            //                string uri = urlElement.GetString();
+            //                //context.Identity.AddClaim(new Claim("image", context.User.GetValue("image").SelectToken("url").ToString()));
+            //                context.Identity.AddClaim(new Claim("image", uri));
+            //                Console.WriteLine($"Claim added to get user image URI: {uri}");
+            //            }
+            //        }
+            //        return Task.CompletedTask;
+            //    };
             //})
-            .AddGoogle(options =>
-            {
-                //options.ClientId = Configuration["Google.LoginProvider.ClientId"];
-                //options.ClientSecret = Configuration["Google.LoginProvider.ClientKey"];
-                options.ClientId = Configuration["Authentication:Google:ClientId"];
-                options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-                options.Scope.Add("profile");
-                options.Events.OnCreatingTicket = (context) =>
-                {
-                    if(context.User.TryGetProperty("image", out JsonElement imageElement))
-                    {
-                        if(imageElement.TryGetProperty("url", out JsonElement urlElement))
-                        {
-                            string uri = urlElement.GetString();
-                            //context.Identity.AddClaim(new Claim("image", context.User.GetValue("image").SelectToken("url").ToString()));
-                            context.Identity.AddClaim(new Claim("image", uri));
-                            Console.WriteLine($"Claim added to get user image URI: {uri}");
-                        }
-                    }
-                    return Task.CompletedTask;
-                };
-            })
             //.AddCookie(options =>
             //{
             //    options.ExpireTimeSpan = TimeSpan.FromDays(90);
