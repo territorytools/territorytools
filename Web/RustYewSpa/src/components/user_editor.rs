@@ -125,6 +125,9 @@ pub fn user_editor_page() -> Html {
         || ()
     });
 
+    let full_name = state.user.alba_full_name.clone().unwrap_or_default();
+    let my_territories_link = format!("/app/my-territories?impersonate={full_name}");
+
     let cloned_state = state.clone();
 
     html! {
@@ -138,18 +141,21 @@ pub fn user_editor_page() -> Html {
             </MenuBarV2>
             <div class="container pt-3">
                 <div class="row g-3 pt-3">
-                    <span><strong>{"User Editor"}</strong></span>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <span><strong>{"User Editor"}</strong></span>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <a href={my_territories_link} class="btn btn-primary">{"View My Territories Page"}</a>
+                    </div>                    
                 </div>
                 <div class="row g-3 pt-3">    
                     <div class="col-12 col-sm-6 col-md-4">
                         <label class="form-label">{"Full Name"}</label>
-                        <div class="input-group">
-                            <input 
-                                id="full-name-to-input" 
-                                value={cloned_state.user.alba_full_name.clone()} 
-                                type="text" 
-                                class="form-control shadow-sm" />                       
-                        </div>
+                        <input 
+                            id="full-name-to-input" 
+                            value={cloned_state.user.alba_full_name.clone()} 
+                            type="text" 
+                            class="form-control shadow-sm" />                       
                     </div>
                     <div class="col-12 col-sm-6 col-md-4">
                         <label class="form-label">{"Email"}</label>
@@ -161,6 +167,30 @@ pub fn user_editor_page() -> Html {
                                 class="form-control shadow-sm" />                       
                         </div>
                     </div>
+                    <div class="col-6 col-sm-4 col-md-3">
+                        <label class="form-label">{"Group ID"}</label>
+                        <input 
+                            id="group-id-input" 
+                            value={cloned_state.user.group_id.clone()} 
+                            type="text" 
+                            class="form-control shadow-sm" />                       
+                    </div>
+                    <div class="col-3 col-sm-3 col-md-2">
+                        <input 
+                            id="is-active-input" 
+                            checked={cloned_state.user.is_active} 
+                            type="checkbox" 
+                            class="form-check-input shadow-sm" />                       
+                        <label class="form-check-label">{"Active"}</label>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">{"Notes"}</label>
+                        <textarea 
+                            id="group-id-input" 
+                            value={cloned_state.user.notes.clone()} 
+                            rows="3"
+                            class="form-control shadow-sm" />                       
+                    </div>                       
                 </div>
             </div>
         </>
