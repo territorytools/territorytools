@@ -109,6 +109,7 @@ namespace TerritoryTools.Web.MainSite
 
                 using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
                 {
+                    _logger.LogTrace($"HttpResponseMessage: StatusCode: {(int)responseMessage.StatusCode} Body.Length: {context.Response.Body.Length}");
                     context.Response.StatusCode = (int)responseMessage.StatusCode;
                     CopyFromTargetResponseHeaders(context, responseMessage);
                     await responseMessage.Content.CopyToAsync(context.Response.Body);
