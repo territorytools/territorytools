@@ -162,13 +162,16 @@ namespace TerritoryTools.Web.MainSite
 
             foreach (var header in context.Request.Headers)
             {
+                _logger.LogTrace($"context.Request.Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
                 // Don't allow this header to be added by the client
                 if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
                 {
+                    _logger.LogTrace($"Removing x-territorytools-user header! Value: {string.Join(',', header.Value.ToArray())}");
                     requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
                 }
             }
 
+            _logger.LogTrace($"context.Request.Headers: Add User Header: x-territory-tools-user: {context.User.Identity.Name}");
             requestMessage.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
         }
 
@@ -176,11 +179,13 @@ namespace TerritoryTools.Web.MainSite
         {
             foreach (var header in responseMessage.Headers)
             {
+                _logger.LogTrace($"CopyFromTargetResponseHeaders: Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
                 context.Response.Headers[header.Key] = header.Value.ToArray();
             }
 
             foreach (var header in responseMessage.Content.Headers)
             {
+                _logger.LogTrace($"CopyFromTargetResponseHeaders: Content.Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
                 context.Response.Headers[header.Key] = header.Value.ToArray();
             }
 
