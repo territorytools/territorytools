@@ -149,7 +149,7 @@ namespace TerritoryTools.Web.MainSite
 
         private void CopyFromOriginalRequestContentAndHeaders(HttpContext context, HttpRequestMessage requestMessage)
         {
-            var requestMethod = context.Request.Method;
+            string requestMethod = context.Request.Method;
 
             if (!HttpMethods.IsGet(requestMethod) &&
               !HttpMethods.IsHead(requestMethod) &&
@@ -160,9 +160,11 @@ namespace TerritoryTools.Web.MainSite
                 requestMessage.Content = streamContent;
             }
 
+            string headers = string.Empty;
             foreach (var header in context.Request.Headers)
             {
-                _logger.LogTrace($"context.Request.Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
+                //_logger.LogTrace($"context.Request.Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
+                headers += $"{header.Key}: {string.Join(',', header.Value.ToArray())}\n";
                 // Don't allow this header to be added by the client
                 if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
                 {
@@ -174,7 +176,7 @@ namespace TerritoryTools.Web.MainSite
                 }
             }
 
-            _logger.LogTrace($"context.Request.Headers: Add User Header: x-territory-tools-user: {context.User.Identity.Name}");
+            _logger.LogTrace($"context.Request.Headers.List: \n{headers}\n(***User Header) {context.User.Identity.Name}");            
             requestMessage.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
         }
 
@@ -182,13 +184,13 @@ namespace TerritoryTools.Web.MainSite
         {
             foreach (var header in responseMessage.Headers)
             {
-                _logger.LogTrace($"CopyFromTargetResponseHeaders: Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
+                //_logger.LogTrace($"CopyFromTargetResponseHeaders: Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
                 context.Response.Headers[header.Key] = header.Value.ToArray();
             }
 
             foreach (var header in responseMessage.Content.Headers)
             {
-                _logger.LogTrace($"CopyFromTargetResponseHeaders: Content.Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
+                //_logger.LogTrace($"CopyFromTargetResponseHeaders: Content.Headers: {header.Key}: {string.Join(',', header.Value.ToArray())}");
                 context.Response.Headers[header.Key] = header.Value.ToArray();
             }
 
