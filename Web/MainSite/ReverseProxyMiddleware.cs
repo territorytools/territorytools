@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -50,41 +51,36 @@ namespace TerritoryTools.Web.MainSite
             if (targetUri != null)
             {
                 _logger.LogTrace($"ReverseProxy: Forwarded to: {targetUri}");
-                if(context.Request.Query.TryGetValue("mtk", out StringValues value))
+                if(context.Request.Query.TryGetValue("mtk", out StringValues value) && !string.IsNullOrWhiteSpace(value))
                 {
                     _logger.LogTrace($"MTK query param detected: {value}");
-                    if (string.IsNullOrWhiteSpace(value))
+                    TerritoryLinkContract link = _apiService.Get<TerritoryLinkContract>($"territory-links/{value}", "");
+                    if (link == null && !context.User.Identity.IsAuthenticated)
                     {
+                        string message = $"ReverseProxy: Territory key does not exist";
                         context.Response.StatusCode = 401;
-                        _logger.LogTrace($"ReverseProxy: Territory key is missing");
+                        context.Response.Body = StreamFrom(message);
+                        _logger.LogTrace(message);
                         return;
                     }
-                    else
+                    else if ((!link.Successful || link.Expires != null && link.Expires < DateTime.UtcNow) 
+                        && !context.User.Identity.IsAuthenticated)
                     {
-                        TerritoryLinkContract link = _apiService.Get<TerritoryLinkContract>($"territory-links/{value}", "");
-                        if (link == null)
-                        {
-                            context.Response.StatusCode = 401;
-                            _logger.LogTrace($"ReverseProxy: Territory key does not exist");
-                            return;
-                        }
-                        else if (!link.Successful || link.Expires != null && link.Expires < DateTime.UtcNow)
-                        {
-                            context.Response.StatusCode = 403;
-                            _logger.LogTrace($"ReverseProxy: Territory key expired {link.Expires}");
-                            return;
-                        }
-                        // TODO: Check from tt-api
-                        // It worked
-                        // TODO: Add more middle where to detect the header, or this mtk, or allow certain anonymous things in
+                        string message = $"ReverseProxy: Territory key expired {link.Expires}";
+                        context.Response.StatusCode = 403;
+                        context.Response.Body = StreamFrom(message);
+                        _logger.LogTrace(message);
+                        return;
                     }
                 }
                 else if (!context.User.Identity.IsAuthenticated)
                 {
                     //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-6.0#httpcontext-isnt-thread-safe
                     //HttpContext isn't thread safe
+                    string message = $"ReverseProxy: User Not Authenticated and MTK query param not detected";
                     context.Response.StatusCode = 401;
-                    _logger.LogTrace($"ReverseProxy: Not Authenticated");
+                    context.Response.Body = StreamFrom(message);
+                    _logger.LogTrace(message);
                     return;
                 }
 
@@ -106,6 +102,16 @@ namespace TerritoryTools.Web.MainSite
             }
 
             await _nextMiddleware(context);
+        }
+
+        Stream StreamFrom(string text)
+        {
+            MemoryStream stream = new ();
+            StreamWriter writer = new (stream);
+            writer.Write(text);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
 
         private HttpRequestMessage CreateTargetMessage(HttpContext context, Uri targetUri)
