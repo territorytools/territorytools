@@ -166,8 +166,11 @@ namespace TerritoryTools.Web.MainSite
                 // Don't allow this header to be added by the client
                 if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.LogTrace($"Removing x-territorytools-user header! Value: {string.Join(',', header.Value.ToArray())}");
                     requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                }
+                else
+                {
+                    _logger.LogTrace($"Removing x-territorytools-user header! Value: {string.Join(',', header.Value.ToArray())}");
                 }
             }
 
