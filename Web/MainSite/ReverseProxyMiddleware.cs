@@ -109,7 +109,7 @@ namespace TerritoryTools.Web.MainSite
 
                 using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
                 {
-                    _logger.LogTrace($"HttpResponseMessage: StatusCode: {(int)responseMessage.StatusCode} Body.Length: {context.Response.Body.Length}");
+                    _logger.LogTrace($"HttpResponseMessage: StatusCode: {(int)responseMessage.StatusCode} Body.Length: {context.Response?.Body?.Length ?? 0}");
                     context.Response.StatusCode = (int)responseMessage.StatusCode;
                     CopyFromTargetResponseHeaders(context, responseMessage);
                     await responseMessage.Content.CopyToAsync(context.Response.Body);
@@ -173,7 +173,7 @@ namespace TerritoryTools.Web.MainSite
                 }
                 else
                 {
-                    _logger.LogTrace($"Removing x-territorytools-user header! Value: {string.Join(',', header.Value.ToArray())}");
+                    _logger.LogTrace($"Removing x-territory-tools-user header! Value: {string.Join(',', header.Value.ToArray())}");
                 }
             }
 
