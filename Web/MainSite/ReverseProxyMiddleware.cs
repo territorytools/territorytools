@@ -45,6 +45,11 @@ namespace TerritoryTools.Web.MainSite
         public async Task Invoke(HttpContext context)
         {
             _logger.LogTrace($"ReverseProxy: Incoming: Path: {context.Request.Path} QueryString: {context.Request.QueryString}");
+            string isAuthMessage = $"{context?.User?.Identity?.IsAuthenticated ?? false}";
+            string userNameMessage = $"{context?.User?.Identity?.Name}";
+            string userAuthMessage = $"User IsAuthenticated: {isAuthMessage} Name: {userNameMessage}";
+            _logger.LogTrace(userAuthMessage);
+
             Uri targetUri = BuildTargetUri(context.Request);
 
             // Security bypass Starts:  Comment this block out
@@ -62,6 +67,7 @@ namespace TerritoryTools.Web.MainSite
             //await _nextMiddleware(context);
             //return;
             // End of Security bypass.  Comment this block out
+
 
             if (targetUri != null)
             {
