@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using TerritoryTools.Web.MainSite.Models;
 using TerritoryTools.Web.MainSite.Services;
@@ -46,22 +47,6 @@ namespace TerritoryTools.Web.MainSite
         {
             _logger.LogTrace($"ReverseProxy: Incoming: Path: {context.Request.Path} QueryString: {context.Request.QueryString}");
             Uri targetUri = BuildTargetUri(context.Request);
-
-            // Security bypass Starts:  Comment this block out
-            //if (targetUri != null)
-            //{
-            //    HttpRequestMessage targetRequestMessage = CreateTargetMessage(context, targetUri);
-            //    using (HttpResponseMessage responseMessage = await _httpClientWrapper.SendAsync(targetRequestMessage, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted))
-            //    {
-            //        context.Response.StatusCode = (int)responseMessage.StatusCode;
-            //        CopyFromTargetResponseHeaders(context, responseMessage);
-            //        await responseMessage.Content.CopyToAsync(context.Response.Body);
-            //    }
-            //    return;
-            //}
-            //await _nextMiddleware(context);
-            //return;
-            // End of Security bypass.  Comment this block out
 
             if (targetUri != null)
             {
@@ -159,11 +144,14 @@ namespace TerritoryTools.Web.MainSite
                 // Don't allow this header to be added by the client
                 if (!"x-territory-tools-user".Equals(header.Key, StringComparison.OrdinalIgnoreCase))
                 {
-                    requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+                    // POST and PUT requests will return 415 Unsupported Media Type,
+                    // it needs to be ctx.Content.Headers.Add, not just ctx.Headers.Add
+                    requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
                 }
             }
 
-            requestMessage.Headers.TryAddWithoutValidation("x-territory-tools-user", context.User.Identity.Name);
+            // Requests will return 401/403 without this header
+            requestMessage.Headers.Add("x-territory-tools-user", context.User.Identity.Name);
         }
 
         private void CopyFromTargetResponseHeaders(HttpContext context, HttpResponseMessage responseMessage)
