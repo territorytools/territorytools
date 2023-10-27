@@ -230,7 +230,7 @@ pub fn address_edit_page() -> Html {
         let navigator = navigator.clone();
         Callback::from(move |_| {
             let query = TerritoryEditorParameters {
-                id: Some(territory_id),
+                id: territory_id,
                 number: None,
             };
             let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
@@ -612,7 +612,7 @@ pub fn address_edit_page() -> Html {
     let save_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let cloned_state = cloned_state.clone();
-        let mut modification = cloned_state.deref().clone();
+        let mut modification: AddressEditModel = cloned_state.deref().clone();
         modification.confirming_save_address = true;
         cloned_state.set(modification);
     });

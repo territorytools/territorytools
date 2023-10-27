@@ -1,7 +1,8 @@
 //use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::models::users::UserSummary;
+use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
+use crate::models::users::UserSummary;
 use crate::functions::document_functions::set_document_title;
 
 //use gloo_console::log;
@@ -86,6 +87,52 @@ pub fn user_editor_page() -> Html {
             state.set(modification);
         })
     };
+
+    /*
+    let cloned_state = state.clone();
+    let save_onclick = Callback::from(move |_: i32| { 
+        //event.prevent_default();
+        let cloned_state = cloned_state.clone();
+        spawn_local(async move {
+            let uri_string: String = format!("{path}?territoryId={territory_id}&stageId={to_stage_id}&assignee={assignee}", 
+                path = "/api/users",
+                assignee = cloned_state.territory.signed_out_to.clone().unwrap_or_default(),
+            );
+
+            let uri: &str = uri_string.as_str();
+            let resp = Request::new(uri)
+                .method(Method::POST)
+                //.header("Content-Type", "application/json")
+                .send()
+                .await
+                .expect("A result from the endpoint");
+            
+            let result = AssignmentResult {
+                success: (resp.status() == 200),
+                load_failed: (resp.status() != 200),
+                load_failed_message: match resp.status() {
+                    405 => "Bad Method".to_string(),
+                    _ => "Error".to_string(),
+                },
+                link_contract: TerritoryLinkContract::default(),
+                status: resp.status(),
+                completed: true,
+            };
+
+            stage_change_result_state_clone.set(result);
+
+            if resp.status() == 200 {
+                // let mut modified_state = cloned_state.deref().clone();
+                // modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
+                // modified_state.territory.signed_out = link_contract.clone().assigned_date_utc;
+                // modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
+                // modified_state.territory.last_completed_by = link_contract.clone().territory_last_completed_by;
+                // modified_state.territory.last_completed_date = link_contract.clone().territory_last_completed_date;
+                // cloned_state.set(modified_state);
+            }
+        });
+    });
+    */
    
     let cloned_state = state.clone();
     use_effect_with((), move |_| {
@@ -163,6 +210,7 @@ pub fn user_editor_page() -> Html {
                             <input 
                                 id="email-to-input" 
                                 value={cloned_state.user.normalized_email.clone()} 
+                                onchange={group_id_onchange}
                                 type="text" 
                                 class="form-control shadow-sm" />                       
                         </div>
@@ -190,7 +238,14 @@ pub fn user_editor_page() -> Html {
                             value={cloned_state.user.notes.clone()} 
                             rows="3"
                             class="form-control shadow-sm" />                       
-                    </div>                       
+                    </div>
+                    <div class="col-12">
+                        // <ButtonWithConfirm 
+                        //     id="save-button" 
+                        //     button_text="Save" 
+                        //     on_confirm={save_onclick.clone()} 
+                        // />
+                    </div>
                 </div>
             </div>
         </>
