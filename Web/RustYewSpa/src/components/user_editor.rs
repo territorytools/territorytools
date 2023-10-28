@@ -7,9 +7,11 @@ use crate::functions::document_functions::set_document_title;
 
 //use gloo_console::log;
 use reqwasm::http::Request;
+use reqwasm::http::Method;
 use serde::{Serialize, Deserialize};
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
+use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_clipboard;
@@ -49,13 +51,27 @@ pub fn user_editor_page() -> Html {
     set_document_title("User Editor");
 
     let state: yew::UseStateHandle<UserEditorModel> = use_state(|| UserEditorModel::default());
-    let clipboard = use_clipboard();
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
     let user_id: i32 = match parameters.user_id {
         Some(v) => v,
         _ => 0,
+    };
+
+    let full_name_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.user.alba_full_name = Some(value.to_string());
+            state.set(modification);
+        })
     };
 
     let email_onchange = {
@@ -88,38 +104,85 @@ pub fn user_editor_page() -> Html {
         })
     };
 
-    /*
+    let notes_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.user.notes = Some(value.to_string());
+            state.set(modification);
+        })
+    };
+   
+    let roles_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.user.roles = Some(value.to_string());
+            state.set(modification);
+        })
+    };
+
     let cloned_state = state.clone();
     let save_onclick = Callback::from(move |_: i32| { 
         //event.prevent_default();
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
-            let uri_string: String = format!("{path}?territoryId={territory_id}&stageId={to_stage_id}&assignee={assignee}", 
+            let uri_string: String = format!("{path}", 
                 path = "/api/users",
-                assignee = cloned_state.territory.signed_out_to.clone().unwrap_or_default(),
             );
 
             let uri: &str = uri_string.as_str();
+
+            let body_model = UserSaveRequest {
+                created_by: Some("unkown".to_string()),
+                user: UserSummary {
+                    id: cloned_state.user.id,
+                    alba_full_name: cloned_state.user.alba_full_name.clone(),
+                    given_name: cloned_state.user.given_name.clone(),
+                    surname: cloned_state.user.surname.clone(),
+                    notes: cloned_state.user.notes.clone(),
+                    alba_user_id: cloned_state.user.alba_user_id.clone(),
+                    normalized_email: cloned_state.user.normalized_email.clone(),
+                    is_active: cloned_state.user.is_active,
+                    group_id: cloned_state.user.group_id.clone(),
+                    roles: cloned_state.user.roles.clone(),
+                    territory_summary: cloned_state.user.territory_summary.clone() 
+                }
+            };
+
+            let data_serialized = serde_json::to_string_pretty(&body_model)
+                .expect("Should be able to serialize address for geocoding into JSON");
+
+            let method = if user_id == 0 { Method::POST } else { Method::PUT };
+
             let resp = Request::new(uri)
-                .method(Method::POST)
-                //.header("Content-Type", "application/json")
+                .method(method)
+                .header("Content-Type", "application/json")
+                .body(data_serialized)
                 .send()
                 .await
                 .expect("A result from the endpoint");
             
-            let result = AssignmentResult {
+            let result = UserSaveResult {
                 success: (resp.status() == 200),
-                load_failed: (resp.status() != 200),
-                load_failed_message: match resp.status() {
-                    405 => "Bad Method".to_string(),
-                    _ => "Error".to_string(),
-                },
-                link_contract: TerritoryLinkContract::default(),
+                errors: Some("".to_string()),
                 status: resp.status(),
                 completed: true,
             };
 
-            stage_change_result_state_clone.set(result);
+            //stage_change_result_state_clone.set(result);
 
             if resp.status() == 200 {
                 // let mut modified_state = cloned_state.deref().clone();
@@ -132,7 +195,6 @@ pub fn user_editor_page() -> Html {
             }
         });
     });
-    */
    
     let cloned_state = state.clone();
     use_effect_with((), move |_| {
@@ -201,7 +263,8 @@ pub fn user_editor_page() -> Html {
                         <input 
                             id="full-name-to-input" 
                             value={cloned_state.user.alba_full_name.clone()} 
-                            type="text" 
+                            type="text"
+                            onchange={full_name_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
                     <div class="col-12 col-sm-6 col-md-4">
@@ -210,7 +273,7 @@ pub fn user_editor_page() -> Html {
                             <input 
                                 id="email-to-input" 
                                 value={cloned_state.user.normalized_email.clone()} 
-                                onchange={group_id_onchange}
+                                onchange={email_onchange.clone()}
                                 type="text" 
                                 class="form-control shadow-sm" />                       
                         </div>
@@ -220,7 +283,8 @@ pub fn user_editor_page() -> Html {
                         <input 
                             id="group-id-input" 
                             value={cloned_state.user.group_id.clone()} 
-                            type="text" 
+                            type="text"
+                            onchange={group_id_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
                     <div class="col-3 col-sm-3 col-md-2">
@@ -234,17 +298,29 @@ pub fn user_editor_page() -> Html {
                     <div class="col-12">
                         <label class="form-label">{"Notes"}</label>
                         <textarea 
-                            id="group-id-input" 
+                            id="notes-input" 
                             value={cloned_state.user.notes.clone()} 
                             rows="3"
+                            onchange={notes_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
+                    <div class="col-12 col-sm-12 col-md-12">
+                        <label class="form-label">{"Roles"}</label>
+                        <div class="input-group">
+                            <input 
+                                id="roles-input" 
+                                value={cloned_state.user.roles.clone()} 
+                                onchange={roles_onchange.clone()}
+                                type="text" 
+                                class="form-control shadow-sm" />                       
+                        </div>
+                    </div>                    
                     <div class="col-12">
-                        // <ButtonWithConfirm 
-                        //     id="save-button" 
-                        //     button_text="Save" 
-                        //     on_confirm={save_onclick.clone()} 
-                        // />
+                        <ButtonWithConfirm 
+                            id="save-button" 
+                            button_text="Save" 
+                            on_confirm={save_onclick.clone()} 
+                        />
                     </div>
                 </div>
             </div>
@@ -252,3 +328,19 @@ pub fn user_editor_page() -> Html {
     }
 }
 
+
+#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSaveResult {
+    pub success: bool,
+    pub errors: Option<String>,
+    pub status: u16,
+    pub completed: bool,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSaveRequest {
+    pub created_by: Option<String>,
+    pub user: UserSummary,
+}
