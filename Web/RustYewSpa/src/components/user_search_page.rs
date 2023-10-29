@@ -120,64 +120,67 @@ impl Component for UserSearchPage {
                         </div>
                     </div>
                     <div class="row" style="border-top: 1px solid lightgray;">
-                        <div class="col-4 col-md-3 col-lg-2">
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-2">
+                         <div class="col-8 col-md-6 col-lg-3">
                             <strong>{"Name"}</strong>
                         </div>
-                        <div class="col-2 col-md-2 col-lg-1">
+                        <div class="col-4 col-md-2 col-lg-1">
                             <strong>{"Group"}</strong>
                         </div>
-                        <div class="col-3 col-md-3 col-lg-3">
+                        <div class="col-4 col-md-3 col-lg-3">
                             <strong>{"Email"}</strong>
                         </div>
-                        <div class="col-12 col-md-12 col-lg-6">
+                        <div class="col-12 col-md-12 col-lg-5">
                             <strong>{"Summary"}</strong>
                         </div>
                     </div>
-                    <div class="container">
+                    
                     {
                         self.users.iter().map(|user| {
                             let _user_id = user.id;
                             let full_name = user.alba_full_name.clone();
-                            let my_territories_link = format!("/app/my-territories?impersonate={}", full_name.clone().unwrap_or_default());
+                            let _my_territories_link = format!("/app/my-territories?impersonate={}", full_name.clone().unwrap_or_default());
                             let edit_user_link = format!("/app/user-edit?user_id={}", user.id);
-                            
+                            let email_link = format!("mailto:{}", user.normalized_email.clone().unwrap_or_default().to_lowercase());
                             html! {
-                                <div class="row" style="border-top: 1px solid lightgray;">
-                                    <div class="col-2 col-md-1 col-lg-1">
-                                        <a href={edit_user_link.clone()} class="btn btn-primary m-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                                                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                                            </svg>
-                                        </a>
-                                        <a href={my_territories_link} class="btn btn-primary m-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-ul" viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                                            </svg>                                            
-                                        </a>
+                                <a href={edit_user_link.clone()} class="text-decoration-none text-black" style="color:black;">
+                                    <div  class="row" style="border-top: 1px solid lightgray;">
+                                        // <div class="col-2 col-md-2 col-lg-1">
+                                        //     <a href={edit_user_link.clone()} class="btn btn-primary mx-1">
+                                        //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewBox="0 0 16 16">
+                                        //             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                        //             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        //         </svg>
+                                        //     </a>
+                                        // </div>
+                                        // <div class="col-10 col-md-10 col-lg-10">
+                                        //     <div class="row">
+                                                <div class="col-8 col-md-6 col-lg-3">
+                                                    <strong>{user.alba_full_name.clone()}</strong>
+                                                </div>
+                                                <div class="col-4 col-md-2 col-lg-1">
+                                                    {user.group_id.clone().unwrap_or_default()}
+                                                </div>
+                                                <div class="col-4 col-md-3 col-lg-3">
+                                                    <a href={email_link}>
+                                                        {user.normalized_email.clone().unwrap_or_default().to_lowercase()}
+                                                    </a>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-5">
+                                                    // <a href={my_territories_link} class="btn btn-primary btn-sm me-1">
+                                                    //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewBox="0 0 16 16">
+                                                    //         <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                                    //     </svg>                                            
+                                                    // </a>
+                                                    {user.territory_summary.clone().unwrap_or_default()}
+                                                </div>
+                                        //     </div>
+                                        // </div>
                                     </div>
-                                    <div class="col-10 col-md-11 col-lg-11">
-                                        <div class="row">
-                                            <div class="col-6 col-md-4 col-lg-2">
-                                                <strong>{user.alba_full_name.clone()}</strong>
-                                            </div>
-                                            <div class="col-4 col-md-2 col-lg-1">
-                                                {user.group_id.clone().unwrap_or_default()}
-                                            </div>
-                                            <div class="col-4 col-md-3 col-lg-3">
-                                                {user.normalized_email.clone().unwrap_or_default().to_lowercase()}
-                                            </div>
-                                            <div class="col-12 col-md-12 col-lg-6">
-                                                {user.territory_summary.clone().unwrap_or_default()}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                </a>
                             }
                         }).collect::<Html>()
                     }
-                    </div>
+        
                 </div>
             </>
         }

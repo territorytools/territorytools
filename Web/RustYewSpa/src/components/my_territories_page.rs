@@ -128,12 +128,11 @@ impl Component for MyTerritoriesPage {
                 </MenuBarV2>
                 <div class="container pt-3">
                     <div class="row">
-                        <div class="col-12">
-                            <span><strong id="territory-title-span">{"My Territories: "}</strong></span>
-                            <span><strong>{full_name.clone()}</strong></span>
+                        <div class="col-6">
+                            <span><h3 id="territory-title-span">{"My Territories"}</h3></span>
                         </div>
                         if can_impersonate {
-                            <div class="col-12 col-md-4 col-lg-3">
+                            <div class="col-6">
                                 <label for="user-selector" class="form-label">{"Impersonate User"}</label>
                                 <UserSelector id="user-selector" onchange={assignee_onchange} name_as_value={true} />
                             </div>
@@ -149,6 +148,9 @@ impl Component for MyTerritoriesPage {
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-12">
+                            <span><h4>{full_name.clone()}</h4></span>
+                        </div>                        
                         <div class="col-12">
                             <span id="territories-found-summary"><strong>{count}</strong>{" Territories Found"}</span>
                         </div>

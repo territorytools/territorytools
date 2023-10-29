@@ -22,6 +22,7 @@ use yew_router::prelude::*;
 use yew::html;
 use yew::Html;
 
+use super::app_menu::AppMenuPage;
 use super::my_territories_page::MyTerritoriesPage;
 //use gloo_console::log;
 
@@ -29,6 +30,8 @@ use super::my_territories_page::MyTerritoriesPage;
 pub enum Route {
     #[at("/app")]
     Root,
+    #[at("/app/menu")]
+    AppMenu,
     #[at("/wasm/index.html")]
     Start,
     #[at("/app/map-old")]
@@ -96,6 +99,7 @@ pub fn switch(route: Route) -> Html {
     match route {
         //Route::Home => html! { <Redirect<Route> to={"/"} },
         Route::Home => html! { <h3>{"Home"}</h3> },
+        Route::AppMenu => html! { <AppMenuPage /> },
         Route::Root => html! { <Redirect<Route> to={Route::Map}/> },
         Route::Start => html! { <Redirect<Route> to={Route::Map}/> },
         //Route::Other => html! { <Redirect<Route> to={"https://google.com"}/> },

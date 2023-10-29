@@ -5,6 +5,7 @@ pub mod address_shared_letter_page;
 pub mod address_shared_letter_functions;
 pub mod address_shared_letter_row;
 pub mod address_status_selector;
+pub mod app_menu;
 pub mod assign_form;
 pub mod assign_page;
 pub mod bb_button;

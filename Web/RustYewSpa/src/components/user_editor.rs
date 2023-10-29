@@ -1,8 +1,7 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
-use crate::models::users::UserResponse;
-use crate::models::users::UserSummary;
+use crate::models::users::{UserChanges,UserResponse,UserSummary};
 use crate::functions::document_functions::set_document_title;
 
 use reqwasm::http::Request;
@@ -17,7 +16,7 @@ use yew_router::hooks::use_location;
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
-    pub user: UserSummary,
+    pub user: UserChanges,
     pub user_response: UserResponse,
     pub save_success: bool,
     pub save_error: bool,
@@ -29,7 +28,7 @@ pub struct UserEditorModel {
 impl Default for UserEditorModel {
     fn default() -> Self {
         UserEditorModel {
-            user: UserSummary::default(),
+            user: UserChanges::default(),
             user_response: UserResponse::default(),
             save_success: false,
             save_error: false,
@@ -118,6 +117,51 @@ pub fn user_editor_page() -> Html {
         })
     };
 
+    let can_impersonate_users_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+
+            modification.user.can_impersonate_users = value;   
+            state.set(modification);
+        })
+    };
+
+    let can_assign_territories_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+
+            modification.user.can_assign_territories = value;   
+            state.set(modification);
+        })
+    };
+
+    let can_edit_territories_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+
+            modification.user.can_edit_territories = value;   
+            state.set(modification);
+        })
+    };
+
     let notes_onchange = {
         let state = cloned_state.clone();
         Callback::from(move |event: Event| {
@@ -161,7 +205,7 @@ pub fn user_editor_page() -> Html {
 
             let body_model = UserSaveRequest {
                 created_by: Some("unkown".to_string()),
-                user: UserSummary {
+                user: UserChanges {
                     id: cloned_state.user.id,
                     alba_full_name: cloned_state.user.alba_full_name.clone(),
                     given_name: cloned_state.user.given_name.clone(),
@@ -169,10 +213,13 @@ pub fn user_editor_page() -> Html {
                     notes: cloned_state.user.notes.clone(),
                     alba_user_id: cloned_state.user.alba_user_id.clone(),
                     normalized_email: cloned_state.user.normalized_email.clone(),
-                    is_active: cloned_state.user.is_active,
                     group_id: cloned_state.user.group_id.clone(),
                     roles: cloned_state.user.roles.clone(),
-                    territory_summary: cloned_state.user.territory_summary.clone() 
+                    territory_summary: cloned_state.user.territory_summary.clone(), 
+                    is_active: cloned_state.user.is_active,
+                    can_assign_territories: cloned_state.user.can_assign_territories,
+                    can_edit_territories: cloned_state.user.can_edit_territories,
+                    can_impersonate_users: cloned_state.user.can_impersonate_users,                    
                 }
             };
 
@@ -256,7 +303,7 @@ pub fn user_editor_page() -> Html {
                 cloned_state.set(model);
             } else if response.status() == 401 {
                 let model: UserEditorModel = UserEditorModel {
-                    user: UserSummary::default(),
+                    user: UserChanges::default(),
                     user_response: UserResponse::default(),
                     load_error: true,
                     error_message: "Unauthorized".to_string(),
@@ -327,7 +374,9 @@ pub fn user_editor_page() -> Html {
                             onchange={group_id_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
-                    <div class="col-12">
+                </div>
+                <div class="row">
+                    <div class="col-3">
                         <input 
                             id="is-active-input" 
                             checked={cloned_state.user.is_active} 
@@ -336,6 +385,35 @@ pub fn user_editor_page() -> Html {
                             class="form-check-input shadow-sm mx-1" />
                         <label class="form-check-label mx-1">{"Active"}</label>
                     </div>
+                    if roles_visible {
+                        <div class="col-3">
+                            <input 
+                                id="can-impersonate-users-input" 
+                                checked={cloned_state.user.can_impersonate_users} 
+                                type="checkbox"
+                                onchange={can_impersonate_users_onchange.clone()}
+                                class="form-check-input shadow-sm mx-1" />
+                            <label class="form-check-label mx-1">{"Can Impersonate Users"}</label>
+                        </div>
+                        <div class="col-3">
+                            <input 
+                                id="can-assign-territories-input" 
+                                checked={cloned_state.user.can_assign_territories} 
+                                type="checkbox"
+                                onchange={can_assign_territories_onchange.clone()}
+                                class="form-check-input shadow-sm mx-1" />
+                            <label class="form-check-label mx-1">{"Can Assign Territories"}</label>
+                        </div>
+                        <div class="col-3">
+                            <input 
+                                id="can-edit-territories-input" 
+                                checked={cloned_state.user.can_edit_territories} 
+                                type="checkbox"
+                                onchange={can_edit_territories_onchange.clone()}
+                                class="form-check-input shadow-sm mx-1" />
+                            <label class="form-check-label mx-1">{"Can Edit Territories"}</label>
+                        </div>
+                    }
                     <div class="col-12">
                         <label class="form-label">{"Notes"}</label>
                         <textarea 
@@ -359,7 +437,7 @@ pub fn user_editor_page() -> Html {
                         </div>
                     }
                     if user_can_edit {
-                        <div class="col-12">
+                        <div class="col-12 p-3">
                             <ButtonWithConfirm 
                                 id="save-button" 
                                 button_text="Save" 
@@ -387,5 +465,5 @@ pub struct UserSaveResult {
 #[serde(rename_all = "camelCase")]
 pub struct UserSaveRequest {
     pub created_by: Option<String>,
-    pub user: UserSummary,
+    pub user: UserChanges,
 }

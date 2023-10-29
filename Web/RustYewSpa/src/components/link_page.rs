@@ -30,14 +30,15 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
                 
                 let uri = format!("{DATA_API_PATH}?activeOnly=false");
 
-                let fetched_links: Vec<TerritoryLinkContract> = Request::get(uri.as_str())
+                let fetched_links = Request::get(uri.as_str())
                     .send()
                     .await
-                    .unwrap()
+                    .expect("A valid Vec<TerritoryLinkContract>");
+
+                let fetched_links: Vec<TerritoryLinkContract> = fetched_links
                     .json()
                     .await
-                    //.expect("Territory Link JSON not parsing");
-                    .unwrap();
+                    .expect("Not a valid JSON of Vec<TerritoryLinkContract>");
 
                     links.set(fetched_links);                    
             });
