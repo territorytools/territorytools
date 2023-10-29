@@ -1,11 +1,10 @@
-//use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
+use crate::models::users::UserResponse;
 use crate::models::users::UserSummary;
 use crate::functions::document_functions::set_document_title;
 
-//use gloo_console::log;
 use reqwasm::http::Request;
 use reqwasm::http::Method;
 use serde::{Serialize, Deserialize};
@@ -14,13 +13,12 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew_hooks::use_clipboard;
 use yew_router::hooks::use_location;
-//use serde_json::ser::to_string;
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
     pub user: UserSummary,
+    pub user_response: UserResponse,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -32,6 +30,7 @@ impl Default for UserEditorModel {
     fn default() -> Self {
         UserEditorModel {
             user: UserSummary::default(),
+            user_response: UserResponse::default(),
             save_success: false,
             save_error: false,
             load_error: false,
@@ -100,6 +99,21 @@ pub fn user_editor_page() -> Html {
                 .value();
 
             modification.user.group_id = Some(value);   
+            state.set(modification);
+        })
+    };
+    
+    let is_active_onchange = {
+        let state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+
+            modification.user.is_active = value;   
             state.set(modification);
         })
     };
@@ -175,7 +189,7 @@ pub fn user_editor_page() -> Html {
                 .await
                 .expect("A result from the endpoint");
             
-            let result = UserSaveResult {
+            let _result = UserSaveResult {
                 success: (resp.status() == 200),
                 errors: Some("".to_string()),
                 status: resp.status(),
@@ -183,46 +197,67 @@ pub fn user_editor_page() -> Html {
             };
 
             //stage_change_result_state_clone.set(result);
+            let mut modified = cloned_state.deref().clone();
 
             if resp.status() == 200 {
-                // let mut modified_state = cloned_state.deref().clone();
-                // modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
-                // modified_state.territory.signed_out = link_contract.clone().assigned_date_utc;
-                // modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
-                // modified_state.territory.last_completed_by = link_contract.clone().territory_last_completed_by;
-                // modified_state.territory.last_completed_date = link_contract.clone().territory_last_completed_date;
-                // cloned_state.set(modified_state);
-            }
+                modified.save_success = true;
+                modified.save_error = false;
+                // UserSaveResult {
+                //     success: true,
+                //     errors: Some("".to_string()),
+                //     status: resp.status(),
+                //     completed: true,
+                // }
+            } else {
+                let errors = if (401..403).contains(&resp.status()) { 
+                    Some("Unauthorized".to_string()) 
+                } else {
+                    Some(resp.status().to_string())
+                };
+                modified.error_message = errors.unwrap_or_default();
+                modified.save_error = true;
+                modified.save_success = false;
+                // UserSaveResult {
+                //     success: false,
+                //     errors,
+                //     status: resp.status(),
+                //     completed: true,
+                // }
+            };
+
+            cloned_state.set(modified);
         });
     });
    
     let cloned_state = state.clone();
     use_effect_with((), move |_| {
         let cloned_state = cloned_state.clone();
-        let user_id = parameters.user_id.clone().unwrap_or_default();
+        let user_id = parameters.user_id.unwrap_or_default();
         wasm_bindgen_futures::spawn_local(async move {
             let uri: String = format!("/api/users?userId={user_id}");
 
-            let user_response = Request::get(uri.as_str())
+            let response = Request::get(uri.as_str())
                 .send()
                 .await
                 .expect("User response (raw) from API");
             
-            if user_response.status() == 200 {
-                let fetched_user: UserSummary = user_response
+            if response.status() == 200 {
+                let user_response: UserResponse = response
                     .json()
                     .await
-                    .expect("Valid territory JSON from API");
-
+                    .expect("Valid UserResponse JSON from API");
+  
                 let model: UserEditorModel = UserEditorModel {
-                    user: fetched_user,
+                    user: user_response.clone().user.unwrap_or_default(),
+                    user_response: user_response.clone(),
                     ..UserEditorModel::default()
                 };
 
                 cloned_state.set(model);
-            } else if user_response.status() == 401 {
+            } else if response.status() == 401 {
                 let model: UserEditorModel = UserEditorModel {
                     user: UserSummary::default(),
+                    user_response: UserResponse::default(),
                     load_error: true,
                     error_message: "Unauthorized".to_string(),
                     ..UserEditorModel::default()
@@ -238,6 +273,9 @@ pub fn user_editor_page() -> Html {
     let my_territories_link = format!("/app/my-territories?impersonate={full_name}");
 
     let cloned_state = state.clone();
+    let email_visible = state.user_response.email_visible;
+    let roles_visible = state.user_response.roles_visible;
+    let user_can_edit = state.user_response.user_can_edit;
 
     html! {
         <>
@@ -267,17 +305,19 @@ pub fn user_editor_page() -> Html {
                             onchange={full_name_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <label class="form-label">{"Email"}</label>
-                        <div class="input-group">
-                            <input 
-                                id="email-to-input" 
-                                value={cloned_state.user.normalized_email.clone()} 
-                                onchange={email_onchange.clone()}
-                                type="text" 
-                                class="form-control shadow-sm" />                       
+                    if email_visible {
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <label class="form-label">{"Email"}</label>
+                            <div class="input-group">
+                                <input 
+                                    id="email-to-input" 
+                                    value={cloned_state.user.normalized_email.clone()} 
+                                    onchange={email_onchange.clone()}
+                                    type="text" 
+                                    class="form-control shadow-sm" />                       
+                            </div>
                         </div>
-                    </div>
+                    }
                     <div class="col-6 col-sm-4 col-md-3">
                         <label class="form-label">{"Group ID"}</label>
                         <input 
@@ -287,13 +327,14 @@ pub fn user_editor_page() -> Html {
                             onchange={group_id_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
-                    <div class="col-3 col-sm-3 col-md-2">
+                    <div class="col-12">
                         <input 
                             id="is-active-input" 
                             checked={cloned_state.user.is_active} 
-                            type="checkbox" 
-                            class="form-check-input shadow-sm" />                       
-                        <label class="form-check-label">{"Active"}</label>
+                            type="checkbox"
+                            onchange={is_active_onchange.clone()}
+                            class="form-check-input shadow-sm mx-1" />
+                        <label class="form-check-label mx-1">{"Active"}</label>
                     </div>
                     <div class="col-12">
                         <label class="form-label">{"Notes"}</label>
@@ -304,24 +345,28 @@ pub fn user_editor_page() -> Html {
                             onchange={notes_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12">
-                        <label class="form-label">{"Roles"}</label>
-                        <div class="input-group">
-                            <input 
-                                id="roles-input" 
-                                value={cloned_state.user.roles.clone()} 
-                                onchange={roles_onchange.clone()}
-                                type="text" 
-                                class="form-control shadow-sm" />                       
+                    if roles_visible {
+                        <div class="col-12 col-sm-12 col-md-12">
+                            <label class="form-label">{"Roles"}</label>
+                            <div class="input-group">
+                                <input 
+                                    id="roles-input" 
+                                    value={cloned_state.user.roles.clone()} 
+                                    onchange={roles_onchange.clone()}
+                                    type="text" 
+                                    class="form-control shadow-sm" />                       
+                            </div>
                         </div>
-                    </div>                    
-                    <div class="col-12">
-                        <ButtonWithConfirm 
-                            id="save-button" 
-                            button_text="Save" 
-                            on_confirm={save_onclick.clone()} 
-                        />
-                    </div>
+                    }
+                    if user_can_edit {
+                        <div class="col-12">
+                            <ButtonWithConfirm 
+                                id="save-button" 
+                                button_text="Save" 
+                                on_confirm={save_onclick.clone()} 
+                            />
+                        </div>
+                    }
                 </div>
             </div>
         </>

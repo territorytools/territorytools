@@ -26,3 +26,13 @@ pub struct UserSummary {
     pub roles: Option<String>,
     pub territory_summary: Option<String>,
 }
+
+#[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct UserResponse {
+    pub user: Option<UserSummary>,
+    pub requested_by_user: UserSummary,
+    pub roles_visible: bool,
+    pub email_visible: bool,
+    pub user_can_edit: bool,
+}
