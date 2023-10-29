@@ -84,34 +84,19 @@ impl Component for AppMenuPage {
                 <div class="container mt-3">
                     <span><strong>{"Menu"}</strong></span>
                     <hr/>
-                    <div class="row" style="lightgray;">
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/" class="btn btn-outline-primary">{"Login"}</a>
-                        </div>   
-                        <div class="col-6 col-md-4 col-lg-4 m-1">
-                            <a href="/app/my-territories" class="btn btn-outline-primary">{"My Territories"}</a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/app/user-search" class="btn btn-outline-primary">{"Users"}</a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/app/map" class="btn btn-outline-primary">{"Big Map"}</a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/app/territory-search" class="btn btn-outline-primary">{"Search Territories"}</a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/app/links" class="btn btn-outline-primary">{"Links"}</a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/app/address-search" class="btn btn-outline-primary">{"Search Addresses"}</a>
-                        </div>
-                        <div class="col-6 col-md-4 col-lg-3 m-1">
-                            <a href="/" class="btn btn-outline-primary">{"Phone Territories Etc"}</a>
-                        </div>                                                  
+                    // col-12 col-sm-8 col-md-6 col-lg-4
+                    //d-grid gap-2 d-sm-block remove-mx-auto
+                    //d-inline gap-1
+                    <div class="d-grid gap-2 col-12 col-sm-6 col-md-6 col-lg-4 mx-auto" style="lightgray;">
+                        <a href="/" class="btn btn-outline-primary">{"Login"}</a>
+                        <a href="/app/my-territories" class="btn btn-outline-primary">{"My Territories"}</a>
+                        <a href="/app/user-search" class="btn btn-outline-primary">{"Users"}</a>
+                        <a href="/app/map" class="btn btn-outline-primary">{"Big Map"}</a>
+                        <a href="/app/territory-search" class="btn btn-outline-primary">{"Search Territories"}</a>
+                        <a href="/app/links" class="btn btn-outline-primary">{"Links"}</a>
+                        <a href="/app/address-search" class="btn btn-outline-primary">{"Search Addresses"}</a>
+                        <a href="/" class="btn btn-outline-primary">{"Phone Territories Etc"}</a>
                     </div>
-
-        
                 </div>
             </>
         }
