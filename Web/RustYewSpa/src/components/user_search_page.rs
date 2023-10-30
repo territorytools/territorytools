@@ -3,7 +3,6 @@ use crate::components::menu_bar::MapPageLink;
 use crate::models::users::UserSummary;
 use crate::Route;
 
-use gloo_console::log;
 use reqwasm::http::Request;
 use serde::Deserialize;
 use serde::Serialize;
@@ -16,13 +15,15 @@ use yew_router::scope_ext::RouterScopeExt;
 pub enum Msg {
     Load(UserSearchPageResult),
     RefreshFromSearchText(),
+    ToggleModal(),
 }
 
 //#[derive(Properties, PartialEq, Clone, Default)]
 pub struct UserSearchPage {
     _listener: LocationHandle,
     pub users: Vec<UserSummary>,
-    pub result: UserSearchPageResult    
+    pub result: UserSearchPageResult,
+    pub show_unauthorized_modal: bool,
 }
 
 impl Component for UserSearchPage {
@@ -39,10 +40,11 @@ impl Component for UserSearchPage {
             )
             .unwrap();
 
-        return Self {
+        Self {
             _listener: listener,
             users: vec![],
             result: UserSearchPageResult::default(),
+            show_unauthorized_modal: false,
         }
     }
 
@@ -50,6 +52,12 @@ impl Component for UserSearchPage {
         match msg {
             Msg::Load(result) => {
                 self.users = result.users.clone();
+                self.result = result.clone();
+                
+                if self.result.load_error_message == "Unauthorized" {
+                    self.show_unauthorized_modal = true;
+                }
+
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -58,6 +66,10 @@ impl Component for UserSearchPage {
                     Msg::Load(get_users(search_text.clone()).await)
                 });
                 false
+            },
+            Msg::ToggleModal() => {
+                self.show_unauthorized_modal = !self.show_unauthorized_modal;
+                true
             }
         }
     }
@@ -85,9 +97,26 @@ impl Component for UserSearchPage {
                 let _ = navigator.push_with_query(&Route::UserSearch, &query);
             })
         };
-    
+
+        let link = ctx.link().clone();
+        let show_unauthorized_modal_onclick= Callback::from(move |_: MouseEvent| {
+            link.send_message(Msg::ToggleModal());
+        });
+
+        let navigator = ctx.link().navigator().unwrap();
+        let search_clear_onclick = {
+            Callback::from(move |_: MouseEvent| {
+                let query = UserSearchQuery {
+                    search_text: Some("".to_string()),
+                };
+
+                let _ = navigator.push_with_query(&Route::UserSearch, &query);
+            })
+        };
+
         let count = self.users.len();
-        let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
+        let search_text = ctx.search_query().search_text.clone().unwrap_or_default();
+        let login_uri = format!("/Identity/Account/Login?ReturnUrl=%2Fapp%2Fuser-search?search_text{}", search_text.clone());
 
         html! {
             <>
@@ -104,9 +133,26 @@ impl Component for UserSearchPage {
                     <hr/>
                     <form {onsubmit} >
                     <div class="d-flex flex-row">
-                        <div class="d-flex flex-colum mb-2 shadow-sm">
-                            <input {onchange} type="text" value={search_text} style="max-width:400px;" placeholder="Enter search text" class="form-control" />
-                            <button type="submit" class="btn btn-primary">{"Search"}</button>
+                        <div class="d-flex flex-colum mb-2">
+                            <div class="input-group">
+                                <input 
+                                    {onchange} 
+                                    type="text" 
+                                    value={search_text}
+                                    style="max-width:400px;" 
+                                    placeholder="Enter search text" 
+                                    class="form-control" />
+                                <button 
+                                    id="clear-search-button"
+                                    onclick={search_clear_onclick} 
+                                    class="btn btn-outline-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
+                                        class="bi bi-x-lg" viewBox="0 0 16 16">
+                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                    </svg>
+                                </button> 
+                                <button type="submit" class="btn btn-primary">{"Search"}</button>
+                            </div>
                             if self.result.load_error { 
                                 <span class="mx-1 badge bg-danger">{"Error"}</span> 
                                 <span class="mx-1" style="color:red;">{self.result.load_error_message.clone()}</span>
@@ -144,37 +190,20 @@ impl Component for UserSearchPage {
                             html! {
                                 <a href={edit_user_link.clone()} class="text-decoration-none text-black" style="color:black;">
                                     <div  class="row" style="border-top: 1px solid lightgray;">
-                                        // <div class="col-2 col-md-2 col-lg-1">
-                                        //     <a href={edit_user_link.clone()} class="btn btn-primary mx-1">
-                                        //         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewBox="0 0 16 16">
-                                        //             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                        //             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                        //         </svg>
-                                        //     </a>
-                                        // </div>
-                                        // <div class="col-10 col-md-10 col-lg-10">
-                                        //     <div class="row">
-                                                <div class="col-8 col-md-6 col-lg-3">
-                                                    <strong>{user.alba_full_name.clone()}</strong>
-                                                </div>
-                                                <div class="col-4 col-md-2 col-lg-1">
-                                                    {user.group_id.clone().unwrap_or_default()}
-                                                </div>
-                                                <div class="col-4 col-md-3 col-lg-3">
-                                                    <a href={email_link}>
-                                                        {user.normalized_email.clone().unwrap_or_default().to_lowercase()}
-                                                    </a>
-                                                </div>
-                                                <div class="col-12 col-md-12 col-lg-5">
-                                                    // <a href={my_territories_link} class="btn btn-primary btn-sm me-1">
-                                                    //     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewBox="0 0 16 16">
-                                                    //         <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                                                    //     </svg>                                            
-                                                    // </a>
-                                                    {user.territory_summary.clone().unwrap_or_default()}
-                                                </div>
-                                        //     </div>
-                                        // </div>
+                                        <div class="col-8 col-md-6 col-lg-3">
+                                            <strong>{user.alba_full_name.clone()}</strong>
+                                        </div>
+                                        <div class="col-4 col-md-2 col-lg-1">
+                                            {user.group_id.clone().unwrap_or_default()}
+                                        </div>
+                                        <div class="col-4 col-md-3 col-lg-3">
+                                            <a href={email_link}>
+                                                {user.normalized_email.clone().unwrap_or_default().to_lowercase()}
+                                            </a>
+                                        </div>
+                                        <div class="col-12 col-md-12 col-lg-5">
+                                            {user.territory_summary.clone().unwrap_or_default()}
+                                        </div>
                                     </div>
                                 </a>
                             }
@@ -182,6 +211,36 @@ impl Component for UserSearchPage {
                     }
         
                 </div>
+
+                // The Modal 
+                if self.show_unauthorized_modal {
+                <div class="modal show" id="unauthorized-modal" style="display:block;">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">{"Must Log In"}</h4>
+                                <button type="button" 
+                                    onclick={show_unauthorized_modal_onclick.clone()} 
+                                    class="btn-close" 
+                                    data-bs-dismiss="modal">
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>{"You are not logged in.  Please log in to continue."}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href={login_uri} class="btn btn-primary">{"Login"}</a>
+                                <button type="button" 
+                                    onclick={show_unauthorized_modal_onclick.clone()} 
+                                    class="btn btn-secondary" 
+                                    data-bs-dismiss="modal">
+                                    {"Close"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+                }
             </>
         }
     }
@@ -214,8 +273,6 @@ async fn get_users(search_text: String) -> UserSearchPageResult {
         .await
         .expect("A result from the /api/users endpoint");
     
-    log!(format!("load users from search result code: {}", resp.status().to_string()));
-
     let address_result: UserSearchResults = if resp.status() == 200 {
         resp
         .json()

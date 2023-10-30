@@ -1,7 +1,7 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
-use crate::models::users::{UserChanges,UserResponse,UserSummary};
+use crate::models::users::{UserChanges,UserResponse};
 use crate::functions::document_functions::set_document_title;
 
 use reqwasm::http::Request;
@@ -197,9 +197,7 @@ pub fn user_editor_page() -> Html {
         //event.prevent_default();
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
-            let uri_string: String = format!("{path}", 
-                path = "/api/users",
-            );
+            let uri_string: String = "/api/users".to_string();
 
             let uri: &str = uri_string.as_str();
 

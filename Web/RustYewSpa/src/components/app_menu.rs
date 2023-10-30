@@ -1,10 +1,7 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
-use crate::models::users::UserSummary;
 use crate::Route;
 
-use gloo_console::log;
-use reqwasm::http::Request;
 use serde::Deserialize;
 use serde::Serialize;
 use wasm_bindgen::JsCast;
@@ -26,7 +23,7 @@ impl Component for AppMenuPage {
     type Properties = ();
     
     fn create(ctx: &Context<Self>) -> Self {
-        let link = ctx.link().clone();      
+        let _link = ctx.link().clone();      
         let listener = ctx.link()
             .add_location_listener(
                 Callback::from(move |_| {
@@ -35,12 +32,12 @@ impl Component for AppMenuPage {
             )
             .unwrap();
 
-        return Self {
+        Self {
             _listener: listener,
         }
     }
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
         }
     }
@@ -48,13 +45,13 @@ impl Component for AppMenuPage {
     fn view(&self, ctx: &Context<Self>) -> Html {
         //set_document_title("Territory Search");
         
-        let onsubmit = Callback::from(move |event: SubmitEvent| {
+        let _onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
             // If we don't prevent_default() it will clear the box and search again
         });
 
         let navigator = ctx.link().navigator().unwrap();
-        let onchange = {
+        let _onchange = {
             Callback::from(move |event: Event| {
                 let value = event
                     .target()
@@ -69,8 +66,6 @@ impl Component for AppMenuPage {
             })
         };
     
-        //let count = self.users.len();
-        let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
 
         html! {
             <>
@@ -84,9 +79,6 @@ impl Component for AppMenuPage {
                 <div class="container mt-3">
                     <span><strong>{"Menu"}</strong></span>
                     <hr/>
-                    // col-12 col-sm-8 col-md-6 col-lg-4
-                    //d-grid gap-2 d-sm-block remove-mx-auto
-                    //d-inline gap-1
                     <div class="d-grid gap-2 col-12 col-sm-6 col-md-6 col-lg-4 mx-auto" style="lightgray;">
                         <a href="/" class="btn btn-outline-primary">{"Login"}</a>
                         <a href="/app/my-territories" class="btn btn-outline-primary">{"My Territories"}</a>
