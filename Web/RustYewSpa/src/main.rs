@@ -18,6 +18,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 mod components;
+mod modals;
 mod models;
 mod functions;
 mod libs;

@@ -1,6 +1,7 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::users::UserSummary;
+use crate::modals::unauthorized::UnauthorizedModal;
 use crate::Route;
 
 use reqwasm::http::Request;
@@ -116,7 +117,7 @@ impl Component for UserSearchPage {
 
         let count = self.users.len();
         let search_text = ctx.search_query().search_text.clone().unwrap_or_default();
-        let login_uri = format!("/Identity/Account/Login?ReturnUrl=%2Fapp%2Fuser-search?search_text{}", search_text.clone());
+        let return_url = format!("%2Fapp%2Fuser-search%3Fsearch_text%3D{}", search_text.clone());
 
         html! {
             <>
@@ -212,34 +213,8 @@ impl Component for UserSearchPage {
         
                 </div>
 
-                // The Modal 
                 if self.show_unauthorized_modal {
-                <div class="modal show" id="unauthorized-modal" style="display:block;">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">{"Must Log In"}</h4>
-                                <button type="button" 
-                                    onclick={show_unauthorized_modal_onclick.clone()} 
-                                    class="btn-close" 
-                                    data-bs-dismiss="modal">
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p>{"You are not logged in.  Please log in to continue."}</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a href={login_uri} class="btn btn-primary">{"Login"}</a>
-                                <button type="button" 
-                                    onclick={show_unauthorized_modal_onclick.clone()} 
-                                    class="btn btn-secondary" 
-                                    data-bs-dismiss="modal">
-                                    {"Close"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>                
+                    <UnauthorizedModal return_url={return_url} onclick={show_unauthorized_modal_onclick.clone()} />              
                 }
             </>
         }
