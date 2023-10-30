@@ -1,5 +1,6 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
+use crate::functions::document_functions::set_document_title;
 use crate::Route;
 
 use serde::Deserialize;
@@ -13,7 +14,6 @@ use yew_router::scope_ext::RouterScopeExt;
 pub enum Msg {
 }
 
-//#[derive(Properties, PartialEq, Clone, Default)]
 pub struct AppMenuPage {
     _listener: LocationHandle,
 }
@@ -43,7 +43,7 @@ impl Component for AppMenuPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        //set_document_title("Territory Search");
+        set_document_title("Menu");
         
         let _onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();

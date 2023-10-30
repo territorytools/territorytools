@@ -1,6 +1,7 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::user_selector::UserSelector;
+use crate::functions::document_functions::set_document_title;
 use crate::modals::unauthorized::UnauthorizedModal;
 use crate::models::territories::TerritorySummary;
 use crate::Route;
@@ -68,7 +69,7 @@ impl Component for MyTerritoriesPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        //set_document_title("Territory Search");
+        set_document_title("My Territories");
         
         let _onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();

@@ -8,8 +8,9 @@ use crate::components::{
         stage_as_of_date, tpoly_from_area_w_button,
     },
 };
-//use crate::components::menu_bar_v2::MenuBarV2;
+
 use crate::Route;
+use crate::functions::document_functions::set_document_title;
 
 use chrono::{NaiveDate,Duration};
 use regex::Regex;
@@ -269,6 +270,8 @@ impl Component for Model {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        set_document_title("Map");
+
         let show_menu = self.show_menu;
         let link = ctx.link().clone(); 
         let menu_button_onclick = {

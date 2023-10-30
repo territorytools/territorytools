@@ -1,5 +1,6 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
+use crate::functions::document_functions::set_document_title;
 use crate::models::users::UserSummary;
 use crate::modals::unauthorized::UnauthorizedModal;
 use crate::Route;
@@ -71,7 +72,7 @@ impl Component for UserSearchPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        //set_document_title("Territory Search");
+        set_document_title("Users");
         
         let onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
