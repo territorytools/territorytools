@@ -1,6 +1,7 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::user_selector::UserSelector;
+use crate::modals::unauthorized::UnauthorizedModal;
 use crate::models::territories::TerritorySummary;
 use crate::Route;
 
@@ -22,6 +23,7 @@ pub struct MyTerritoriesPage {
     _listener: LocationHandle,
     territories: Vec<TerritorySummary>,
     result: MyTerritoriesResult,
+    show_unauthorized_modal: bool,
 }
 
 impl Component for MyTerritoriesPage {
@@ -38,10 +40,11 @@ impl Component for MyTerritoriesPage {
             )
             .unwrap();
 
-        return Self {
+        Self {
             _listener: listener,
             territories: vec![],
             result: MyTerritoriesResult::default(),
+            show_unauthorized_modal: false,
         }
     }
 
@@ -50,6 +53,7 @@ impl Component for MyTerritoriesPage {
             Msg::Load(result) => {
                 self.territories = result.territories.clone();
                 self.result.contract = result.contract.clone();
+                self.show_unauthorized_modal = result.load_error_message == "Unauthorized";
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -110,6 +114,7 @@ impl Component for MyTerritoriesPage {
         let _search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
         let full_name = self.result.contract.full_name.clone();
         let can_impersonate = self.result.contract.can_impersonate;
+        let return_url = "%2Fapp%2Fmy-territories";
 
         html!{
             <>
@@ -229,6 +234,9 @@ impl Component for MyTerritoriesPage {
                          }).collect::<Html>()
                     }
                 </div>
+                if self.show_unauthorized_modal {
+                    <UnauthorizedModal {return_url} />              
+                }
             </>
         }
     }

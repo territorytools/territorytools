@@ -6,6 +6,7 @@ const DATA_API_PATH: &str = "/api/territories/list";
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::territories::TerritorySummary;
+use crate::modals::unauthorized::UnauthorizedModal;
 use crate::Route;
 
 use gloo_console::log;
@@ -26,6 +27,7 @@ pub struct TerritorySearchPage {
     _listener: LocationHandle,
     territories: Vec<TerritorySummary>,
     result: TerritorySearchResult,
+    show_unauthorized_modal: bool,
 }
 
 impl Component for TerritorySearchPage {
@@ -42,10 +44,11 @@ impl Component for TerritorySearchPage {
             )
             .unwrap();
 
-        return Self {
+        Self {
             _listener: listener,
             territories: vec![],
             result: TerritorySearchResult::default(),
+            show_unauthorized_modal: false,
         }
     }
 
@@ -53,6 +56,7 @@ impl Component for TerritorySearchPage {
         match msg {
             Msg::Load(result) => {
                 self.territories = result.territories.clone();
+                self.show_unauthorized_modal = result.load_error_message == "Unauthorized";
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -91,6 +95,7 @@ impl Component for TerritorySearchPage {
     
         let count = self.territories.len();
         let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
+        let return_url = format!("%2Fapp%2Fterritory-search%3Fsearch_text%3D{}", search_text.clone());
 
         html!{
             <>
@@ -207,6 +212,9 @@ impl Component for TerritorySearchPage {
                          }).collect::<Html>()
                     }
                 </div>
+                if self.show_unauthorized_modal {
+                    <UnauthorizedModal {return_url} />              
+                }
             </>
         }
     }

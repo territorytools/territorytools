@@ -16,7 +16,6 @@ use yew_router::scope_ext::RouterScopeExt;
 pub enum Msg {
     Load(UserSearchPageResult),
     RefreshFromSearchText(),
-    ToggleModal(),
 }
 
 //#[derive(Properties, PartialEq, Clone, Default)]
@@ -68,10 +67,6 @@ impl Component for UserSearchPage {
                 });
                 false
             },
-            Msg::ToggleModal() => {
-                self.show_unauthorized_modal = !self.show_unauthorized_modal;
-                true
-            }
         }
     }
 
@@ -98,11 +93,6 @@ impl Component for UserSearchPage {
                 let _ = navigator.push_with_query(&Route::UserSearch, &query);
             })
         };
-
-        let link = ctx.link().clone();
-        let show_unauthorized_modal_onclick= Callback::from(move |_: MouseEvent| {
-            link.send_message(Msg::ToggleModal());
-        });
 
         let navigator = ctx.link().navigator().unwrap();
         let search_clear_onclick = {
@@ -214,7 +204,7 @@ impl Component for UserSearchPage {
                 </div>
 
                 if self.show_unauthorized_modal {
-                    <UnauthorizedModal return_url={return_url} onclick={show_unauthorized_modal_onclick.clone()} />              
+                    <UnauthorizedModal return_url={return_url} />              
                 }
             </>
         }
