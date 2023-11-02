@@ -1,17 +1,13 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
-use crate::models::users::{UserChanges,UserResponse};
-use crate::functions::document_functions::set_document_title;
-use crate::components::text_box::{TextBox, InputCell, CheckboxCell, TextAreaCell};
-use crate::{callback_value, field_checked};
-use crate::callback_string;
-use crate::callback_checked;
-use crate::grid_input_box;
-use crate::field;
+use crate::components::text_box::{InputCell, CheckboxCell, TextAreaCell};
 use crate::components::input_callback_macros::GridInput;
+use crate::functions::document_functions::set_document_title;
+use crate::models::users::{UserChanges,UserResponse};
+use crate::field_checked;
+use crate::field;
 
-use gloo_console::log;
 use reqwasm::http::Request;
 use reqwasm::http::Method;
 use serde::{Serialize, Deserialize};
@@ -56,13 +52,10 @@ pub struct UserEditorParameters {
 pub fn user_editor_page() -> Html {
     set_document_title("User Editor");
 
-    let state: yew::UseStateHandle<UserEditorModel> = use_state(|| UserEditorModel::default());
+    let state: yew::UseStateHandle<UserEditorModel> = use_state(UserEditorModel::default);
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
-    let user_id: i32 = match parameters.user_id {
-        Some(v) => v,
-        _ => 0,
-    };
+    let user_id: i32 = match parameters.user_id { Some(v) => v, _ => 0 };
 
     let cloned_state = state.clone();
     let save_onclick = Callback::from(move |_: i32| { 
@@ -189,11 +182,7 @@ pub fn user_editor_page() -> Html {
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();
     let my_territories_link = format!("/app/my-territories?impersonate={full_name}");
-
     let cloned_state = state.clone();
-    let email_visible = state.user_response.email_visible;
-    let roles_visible = state.user_response.roles_visible;
-    let user_can_edit = state.user_response.user_can_edit;
 
     html! {
         <>
@@ -217,7 +206,7 @@ pub fn user_editor_page() -> Html {
                     <InputCell label="Full Name" field={field!(cloned_state.user.alba_full_name)} /> 
                     <InputCell label="Surname (family name)" field={field!(cloned_state.user.surname)} /> 
                     <InputCell label="Given Name" field={field!(cloned_state.user.given_name)} />                      
-                    if email_visible {
+                    if state.user_response.email_visible {
                          <InputCell label="Email" field={field!(cloned_state.user.normalized_email)} />  
                          <InputCell label="Phone" field={field!(cloned_state.user.phone)} />  
                     }
@@ -225,25 +214,21 @@ pub fn user_editor_page() -> Html {
                 </div>
                 <div class="row">
                     <CheckboxCell label="Active" field={field_checked!(cloned_state.user.is_active)} />  
-                    if roles_visible {
+                    if state.user_response.roles_visible {
                         <CheckboxCell label="Can Impersonate Users" field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
                         <CheckboxCell label="Can Assign Territories" field={field_checked!(cloned_state.user.can_assign_territories)} /> 
                         <CheckboxCell label="Can Edit Territories" field={field_checked!(cloned_state.user.can_edit_territories)} /> 
                     }
                     <TextAreaCell label="Notes" field={field!(cloned_state.user.notes)} />
-                    if roles_visible {
+                    if state.user_response.roles_visible {
                         <InputCell 
                             class="col-12 col-sm-12 col-md-12" 
                             label="Roles" 
                             field={field!(cloned_state.user.roles)} />    
                     }
-                    if user_can_edit {
+                    if state.user_response.user_can_edit {
                         <div class="col-12 p-3">
-                            <ButtonWithConfirm 
-                                id="save-button" 
-                                button_text="Save" 
-                                on_confirm={save_onclick.clone()} 
-                            />
+                            <ButtonWithConfirm id="save-button" button_text="Save" on_confirm={save_onclick.clone()} />
                         </div>
                     }
                 </div>
@@ -251,7 +236,6 @@ pub fn user_editor_page() -> Html {
         </>
     }
 }
-
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]

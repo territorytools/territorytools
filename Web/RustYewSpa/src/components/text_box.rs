@@ -1,36 +1,9 @@
 use gloo_console::log;
-use web_sys::HtmlInputElement;
-use wasm_bindgen::JsCast;
 use yew::function_component;
 use yew::prelude::*;
 
 use super::input_callback_macros::CheckboxCellInput;
 use super::input_callback_macros::GridInput;
-
-
-// #[macro_export]
-// macro_rules! callback_value {
-//     ($cloner:ident, $field:expr) => (
-//         {
-//             //let state = cloned_state.clone();
-//             let state = $cloner.clone();
-//             Callback::from(move |event: Event| {
-//                 let mut modification = state.deref().clone();
-//                 let value = event
-//                 .target()
-//                 .unwrap()
-//                 .unchecked_into::<HtmlInputElement>()
-//                 .value();
-
-//                 log!(format!("callback_value!: {}", value.clone()));
-//                 //modification.user.given_name = Some(value.to_string());
-//                 //modification.$field = Some(value.to_string());
-//                 $field = Some(value.to_string());
-//                 state.set(modification);
-//             })
-//         }
-//     )
-// }
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
