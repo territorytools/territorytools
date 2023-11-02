@@ -19,6 +19,7 @@ pub mod menu_bar;
 pub mod menu_bar_v2;
 pub mod popup_content;
 pub mod route_stuff;
+pub mod input_callback_macros;
 pub mod selector_option_bilingual;
 pub mod sms_section;
 pub mod state_selector;

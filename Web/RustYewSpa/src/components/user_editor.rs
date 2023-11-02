@@ -3,7 +3,13 @@ use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::users::{UserChanges,UserResponse};
 use crate::functions::document_functions::set_document_title;
-use crate::components::text_box::TextBox;
+use crate::components::text_box::{TextBox, InputCell, CheckboxCell, TextAreaCell};
+use crate::{callback_value, field_checked};
+use crate::callback_string;
+use crate::callback_checked;
+use crate::grid_input_box;
+use crate::field;
+use crate::components::input_callback_macros::GridInput;
 
 use gloo_console::log;
 use reqwasm::http::Request;
@@ -15,51 +21,6 @@ use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
-
-
-#[macro_export]
-macro_rules! callback_value {
-    // This awesome comment made it work: https://stackoverflow.com/questions/65451484/passing-nested-struct-field-path-as-macro-parameter/65451718#65451718
-    ($cloner:ident, $($field_path:ident).+) => (
-        {
-            let state = $cloner.clone();
-            Callback::from(move |event: Event| {
-                let mut modification = state.deref().clone();
-                let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-                //log!(format!("callback_value!!!: {}", value.clone()));
-                modification.$($field_path).+ = Some(value.to_string());
-                state.set(modification);
-            })
-        }
-    )
-}
-
-#[macro_export]
-macro_rules! callback_checked {
-    // This awesome comment made it work: https://stackoverflow.com/questions/65451484/passing-nested-struct-field-path-as-macro-parameter/65451718#65451718
-    ($cloner:ident, $($field_path:ident).+) => (
-        {
-            let state = $cloner.clone();
-            Callback::from(move |event: Event| {
-                let mut modification = state.deref().clone();
-                let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .checked();
-
-                //log!(format!("checked!!!: {}", value.clone()));
-                modification.$($field_path).+ = value;
-                state.set(modification);
-            })
-        }
-    )
-}
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
@@ -96,26 +57,12 @@ pub fn user_editor_page() -> Html {
     set_document_title("User Editor");
 
     let state: yew::UseStateHandle<UserEditorModel> = use_state(|| UserEditorModel::default());
-    let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
     let user_id: i32 = match parameters.user_id {
         Some(v) => v,
         _ => 0,
     };
-
-    let full_name_onchange = callback_value!(cloned_state, user.alba_full_name);
-    let email_onchange = callback_value!(cloned_state, user.normalized_email);
-    let group_id_onchange = callback_value!(cloned_state, user.group_id);
-    let phone_onchange = callback_value!(cloned_state, user.phone);
-    let is_active_onchange = callback_checked!(cloned_state, user.is_active);
-    let can_impersonate_users_onchange = callback_checked!(cloned_state, user.can_impersonate_users);
-    let can_assign_territories_onchange = callback_checked!(cloned_state, user.can_assign_territories);
-    let can_edit_territories_onchange = callback_checked!(cloned_state, user.can_edit_territories);
-    let notes_onchange = callback_value!(cloned_state, user.notes);
-    let surname_onchange = callback_value!(cloned_state, user.surname);
-    let given_name_onchange = callback_value!(cloned_state, user.given_name);
-    let roles_onchange = callback_value!(cloned_state, user.roles);
 
     let cloned_state = state.clone();
     let save_onclick = Callback::from(move |_: i32| { 
@@ -267,128 +214,28 @@ pub fn user_editor_page() -> Html {
                     </div>                    
                 </div>
                 <div class="row g-3 pt-3">    
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <label class="form-label">{"Full Name"}</label>
-                        <input 
-                            id="full-name-to-input" 
-                            value={cloned_state.user.alba_full_name.clone()} 
-                            type="text"
-                            onchange={full_name_onchange.clone()}
-                            class="form-control shadow-sm" />                       
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <label class="form-label">{"Surname (family name)"}</label>
-                        <input 
-                            id="surname-to-input"
-                            data-field="surname"
-                            value={cloned_state.user.surname.clone()} 
-                            type="text"
-                            onchange={surname_onchange.clone()}
-                            class="form-control shadow-sm" />                       
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <label class="form-label">{"Given Name"}</label>
-                        // <TextBox 
-                        //     model="cloned_state"
-                        //     field="user.given_name"
-                        //     value={cloned_state.user.given_name.clone()} />
-                        <input 
-                            id="given-name-to-input" 
-                            value={cloned_state.user.given_name.clone()} 
-                            type="text"
-                            onchange={given_name_onchange.clone()}
-                            class="form-control shadow-sm" />                       
-                    </div>
+                    <InputCell label="Full Name" field={field!(cloned_state.user.alba_full_name)} /> 
+                    <InputCell label="Surname (family name)" field={field!(cloned_state.user.surname)} /> 
+                    <InputCell label="Given Name" field={field!(cloned_state.user.given_name)} />                      
                     if email_visible {
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <label class="form-label">{"Email"}</label>
-                            <input 
-                                id="email-to-input" 
-                                value={cloned_state.user.normalized_email.clone()} 
-                                onchange={email_onchange.clone()}
-                                type="text" 
-                                class="form-control shadow-sm" />                       
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <label class="form-label">{"Phone"}</label>
-                            <input 
-                                id="phone-input" 
-                                value={cloned_state.user.phone.clone()} 
-                                onchange={phone_onchange.clone()}
-                                type="text" 
-                                class="form-control shadow-sm" />                       
-                        </div>
+                         <InputCell label="Email" field={field!(cloned_state.user.normalized_email)} />  
+                         <InputCell label="Phone" field={field!(cloned_state.user.phone)} />  
                     }
-                    <div class="col-6 col-sm-4 col-md-3">
-                        <label class="form-label">{"Group ID"}</label>
-                        <input 
-                            id="group-id-input" 
-                            value={cloned_state.user.group_id.clone()} 
-                            type="text"
-                            onchange={group_id_onchange.clone()}
-                            class="form-control shadow-sm" />                       
-                    </div>
+                    <InputCell label="Group ID" field={field!(cloned_state.user.group_id)} />  
                 </div>
                 <div class="row">
-                    <div class="col-3">
-                        <input 
-                            id="is-active-input" 
-                            checked={cloned_state.user.is_active} 
-                            type="checkbox"
-                            onchange={is_active_onchange.clone()}
-                            class="form-check-input shadow-sm mx-1" />
-                        <label class="form-check-label mx-1">{"Active"}</label>
-                    </div>
+                    <CheckboxCell label="Active" field={field_checked!(cloned_state.user.is_active)} />  
                     if roles_visible {
-                        <div class="col-3">
-                            <input 
-                                id="can-impersonate-users-input" 
-                                checked={cloned_state.user.can_impersonate_users} 
-                                type="checkbox"
-                                onchange={can_impersonate_users_onchange.clone()}
-                                class="form-check-input shadow-sm mx-1" />
-                            <label class="form-check-label mx-1">{"Can Impersonate Users"}</label>
-                        </div>
-                        <div class="col-3">
-                            <input 
-                                id="can-assign-territories-input" 
-                                checked={cloned_state.user.can_assign_territories} 
-                                type="checkbox"
-                                onchange={can_assign_territories_onchange.clone()}
-                                class="form-check-input shadow-sm mx-1" />
-                            <label class="form-check-label mx-1">{"Can Assign Territories"}</label>
-                        </div>
-                        <div class="col-3">
-                            <input 
-                                id="can-edit-territories-input" 
-                                checked={cloned_state.user.can_edit_territories} 
-                                type="checkbox"
-                                onchange={can_edit_territories_onchange.clone()}
-                                class="form-check-input shadow-sm mx-1" />
-                            <label class="form-check-label mx-1">{"Can Edit Territories"}</label>
-                        </div>
+                        <CheckboxCell label="Can Impersonate Users" field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
+                        <CheckboxCell label="Can Assign Territories" field={field_checked!(cloned_state.user.can_assign_territories)} /> 
+                        <CheckboxCell label="Can Edit Territories" field={field_checked!(cloned_state.user.can_edit_territories)} /> 
                     }
-                    <div class="col-12">
-                        <label class="form-label">{"Notes"}</label>
-                        <textarea 
-                            id="notes-input" 
-                            value={cloned_state.user.notes.clone()} 
-                            rows="3"
-                            onchange={notes_onchange.clone()}
-                            class="form-control shadow-sm" />                       
-                    </div>
+                    <TextAreaCell label="Notes" field={field!(cloned_state.user.notes)} />
                     if roles_visible {
-                        <div class="col-12 col-sm-12 col-md-12">
-                            <label class="form-label">{"Roles"}</label>
-                            <div class="input-group">
-                                <input 
-                                    id="roles-input" 
-                                    value={cloned_state.user.roles.clone()} 
-                                    onchange={roles_onchange.clone()}
-                                    type="text" 
-                                    class="form-control shadow-sm" />                       
-                            </div>
-                        </div>
+                        <InputCell 
+                            class="col-12 col-sm-12 col-md-12" 
+                            label="Roles" 
+                            field={field!(cloned_state.user.roles)} />    
                     }
                     if user_can_edit {
                         <div class="col-12 p-3">
