@@ -3,7 +3,9 @@ use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
 use crate::models::users::{UserChanges,UserResponse};
 use crate::functions::document_functions::set_document_title;
+use crate::components::text_box::TextBox;
 
+use gloo_console::log;
 use reqwasm::http::Request;
 use reqwasm::http::Method;
 use serde::{Serialize, Deserialize};
@@ -13,6 +15,51 @@ use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
+
+
+#[macro_export]
+macro_rules! callback_value {
+    // This awesome comment made it work: https://stackoverflow.com/questions/65451484/passing-nested-struct-field-path-as-macro-parameter/65451718#65451718
+    ($cloner:ident, $($field_path:ident).+) => (
+        {
+            let state = $cloner.clone();
+            Callback::from(move |event: Event| {
+                let mut modification = state.deref().clone();
+                let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+                //log!(format!("callback_value!!!: {}", value.clone()));
+                modification.$($field_path).+ = Some(value.to_string());
+                state.set(modification);
+            })
+        }
+    )
+}
+
+#[macro_export]
+macro_rules! callback_checked {
+    // This awesome comment made it work: https://stackoverflow.com/questions/65451484/passing-nested-struct-field-path-as-macro-parameter/65451718#65451718
+    ($cloner:ident, $($field_path:ident).+) => (
+        {
+            let state = $cloner.clone();
+            Callback::from(move |event: Event| {
+                let mut modification = state.deref().clone();
+                let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+
+                //log!(format!("checked!!!: {}", value.clone()));
+                modification.$($field_path).+ = value;
+                state.set(modification);
+            })
+        }
+    )
+}
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
@@ -57,140 +104,18 @@ pub fn user_editor_page() -> Html {
         _ => 0,
     };
 
-    let full_name_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.user.alba_full_name = Some(value.to_string());
-            state.set(modification);
-        })
-    };
-
-    let email_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.user.normalized_email = Some(value.to_string());
-            state.set(modification);
-        })
-    };
-  
-    let group_id_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.user.group_id = Some(value);   
-            state.set(modification);
-        })
-    };
-    
-    let is_active_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .checked();
-
-            modification.user.is_active = value;   
-            state.set(modification);
-        })
-    };
-
-    let can_impersonate_users_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .checked();
-
-            modification.user.can_impersonate_users = value;   
-            state.set(modification);
-        })
-    };
-
-    let can_assign_territories_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .checked();
-
-            modification.user.can_assign_territories = value;   
-            state.set(modification);
-        })
-    };
-
-    let can_edit_territories_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .checked();
-
-            modification.user.can_edit_territories = value;   
-            state.set(modification);
-        })
-    };
-
-    let notes_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.user.notes = Some(value.to_string());
-            state.set(modification);
-        })
-    };
-   
-    let roles_onchange = {
-        let state = cloned_state.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.user.roles = Some(value.to_string());
-            state.set(modification);
-        })
-    };
+    let full_name_onchange = callback_value!(cloned_state, user.alba_full_name);
+    let email_onchange = callback_value!(cloned_state, user.normalized_email);
+    let group_id_onchange = callback_value!(cloned_state, user.group_id);
+    let phone_onchange = callback_value!(cloned_state, user.phone);
+    let is_active_onchange = callback_checked!(cloned_state, user.is_active);
+    let can_impersonate_users_onchange = callback_checked!(cloned_state, user.can_impersonate_users);
+    let can_assign_territories_onchange = callback_checked!(cloned_state, user.can_assign_territories);
+    let can_edit_territories_onchange = callback_checked!(cloned_state, user.can_edit_territories);
+    let notes_onchange = callback_value!(cloned_state, user.notes);
+    let surname_onchange = callback_value!(cloned_state, user.surname);
+    let given_name_onchange = callback_value!(cloned_state, user.given_name);
+    let roles_onchange = callback_value!(cloned_state, user.roles);
 
     let cloned_state = state.clone();
     let save_onclick = Callback::from(move |_: i32| { 
@@ -208,6 +133,7 @@ pub fn user_editor_page() -> Html {
                     alba_full_name: cloned_state.user.alba_full_name.clone(),
                     given_name: cloned_state.user.given_name.clone(),
                     surname: cloned_state.user.surname.clone(),
+                    phone: cloned_state.user.phone.clone(),
                     notes: cloned_state.user.notes.clone(),
                     alba_user_id: cloned_state.user.alba_user_id.clone(),
                     normalized_email: cloned_state.user.normalized_email.clone(),
@@ -350,17 +276,47 @@ pub fn user_editor_page() -> Html {
                             onchange={full_name_onchange.clone()}
                             class="form-control shadow-sm" />                       
                     </div>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <label class="form-label">{"Surname (family name)"}</label>
+                        <input 
+                            id="surname-to-input"
+                            data-field="surname"
+                            value={cloned_state.user.surname.clone()} 
+                            type="text"
+                            onchange={surname_onchange.clone()}
+                            class="form-control shadow-sm" />                       
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <label class="form-label">{"Given Name"}</label>
+                        // <TextBox 
+                        //     model="cloned_state"
+                        //     field="user.given_name"
+                        //     value={cloned_state.user.given_name.clone()} />
+                        <input 
+                            id="given-name-to-input" 
+                            value={cloned_state.user.given_name.clone()} 
+                            type="text"
+                            onchange={given_name_onchange.clone()}
+                            class="form-control shadow-sm" />                       
+                    </div>
                     if email_visible {
                         <div class="col-12 col-sm-6 col-md-4">
                             <label class="form-label">{"Email"}</label>
-                            <div class="input-group">
-                                <input 
-                                    id="email-to-input" 
-                                    value={cloned_state.user.normalized_email.clone()} 
-                                    onchange={email_onchange.clone()}
-                                    type="text" 
-                                    class="form-control shadow-sm" />                       
-                            </div>
+                            <input 
+                                id="email-to-input" 
+                                value={cloned_state.user.normalized_email.clone()} 
+                                onchange={email_onchange.clone()}
+                                type="text" 
+                                class="form-control shadow-sm" />                       
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <label class="form-label">{"Phone"}</label>
+                            <input 
+                                id="phone-input" 
+                                value={cloned_state.user.phone.clone()} 
+                                onchange={phone_onchange.clone()}
+                                type="text" 
+                                class="form-control shadow-sm" />                       
                         </div>
                     }
                     <div class="col-6 col-sm-4 col-md-3">

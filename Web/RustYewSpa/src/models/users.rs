@@ -44,6 +44,7 @@ pub struct UserChanges {
     pub alba_full_name: Option<String>,
     pub given_name: Option<String>,
     pub surname: Option<String>,
+    pub phone: Option<String>,
     pub notes: Option<String>,
     pub alba_user_id: Option<String>,
     pub normalized_email: Option<String>,
