@@ -1,12 +1,16 @@
-use crate::AddressEditPage;
-use crate::AddressSearchPage;
 use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::components::territory_stage_report_page::TerritoryReportsPage;
 use crate::components::user_search_page::UserSearchPage;
 use crate::components::user_editor::UserEditorPage;
 
+use crate::AddressEditPage;
+use crate::AddressSearchPage;
 use crate::AssignPage;
+use crate::CanvasMap;
+use crate::LinkEditPage;
+use crate::Model;
 use crate::Secure;
+use crate::SvgMap;
 use crate::TerritoryEditPage;
 use crate::TerritoryEditorPage;
 use crate::TerritoryEditPageExample;
@@ -14,9 +18,6 @@ use crate::TerritorySearchPage;
 use crate::TerritorySearchOld;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
-use crate::SvgMap;
-use crate::CanvasMap;
-use crate::Model;
 
 use yew_router::prelude::*;
 use yew::html;
@@ -68,6 +69,8 @@ pub enum Route {
     AddressSharedLetter,
     #[at("/app/address-edit")]
     AddressEdit,
+    #[at("/app/link-edit")]
+    LinkEdit,
     #[at("/app/territory-edit")]
     TerritoryEditor,
     #[at("/app/user-edit")]
@@ -137,6 +140,7 @@ pub fn switch(route: Route) -> Html {
         Route::UserSearch => html! { <UserSearchPage /> },
         Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
+        Route::LinkEdit => html! { <LinkEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::UserEditor => html! { <UserEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearchPage /> },

@@ -3,6 +3,7 @@ use yew::function_component;
 use yew::prelude::*;
 
 use super::input_callback_macros::CheckboxCellInput;
+use super::input_callback_macros::FieldStringInput;
 use super::input_callback_macros::GridInput;
 
 #[derive(Properties, PartialEq, Clone)]
@@ -42,6 +43,38 @@ pub struct InputCellProps {
 
 #[function_component(InputCell)]
 pub fn grid_input_box(props: &InputCellProps) -> Html {
+    let id = props.id.clone();
+    let class = if props.class.is_some() {
+        props.class.clone()
+    } else {
+        Some("col-12 col-sm-6 col-md-4".to_string())
+    };
+
+    html!{
+        <div class={class.clone()}>
+            <label class="form-label">{props.label.clone()}</label>
+            <input 
+                {id}
+                value={props.field.value.clone()} 
+                type="text"
+                onchange={props.field.callback.clone()}
+                class="form-control shadow-sm" />                       
+        </div>  
+    }
+}
+
+#[derive(Properties, PartialEq, Clone)]
+pub struct StringCellProps {
+    #[prop_or_default]
+    pub id: Option<String>,
+    #[prop_or_default]
+    pub class: Option<String>,
+    pub label: String,
+    pub field: FieldStringInput,
+}
+
+#[function_component(StringCell)]
+pub fn grid_input_box(props: &StringCellProps) -> Html {
     let id = props.id.clone();
     let class = if props.class.is_some() {
         props.class.clone()

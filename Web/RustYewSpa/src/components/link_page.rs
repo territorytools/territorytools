@@ -85,31 +85,34 @@ pub fn territory_link_page(_props: &TerritoryLinkPageProps) -> Html {
                 links.links.iter().map(|link| 
                     {
                         let uri = format!("/mtk/{id}", id = link.id.clone());
+                        let link_edit_uri = format!("/app/link-edit?link_id={}", link.id.clone());
 
                         html! {
-                        <div class={"row border-bottom"}>
-                            <div class={"col-6 col-sm-4 col-lg-2"}>
-                                {format_date(link.created.clone())}
-                            </div>
-                            <div class={"col-6 col-sm-4 col-lg-2"}>
-                            <span class={if link.expired { "text-decoration-line-through"} else {""}}>
-                                 {format_date(link.expires.clone())}</span>
-                            </div>
-                            <div class={"col-6 col-sm-4 col-lg-2"}><a href={uri}>{link.id.clone()}</a></div>
-                            <div class={"col-6 col-sm-4 col-lg-1"}>
-                                {link.territory_number.clone()}
-                            </div>
-                            <div class={"col-6 col-sm-4 col-lg-3"} style="text-overflow:clip;overflow:hidden;">
-                                {link.territory_description.clone()}
-                            </div>
-                            <div class={"col-6 col-sm-4 col-lg-2"}>
-                                <a href={format!("mailto:{}",link.assignee_email.clone().expect("string"))}>
-                                    {link.assignee_name.clone()}
-                                </a>
-                            </div>
-                           
-                        </div>
-                }}).collect::<Html>()
+                            <a href={link_edit_uri} style="text-decoration:none;color:black;">
+                                <div class={"row border-bottom"}>
+                                    <div class={"col-6 col-sm-4 col-lg-2"}>
+                                        {format_date(link.created.clone())}
+                                    </div>
+                                    <div class={"col-6 col-sm-4 col-lg-2"}>
+                                    <span class={if link.expired { "text-decoration-line-through"} else {""}}>
+                                        {format_date(link.expires.clone())}</span>
+                                    </div>
+                                    <div class={"col-6 col-sm-4 col-lg-2"}><a href={uri}>{link.id.clone()}</a></div>
+                                    <div class={"col-6 col-sm-4 col-lg-1"}>
+                                        {link.territory_number.clone()}
+                                    </div>
+                                    <div class={"col-6 col-sm-4 col-lg-3"} style="text-overflow:clip;overflow:hidden;">
+                                        {link.territory_description.clone()}
+                                    </div>
+                                    <div class={"col-6 col-sm-4 col-lg-2"}>
+                                        <a href={format!("mailto:{}",link.assignee_email.clone().expect("string"))}>
+                                            {link.assignee_name.clone()}
+                                        </a>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    }).collect::<Html>()
             }
             </div>
             if show_unauthorized_modal {

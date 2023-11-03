@@ -124,6 +124,40 @@ macro_rules! field {
 
 
 #[derive(Properties, PartialEq, Clone)]
+pub struct FieldStringInput {
+    pub callback: Callback<Event>,
+    pub value: String,
+}
+
+#[macro_export]
+macro_rules! field_string {
+    // This awesome stack overflow comment made it work: https://stackoverflow.com/questions/65451484/passing-nested-struct-field-path-as-macro-parameter/65451718#65451718
+    ($cloner:ident.$($field_path:ident).+) => (
+        {
+            let state = $cloner.clone();
+            let callback = Callback::from(move |event: Event| {
+                let mut modification = state.deref().clone();
+                let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+                //log!(format!("checked!!!: {}", value.clone()));
+                modification.$($field_path).+ = value;
+                state.set(modification);
+            });
+            let value = $cloner.$($field_path).+.clone();
+            $crate::components::input_callback_macros::FieldStringInput {
+                callback,
+                value,
+            }
+        }
+    )
+}
+
+
+#[derive(Properties, PartialEq, Clone)]
 pub struct CheckboxCellInput {
     pub callback: Callback<Event>,
     pub checked: bool
