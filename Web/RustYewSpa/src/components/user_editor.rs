@@ -193,8 +193,8 @@ pub fn user_editor_page() -> Html {
                     </li> 
                 </ul>
             </MenuBarV2>
-            <div class="container pt-3">
-                <div class="row g-3 pt-3">
+            <div class="container my-2">
+                <div class="row g-3 my-3">
                     <div class="col-12 col-sm-6 col-md-4">
                         <span><strong>{"User Editor"}</strong></span>
                     </div>
@@ -202,7 +202,7 @@ pub fn user_editor_page() -> Html {
                         <a href={my_territories_link} class="btn btn-primary">{"View My Territories Page"}</a>
                     </div>                    
                 </div>
-                <div class="row g-3 pt-3">    
+                <div class="row g-3 my-2">    
                     <InputCell label="Full Name" field={field!(cloned_state.user.alba_full_name)} /> 
                     <InputCell label="Surname (family name)" field={field!(cloned_state.user.surname)} /> 
                     <InputCell label="Given Name" field={field!(cloned_state.user.given_name)} />                      
@@ -212,7 +212,7 @@ pub fn user_editor_page() -> Html {
                     }
                     <InputCell label="Group ID" field={field!(cloned_state.user.group_id)} />  
                 </div>
-                <div class="row">
+                <div class="row g-3 my-2">
                     <CheckboxCell label="Active" field={field_checked!(cloned_state.user.is_active)} />  
                     if state.user_response.roles_visible {
                         <CheckboxCell label="Can Impersonate Users"  field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
@@ -224,7 +224,7 @@ pub fn user_editor_page() -> Html {
                         <InputCell 
                             class="col-12 col-sm-12 col-md-12" 
                             label="Roles" 
-                            field={field!(cloned_state.user.roles)} />    
+                            field={field!(cloned_state.user.roles)} />  
                     }
                     if state.user_response.user_can_edit {
                         <div class="col-12 p-3">

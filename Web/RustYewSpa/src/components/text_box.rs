@@ -82,10 +82,12 @@ pub fn text_area_cell(props: &TextAreaCellProps) -> Html {
     } else {
         Some("col-12".to_string())
     };
+
     let rows = format!("{}", props.rows.unwrap_or(3));
+    let class = format!("{:?} mt-2", class);
 
     html!{
-        <div class={class.clone()}>
+        <div {class}>
             <label class="form-label">{"Notes"}</label>
             <textarea 
                 {id}
