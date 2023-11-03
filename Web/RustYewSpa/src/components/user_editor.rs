@@ -215,9 +215,9 @@ pub fn user_editor_page() -> Html {
                 <div class="row">
                     <CheckboxCell label="Active" field={field_checked!(cloned_state.user.is_active)} />  
                     if state.user_response.roles_visible {
-                        <CheckboxCell label="Can Impersonate Users" field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
+                        <CheckboxCell label="Can Impersonate Users"  field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
                         <CheckboxCell label="Can Assign Territories" field={field_checked!(cloned_state.user.can_assign_territories)} /> 
-                        <CheckboxCell label="Can Edit Territories" field={field_checked!(cloned_state.user.can_edit_territories)} /> 
+                        <CheckboxCell label="Can Edit Territories"   field={field_checked!(cloned_state.user.can_edit_territories)} /> 
                     }
                     <TextAreaCell label="Notes" field={field!(cloned_state.user.notes)} />
                     if state.user_response.roles_visible {

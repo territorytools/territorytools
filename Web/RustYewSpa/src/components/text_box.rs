@@ -113,11 +113,13 @@ pub fn checkbox_cell(props: &CheckboxCellProps) -> Html {
     let class = if props.class.is_some() {
         props.class.clone()
     } else {
-        Some("col-3".to_string())
+        Some("col-auto".to_string())
     };
 
+    let class = format!("{} mt-3 mb-2", class.unwrap_or_default());
+
     html!{
-        <div class={class.clone()}>
+        <div {class}>
             <input 
                 {id}
                 checked={props.field.checked} 
