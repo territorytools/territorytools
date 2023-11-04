@@ -2,7 +2,8 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::text_box::{InputCell, CheckboxCell, TextAreaCell};
-use crate::macros::http::{LoadStatus, SaveStatus};
+use crate::macros::http::LoadStatus;
+use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::users::{UserChanges,UserResponse};
@@ -60,75 +61,7 @@ pub fn user_editor_page() -> Html {
     let state: yew::UseStateHandle<UserEditorModel> = use_state(UserEditorModel::default);
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
-    let user_id: i32 = match parameters.user_id { Some(v) => v, _ => 0 };
-
-    let cloned_state = state.clone();
-    // let save_onclick = Callback::from(move |_: i32| { 
-    //     //event.prevent_default();
-    //     let cloned_state = cloned_state.clone();
-    //     spawn_local(async move {
-    //         let uri_string: String = "/api/users".to_string();
-
-    //         let uri: &str = uri_string.as_str();
-
-    //         let body_model = UserSaveRequest {
-    //             created_by: Some("unkown".to_string()),
-    //             user: cloned_state.user_response.user.clone(),
-    //         };
-
-    //         let data_serialized = serde_json::to_string_pretty(&body_model)
-    //             .expect("Should be able to serialize address for geocoding into JSON");
-
-    //         let method = if user_id == 0 { Method::POST } else { Method::PUT };
-
-    //         let resp = Request::new(uri)
-    //             .method(method)
-    //             .header("Content-Type", "application/json")
-    //             .body(data_serialized)
-    //             .send()
-    //             .await
-    //             .expect("A result from the endpoint");
-            
-    //         let _result = UserSaveResult {
-    //             success: (resp.status() == 200),
-    //             errors: Some("".to_string()),
-    //             status: resp.status(),
-    //             completed: true,
-    //         };
-
-    //         //stage_change_result_state_clone.set(result);
-    //         let mut modified = cloned_state.deref().clone();
-
-    //         if resp.status() == 200 {
-    //             modified.save_success = true;
-    //             modified.save_error = false;
-    //             // UserSaveResult {
-    //             //     success: true,
-    //             //     errors: Some("".to_string()),
-    //             //     status: resp.status(),
-    //             //     completed: true,
-    //             // }
-    //         } else {
-    //             let errors = if (401..403).contains(&resp.status()) { 
-    //                 Some("Unauthorized".to_string()) 
-    //             } else {
-    //                 Some(resp.status().to_string())
-    //             };
-    //             modified.error_message = errors.unwrap_or_default();
-    //             modified.save_error = true;
-    //             modified.save_success = false;
-    //             // UserSaveResult {
-    //             //     success: false,
-    //             //     errors,
-    //             //     status: resp.status(),
-    //             //     completed: true,
-    //             // }
-    //         };
-
-    //         cloned_state.set(modified);
-    //     });
-    // });
-    
+       
     let cloned_state = state.clone();
     let uri = "/api/users".to_string();
     let save_onclick = save_callback!(cloned_state.user_response, uri);
