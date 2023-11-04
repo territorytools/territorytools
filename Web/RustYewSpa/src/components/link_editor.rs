@@ -5,23 +5,43 @@ use crate::components::text_box::{InputCell, CheckboxCell, StringCell};
 use crate::components::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::territory_links::{LinkChanges, LinkResponse, TerritoryLinkContract};
-use crate::{field_checked, field_string};
+use crate::field_string;
 use crate::field;
 
-use reqwasm::http::Request;
-use reqwasm::http::Method;
+use reqwasm::http::{Request,Response};
 use serde::{Serialize, Deserialize};
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
-use wasm_bindgen_futures::spawn_local;
+//use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
 
+#[macro_export]
+macro_rules! http_get_set {
+    ($state:ident.$($field_path:ident).+, $uri:ident) => {{
+        let state = $state.clone();
+        let uri = $uri.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let response = Request::get(uri.as_str())
+                .send()
+                .await
+                .expect("Response (raw) from API");
+            let status = response_status(&response);
+            
+            let mut modification = state.deref().clone();
+            modification.$($field_path).+ = response.json().await.expect("Valid JSON");
+            modification.error_message = status.error_message;
+            modification.load_error = status.load_error;
+            
+            state.set(modification);
+        });
+    }};
+}
+
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct LinkEditorModel {
     pub link: TerritoryLinkContract,
-    pub link_response: TerritoryLinkContract,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -33,7 +53,6 @@ impl Default for LinkEditorModel {
     fn default() -> Self {
         LinkEditorModel {
             link: TerritoryLinkContract::default(),
-            link_response: TerritoryLinkContract::default(),
             save_success: false,
             save_error: false,
             load_error: false,
@@ -134,43 +153,9 @@ pub fn user_editor_page() -> Html {
     // });
     //let parameters = parameters.clone();
     let cloned_state = state.clone();
+    let uri: String = format!("/api/territory-links/{link_id}");
     use_effect_with((), move |_| {
-        let cloned_state = cloned_state.clone();
-        //let link_id = parameters.link_id.unwrap_or_default();
-        wasm_bindgen_futures::spawn_local(async move {
-            let uri: String = format!("/api/territory-links/{link_id}");
-
-            let response = Request::get(uri.as_str())
-                .send()
-                .await
-                .expect("User response (raw) from API");
-            
-            if response.status() == 200 {
-                let link_response: TerritoryLinkContract = response
-                    .json()
-                    .await
-                    .expect("Valid LinkResponse JSON from API");
-  
-                let model = LinkEditorModel {
-                    link: link_response.clone(),
-                    link_response: link_response.clone(),
-                    ..LinkEditorModel::default()
-                };
-
-                cloned_state.set(model);
-            } else if response.status() == 401 {
-                let model: LinkEditorModel = LinkEditorModel {
-                    link: TerritoryLinkContract::default(),
-                    link_response: TerritoryLinkContract::default(),
-                    load_error: true,
-                    error_message: "Unauthorized".to_string(),
-                    ..LinkEditorModel::default()
-                };
-
-                cloned_state.set(model);
-            }
-        });
-        || ()
+        http_get_set!(cloned_state.link, uri);
     });
 
     let cloned_state = state.clone();
@@ -221,6 +206,33 @@ pub struct LinkSaveResult {
     pub errors: Option<String>,
     pub status: u16,
     pub completed: bool,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GetResult {
+    // pub success: bool,
+    // pub errors: Option<String>,
+    // pub status: u16,
+    // pub completed: bool,
+    pub load_error: bool,
+    pub error_message: String,
+}
+
+pub fn response_status(response: &Response) -> GetResult {
+    if response.status() == 200 {
+        GetResult::default()
+    } else if response.status() == 401 {
+        GetResult {
+            load_error: true,
+            error_message: "Unauthorized".to_string(),
+        }
+    } else {
+        GetResult {
+            load_error: true,
+            error_message: format!("Error: {}", response.status()),
+        }
+    }
 }
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
