@@ -203,19 +203,13 @@ pub fn territory_map() -> Html {
             }
         };
 
-        let opacity: f32 = {
-            if t.is_active {
-                1.0
-            } else {
-                1.0
-            }
-        };
+        let opacity: f32 = 1.0;
 
         if area_code == "TER" {
             let polyline = Polyline::new_with_options(
                 polygon.iter().map(JsValue::from).collect(),
                 &serde_wasm_bindgen::to_value(&PolylineOptions {
-                    color: territory_color.into(),
+                    color: territory_color,
                     opacity: 1.0,
                 })
                 .expect("Unable to serialize polygon options"),
@@ -230,18 +224,18 @@ pub fn territory_map() -> Html {
             let poly = Polygon::new_with_options(
                 polygon.iter().map(JsValue::from).collect(),
                 &serde_wasm_bindgen::to_value(&PolylineOptions {
-                    color: territory_color.into(),
-                    opacity: opacity.into(),
+                    color: territory_color,
+                    opacity: opacity,
                 })
                 .expect("Unable to serialize polygon options"),
             );
 
-            if t.number == "10001".to_string() {
+            if t.number == *"10001" {
                 let bounds = poly.getBounds();
                 leaflet_map.fitBounds(&bounds);
             }
 
-            let tooltip_text: String = t.number.clone().to_string(); //format!("{group_id}: {area_code}: {}", t.number);
+            let tooltip_text: String = t.number.clone().to_string();
 
             let popup_options = PopupContentOptions {
                 edit_territory_button_enabled: true,

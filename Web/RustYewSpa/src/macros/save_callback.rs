@@ -4,6 +4,31 @@ use reqwasm::http::Response;
 
 #[macro_export]
 macro_rules! save_callback {
+    (id: $state:ident.$($field_path:ident).*$id_field:ident, $uri:ident) => {{
+        Callback::from(move |_: i32| { 
+            let state = $state.clone();
+            let uri = $uri.clone();
+            spawn_local(async move {
+                let model = state.$($field_path).+.clone();
+                let model_serialized = serde_json::to_string_pretty(&model)
+                    .expect("Cannot serialize model into JSON");
+                let method = Method::POST;
+                let response = Request::new(uri.as_str())
+                    .method(method)
+                    .header("Content-Type", "application/json")
+                    .body(model_serialized)
+                    .send()
+                    .await
+                    .expect("A result from the endpoint");        
+                
+                let status = $crate::macros::save_callback::save_status(&response);
+
+                let mut modified = state.deref().clone();
+                modified.save_status = status;
+                state.set(modified);
+            });
+        })
+    }};
     ($state:ident.$($field_path:ident).+, $uri:ident) => {{
         Callback::from(move |_: i32| { 
             let state = $state.clone();

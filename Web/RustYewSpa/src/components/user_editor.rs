@@ -7,8 +7,7 @@ use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::users::{UserChanges,UserResponse};
-use crate::{field_checked, http_get_set, save_callback};
-use crate::field;
+use crate::{field, field_checked, http_get_set, save_callback};
 
 use reqwasm::http::Request;
 use reqwasm::http::Method;
@@ -19,6 +18,34 @@ use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
+
+
+#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSaveResult {
+    pub success: bool,
+    pub errors: Option<String>,
+    pub status: u16,
+    pub completed: bool,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSaveRequest {
+    pub created_by: Option<String>,
+    pub user: UserChanges, // <-- Can I add this later?
+}
+
+#[derive(Properties, PartialEq, Clone, Serialize)]
+pub struct UserEditorModelTest {
+    pub user: UserChanges,
+    pub load_response: UserResponse,
+    pub save_response: SaveStatus,
+    pub save_request: SaveUserRequest,
+
+    pub load_status: LoadStatus,
+    pub save_status: SaveStatus,
+}
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
@@ -64,7 +91,7 @@ pub fn user_editor_page() -> Html {
        
     let cloned_state = state.clone();
     let uri = "/api/users".to_string();
-    let save_onclick = save_callback!(cloned_state.user_response, uri);
+    let save_onclick = save_callback!(id: cloned_state.user_response.user_id, uri);
    
     let cloned_state = state.clone();
     let user_id = parameters.user_id.unwrap_or_default();
@@ -128,20 +155,4 @@ pub fn user_editor_page() -> Html {
             </div>
         </>
     }
-}
-
-#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct UserSaveResult {
-    pub success: bool,
-    pub errors: Option<String>,
-    pub status: u16,
-    pub completed: bool,
-}
-
-#[derive(Properties, PartialEq, Clone, Default, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct UserSaveRequest {
-    pub created_by: Option<String>,
-    pub user: UserChanges,
 }
