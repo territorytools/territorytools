@@ -11,6 +11,12 @@ pub struct EditorModel {
         pub dob: String,
         // etc...
     }
+    pub original_entity: Entity { // This would be loaded on every load, a whole copy of the entity
+        pub entity_id: i32,
+        pub name: String,
+        pub dob: String,
+        // etc...
+    }
     pub load_request: EntityLoadRequest { 
         pub entity_id: i32,       // <--- I'm not sure if this is useful since we use query params normally
         // Anything else too
