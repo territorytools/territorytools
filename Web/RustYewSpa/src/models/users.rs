@@ -30,7 +30,7 @@ pub struct UserSummary {
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct UserResponse {
-    pub user: Option<UserChanges>,
+    pub user: UserChanges,
     pub requested_by_user: UserSummary,
     pub roles_visible: bool,
     pub email_visible: bool,

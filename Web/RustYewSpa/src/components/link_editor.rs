@@ -2,41 +2,26 @@ use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::text_box::{InputCell, StringCell};
-use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
+use crate::macros::http::{SaveStatus, LoadStatus};
+use crate::macros::input_callback_macros::GridInput;
 use crate::models::territory_links::{LinkChanges, TerritoryLinkContract};
-use crate::{field_string, http_get_set, http_put};
-use crate::field;
+use crate::{field, field_string, http_get_set, save_callback};
 
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
-use wasm_bindgen_futures::spawn_local;
 use std::ops::Deref;
+use wasm_bindgen_futures::spawn_local;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
 
-#[derive(Properties, PartialEq, Clone, Serialize)]
+#[derive(Default, Properties, PartialEq, Clone, Serialize)]
 pub struct LinkEditorModel {
     pub link: TerritoryLinkContract,
-    pub save_success: bool,
-    pub save_error: bool,
-    #[prop_or_default]
-    pub load_error: bool,
-    pub error_message: String,
-}
-
-impl Default for LinkEditorModel {
-    fn default() -> Self {
-        LinkEditorModel {
-            link: TerritoryLinkContract::default(),
-            save_success: false,
-            save_error: false,
-            load_error: false,
-            error_message: "".to_string(),
-        }
-    }
+    pub save_status: SaveStatus,
+    pub load_status: LoadStatus,
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -56,7 +41,7 @@ pub fn user_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let save_uri: String = "/api/territory-links".to_string();
-    let save_onclick = http_put!(cloned_state.link, save_uri);
+    let save_onclick = save_callback!(cloned_state.link, save_uri);
    
     let cloned_state = state.clone();
     let uri: String = format!("/api/territory-links/{}", link_id.clone());
@@ -97,11 +82,11 @@ pub fn user_editor_page() -> Html {
                     if true { //state.user_response.user_can_edit {
                         <div class="col-12 p-3">
                             <ButtonWithConfirm id="save-button" button_text="Save" on_confirm={save_onclick.clone()} />
-                            if state.save_error {
+                            if state.save_status.save_error {
                                 <span class="mx-1 badge bg-danger">{"Error"}</span>
-                                <span class="mx-1 fw-bold text-danger">{state.error_message.clone()}</span>
+                                <span class="mx-1 fw-bold text-danger">{state.save_status.error_message.clone()}</span>
                             }
-                            if state.save_success {
+                            if state.save_status.save_success {
                                 <span class="mx-1 badge bg-success">{"Saved"}</span>
                             }
                         </div>
