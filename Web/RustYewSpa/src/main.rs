@@ -23,6 +23,7 @@ mod modals;
 mod models;
 mod functions;
 mod libs;
+mod macros;
 
 fn main() {
     yew::Renderer::<App>::new().render();

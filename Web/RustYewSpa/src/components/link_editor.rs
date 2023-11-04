@@ -1,43 +1,19 @@
 use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
-use crate::components::text_box::{InputCell, CheckboxCell, StringCell};
+use crate::components::text_box::{InputCell, StringCell};
 use crate::components::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
-use crate::models::territory_links::{LinkChanges, LinkResponse, TerritoryLinkContract};
-use crate::field_string;
+use crate::models::territory_links::{LinkChanges, TerritoryLinkContract};
+use crate::{field_string, http_get_set};
 use crate::field;
 
-use reqwasm::http::{Request,Response};
+use reqwasm::http::Request;
 use serde::{Serialize, Deserialize};
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
-//use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
-
-#[macro_export]
-macro_rules! http_get_set {
-    ($state:ident.$($field_path:ident).+, $uri:ident) => {{
-        let state = $state.clone();
-        let uri = $uri.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let response = Request::get(uri.as_str())
-                .send()
-                .await
-                .expect("Response (raw) from API");
-            let status = response_status(&response);
-            
-            let mut modification = state.deref().clone();
-            modification.$($field_path).+ = response.json().await.expect("Valid JSON");
-            modification.error_message = status.error_message;
-            modification.load_error = status.load_error;
-            
-            state.set(modification);
-        });
-    }};
-}
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct LinkEditorModel {
@@ -207,34 +183,6 @@ pub struct LinkSaveResult {
     pub status: u16,
     pub completed: bool,
 }
-
-#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GetResult {
-    // pub success: bool,
-    // pub errors: Option<String>,
-    // pub status: u16,
-    // pub completed: bool,
-    pub load_error: bool,
-    pub error_message: String,
-}
-
-pub fn response_status(response: &Response) -> GetResult {
-    if response.status() == 200 {
-        GetResult::default()
-    } else if response.status() == 401 {
-        GetResult {
-            load_error: true,
-            error_message: "Unauthorized".to_string(),
-        }
-    } else {
-        GetResult {
-            load_error: true,
-            error_message: format!("Error: {}", response.status()),
-        }
-    }
-}
-
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LinkSaveRequest {
