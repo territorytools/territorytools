@@ -148,7 +148,7 @@ macro_rules! field_string {
                 state.set(modification);
             });
             let value = $cloner.$($field_path).+.clone();
-            $crate::components::input_callback_macros::FieldStringInput {
+            $crate::macros::input_callback_macros::FieldStringInput {
                 callback,
                 value,
             }
@@ -181,7 +181,7 @@ macro_rules! field_checked {
             });
             let state = $cloner.clone();
             let checked = state.$($field_path).+;
-            $crate::components::input_callback_macros::CheckboxCellInput {
+            $crate::macros::input_callback_macros::CheckboxCellInput {
                 callback,
                 checked,
             }

@@ -2,9 +2,7 @@ use gloo_console::log;
 use yew::function_component;
 use yew::prelude::*;
 
-use super::input_callback_macros::CheckboxCellInput;
-use super::input_callback_macros::FieldStringInput;
-use super::input_callback_macros::GridInput;
+use crate::macros::input_callback_macros::{FieldStringInput,GridInput,CheckboxCellInput};
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {

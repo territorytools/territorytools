@@ -2,7 +2,7 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::text_box::{InputCell, CheckboxCell, TextAreaCell};
-use crate::components::input_callback_macros::GridInput;
+use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::users::{UserChanges,UserResponse};
 use crate::field_checked;
