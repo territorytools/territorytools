@@ -40,8 +40,8 @@ pub struct UserSaveRequest {
 pub struct UserEditorModelTest {
     pub user: UserChanges,
     pub load_response: UserResponse,
-    pub save_response: SaveStatus,
-    pub save_request: SaveUserRequest,
+    // pub save_response: SaveStatus,
+    // pub save_request: SaveUserRequest,
 
     pub load_status: LoadStatus,
     pub save_status: SaveStatus,
@@ -58,6 +58,7 @@ pub struct UserEditorModel {
     pub error_message: String,
     pub load_status: LoadStatus,
     pub save_status: SaveStatus,
+    pub wrapper: Wrapper<UserChanges>,
 }
 
 impl Default for UserEditorModel {
@@ -71,8 +72,16 @@ impl Default for UserEditorModel {
             error_message: "".to_string(),
             load_status: LoadStatus::default(),
             save_status: SaveStatus::default(),
+            wrapper: Wrapper::<UserChanges>::default(),
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct Wrapper<E> {
+    pub entity: E,
+    pub timestamp: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -88,10 +97,14 @@ pub fn user_editor_page() -> Html {
     let state: yew::UseStateHandle<UserEditorModel> = use_state(UserEditorModel::default);
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
-       
+    
+    let mut modified = state.deref().clone();
+    state.wrapper.user = state.user;
+    state.set() //TODO: Finish this, set wrapper or something
+
     let cloned_state = state.clone();
     let uri = "/api/users".to_string();
-    let save_onclick = save_callback!(id: cloned_state.user_response.user_id, uri);
+    let save_onclick = save_callback!(cloned_state.user.id, uri);
    
     let cloned_state = state.clone();
     let user_id = parameters.user_id.unwrap_or_default();
