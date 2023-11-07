@@ -29,6 +29,45 @@ macro_rules! save_callback {
             });
         })
     }};
+    (id: $id:ident, 
+        uri: $uri:ident,
+        entity: $entity_state:ident.$($entity_path:ident).+, 
+        result: $result_state:ident.$($result_path:ident).+,
+        status: $status_state:ident.$($status_path:ident).+, 
+        result_entity: $result_state2:ident.$($result_entity_path:ident).+) => {{
+        Callback::from(move |_: i32| { 
+            let entity_state = $entity_state.clone();
+            let status_state = $status_state.clone();
+            let result_state = $result_state.clone();
+            let uri = $uri.clone();
+            spawn_local(async move {
+                let model = entity_state.$($entity_path).+.clone();
+                let model_serialized = serde_json::to_string_pretty(&model)
+                    .expect("Cannot serialize model into JSON");
+                let method = if $id == 0 { Method::POST } else { Method::PUT };
+                //gloo_console::log!("The id_field value: {}", $id_field);
+                let response = Request::new(uri.as_str())
+                    .method(method)
+                    .header("Content-Type", "application/json")
+                    .body(model_serialized)
+                    .send()
+                    .await
+                    .expect("A result from the endpoint");        
+                
+                let mut modified = status_state.deref().clone();
+                modified.$($status_path).+ = $crate::macros::save_callback::save_status(&response);
+                status_state.set(modified);
+                
+                let mut modified = result_state.deref().clone();
+                modified.$($result_path).+ = response.json().await.unwrap_or_default();
+                result_state.set(modified);
+                
+                let mut modified = entity_state.deref().clone();
+                modified.$($entity_path).+ = result_state.$($result_entity_path).+.clone();
+                entity_state.set(modified);
+            });
+        })
+    }};
     // save status to one place and entity to another
     ($entity_state:ident.$($entity_field:ident).+, $session_state:ident.$($session_field:ident).+, $status_state:ident.$($status_field:ident).+) => {{
         Callback::from(move |_: i32| { 
@@ -64,38 +103,38 @@ macro_rules! save_callback {
         })
     }};
     // TODO: Finish or delete this, this should copy the model to the request.model property...
-    ($state:ident.$($model_path:ident).*$model:ident, $request_state:ident.$($request_path:ident).+, $uri:ident) => {{
-        Callback::from(move |_: i32| { 
-            let state = $state.clone();
-            let request_state = $request_state.clone();
-            let uri = $uri.clone();
-            spawn_local(async move {
-                let model = state.$($model_path).*$model.clone();
+    // ($state:ident.$($model_path:ident).*$model:ident, $request_state:ident.$($request_path:ident).+, $uri:ident) => {{
+    //     Callback::from(move |_: i32| { 
+    //         let state = $state.clone();
+    //         let request_state = $request_state.clone();
+    //         let uri = $uri.clone();
+    //         spawn_local(async move {
+    //             let model = state.$($model_path).*$model.clone();
 
-                let mut request = request_state.deref().clone();
-                // TODO: request.user = model ?
-                // state.save_request.user = model
-                request.$($request_path:ident).+ = model.clone();
+    //             let mut request = request_state.deref().clone();
+    //             // TODO: request.user = model ?
+    //             // state.save_request.user = model
+    //             request.$($request_path:ident).+ = model.clone();
                 
-                let request_serialized = serde_json::to_string_pretty(&request)
-                    .expect("Cannot serialize request into JSON");
-                let method = Method::POST;
-                let response = Request::new(uri.as_str())
-                    .method(method)
-                    .header("Content-Type", "application/json")
-                    .body(model_serialized)
-                    .send()
-                    .await
-                    .expect("A result from the endpoint");        
+    //             let request_serialized = serde_json::to_string_pretty(&request)
+    //                 .expect("Cannot serialize request into JSON");
+    //             let method = Method::POST;
+    //             let response = Request::new(uri.as_str())
+    //                 .method(method)
+    //                 .header("Content-Type", "application/json")
+    //                 .body(model_serialized)
+    //                 .send()
+    //                 .await
+    //                 .expect("A result from the endpoint");        
                 
-                let status = $crate::macros::http::save_status(&response);
+    //             let status = $crate::macros::http::save_status(&response);
 
-                let mut modified = state.deref().clone();
-                modified.save_status = status;
-                state.set(modified);
-            });
-        })
-    }}
+    //             let mut modified = state.deref().clone();
+    //             modified.save_status = status;
+    //             state.set(modified);
+    //         });
+    //     })
+    // }}
 }
 
 #[derive(Properties, PartialEq, Clone, Default, Deserialize, Serialize)]

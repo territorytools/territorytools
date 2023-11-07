@@ -6,7 +6,7 @@ use crate::macros::http::LoadStatus;
 use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
-use crate::models::users::{UserChanges,UserResponse};
+use crate::models::users::{UserChanges,UserLoadResult};
 use crate::{field, field_checked, http_get_set, save_callback};
 
 use reqwasm::http::Request;
@@ -20,12 +20,13 @@ use yew::prelude::*;
 use yew_router::hooks::use_location;
 
 
-#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
+#[derive(Properties, PartialEq, Clone, Default, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSaveResult {
+    pub user: UserChanges,
     pub success: bool,
     pub errors: Option<String>,
-    pub status: u16,
+    pub status: SaveStatus,
     pub completed: bool,
 }
 
@@ -36,21 +37,22 @@ pub struct UserSaveRequest {
     pub user: UserChanges, // <-- Can I add this later?
 }
 
-#[derive(Properties, PartialEq, Clone, Serialize)]
-pub struct UserEditorModelTest {
-    pub user: UserChanges,
-    pub load_response: UserResponse,
-    // pub save_response: SaveStatus,
-    // pub save_request: SaveUserRequest,
+// #[derive(Properties, PartialEq, Clone, Serialize)]
+// pub struct UserEditorModelTest {
+//     pub user: UserChanges,
+//     pub load_response: UserResponse,
+//     // pub save_response: SaveStatus,
+//     // pub save_request: SaveUserRequest,
 
-    pub load_status: LoadStatus,
-    pub save_status: SaveStatus,
-}
+//     pub load_status: LoadStatus,
+//     pub save_status: SaveStatus,
+// }
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
     pub user: UserChanges,
-    pub user_response: UserResponse,
+    pub load_result: UserLoadResult, // TODO: Rename struct
+    pub save_result: UserSaveResult,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -65,7 +67,8 @@ impl Default for UserEditorModel {
     fn default() -> Self {
         UserEditorModel {
             user: UserChanges::default(),
-            user_response: UserResponse::default(),
+            load_result: UserLoadResult::default(),
+            save_result: UserSaveResult::default(),
             save_success: false,
             save_error: false,
             load_error: false,
@@ -98,19 +101,30 @@ pub fn user_editor_page() -> Html {
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
     
-    let mut modified = state.deref().clone();
-    state.wrapper.user = state.user;
-    state.set() //TODO: Finish this, set wrapper or something
+    //let mut modified = state.deref().clone();
+    //state.wrapper.user = state.user;
+    //state.set() //TODO: Finish this, set wrapper or something
 
     let cloned_state = state.clone();
+    let user_id = cloned_state.user.id;
     let uri = "/api/users".to_string();
-    let save_onclick = save_callback!(cloned_state.user.id, uri);
-   
+    let save_onclick = save_callback!(
+        id: user_id, 
+        uri: uri,
+        entity: cloned_state.user, 
+        result: cloned_state.save_result,
+        status: cloned_state.save_result.status, 
+        result_entity: cloned_state.save_result.user);
+
     let cloned_state = state.clone();
     let user_id = parameters.user_id.unwrap_or_default();
     let uri: String = format!("/api/users?userId={user_id}");
     use_effect_with((), move |_| {
-        http_get_set!(cloned_state.user_response, uri);
+        http_get_set!(
+            entity: cloned_state.user,
+            result: cloned_state.load_result,
+            result_entity: cloned_state.load_result.user,
+            uri: uri);
     });
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();
@@ -136,34 +150,35 @@ pub fn user_editor_page() -> Html {
                     </div>                    
                 </div>
                 <div class="row g-3 my-2">    
-                    <InputCell label="Full Name" field={field!(cloned_state.user_response.user.alba_full_name)} /> 
-                    <InputCell label="Surname (family name)" field={field!(cloned_state.user_response.user.surname)} /> 
-                    <InputCell label="Given Name" field={field!(cloned_state.user_response.user.given_name)} />                      
-                    if state.user_response.email_visible {
-                         <InputCell label="Email" field={field!(cloned_state.user_response.user.normalized_email)} />  
-                         <InputCell label="Phone" field={field!(cloned_state.user_response.user.phone)} />  
+                    <InputCell label="Full Name" field={field!(cloned_state.user.alba_full_name)} /> 
+                    <InputCell label="Surname (family name)" field={field!(cloned_state.user.surname)} /> 
+                    <InputCell label="Given Name" field={field!(cloned_state.user.given_name)} />                      
+                    if state.load_result.email_visible {
+                         <InputCell label="Email" field={field!(cloned_state.user.normalized_email)} />  
+                         <InputCell label="Phone" field={field!(cloned_state.user.phone)} />  
                     }
-                    <InputCell label="Group ID" field={field!(cloned_state.user_response.user.group_id)} />  
+                    <InputCell label="Group ID" field={field!(cloned_state.user.group_id)} />  
                 </div>
                 <div class="row g-3 my-2">
-                    <CheckboxCell label="Active" field={field_checked!(cloned_state.user_response.user.is_active)} />  
-                    if state.user_response.roles_visible {
-                        <CheckboxCell label="Can Impersonate Users"  field={field_checked!(cloned_state.user_response.user.can_impersonate_users)} /> 
-                        <CheckboxCell label="Can Assign Territories" field={field_checked!(cloned_state.user_response.user.can_assign_territories)} /> 
-                        <CheckboxCell label="Can Edit Territories"   field={field_checked!(cloned_state.user_response.user.can_edit_territories)} /> 
+                    <CheckboxCell label="Active" field={field_checked!(cloned_state.user.is_active)} />  
+                    if state.load_result.roles_visible {
+                        <CheckboxCell label="Can Impersonate Users"  field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
+                        <CheckboxCell label="Can Assign Territories" field={field_checked!(cloned_state.user.can_assign_territories)} /> 
+                        <CheckboxCell label="Can Edit Territories"   field={field_checked!(cloned_state.user.can_edit_territories)} /> 
                     }
-                    <TextAreaCell label="Notes" field={field!(cloned_state.user_response.user.notes)} />
-                    if state.user_response.roles_visible {
+                    <TextAreaCell label="Notes" field={field!(cloned_state.user.notes)} />
+                    if state.load_result.roles_visible {
                         <InputCell 
                             class="col-12 col-sm-12 col-md-12" 
                             label="Roles" 
-                            field={field!(cloned_state.user_response.user.roles)} />  
+                            field={field!(cloned_state.user.roles)} />  
                     }
-                    if state.user_response.user_can_edit {
+                    if state.load_result.user_can_edit {
                         <div class="col-12 p-3">
                             <ButtonWithConfirm id="save-button" button_text="Save" on_confirm={save_onclick.clone()} />
                         </div>
                     }
+                    <div class="col-12"><span><small>{"UID:"}{cloned_state.user.id}</small></span></div>
                 </div>
             </div>
         </>

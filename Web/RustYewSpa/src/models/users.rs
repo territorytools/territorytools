@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::macros::{save_callback::SaveStatus, http::LoadStatus};
+
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
@@ -27,14 +29,15 @@ pub struct UserSummary {
     pub territory_summary: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct UserResponse {
+pub struct UserLoadResult {
     pub user: UserChanges,
     pub requested_by_user: UserSummary,
     pub roles_visible: bool,
     pub email_visible: bool,
     pub user_can_edit: bool,
+    pub status: LoadStatus,
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]
