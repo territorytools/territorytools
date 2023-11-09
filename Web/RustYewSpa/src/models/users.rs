@@ -37,7 +37,7 @@ pub struct UserLoadResult {
     pub roles_visible: bool,
     pub email_visible: bool,
     pub user_can_edit: bool,
-    pub status: LoadStatus,
+    //pub status: LoadStatus,
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]

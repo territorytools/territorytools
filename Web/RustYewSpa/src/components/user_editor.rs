@@ -7,7 +7,7 @@ use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::users::{UserChanges,UserLoadResult};
-use crate::{field, field_checked, http_get_set, save_callback};
+use crate::{field, field_checked, http_get_set, save_callback, get_simple};
 
 use reqwasm::http::Request;
 use reqwasm::http::Method;
@@ -105,7 +105,7 @@ pub fn user_editor_page() -> Html {
     //state.wrapper.user = state.user;
     //state.set() //TODO: Finish this, set wrapper or something
 
-    let cloned_state = state.clone();
+    let cloned_state: UseStateHandle<UserEditorModel> = state.clone();
     let user_id = cloned_state.user.id;
     let uri = "/api/users".to_string();
     let save_onclick = save_callback!(
@@ -120,11 +120,21 @@ pub fn user_editor_page() -> Html {
     let user_id = parameters.user_id.unwrap_or_default();
     let uri: String = format!("/api/users?userId={user_id}");
     use_effect_with((), move |_| {
-        http_get_set!(
-            entity: cloned_state.user,
+        get_simple!(
+            t: UserLoadResult,
             result: cloned_state.load_result,
             result_entity: cloned_state.load_result.user,
-            uri: uri);
+            entity: cloned_state.user,
+            uri: uri,
+            body: {
+                gloo_console::log!("user_editor block:");
+                gloo_console::log!("  URI: ", uri);
+            })
+        // http_get_set!(
+        //     entity: cloned_state.user,
+        //     result: cloned_state.load_result,
+        //     result_entity: cloned_state.load_result.user,
+        //     uri: uri);
     });
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();
