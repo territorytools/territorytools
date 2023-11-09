@@ -7,7 +7,7 @@ use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::users::{UserChanges,UserLoadResult};
-use crate::{field, field_checked, http_get_set, save_callback, get_simple};
+use crate::{field, field_checked, http_get_set, save_callback, get_result_by_id};
 
 use reqwasm::http::Request;
 use reqwasm::http::Method;
@@ -120,7 +120,7 @@ pub fn user_editor_page() -> Html {
     let user_id = parameters.user_id.unwrap_or_default();
     let uri: String = format!("/api/users?userId={user_id}");
     use_effect_with((), move |_| {
-        get_simple!(uri, cloned_state.load_result.user.id)
+        get_result_by_id!(uri, cloned_state.load_result.user.id)
     });
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();

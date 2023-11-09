@@ -3,12 +3,9 @@ use yew::prelude::*;
 use serde::{Deserialize,Serialize};
 extern crate jsonpath;
 extern crate serde_json;
-use jsonpath::Selector;
-use serde_json::Value;
-
 
 #[macro_export]
-macro_rules! get_simple {
+macro_rules! get_result_by_id {
      ($uri:ident, $state:ident.$result:ident.$entity:ident.$id:ident) => {{
         let state = $state.clone();
         let uri = $uri.clone();
@@ -20,9 +17,7 @@ macro_rules! get_simple {
             
             let mut modification = state.deref().clone();
             modification.$result = response.json().await.expect("Valid JSON"); 
-            //gloo_console::log!("get_simple:modification.result.entity.id: ", modification.$result.$entity.$id);
-            modification.$entity = modification.$result.$entity.clone(); ////result_entity_state.$($result_entity_path).+.clone();
-            //gloo_console::log!("get_simple.modification.entity.id: ", modification.$entity.$id);
+            modification.$entity = modification.$result.$entity.clone();
             state.set(modification);
         });
     }};
