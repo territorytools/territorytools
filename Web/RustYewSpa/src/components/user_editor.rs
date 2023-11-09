@@ -51,7 +51,7 @@ pub struct UserSaveRequest {
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
     pub user: UserChanges,
-    pub load_result: UserLoadResult, // TODO: Rename struct
+    pub load_result: UserLoadResult,
     pub save_result: UserSaveResult,
     pub save_success: bool,
     pub save_error: bool,
@@ -120,21 +120,7 @@ pub fn user_editor_page() -> Html {
     let user_id = parameters.user_id.unwrap_or_default();
     let uri: String = format!("/api/users?userId={user_id}");
     use_effect_with((), move |_| {
-        get_simple!(
-            t: UserLoadResult,
-            result: cloned_state.load_result,
-            result_entity: cloned_state.load_result.user,
-            entity: cloned_state.user,
-            uri: uri,
-            body: {
-                gloo_console::log!("user_editor block:");
-                gloo_console::log!("  URI: ", uri);
-            })
-        // http_get_set!(
-        //     entity: cloned_state.user,
-        //     result: cloned_state.load_result,
-        //     result_entity: cloned_state.load_result.user,
-        //     uri: uri);
+        get_simple!(uri, cloned_state.load_result.user.id)
     });
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();
