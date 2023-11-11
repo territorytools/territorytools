@@ -6,9 +6,9 @@ extern crate serde_json;
 
 #[macro_export]
 macro_rules! get_result_by_id {
-     ($uri:ident, $state:ident.$result:ident.$entity:ident.$id:ident) => {{
+     ($uri:expr, $state:ident.$result:ident.$entity:ident.$id:ident) => {{
+        let uri = format!($uri);
         let state = $state.clone();
-        let uri = $uri.clone();
         spawn_local(async move {
             let response = Request::get(uri.as_str())
                 .send()

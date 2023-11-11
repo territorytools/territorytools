@@ -21,6 +21,7 @@ use yew_router::hooks::use_location;
 #[derive(Default, Properties, PartialEq, Clone, Serialize)]
 pub struct LinkEditorModel {
     pub link: TerritoryLinkContract,
+    pub save_request: LinkSaveRequest,
     pub save_status: SaveStatus,
     pub load_status: LoadStatus,
 }
@@ -42,7 +43,10 @@ pub fn user_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let save_uri: String = "/api/territory-links".to_string();
-    let save_onclick = save_callback!(cloned_state.link, save_uri);
+    let save_onclick = save_callback!(
+        "/api/territory-links",
+        request_string_id: cloned_state.save_request.link.id,
+        status: cloned_state.save_status);
    
     let cloned_state = state.clone();
     let uri: String = format!("/api/territory-links/{}", link_id.clone());
@@ -110,6 +114,6 @@ pub struct LinkSaveResult {
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LinkSaveRequest {
+    pub link: TerritoryLinkContract,
     pub created_by: Option<String>,
-    pub link: LinkChanges,
 }

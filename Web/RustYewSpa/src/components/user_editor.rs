@@ -53,6 +53,7 @@ pub struct UserEditorModel {
     pub user: UserChanges,
     pub load_result: UserLoadResult,
     pub save_result: UserSaveResult,
+    pub save_request: UserSaveRequest,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -69,6 +70,7 @@ impl Default for UserEditorModel {
             user: UserChanges::default(),
             load_result: UserLoadResult::default(),
             save_result: UserSaveResult::default(),
+            save_request: UserSaveRequest::default(),
             save_success: false,
             save_error: false,
             load_error: false,
@@ -100,27 +102,19 @@ pub fn user_editor_page() -> Html {
     let state: yew::UseStateHandle<UserEditorModel> = use_state(UserEditorModel::default);
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
-    
-    //let mut modified = state.deref().clone();
-    //state.wrapper.user = state.user;
-    //state.set() //TODO: Finish this, set wrapper or something
 
-    let cloned_state: UseStateHandle<UserEditorModel> = state.clone();
-    let user_id = cloned_state.user.id;
-    let uri = "/api/users".to_string();
+    let cloned_state = state.clone();
     let save_onclick = save_callback!(
-        id: user_id, 
-        uri: uri,
-        entity: cloned_state.user, 
-        result: cloned_state.save_result,
-        status: cloned_state.save_result.status, 
-        result_entity: cloned_state.save_result.user);
+        "/api/users",
+        id: cloned_state.save_request.user.id,
+        status: cloned_state.save_status);
 
     let cloned_state = state.clone();
     let user_id = parameters.user_id.unwrap_or_default();
-    let uri: String = format!("/api/users?userId={user_id}");
     use_effect_with((), move |_| {
-        get_result_by_id!(uri, cloned_state.load_result.user.id)
+        get_result_by_id!(
+            "/api/users?userId={user_id}", 
+            cloned_state.load_result.user.id)
     });
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();
