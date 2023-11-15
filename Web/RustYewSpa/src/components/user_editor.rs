@@ -136,7 +136,10 @@ pub fn user_editor_page() -> Html {
                         <span><strong>{"User Editor"}</strong></span>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4">
-                        <a href={my_territories_link} class="btn btn-primary">{"View My Territories Page"}</a>
+                        <a href={my_territories_link} class="btn btn-primary">{"My Territories"}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <a href="/app/user-edit?user_id=0" class="btn btn-primary">{"New User"}</a>
                     </div>                    
                 </div>
                 <div class="row g-3 my-2">    
