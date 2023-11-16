@@ -1,8 +1,4 @@
-use crate::models::users::User;
-use reqwasm::http::Request;
 use serde::Serialize;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlSelectElement;
 use yew::prelude::*;
 use std::ops::Deref;
 
@@ -24,8 +20,11 @@ pub struct CollapsibleSectionModel {
 
 #[function_component(CollapsibleSection)]
 pub fn collapsible_section(props: &Props) -> Html {
-    let state: yew::UseStateHandle<CollapsibleSectionModel> = use_state(CollapsibleSectionModel::default);
-    
+    let state: yew::UseStateHandle<CollapsibleSectionModel> = use_state(
+        || CollapsibleSectionModel{
+            show_section: props.show_section_default,
+        });
+
     let cloned_state = state.clone();
     let show_section_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
@@ -47,7 +46,7 @@ pub fn collapsible_section(props: &Props) -> Html {
                         <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
                     </svg>
                 }
-                <span class="text-white ms-2">{props.text}</span>
+                <span class="text-white ms-2">{props.text.clone()}</span>
             </div>
             if state.show_section {
                 <div class="container mb-1 border border-secondary rounded-bottom mt-0 p-1 pb-3">
