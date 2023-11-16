@@ -691,6 +691,64 @@ pub fn territory_editor_page() -> Html {
     let active_link = format!("/mtk/{}", state.territory.assignee_link_key.clone().unwrap_or_default());
     let has_active_link = !link_key.is_empty();
 
+    let addresses_unvisited = state.territory.addresses_unvisited.unwrap_or_default();
+    let addresses_active = state.territory.addresses_active.unwrap_or_default();
+
+    let stage_id = state.territory.stage_id.unwrap_or_default();
+    // let (dtd_stage, letter_stage) = if (2000..3000).contains(&stage_id) {
+    //     String::from("Completed")
+    // } else { 
+    //     state.territory.stage.clone().unwrap_or_default() 
+    // };
+
+    let (dtd_stage, 
+        letter_stage,
+        show_letter_check_out_button,
+        show_letter_complete_button,
+        show_dtd_check_out_button,
+        show_dtd_complete_button) = 
+    // Available
+    if (0..2000).contains(&stage_id) {
+        (state.territory.stage.clone().unwrap_or_default(), 
+        String::from("Unvailable"), 
+        false,
+        false,
+        true,
+        false)
+    // Letter
+    } else if (2000..3000).contains(&stage_id) {
+        (String::from("Completed"), 
+        state.territory.stage.clone().unwrap_or_default(), 
+        false,
+        true,
+        false,
+        false)
+    // Phone, Visiting Started
+    } else if (3000..=4010).contains(&stage_id) {
+        (state.territory.stage.clone().unwrap_or_default(), 
+        String::from("Unvailable"), 
+        false,
+        false,
+        false,
+        true)
+    // Visiting Done, Cooling Off
+    } else if (4011..=5000).contains(&stage_id) { // There is no 4011
+        (state.territory.stage.clone().unwrap_or_default(), 
+        String::from("Available"), 
+        true,
+        false,
+        false,
+        false)
+    // Reserved, Ready to Visit
+    } else { 
+        (state.territory.stage.clone().unwrap_or_default(), 
+        String::from("Unavailable"), 
+        false,
+        false,
+        false,
+        false)
+    };
+
     html! {
         <>
         <MenuBarV2>
@@ -711,6 +769,39 @@ pub fn territory_editor_page() -> Html {
                     <span class="fs-5 p-2 pt-3">{"Territory "}{state.territory.number.clone()}</span>
                 </div>
             </div>
+            <CollapsibleSection hidden={true} text="委派给 Territory Assignment Status (v2)" show_section_default={true}>
+                <div class="row p-0 px-1">
+                    <div class="col-12 col-sm-6 col-md-3 border-top-primary pb-2">
+                        <div style="width:100%;background-color:lightgray;"><strong>{"Door-to-door"}</strong></div>
+                        <br/>
+                        <span>{"Status:"}</span>
+                        <span class="mx-2 badge bg-dark">{dtd_stage.clone()}</span>
+                        <span>{format!("{}/{}", addresses_unvisited, addresses_active)}</span>
+                        if show_dtd_check_out_button {
+                            <br/>
+                            <button class="btn btn-primary mt-2">{"Check Out"}</button>
+                        }
+                        if show_dtd_complete_button {
+                            <br/>
+                            <button class="btn btn-primary mt-2">{"Complete"}</button>
+                        }
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3 border-top-1 border-dark pb-2">
+                        <div style="width:100%;background-color:lightgray;"><strong>{"Letter Writing"}</strong></div>
+                        <br/>
+                        <span>{"Status:"}</span>
+                        <span class="mx-2 badge bg-secondary">{letter_stage.clone()}</span>
+                        if show_letter_check_out_button {
+                            <br/>
+                            <button class="btn btn-primary mt-2">{"Write Letters"}</button>
+                        }
+                        if show_letter_complete_button {
+                            <br/>
+                            <button class="btn btn-primary mt-2">{"Complete"}</button>
+                        }
+                    </div>
+                </div>
+            </CollapsibleSection>
             <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
                 <div class="row g-3 pt-3">    
                     if is_assigned {
