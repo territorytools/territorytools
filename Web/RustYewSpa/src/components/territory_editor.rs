@@ -45,6 +45,12 @@ pub struct TerritoryEditorModel {
     pub show_changes: bool,
     #[prop_or_default]
     pub show_reassign: bool,
+    #[prop_or_default]
+    pub show_status_section: bool,
+    #[prop_or_default]
+    pub show_details_section: bool,
+    #[prop_or_default]
+    pub show_history_section: bool,
 }
 
 impl Default for TerritoryEditorModel {
@@ -57,6 +63,9 @@ impl Default for TerritoryEditorModel {
             error_message: "".to_string(),
             show_changes: false,
             show_reassign: false,
+            show_status_section: true,
+            show_details_section: false,
+            show_history_section: false,
         }
     }
 }
@@ -96,11 +105,11 @@ pub struct AssignmentResult {
 pub fn territory_editor_page() -> Html {
     set_document_title("Territory Editor");
 
-    let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(|| TerritoryEditorModel::default());
-    let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(|| TerritoryAssignerModel::default());
-    let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
-    let unassignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
-    let stage_change_result_state: yew::UseStateHandle<AssignmentResult> = use_state(|| AssignmentResult::default());
+    let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(TerritoryEditorModel::default);
+    let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(TerritoryAssignerModel::default);
+    let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
+    let unassignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
+    let stage_change_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
     let clipboard = use_clipboard();
     let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
@@ -601,6 +610,30 @@ pub fn territory_editor_page() -> Html {
     });
 
     let cloned_state = state.clone();
+    let show_status_section_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let mut modification = cloned_state.deref().clone();
+        modification.show_status_section = !cloned_state.show_status_section;
+        cloned_state.set(modification);
+    });
+
+    let cloned_state = state.clone();
+    let show_details_section_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let mut modification = cloned_state.deref().clone();
+        modification.show_details_section = !cloned_state.show_details_section;
+        cloned_state.set(modification);
+    });
+
+    let cloned_state = state.clone();
+    let show_history_section_onclick = Callback::from(move |event: MouseEvent| {
+        event.prevent_default();
+        let mut modification = cloned_state.deref().clone();
+        modification.show_history_section = !cloned_state.show_history_section;
+        cloned_state.set(modification);
+    });
+
+    let cloned_state = state.clone();
     let show_changes_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let mut modification = cloned_state.deref().clone();
@@ -666,365 +699,318 @@ pub fn territory_editor_page() -> Html {
                 </li> 
             </ul>
         </MenuBarV2>
-        <div class="container pt-3">
-            <div class="row g-3">
+        <div class="container p-1 pt-3">
+            <div class="row g-3 pb-2">
                 <div class="col-12">
                     if has_active_link {
-                        <a href={active_link} class="btn btn-outline-primary">{"Open Territory"}</a>
+                        <a href={active_link} class="btn btn-outline-primary">{"Open"}</a>
                     } else {
-                        <button class="btn btn-outline-secondary">{"Cannot Open Territory"}</button>
+                        <button class="btn btn-outline-secondary">{"Open"}</button>
                     }
+                    <span class="fs-5 p-2 pt-3">{"Territory "}{state.territory.number.clone()}</span>
                 </div>
             </div>
-            <hr/>
-            // <div class="row g-3 pt-3">
-            //     <div class="col-12">
-            //         <ButtonWithConfirm id="test-button" button_text="Test" on_confirm={unassign_onclick.clone()} />
-            //     </div>
-            // </div>
-            <div class="row g-3 pt-3">
-                <span><strong>{"委派给 Territory Assignment Status"}</strong></span>
-            </div>
-           
-            // <a 
-            //     style="margin-top:5px;color:white;"
-            //     class="btn btn-primary btn-sm"
-            //     href={assign_uri}>
-            //     {"Open Territory Assign Page"}
-            // </a>
-            //<form onsubmit={assigner_onsubmit} class="row g-3 pt-3">
-            <div class="row g-3 pt-3">    
-                if is_assigned {
-                        // <div class="col">
-                        //     <span class="mx-1 mb-2">{"Assigned to: "}{state.territory.signed_out_to.clone()}</span>
-                        //     //<span class="mx-1">{" "}{state.territory.signed_out.clone()}</span>
-                        // </div>
 
-                        <div class="col-12 col-sm-12 col-md-6">
-                            <label class="form-label">{"Assigned to"}</label>
-                            <div class="input-group">
-                                <input 
-                                    id="assigned-to-input" 
-                                    readonly=true 
-                                    value={assigned_to} 
-                                    type="text" 
-                                    class="form-control shadow-sm" />
-                                if state.show_reassign {
-                                    <ButtonWithConfirm 
-                                        id="unassign-button" 
-                                        button_text="Unassign" 
-                                        on_confirm={unassign_onclick.clone()} 
-                                        class="me-1 btn btn-danger shadow-sm"
-                                    />
-                                } else {
-                                    <button onclick={show_reassign_onclick.clone()} class="btn btn-outline-primary">{"Change"}</button>
-                                }
-                            </div>
-                        </div>
-                        if unassignment_result_state.load_failed { 
-                            <div class="row">
-                                <div class="col">
-                                    <span class="mx-1 badge bg-danger">{"Unassignment Error"}</span> 
-                                    <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
-                                    <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+            <div onclick={show_status_section_onclick} 
+                class={format!("bg-secondary mt-1 mb-0 p-1 {}", (if state.show_status_section {" rounded-top"} else {" rounded"}))}>
+                if state.show_status_section {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                } else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                }
+                <span class="text-white ms-2">{"委派给 Territory Assignment Status"}</span>
+            </div>
+            if state.show_status_section {
+                <div class="container mb-1 border border-secondary rounded-bottom mt-0 p-1 pb-3">
+                    <div class="row g-3 pt-3">    
+                        if is_assigned {
+                            <div class="col-12 col-sm-12 col-md-6">
+                                <label class="form-label">{"Assigned to"}</label>
+                                <div class="input-group">
+                                    <input 
+                                        id="assigned-to-input" 
+                                        readonly=true 
+                                        value={assigned_to} 
+                                        type="text" 
+                                        class="form-control shadow-sm" />
+                                    if state.show_reassign {
+                                        <ButtonWithConfirm 
+                                            id="unassign-button" 
+                                            button_text="Unassign" 
+                                            on_confirm={unassign_onclick.clone()} 
+                                            class="me-1 btn btn-danger shadow-sm"
+                                        />
+                                    } else {
+                                        <button onclick={show_reassign_onclick.clone()} class="btn btn-outline-primary">{"Change"}</button>
+                                    }
                                 </div>
                             </div>
-                        } //                        
-                        // <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-                        //     <label class="form-label">{"Assigned Date"}</label>
-                        //     <input 
-                        //         id="assigned-date-input" 
-                        //         readonly=true 
-                        //         value={signed_out_date.clone()} 
-                        //         type="text" 
-                        //         class="form-control shadow-sm" />
-                        // </div>
-                    
-                }
-
-                if !is_assigned || state.show_reassign {
-                    <div class="col-12 col-sm-9 col-md-6">
-                        <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
-                        <div class="input-group">
-                                <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
-                                // <button type="submit" class={ if is_assigned { "btn btn-outline-primary" } else { "btn btn-primary"}}>
-                                //     {if is_assigned { "Reassign" } else { "Assign" }}
-                                // </button>
-
+                            if unassignment_result_state.load_failed { 
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="mx-1 badge bg-danger">{"Unassignment Error"}</span> 
+                                        <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+                                        <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                                    </div>
+                                </div>
+                            }                   
+                        }
+                        if !is_assigned || state.show_reassign {
+                            <div class="col-12 col-sm-9 col-md-6">
+                                <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
+                                <div class="input-group">
+                                        <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
+                                        <ButtonWithConfirm 
+                                            id="assign-button" 
+                                            button_text={if is_assigned { "Reassign" } else { "Assign" }}
+                                            on_confirm={assigner_onsubmit.clone()} 
+                                            class={if is_assigned {"me-1 btn btn-success shadow-sm"} else {"me-1 btn btn-primary shadow-sm"}}
+                                        />
+                                </div>
+                            </div>
+                            if state.show_reassign {
+                                <div class="col-12 col-sm-9 col-md-6">
+                                    <button onclick={show_reassign_onclick.clone()} class="btn btn-secondary">{"Cancel Assignment Change"}</button>
+                                </div>
+                            }
+                        }
+                    </div>
+                    if assignment_result_state.load_failed { 
+                        <div class="row">
+                            <div class="col">
+                                <span class="mx-1 badge bg-danger">{"Assignment Error"}</span> 
+                                <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+                                <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                            </div>
+                        </div>
+                    } //
+                    if assignment_result_state.success {
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                            //<p style="color:blue;">{"Success"}</p>
+                            <span class="mx-1 badge bg-success">{"Success"}</span><br/>
+                            <a 
+                                style="color:blue;margin-bottom:10px;"
+                                href={assignment_result_state.link_contract.territory_uri.clone()}>
+                                {assignment_result_state.link_contract.territory_uri.clone()}
+                            </a>
+                            //<button onclick={copy_link_onclick} class="btn btn-outline-primary">{"Copy"}</button>
+                            <SmsSection
+                                territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                                assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
+                                territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                            />
+                            <EmailSection 
+                                territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                                assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
+                                territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                            />
+                        </div>
+                    } 
+                    <div class="row g-3 pt-3">
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                            <label for="input-stage" class="form-label">{"Stage"}</label>
+                            // TODO: Load this dynamically, it has already changed
+                            <div class="input-group">
+                                <select 
+                                    id="input-stage" 
+                                    onchange={stage_id_onchange} 
+                                    class="form-select shadow-sm">
+                                    <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={2100} english="Letter: Sent" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={4000} english="Visiting" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={4005} english="Visiting Started" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={4010} english="Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={4020} english="Visiting Done" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={4100} english="Territory Done" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={5000} english="Territory Cooling Off" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
+                                    <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
+                                </select>
                                 <ButtonWithConfirm 
-                                    id="assign-button" 
-                                    button_text={if is_assigned { "Reassign" } else { "Assign" }}
-                                    on_confirm={assigner_onsubmit.clone()} 
-                                    class={if is_assigned {"me-1 btn btn-success shadow-sm"} else {"me-1 btn btn-primary shadow-sm"}}
+                                    id="save-stage-button" 
+                                    button_text="Save" 
+                                    on_confirm={save_stage_onclick.clone()} 
                                 />
-                        </div>
-                    </div>
-                    if state.show_reassign {
-                        <div class="col-12 col-sm-9 col-md-6">
-                            <button onclick={show_reassign_onclick.clone()} class="btn btn-secondary">{"Cancel Assignment Change"}</button>
-                        </div>
-                    }
-                }
-            //</form>
-            </div>
-            if assignment_result_state.load_failed { 
-                <div class="row">
-                    <div class="col">
-                        <span class="mx-1 badge bg-danger">{"Assignment Error"}</span> 
-                        <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
-                        <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
-                    </div>
-                </div>
-            } //
-            if assignment_result_state.success {
-                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                    //<p style="color:blue;">{"Success"}</p>
-                    <span class="mx-1 badge bg-success">{"Success"}</span><br/>
-                    <a 
-                        style="color:blue;margin-bottom:10px;"
-                        href={assignment_result_state.link_contract.territory_uri.clone()}>
-                        {assignment_result_state.link_contract.territory_uri.clone()}
-                    </a>
-                    //<button onclick={copy_link_onclick} class="btn btn-outline-primary">{"Copy"}</button>
-                    <SmsSection
-                        territory_number={assignment_result_state.link_contract.territory_number.clone()}
-                        assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
-                        territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
-                    />
-                    <EmailSection 
-                        territory_number={assignment_result_state.link_contract.territory_number.clone()}
-                        assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
-                        territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
-                    />
-                </div>
-            } 
-            // else {
-            //     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-            //         <div id="assign-failed-result" style="color:red;">{"Failed"}</div>
-            //     </div>
-            // }
-            <div class="row g-3 pt-3">
-                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                    <label for="input-stage" class="form-label">{"Stage"}</label>
-                    // TODO: Load this dynamically, it has already changed
-                    <div class="input-group">
-                        <select 
-                            id="input-stage" 
-                            onchange={stage_id_onchange} 
-                            class="form-select shadow-sm">
-                            <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={2100} english="Letter: Sent" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4000} english="Visiting" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4005} english="Visiting Started" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4010} english="Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4020} english="Visiting Done" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={4100} english="Territory Done" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={5000} english="Territory Cooling Off" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
-                            <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
-                        </select>
-                        // <button 
-                        //     onclick={save_stage_onclick}
-                        //     class="btn btn-outline-primary">
-                        //     {"Save"}
-                        // </button>
-                        <ButtonWithConfirm 
-                            id="save-stage-button" 
-                            button_text="Save" 
-                            on_confirm={save_stage_onclick.clone()} 
-                        />
-                    </div>
-                    if stage_change_result_state.success {
-                        <div class="row">
-                            <div class="col">
-                                <span class="mx-1 badge bg-success">{"Stage Change Saved"}</span> 
                             </div>
+                            if stage_change_result_state.success {
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="mx-1 badge bg-success">{"Stage Change Saved"}</span> 
+                                    </div>
+                                </div>
+                            }
+                            if stage_change_result_state.load_failed {
+                                <div class="row">
+                                    <div class="col">
+                                        <span class="mx-1 badge bg-danger">{"Stage Change Error"}</span> 
+                                        <span class="mx-1" style="color:red;">{stage_change_result_state.load_failed_message.clone()}</span>
+                                        <span class="mx-1 badge bg-danger">{stage_change_result_state.status}</span>
+                                    </div>
+                                </div>
+                            }
                         </div>
-                    }
-                    if stage_change_result_state.load_failed {
-                        <div class="row">
-                            <div class="col">
-                                <span class="mx-1 badge bg-danger">{"Stage Change Error"}</span> 
-                                <span class="mx-1" style="color:red;">{stage_change_result_state.load_failed_message.clone()}</span>
-                                <span class="mx-1 badge bg-danger">{stage_change_result_state.status}</span>
-                            </div>
-                        </div>
-                    }
+                    </div>
                 </div>
-                // if state.territory.stage_id == Some(4020) { // Visiting Ready to Complete
-                //     <div class="col-4 col-sm-3 col-md-2 col-lg-1">
-                //         <ButtonWithConfirm 
-                //             id="confirm-completion" 
-                //             button_text="Confirm Complete"
-                //             on_confirm={confirm_complete_click.clone()}
-                //         />
-                //     </div>
-                // }
-            </div>
-            <hr/>
-            <span><strong>{"Edit Territory Details"}</strong></span>
-            if state.save_success { 
-                <span class="mx-1 badge bg-success">{"Saved"}</span> 
             }
-            if state.save_error { 
-                <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
-                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-            }      
-            if state.load_error { 
-                <span class="mx-1 badge bg-danger">{"Error"}</span> 
-                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-            }        
-            <div class="row g-3 pt-3">
-                // <div class="col-12 col-sm-6 col-md-4">
-                //     <label for="input-status" class="form-label">{"Status"}</label>
-                //     <select onchange={status_onchange} id="input-status" class="form-select shadow-sm">
-                //         <EnglishChineseIdOption id={1} english="Available" chinese="" selected={selected_status_id} />
-                //         <EnglishChineseIdOption id={2} english="Signed-out" chinese="" selected={selected_status_id} />
-                //     </select>
-                // </div>
-                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                    <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
-                    <input 
-                        id="territory-number-input" 
-                        readonly=true 
-                        value={state.territory.number.clone()} 
-                        onchange={number_onchange} 
-                        type="text" 
-                        class="form-control shadow-sm" 
-                        placeholder="Number"/>
-                </div>
-                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                    <label for="input-group-id" class="form-label">{"Group ID"}</label>
-                    <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
-                </div>                
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                // NOT DONE YET
-                //<label for="input-status" class="form-label">{"Status"}</label>
-                // <select id="input-status" class="form-select shadow-sm">
-                //     <option value="Available" selected={state.territory.status.clone() == "Available"}>
-                //         {"Available"}
-                //     </option>
-                //     <option value="Signed-out" selected={state.territory.status.clone() == "Signed-out"}>
-                //         {"Signed-out"}
-                //     </option>
-                // </select>
-            </div>                
-                // <div class="col-12 col-sm-6 col-md-4">
-                //     <label for="input-delivery-status" class="form-label">{"Mail Delivery Status"}</label>
-                //     <AddressDeliveryStatusSelector 
-                //         onchange={delivery_status_onchange} 
-                //         id={state.address.delivery_status_id} />
-                // </div>
-                <div class="col-12 col-sm-9 col-md-6">
-                    <label for="inputDescription" class="form-label">{"区域名称 Description"}</label>
-                    <input value={state.territory.description.clone()} onchange={description_onchange} type="text" class="form-control shadow-sm" id="inputDescription" placeholder="Description"/>
-                </div>
-                <div class="col-12">
-                    <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
-                    <textarea value={state.territory.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
-                </div>
-
-                <div class="col-12">
-                    //<button type="submit" class="me-1 btn btn-primary shadow-sm">{"Save Details"}</button>
-                    <ButtonWithConfirm 
-                        id="save-details-button" 
-                        button_text="Save Details" 
-                        on_confirm={onsubmit.clone()} 
-                    />
-                    <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
+            <div onclick={show_details_section_onclick} 
+                class={format!("bg-secondary mt-1 mb-0 p-1 {}", (if state.show_details_section {" rounded-top"} else {" rounded"}))}>
+                if state.show_details_section {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                } else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                }
+                <span class="text-white ps-2">{"Edit Territory Details"}</span>
+            </div>
+            if state.show_details_section {
+                <div class="container mb-1 border border-secondary rounded-bottom mt-0 p-1 py-3">
                     if state.save_success { 
                         <span class="mx-1 badge bg-success">{"Saved"}</span> 
                     }
                     if state.save_error { 
                         <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
                         <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-                    }
-                // </div>
-                // <div class="col-12">
-                    <br/><span><small>{"TID: "}{state.territory.id}</small></span>
-                    <span><small>{" ATID: "}{state.territory.id}</small></span>
-                </div>
-            </div>
-            <div class="row g-3 pt-3">
-                <hr/>
-                <span><strong>{"History"}</strong></span>
-                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                    <label class="form-label">{"Last Completed By"}</label>
-                    <input readonly={true} value={last_completed_by.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Name"/>
-                </div>
-                // <div class="col-6 col-sm-5 col-md-5">
-                //     <label class="form-label">{"Last Completed Date"}</label>
-                //     <input readonly={true} value={state.territory.last_completed.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Date"/>
-                // </div>
-            </div>
-            <div class="row g-3 pt-3">
-                <div class="col-12">
-                    <button onclick={show_changes_onclick} class="btn btn-outline-primary">
-                    if state.show_changes {
-                        {"Hide Changes"}
-                    } else {
-                        {"Show Changes"}
-                    }
-                    </button>
-                </div>
-            </div>
-            if state.show_changes {
-                <div class="row g-3 pt-3">
-                    <div class="col-12 table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">{"Changed"}</th>
-                                //<th scope="col">{"Formatted"}</th>
-                                //<th scope="col">{"Stage Id"}</th>
-                                <th scope="col">{"Stage"}</th>
-                                <th scope="col">{"Assignee Name"}</th>
-                                //<th scope="col">{"Email"}</th>
-                                <th scope="col">{"Changed by"}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {
-                            state.territory.stage_changes.iter().map(|change| {   
-                                let _change_date = change.change_date_utc.clone().chars().take(10).collect::<String>();
-                                let _change_time = change.change_date_utc.clone().as_str()[11..16].to_string();
-                                let assignee = if change.assignee_name.clone() == None {
-                                    change.assignee_normalized_email.clone()
-                                } else {
-                                    change.assignee_name.clone() 
-                                };
-
-                                let formatted_date_time = format_date(Some(change.change_date_utc.clone()));
-
-                                html! {
-                                        
-                                        // <div class="col-6 col-sm-5 col-md-5">{change_date}</div>
-                                        // <div class="col-6 col-sm-5 col-md-5">{change.stage_id}</div>
-                                        // <div class="col-6 col-sm-5 col-md-5">{change.stage.clone()}</div>
-                                        // <div class="col-6 col-sm-5 col-md-5">{change.assignee_name.clone()}</div>
-                                        // <div class="col-6 col-sm-5 col-md-5">{change.assignee_normalized_email.clone()}</div>
-                                        // <div class="col-6 col-sm-5 col-md-5">{change.created_by_user_id.clone()}</div>
-                                        <tr>
-                                            //<td scope="row">{change_date}{" "}{change_time}</td>
-                                            <td>{formatted_date_time}</td>
-                                            //<td>{change.stage_id}</td>
-                                            <td>{change.stage.clone()}</td>
-                                            <td>{assignee}</td>
-                                            //<td>{change.assignee_normalized_email.clone()}</td>
-                                            <td>{change.created_by_user_id.clone()}</td>
-                                        </tr>
-                                        
-                                }
-                            }).collect::<Html>()
-                        }
-                        </tbody>
-                    </table>
+                    }      
+                    if state.load_error { 
+                        <span class="mx-1 badge bg-danger">{"Error"}</span> 
+                        <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+                    }        
+                    <div class="row g-3 pt-3">
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                            <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
+                            <input 
+                                id="territory-number-input" 
+                                readonly=true 
+                                value={state.territory.number.clone()} 
+                                onchange={number_onchange} 
+                                type="text" 
+                                class="form-control shadow-sm" 
+                                placeholder="Number"/>
+                        </div>
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                            <label for="input-group-id" class="form-label">{"Group ID"}</label>
+                            <input value={state.territory.group_id.clone()} onchange={group_id_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-group_id" placeholder="Group ID"/>
+                        </div>                
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">               
+                    </div>                
+                        <div class="col-12 col-sm-9 col-md-6">
+                            <label for="inputDescription" class="form-label">{"区域名称 Description"}</label>
+                            <input value={state.territory.description.clone()} onchange={description_onchange} type="text" class="form-control shadow-sm" id="inputDescription" placeholder="Description"/>
+                        </div>
+                        <div class="col-12">
+                            <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
+                            <textarea value={state.territory.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
+                        </div>
+                        <div class="col-12">
+                            <ButtonWithConfirm 
+                                id="save-details-button" 
+                                button_text="Save Details" 
+                                on_confirm={onsubmit.clone()} 
+                            />
+                            <a href="/app/address-search" class="mx-1 btn btn-secondary shadow-sm">{"Close"}</a>
+                            if state.save_success { 
+                                <span class="mx-1 badge bg-success">{"Saved"}</span> 
+                            }
+                            if state.save_error { 
+                                <span class="mx-1 badge bg-danger">{"Save Error"}</span> 
+                                <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
+                            }
+                            <br/><span><small>{"TID: "}{state.territory.id}</small></span>
+                            <span><small>{" ATID: "}{state.territory.id}</small></span>
+                        </div>
                     </div>
+                </div>
+            }
+            <div onclick={show_history_section_onclick} 
+            class={format!("bg-secondary mt-1 mb-0 p-1 {}", (if state.show_history_section {" rounded-top"} else {" rounded"}))}>
+                if state.show_history_section {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                } else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                }
+                <span class="text-white ps-2">{"History"}</span>
+            </div>
+            if state.show_history_section {
+                <div class="container mb-1 border border-secondary rounded-bottom mt-0 p-1 py-3">
+                    <div class="row g-3 pt-3">
+                        // <hr/>
+                        // <span><strong>{"History"}</strong></span>
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                            <label class="form-label">{"Last Completed By"}</label>
+                            <input readonly={true} value={last_completed_by.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Name"/>
+                        </div>
+                    </div>
+                    <div class="row g-3 pt-3">
+                        <div class="col-12">
+                            <button onclick={show_changes_onclick} class="btn btn-outline-primary">
+                            if state.show_changes {
+                                {"Hide Changes"}
+                            } else {
+                                {"Show Changes"}
+                            }
+                            </button>
+                        </div>
+                    </div>
+                    if state.show_changes {
+                        <div class="row g-3 pt-3">
+                            <div class="col-12 table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">{"Changed"}</th>
+                                            <th scope="col">{"Stage"}</th>
+                                            <th scope="col">{"Assignee Name"}</th>
+                                            <th scope="col">{"Changed by"}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        state.territory.stage_changes.iter().map(|change| {   
+                                            let _change_date = change.change_date_utc.clone().chars().take(10).collect::<String>();
+                                            let _change_time = change.change_date_utc.clone().as_str()[11..16].to_string();
+                                            let assignee = if change.assignee_name.clone() == None {
+                                                change.assignee_normalized_email.clone()
+                                            } else {
+                                                change.assignee_name.clone() 
+                                            };
+
+                                            let formatted_date_time = format_date(Some(change.change_date_utc.clone()));
+
+                                            html! {
+                                                    <tr>
+                                                        //<td scope="row">{change_date}{" "}{change_time}</td>
+                                                        <td>{formatted_date_time}</td>
+                                                        //<td>{change.stage_id}</td>
+                                                        <td>{change.stage.clone()}</td>
+                                                        <td>{assignee}</td>
+                                                        //<td>{change.assignee_normalized_email.clone()}</td>
+                                                        <td>{change.created_by_user_id.clone()}</td>
+                                                    </tr>
+                                                    
+                                            }
+                                        }).collect::<Html>()
+                                    }
+                                    </tbody>
+                                </table>                        
+                            </div>
+                        </div>
+                    }
                 </div>
             }
         </div>
