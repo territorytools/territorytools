@@ -1,4 +1,3 @@
-//use crate::components::menu_bar::MenuBar;
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::user_selector::UserSelector;
@@ -20,7 +19,6 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew_hooks::use_clipboard;
 use yew_router::hooks::use_location;
 
 const GET_TERRITORY_API_PATH: &str = "/api/territories";
@@ -92,33 +90,11 @@ pub fn territory_editor_page() -> Html {
     let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(TerritoryAssignerModel::default);
     let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
     let unassignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
-    let stage_change_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
-    let clipboard = use_clipboard();
-    let cloned_state = state.clone();
     let location = use_location().expect("Should be a location to get query string");
     let parameters: TerritoryEditorParameters = location.query::<TerritoryEditorParameters>().expect("An object");
     let territory_id: i32 = match parameters.id {
         Some(v) => v,
         _ => 0,
-    };
-
-    let state_clone = state.clone();
-    let stage_id_onchange = {
-        let state_clone = state_clone.clone();
-        Callback::from(move |event: Event| {
-            let mut modification = cloned_state.deref().clone();
-            let value = event
-                .target()
-                .unwrap()
-                .unchecked_into::<HtmlInputElement>()
-                .value();
-
-            modification.territory.stage_id = Some(value.parse().unwrap_or_default());
-            
-            log!(format!("Territory stage id set to {stage_id:?}", stage_id = modification.territory.stage_id));
-
-            state_clone.set(modification);
-        })
     };
 
     let cloned_state = state.clone();
@@ -336,7 +312,6 @@ pub fn territory_editor_page() -> Html {
         });
     });
 
-    let selected_stage_id: i32 = state.territory.stage_id.unwrap_or_default();
     let assigner_state = assigner_state.clone();
     let assignee_onchange = {
         let assigner_state = assigner_state.clone();
@@ -451,47 +426,6 @@ pub fn territory_editor_page() -> Html {
     });
 
     let cloned_state = state.clone();
-    let assigner_state_clone = assigner_state.clone();
-
-    let stage_change_result_state_clone = stage_change_result_state.clone();
-    let save_stage_onclick = Callback::from(move |_: i32| { 
-        let cloned_state = cloned_state.clone();
-        let assigner_state_clone = assigner_state_clone.clone();
-        let stage_change_result_state_clone = stage_change_result_state_clone.clone();
-        let territory_id = cloned_state.territory.id.unwrap_or_default();
-        let to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
-        spawn_local(async move {
-            let _model = assigner_state_clone.clone();
-            let uri_string: String = format!("{path}?territoryId={territory_id}&stageId={to_stage_id}&assignee={assignee}", 
-                path = "/api/territory-marking/stages",
-                assignee = cloned_state.territory.signed_out_to.clone().unwrap_or_default(),
-            );
-
-            let uri: &str = uri_string.as_str();
-            let resp = Request::new(uri)
-                .method(Method::POST)
-                //.header("Content-Type", "application/json")
-                .send()
-                .await
-                .expect("A result from the endpoint");
-            
-            let result = AssignmentResult {
-                success: (resp.status() == 200),
-                load_failed: (resp.status() != 200),
-                load_failed_message: match resp.status() {
-                    405 => "Bad Method".to_string(),
-                    _ => "Error".to_string(),
-                },
-                link_contract: TerritoryLinkContract::default(),
-                status: resp.status(),
-                completed: true,
-            };
-
-            stage_change_result_state_clone.set(result);
-        });
-    });
-
-    let cloned_state = state.clone();
     let show_changes_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let mut modification = cloned_state.deref().clone();
@@ -507,8 +441,6 @@ pub fn territory_editor_page() -> Html {
         cloned_state.set(modification);
     });
 
-    let cloned_state = state.clone();
-    let full_signed_out = cloned_state.territory.signed_out.clone().unwrap_or_default();
     let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
     let assigned_date = if state.territory.signed_out.clone().is_some() {
         state.territory.signed_out.clone().unwrap_or_default().as_str()[0..10].to_string()
@@ -906,7 +838,6 @@ pub fn format_date(text: Option<String>) -> String {
     } else {
         let utc = DateTime::parse_from_rfc3339( 
             format!("{}Z", text.expect("String date"))
-            //.parse::<DateTime<Utc>>()
             .to_string().as_str()
         )
         .expect("DateTime");
@@ -919,14 +850,12 @@ pub fn format_date(text: Option<String>) -> String {
     }
 }
 
-
+/*
 pub fn format_date_only(text: Option<String>) -> String {
     if text.is_none() {
         "".to_string()
     } else {
         let utc = DateTime::parse_from_rfc3339( 
-            //format!("{}Z", text.expect("String date"))
-            //.parse::<DateTime<Utc>>()
             text
             .unwrap_or_default()
             .as_str()
@@ -940,3 +869,4 @@ pub fn format_date_only(text: Option<String>) -> String {
         .to_string()
     }
 }
+*/
