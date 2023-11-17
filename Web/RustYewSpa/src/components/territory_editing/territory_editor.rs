@@ -9,6 +9,7 @@ use crate::functions::document_functions::set_document_title;
 use crate::components::email_section::EmailSection;
 use crate::components::sms_section::SmsSection;
 use crate::components::collapsible_section::CollapsibleSection;
+use crate::components::territory_editing::stage_selector::{self, StageSelector};
 
 use chrono::{DateTime,Local,TimeZone};
 use gloo_console::log;
@@ -121,10 +122,11 @@ pub fn territory_editor_page() -> Html {
         _ => 0,
     };
 
+    let state_clone = state.clone();
     let stage_id_onchange = {
-        let state = cloned_state.clone();
+        let state_clone = state_clone.clone();
         Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
+            let mut modification = cloned_state.deref().clone();
             let value = event
                 .target()
                 .unwrap()
@@ -135,14 +137,25 @@ pub fn territory_editor_page() -> Html {
             
             log!(format!("Territory stage id set to {stage_id:?}", stage_id = modification.territory.stage_id));
 
-            state.set(modification);
+            state_clone.set(modification);
+        })
+    };
+
+    let cloned_state = state.clone();
+    let stage_id32_onchange = {
+        let cloned_state = cloned_state.clone();
+        Callback::from(move |stage_id: i32| {
+            let mut modification = cloned_state.deref().clone();
+            modification.territory.stage_id = Some(stage_id);
+            cloned_state.set(modification);
         })
     };
   
+    let cloned_state = state.clone();
     let number_onchange = {
-        let state = cloned_state.clone();
+        let cloned_state = cloned_state.clone();
         Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
+            let mut modification = cloned_state.deref().clone();
             let value = event
                 .target()
                 .unwrap()
@@ -153,14 +166,15 @@ pub fn territory_editor_page() -> Html {
             
             log!(format!("Territory number set to {number:?}", number = modification.territory.number));
 
-            state.set(modification);
+            cloned_state.set(modification);
         })
     };
   
+    let cloned_state = state.clone();
     let description_onchange = {
-        let state = cloned_state.clone();
+        let state_clone = cloned_state.clone();
         Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
+            let mut modification = cloned_state.deref().clone();
             let value = event
                 .target()
                 .unwrap()
@@ -171,14 +185,15 @@ pub fn territory_editor_page() -> Html {
             
             log!(format!("Territory description set to {description:?}", description = modification.territory.description));
 
-            state.set(modification);
+            state_clone.set(modification);
         })
     };
    
+    let cloned_state = state.clone();
     let group_id_onchange = {
-        let state = cloned_state.clone();
+        let cloned_state = cloned_state.clone();
         Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
+            let mut modification = cloned_state.deref().clone();
             let value = event
                 .target()
                 .unwrap()
@@ -189,14 +204,15 @@ pub fn territory_editor_page() -> Html {
             
             log!(format!("Territory group_id set to {group_id:?}", group_id = modification.territory.group_id));
 
-            state.set(modification);
+            cloned_state.set(modification);
         })
     };
    
+    let cloned_state = state.clone();
     let notes_onchange = {
-        let state = cloned_state.clone();
+        let cloned_state = cloned_state.clone();
         Callback::from(move |event: Event| {
-            let mut modification = state.deref().clone();
+            let mut modification = cloned_state.deref().clone();
             let value = event
                 .target()
                 .unwrap()
@@ -207,7 +223,7 @@ pub fn territory_editor_page() -> Html {
             
             log!(format!("Territory notes set to {notes:?}", notes = modification.territory.notes));
 
-            state.set(modification);
+            cloned_state.set(modification);
         })
     };
    
@@ -612,30 +628,6 @@ pub fn territory_editor_page() -> Html {
     });
 
     let cloned_state = state.clone();
-    let show_status_section_onclick = Callback::from(move |event: MouseEvent| {
-        event.prevent_default();
-        let mut modification = cloned_state.deref().clone();
-        modification.show_status_section = !cloned_state.show_status_section;
-        cloned_state.set(modification);
-    });
-
-    let cloned_state = state.clone();
-    let show_details_section_onclick = Callback::from(move |event: MouseEvent| {
-        event.prevent_default();
-        let mut modification = cloned_state.deref().clone();
-        modification.show_details_section = !cloned_state.show_details_section;
-        cloned_state.set(modification);
-    });
-
-    let cloned_state = state.clone();
-    let show_history_section_onclick = Callback::from(move |event: MouseEvent| {
-        event.prevent_default();
-        let mut modification = cloned_state.deref().clone();
-        modification.show_history_section = !cloned_state.show_history_section;
-        cloned_state.set(modification);
-    });
-
-    let cloned_state = state.clone();
     let show_changes_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let mut modification = cloned_state.deref().clone();
@@ -808,6 +800,9 @@ pub fn territory_editor_page() -> Html {
                                 <button class="btn btn-primary mt-2">{"Complete"}</button>
                             }
                         </div>
+                    </div>
+                    <div class="col-12">
+                        <StageSelector hidden={false} onchange={stage_id32_onchange} value={33} territory_id={44} to_stage_id={55} />
                     </div>
                 </div>
             </CollapsibleSection>
