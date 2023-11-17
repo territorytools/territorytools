@@ -1,15 +1,9 @@
-use crate::components::menu_bar_v2::MenuBarV2;
-use crate::components::menu_bar::MapPageLink;
 use crate::functions::document_functions::set_document_title;
-use crate::Route;
 use crate::models::users::SessionUser;
-use crate::models::users::User;
 
 use reqwasm::http::Request;
 use serde::Deserialize;
 use serde::Serialize;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::prelude::LocationHandle;
 use yew_router::scope_ext::RouterScopeExt;
@@ -67,7 +61,6 @@ impl Component for AppMenuPage {
             // if we don't prevent_default() it will clear the box and search again
         });
 
-        let navigator = ctx.link().navigator().unwrap();
         let user = self.session.current_user.clone().unwrap_or_default();
 
         html! {

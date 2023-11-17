@@ -6,7 +6,7 @@ use crate::functions::document_functions::set_document_title;
 use crate::macros::http::LoadStatus;
 use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
-use crate::models::territory_links::{LinkChanges, TerritoryLinkContract};
+use crate::models::territory_links::TerritoryLinkContract;
 use crate::{field, field_string, http_get_set, save_callback};
 
 use reqwasm::http::{Request, Method};
@@ -42,7 +42,6 @@ pub fn user_editor_page() -> Html {
     let link_id: String = parameters.link_id.clone().unwrap_or_default();
 
     let cloned_state = state.clone();
-    let save_uri: String = "/api/territory-links".to_string();
     let save_onclick = save_callback!(
         "/api/territory-links",
         request_string_id: cloned_state.save_request.link.id,

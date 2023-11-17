@@ -7,7 +7,7 @@ use crate::macros::save_callback::SaveStatus;
 use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
 use crate::models::users::{UserChanges,UserLoadResult};
-use crate::{field, field_checked, http_get_set, save_callback, get_result_by_id};
+use crate::{field, field_checked, save_callback, get_result_by_id};
 
 use reqwasm::http::Request;
 use reqwasm::http::Method;

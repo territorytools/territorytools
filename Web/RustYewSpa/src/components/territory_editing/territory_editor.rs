@@ -9,7 +9,7 @@ use crate::functions::document_functions::set_document_title;
 use crate::components::email_section::EmailSection;
 use crate::components::sms_section::SmsSection;
 use crate::components::collapsible_section::CollapsibleSection;
-use crate::components::territory_editing::stage_selector::{self, StageSelector};
+use crate::components::territory_editing::stage_selector::StageSelector;
 
 use chrono::{DateTime,Local,TimeZone};
 use gloo_console::log;
@@ -22,22 +22,12 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::use_clipboard;
 use yew_router::hooks::use_location;
-//use serde_json::ser::to_string;
-
-// Uncomment for debugging without an API server
-// const GET_TERRITORY_API_PATH: &str = "/data/territories_id_1020.json";
-// const ASSIGN_METHOD: &str = "GET";
-// const EDIT_METHOD: &str = "GET";
 
 const GET_TERRITORY_API_PATH: &str = "/api/territories";
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct TerritoryEditorModel {
     pub territory: Territory,
-    // pub number: Option<String>,
-    // pub id: i32,
-    // pub description: Option<String>,
-    // pub status: Option<String>,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
@@ -74,13 +64,7 @@ impl Default for TerritoryEditorModel {
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct TerritoryAssignerModel {
-    //pub territory: Territory,
     pub assignee: String,
-    // pub save_success: bool,
-    // pub save_error: bool,
-    // #[prop_or_default]
-    // pub load_error: bool,
-    // pub error_message: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -99,10 +83,6 @@ pub struct AssignmentResult {
     pub status: u16,
     pub completed: bool,
 }
-
-// pub fn add_field(state: yew::UseStateHandle<AddressEditModel>, field: &str) {
-//     state.
-// }
 
 #[function_component(TerritoryEditorPage)]
 pub fn territory_editor_page() -> Html {
@@ -226,27 +206,6 @@ pub fn territory_editor_page() -> Html {
             cloned_state.set(modification);
         })
     };
-   
-    // let delivery_status_onchange = {
-    //     let state = cloned_state.clone();
-    //     Callback::from(move |value: String| {
-    //         let mut modification = state.deref().clone();
-    //         modification.address.delivery_status_id = value.parse().unwrap();
-    //         state.set(modification);
-    //     })
-    // };
-  
-    // let state_onchange = {
-    //     let state = cloned_state.clone();
-    //     Callback::from(move |value: String| {
-    //         let mut modification = state.deref().clone();
-    //         modification.address.state = Some(value);
-
-    //         log!(format!("Address State set to {name:?}", name = modification.address.state.clone()));
-
-    //         state.set(modification);
-    //     })
-    // };
 
     let cloned_state = state.clone();
     use_effect_with((), move |_| {
@@ -303,7 +262,6 @@ pub fn territory_editor_page() -> Html {
     
     let cloned_state = state.clone();
     let onsubmit = Callback::from(move |_event: i32 /*SubmitEvent*/| { 
-        //event.prevent_default();
         let cloned_state = cloned_state.clone();
         spawn_local(async move {
             log!("Spawing request for territory change...");
@@ -379,8 +337,6 @@ pub fn territory_editor_page() -> Html {
     });
 
     let selected_stage_id: i32 = state.territory.stage_id.unwrap_or_default();
-    //let selected_status_id: i32 = state.territory.status_id;
-    
     let assigner_state = assigner_state.clone();
     let assignee_onchange = {
         let assigner_state = assigner_state.clone();
@@ -396,8 +352,6 @@ pub fn territory_editor_page() -> Html {
     let assignment_result_state_clone = assignment_result_state.clone();
     let unassignment_result_state_clone = unassignment_result_state.clone();
     let assigner_onsubmit = Callback::from(move |_: i32| { 
-        //event.prevent_default();
-        
         let cloned_state = cloned_state.clone();
         let assigner_state_clone = assigner_state_clone.clone();
         let assignment_result_state_clone = assignment_result_state_clone.clone();
@@ -413,7 +367,6 @@ pub fn territory_editor_page() -> Html {
             let uri: &str = uri_string.as_str();
             let resp = Request::new(uri)
                 .method(Method::POST)
-                //.header("Content-Type", "application/json")
                 .send()
                 .await
                 .expect("A result from the endpoint");
@@ -451,15 +404,10 @@ pub fn territory_editor_page() -> Html {
     });
    
     let cloned_state = state.clone();
-    let assigner_state_clone = assigner_state.clone();
     let assignment_result_state_clone = assignment_result_state.clone();
     let unassignment_result_state_clone = unassignment_result_state.clone();
-    //let unassign_onclick = Callback::from(move |event: MouseEvent| { 
     let unassign_onclick = Callback::from(move |_| { 
-        //event.prevent_default();
-        
         let cloned_state = cloned_state.clone();
-        let _assigner_state_clone = assigner_state_clone.clone();
         let assignment_result_state_clone = assignment_result_state_clone.clone();
         let unassignment_result_state_clone = unassignment_result_state_clone.clone();
         spawn_local(async move {
@@ -472,7 +420,6 @@ pub fn territory_editor_page() -> Html {
             let uri: &str = uri_string.as_str();
             let resp = Request::new(uri)
                 .method(Method::DELETE)
-                //.header("Content-Type", "application/json")
                 .send()
                 .await
                 .expect("A result from the endpoint");
@@ -508,11 +455,8 @@ pub fn territory_editor_page() -> Html {
 
     let stage_change_result_state_clone = stage_change_result_state.clone();
     let save_stage_onclick = Callback::from(move |_: i32| { 
-        //event.prevent_default();
-        
         let cloned_state = cloned_state.clone();
         let assigner_state_clone = assigner_state_clone.clone();
-        //let assignment_result_state_clone = assignment_result_state_clone.clone();
         let stage_change_result_state_clone = stage_change_result_state_clone.clone();
         let territory_id = cloned_state.territory.id.unwrap_or_default();
         let to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
@@ -544,86 +488,6 @@ pub fn territory_editor_page() -> Html {
             };
 
             stage_change_result_state_clone.set(result);
-
-            if resp.status() == 200 {
-                // let mut modified_state = cloned_state.deref().clone();
-                // modified_state.territory.signed_out_to = Some(link_contract.clone().assignee_name);
-                // modified_state.territory.signed_out = link_contract.clone().assigned_date_utc;
-                // modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
-                // modified_state.territory.last_completed_by = link_contract.clone().territory_last_completed_by;
-                // modified_state.territory.last_completed_date = link_contract.clone().territory_last_completed_date;
-                // cloned_state.set(modified_state);
-            }
-        });
-    });
-
-    let cloned_state = state.clone();
-    let assigner_state_clone = assigner_state.clone();
-    let _assignment_result_state_clone = assignment_result_state.clone();
-    let stage_change_result_state_clone = stage_change_result_state.clone();
-    let _confirm_complete_click = Callback::from(move |_: i32| { 
-        //event.prevent_default();
-        
-        let cloned_state = cloned_state.clone();
-        let _assigner_state_clone = assigner_state_clone.clone();
-        //let assignment_result_state_clone = assignment_result_state_clone.clone();
-        let _stage_change_result_state_clone = stage_change_result_state_clone.clone();
-        let _territory_id = cloned_state.territory.id.unwrap_or_default();
-        let _to_stage_id = cloned_state.territory.stage_id.unwrap_or_default();
-        spawn_local(async move {
-            /*
-            let _model = assigner_state_clone.clone();
-            let uri_string: String = format!("{path}?territoryId={territory_id}&stageId={to_stage_id}&assignee={assignee}", 
-                path = "/api/territory-marking/stages",
-                assignee = cloned_state.territory.signed_out_to.clone().unwrap_or_default(),
-            );
-
-            let uri: &str = uri_string.as_str();
-            let resp = Request::new(uri)
-                .method(Method::POST)
-                //.header("Content-Type", "application/json")
-                .send()
-                .await
-                .expect("A result from the endpoint");
-            
-            let result = AssignmentResult {
-                success: (resp.status() == 200),
-                load_failed: (resp.status() != 200),
-                load_failed_message: match resp.status() {
-                    405 => "Bad Method".to_string(),
-                    _ => "Error".to_string(),
-                },
-                link_contract: TerritoryLinkContract::default(),
-                status: resp.status(),
-                completed: true,
-            };
-
-            stage_change_result_state_clone.set(result);
-
-            if resp.status() == 200 {
-                // let mut modified_state = cloned_state.deref().clone();
-                // modified_state.territory.signed_out_to = None;
-                // modified_state.territory.signed_out = None;
-                // cloned_state.set(modified_state);
-            }
-            */
-        });
-    });
-
-    let cloned_state = state.clone();
-    let clipboard_clone = clipboard.clone();
-    let _copy_link_onclick = Callback::from(move |event: MouseEvent| { 
-        event.prevent_default();
-        
-        let cloned_state = cloned_state.clone();
-        let clipboard_clone = clipboard_clone.clone();
-        spawn_local(async move {
-           
-            let active_link = format!("/mtk/{}", cloned_state.territory.assignee_link_key.clone().unwrap_or_default());
-            //stage_change_result_state_clone.set(result);
-
-            clipboard_clone.write_text(active_link.to_owned());
-    
         });
     });
 
@@ -645,18 +509,7 @@ pub fn territory_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let full_signed_out = cloned_state.territory.signed_out.clone().unwrap_or_default();
-    let _signed_out_date = if full_signed_out.is_empty() || full_signed_out.len() < 10 { 
-        "".to_string() 
-    } else {
-        full_signed_out.clone().chars().take(10).collect::<String>()
-    };
-
-    let _assignment_result_state = assignment_result_state.clone();
     let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
-    
-    log!(format!("teditor:signed_out (date): {}", state.territory.signed_out.clone().unwrap_or_default()));
-
-    //let assigned_date = format_date_only(state.territory.signed_out.clone());
     let assigned_date = if state.territory.signed_out.clone().is_some() {
         state.territory.signed_out.clone().unwrap_or_default().as_str()[0..10].to_string()
     } else {
@@ -672,33 +525,22 @@ pub fn territory_editor_page() -> Html {
     } else {
         "".to_string()
     };
+
     let last_completed_by = format!("{}   {}",
         state.territory.last_completed_by.clone().unwrap_or_default(),
         last_completed_date.clone());
 
-    let _assign_uri = format!("/app/assign/{territory_number}/{description}/Current+Assignee", 
-        territory_number = state.territory.number.clone(),
-        description = state.territory.description.clone().unwrap_or("".to_string()));
-    
     let link_key = state.territory.assignee_link_key.clone().unwrap_or_default();
     let active_link = format!("/mtk/{}", state.territory.assignee_link_key.clone().unwrap_or_default());
     let has_active_link = !link_key.is_empty();
-
     let addresses_unvisited = state.territory.addresses_unvisited.unwrap_or_default();
     let addresses_active = state.territory.addresses_active.unwrap_or_default();
-
     let stage_id = state.territory.stage_id.unwrap_or_default();
-    // let (dtd_stage, letter_stage) = if (2000..3000).contains(&stage_id) {
-    //     String::from("Completed")
-    // } else { 
-    //     state.territory.stage.clone().unwrap_or_default() 
-    // };
-
-    //let location = use_location().expect("Should be a location to get query string");
-    //let parameters: TerritoryEditorParameters = location.query::<TerritoryEditorParameters>().expect("An object");
     let features = parameters.features.clone().unwrap_or_default();
     let features: Vec<_> = features.split(',').collect();
     let show_status_v2 = features.clone().contains(&"show-status-v2");
+
+    let cloned_state = state.clone();
 
     let (dtd_stage, 
         letter_stage,
@@ -801,9 +643,6 @@ pub fn territory_editor_page() -> Html {
                             }
                         </div>
                     </div>
-                    <div class="col-12">
-                        <StageSelector hidden={false} onchange={stage_id32_onchange} value={33} territory_id={44} to_stage_id={55} />
-                    </div>
                 </div>
             </CollapsibleSection>
             <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
@@ -868,17 +707,15 @@ pub fn territory_editor_page() -> Html {
                             <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
                         </div>
                     </div>
-                } //
+                }
                 if assignment_result_state.success {
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                        //<p style="color:blue;">{"Success"}</p>
                         <span class="mx-1 badge bg-success">{"Success"}</span><br/>
                         <a 
                             style="color:blue;margin-bottom:10px;"
                             href={assignment_result_state.link_contract.territory_uri.clone()}>
                             {assignment_result_state.link_contract.territory_uri.clone()}
                         </a>
-                        //<button onclick={copy_link_onclick} class="btn btn-outline-primary">{"Copy"}</button>
                         <SmsSection
                             territory_number={assignment_result_state.link_contract.territory_number.clone()}
                             assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
@@ -893,51 +730,12 @@ pub fn territory_editor_page() -> Html {
                 } 
                 <div class="row p-2">
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                        <label for="input-stage" class="form-label">{"Stage"}</label>
-                        // TODO: Load this dynamically, it has already changed
-                        <div class="input-group">
-                            <select 
-                                id="input-stage" 
-                                onchange={stage_id_onchange} 
-                                class="form-select shadow-sm">
-                                <EnglishChineseIdOption id={1} english="None" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={1000} english="Available for Check Out" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={2000} english="Letter: Writing" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={2100} english="Letter: Sent" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={2200} english="Letter: Returned (Done)" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={3000} english="Phone: Calling" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={3100} english="Phone: Done" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={4000} english="Visiting" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={4005} english="Visiting Started" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={4010} english="Visiting Not-at-Homes" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={4020} english="Visiting Done" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={4100} english="Territory Done" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={5000} english="Territory Cooling Off" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={6000} english="Reserved" chinese="" selected={selected_stage_id} />
-                                <EnglishChineseIdOption id={6500} english="Ready to Visit" chinese="" selected={selected_stage_id} />
-                            </select>
-                            <ButtonWithConfirm 
-                                id="save-stage-button" 
-                                button_text="Save" 
-                                on_confirm={save_stage_onclick.clone()} 
-                            />
-                        </div>
-                        if stage_change_result_state.success {
-                            <div class="row">
-                                <div class="col">
-                                    <span class="mx-1 badge bg-success">{"Stage Change Saved"}</span> 
-                                </div>
-                            </div>
-                        }
-                        if stage_change_result_state.load_failed {
-                            <div class="row">
-                                <div class="col">
-                                    <span class="mx-1 badge bg-danger">{"Stage Change Error"}</span> 
-                                    <span class="mx-1" style="color:red;">{stage_change_result_state.load_failed_message.clone()}</span>
-                                    <span class="mx-1 badge bg-danger">{stage_change_result_state.status}</span>
-                                </div>
-                            </div>
-                        }
+                        <StageSelector 
+                            hidden={false} 
+                            onchange={stage_id32_onchange.clone()} 
+                            territory_id={cloned_state.territory.id.unwrap_or_default()} 
+                            stage_id={cloned_state.territory.stage_id.unwrap_or_default()} 
+                            signed_out_to={cloned_state.territory.signed_out_to.clone()} />
                     </div>
                 </div>
             </CollapsibleSection>

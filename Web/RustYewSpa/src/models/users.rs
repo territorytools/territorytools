@@ -1,7 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-use crate::macros::{save_callback::SaveStatus, http::LoadStatus};
-
 #[derive(Serialize, Deserialize, PartialEq, Clone, Debug, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
