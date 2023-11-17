@@ -5,7 +5,7 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
 use crate::components::selector_option_bilingual::EnglishChineseIdOption;
 use crate::components::language_selector::LanguageSelector;
-use crate::components::territory_editor::TerritoryEditorParameters;
+use crate::components::territory_editing::territory_editor::TerritoryEditorParameters;
 use crate::models::addresses::Address;
 use crate::models::geocoding_coordinates::AddressToGeocode;
 use crate::models::geocoding_coordinates::GeocodingCoordinates;
@@ -226,12 +226,15 @@ pub fn address_edit_page() -> Html {
 
     let territory_id = state.address.territory_id;
     let navigator = use_navigator().unwrap();
+    let parameters_clone = parameters.clone();
     let territory_open_onclick = {
         let navigator = navigator.clone();
+        let parameters_clone = parameters_clone.clone();
         Callback::from(move |_| {
             let query = TerritoryEditorParameters {
                 id: territory_id,
                 number: None,
+                features: parameters_clone.features.clone(),
             };
             let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
         })

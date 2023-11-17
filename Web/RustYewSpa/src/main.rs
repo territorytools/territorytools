@@ -5,7 +5,7 @@ use crate::components::link_page::TerritoryLinkPage;
 use crate::components::link_editor::LinkEditPage;
 use crate::components::route_stuff::Route;
 use crate::components::route_stuff::switch;
-use crate::components::territory_editor::*;
+use crate::components::territory_editing::territory_editor::*;
 use crate::components::svg_map::*;
 use crate::components::canvas_map::*;
 use crate::components::territory_edit_page::*;

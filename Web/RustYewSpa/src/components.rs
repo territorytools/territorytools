@@ -29,7 +29,7 @@ pub mod territory_map;
 pub mod territory_search_page;
 pub mod territory_search_page_old;
 pub mod territory_summary;
-pub mod territory_editor;
+pub mod territory_editing;
 pub mod territory_edit_form;
 pub mod territory_edit_form_example;
 pub mod territory_edit_page;

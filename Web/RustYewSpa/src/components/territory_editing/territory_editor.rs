@@ -86,6 +86,7 @@ pub struct TerritoryAssignerModel {
 pub struct TerritoryEditorParameters {
     pub id: Option<i32>,
     pub number: Option<String>,
+    pub features: Option<String>,
 }
 
 #[derive(Properties, PartialEq, Clone, Default)]
@@ -701,6 +702,12 @@ pub fn territory_editor_page() -> Html {
     //     state.territory.stage.clone().unwrap_or_default() 
     // };
 
+    //let location = use_location().expect("Should be a location to get query string");
+    //let parameters: TerritoryEditorParameters = location.query::<TerritoryEditorParameters>().expect("An object");
+    let features = parameters.features.clone().unwrap_or_default();
+    let features: Vec<_> = features.split(',').collect();
+    let show_status_v2 = features.clone().contains(&"show-status-v2");
+
     let (dtd_stage, 
         letter_stage,
         show_letter_check_out_button,
@@ -769,41 +776,43 @@ pub fn territory_editor_page() -> Html {
                     <span class="fs-5 p-2 pt-3">{"Territory "}{state.territory.number.clone()}</span>
                 </div>
             </div>
-            <CollapsibleSection hidden={true} text="委派给 Territory Assignment Status (v2)" show_section_default={true}>
-                <div class="row p-0 px-1">
-                    <div class="col-12 col-sm-6 col-md-3 border-top-primary pb-2">
-                        <div style="width:100%;background-color:lightgray;"><strong>{"Door-to-door"}</strong></div>
-                        <br/>
-                        <span>{"Status:"}</span>
-                        <span class="mx-2 badge bg-dark">{dtd_stage.clone()}</span>
-                        <span>{format!("{}/{}", addresses_unvisited, addresses_active)}</span>
-                        if show_dtd_check_out_button {
-                            <br/>
-                            <button class="btn btn-primary mt-2">{"Check Out"}</button>
-                        }
-                        if show_dtd_complete_button {
-                            <br/>
-                            <button class="btn btn-primary mt-2">{"Complete"}</button>
-                        }
+            <CollapsibleSection hidden={!show_status_v2} text="委派给 Territory Assignment Status (v2)" show_section_default={true}>
+                <div class="row p-0 m-0">
+                    <div class="col-12 col-sm-6 col-lg-4 p-0">
+                        <div class="m-0 p-0 px-2" style="background-color:lightgray;"><strong>{"Door-to-door"}</strong></div>
+                        <div class="m-2">
+                            <span>{"Status:"}</span>
+                            <span class="mx-2 badge bg-dark">{dtd_stage.clone()}</span>
+                            <span>{format!("{}/{}", addresses_unvisited, addresses_active)}</span>
+                            if show_dtd_check_out_button {
+                                <br/>
+                                <button class="btn btn-primary mt-2">{"Check Out"}</button>
+                            }
+                            if show_dtd_complete_button {
+                                <br/>
+                                <button class="btn btn-primary mt-2">{"Complete"}</button>                              
+                            }
+                        </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-md-3 border-top-1 border-dark pb-2">
-                        <div style="width:100%;background-color:lightgray;"><strong>{"Letter Writing"}</strong></div>
-                        <br/>
-                        <span>{"Status:"}</span>
-                        <span class="mx-2 badge bg-secondary">{letter_stage.clone()}</span>
-                        if show_letter_check_out_button {
-                            <br/>
-                            <button class="btn btn-primary mt-2">{"Write Letters"}</button>
-                        }
-                        if show_letter_complete_button {
-                            <br/>
-                            <button class="btn btn-primary mt-2">{"Complete"}</button>
-                        }
+                    <div class="col-12 col-sm-6 col-lg-4 p-0">
+                        <div class="m-0 p-0 px-2" style="background-color:lightgray;"><strong>{"Letter Writing"}</strong></div>
+                        <div class="m-2">
+                            <span>{"Status:"}</span>
+                            <span class="mx-2 badge bg-secondary">{letter_stage.clone()}</span>
+                            if show_letter_check_out_button {
+                                <br/>
+                                <button class="btn btn-primary mt-2">{"Write Letters"}</button>
+                            }
+                            if show_letter_complete_button {
+                                <br/>
+                                <button class="btn btn-primary mt-2">{"Complete"}</button>
+                            }
+                        </div>
                     </div>
                 </div>
             </CollapsibleSection>
             <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
-                <div class="row g-3 pt-3">    
+                <div class="row p-2">    
                     if is_assigned {
                         <div class="col-12 col-sm-12 col-md-6">
                             <label class="form-label">{"Assigned to"}</label>
@@ -827,9 +836,9 @@ pub fn territory_editor_page() -> Html {
                             </div>
                         </div>
                         if unassignment_result_state.load_failed { 
-                            <div class="row">
-                                <div class="col">
-                                    <span class="mx-1 badge bg-danger">{"Unassignment Error"}</span> 
+                            <div class="row m-0 p-0">
+                                <div class="col m-0 p-0">
+                                    <span class="m-0 badge bg-danger">{"Unassignment Error"}</span> 
                                     <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
                                     <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
                                 </div>
@@ -857,7 +866,7 @@ pub fn territory_editor_page() -> Html {
                     }
                 </div>
                 if assignment_result_state.load_failed { 
-                    <div class="row">
+                    <div class="row p-2">
                         <div class="col">
                             <span class="mx-1 badge bg-danger">{"Assignment Error"}</span> 
                             <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
@@ -887,7 +896,7 @@ pub fn territory_editor_page() -> Html {
                         />
                     </div>
                 } 
-                <div class="row g-3 pt-3">
+                <div class="row p-2">
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                         <label for="input-stage" class="form-label">{"Stage"}</label>
                         // TODO: Load this dynamically, it has already changed
@@ -950,7 +959,7 @@ pub fn territory_editor_page() -> Html {
                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
                     <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
                 }        
-                <div class="row g-3 pt-3">
+                <div class="row p-2">
                     <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                         <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
                         <input 
@@ -976,7 +985,7 @@ pub fn territory_editor_page() -> Html {
                         <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
                         <textarea value={state.territory.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 pt-2">
                         <ButtonWithConfirm 
                             id="save-details-button" 
                             button_text="Save Details" 
@@ -996,7 +1005,7 @@ pub fn territory_editor_page() -> Html {
                 </div>
             </CollapsibleSection>
             <CollapsibleSection text="History">
-                <div class="row g-3 pt-3">
+                <div class="row p-2">
                     // <hr/>
                     // <span><strong>{"History"}</strong></span>
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
@@ -1004,7 +1013,7 @@ pub fn territory_editor_page() -> Html {
                         <input readonly={true} value={last_completed_by.clone()} type="text" class="form-control shadow-sm" id="last-completed-by-input" placeholder="Name"/>
                     </div>
                 </div>
-                <div class="row g-3 pt-3">
+                <div class="row p-2">
                     <div class="col-12">
                         <button onclick={show_changes_onclick} class="btn btn-outline-primary">
                         if state.show_changes {
@@ -1016,7 +1025,7 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 </div>
                 if state.show_changes {
-                    <div class="row g-3 pt-3">
+                    <div class="row p-2">
                         <div class="col-12 table-responsive">
                             <table class="table">
                                 <thead>

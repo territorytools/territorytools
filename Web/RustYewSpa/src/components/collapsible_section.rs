@@ -51,7 +51,7 @@ pub fn collapsible_section(props: &Props) -> Html {
                     <span class="text-white ms-2">{props.text.clone()}</span>
                 </div>
                 if state.show_section {
-                    <div class="container mb-1 border border-secondary rounded-bottom mt-0 p-1 pb-1">
+                    <div class="container mb-1 border border-secondary rounded-bottom mt-0 p-0">
                         {props.children.clone()}
                     </div>
                 }
