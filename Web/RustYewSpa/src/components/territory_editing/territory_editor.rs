@@ -578,6 +578,7 @@ pub fn territory_editor_page() -> Html {
                 </div>
             </CollapsibleSection>
             <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
+                <Assigner territory_number={} assignee_email={} />
                 <div class="row p-2">    
                     if is_assigned {
                         <div class="col-12 col-sm-12 col-md-6">
@@ -766,7 +767,7 @@ pub fn territory_editor_page() -> Html {
                                     state.territory.stage_changes.iter().map(|change| {   
                                         let _change_date = change.change_date_utc.clone().chars().take(10).collect::<String>();
                                         let _change_time = change.change_date_utc.clone().as_str()[11..16].to_string();
-                                        let assignee = if change.assignee_name.clone() == None {
+                                        let assignee = if change.assignee_name.is_none() {
                                             change.assignee_normalized_email.clone()
                                         } else {
                                             change.assignee_name.clone() 
