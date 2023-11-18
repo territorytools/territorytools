@@ -1,5 +1,6 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
+use crate::components::territory_editing::assigner::Assigner;
 use crate::components::user_selector::UserSelector;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::models::territories::{Territory, TerritoryEditRequest};
@@ -578,7 +579,7 @@ pub fn territory_editor_page() -> Html {
                 </div>
             </CollapsibleSection>
             <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
-                <Assigner territory_number={} assignee_email={} />
+                <Assigner territory_number={"9999"} signed_out_to={"email"} />
                 <div class="row p-2">    
                     if is_assigned {
                         <div class="col-12 col-sm-12 col-md-6">
