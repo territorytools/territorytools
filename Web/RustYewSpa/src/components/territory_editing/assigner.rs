@@ -32,19 +32,48 @@ pub struct Props {
     pub hidden: bool,
     //pub onchange: Callback<i32>,
     //pub territory_id: i32,
-    pub signed_out_to: Option<String>,
     pub territory_number: Option<String>,
+    pub signed_out_to: Option<String>,
+    pub signed_out_date: Option<String>,
 }
 
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct TerritoryAssignerModel {
+    pub territory_number: String,
     pub assignee: String,
+    pub show_reassign: bool,
 }
 
 #[function_component(Assigner)]
 pub fn assigner(props: &Props) -> Html {
-    let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(TerritoryAssignerModel::default);
+    let territory_number = props.territory_number.clone().unwrap_or_default();
+    let assignee = props.signed_out_to.clone().unwrap_or_default();
+    log!(format!(
+        "assigner: props: territory_number: {}, assignee: {}", 
+        territory_number.clone(), 
+        assignee.clone()));
+
+    let territory_number_clone = territory_number.clone();
+    let assignee_clone = assignee.clone();
+    let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(move || TerritoryAssignerModel {
+        territory_number: territory_number_clone,
+        assignee: assignee_clone,
+        show_reassign: false,
+    });
+
+    // let territory_number_clone = territory_number.clone();
+    // let assignee_clone = assignee.clone();
+    // assigner_state.set(TerritoryAssignerModel {
+    //     territory_number: territory_number_clone,
+    //     assignee: assignee_clone,
+    // });
+
+    log!(format!(
+        "assigner: assigner_state: territory_number: {}, assignee: {}", 
+        assigner_state.territory_number.clone(), 
+        assigner_state.assignee.clone()));
+
     let assignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
     let unassignment_result_state: yew::UseStateHandle<AssignmentResult> = use_state(AssignmentResult::default);
     let unassignment_result_state_clone = unassignment_result_state.clone();
@@ -72,6 +101,8 @@ pub fn assigner(props: &Props) -> Html {
                 .await
                 .expect("A result from the endpoint");
 
+            log!(format!("Posting result code: {}", resp.status()));
+
             let link_contract: TerritoryLinkContract = if resp.status() == 200 {
                 resp.json().await.unwrap()
             } else {
@@ -98,8 +129,12 @@ pub fn assigner(props: &Props) -> Html {
                 modified_state.link_contract.assignee_name = link_contract.clone().assignee_name;
                 modified_state.link_contract.assigned_date_utc = link_contract.clone().assigned_date_utc;
                 //modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
-                //modified_state.show_reassign = false;
+                // // //modified_state.show_reassign = false;
                 assignment_result_state_clone.set(modified_state);
+
+                let mut modified_state = assigner_state_clone.deref().clone();
+                modified_state.show_reassign = false;
+                assigner_state_clone.set(modified_state);
             }
         });
     });
@@ -176,15 +211,29 @@ pub fn assigner(props: &Props) -> Html {
     let show_reassign_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let mut modification = assigner_state_clone.deref().clone();
-        //modification.show_reassign = !assigner_state.show_reassign;
+        modification.show_reassign = !assigner_state_clone.show_reassign;
         assigner_state_clone.set(modification);
     });
 
     let assigner_state_clone = assigner_state.clone();
     
-    let is_assigned = !assigner_state_clone.assignee.clone().is_empty();
-    let assigned_to = assigner_state_clone.assignee.clone();
-    let show_reassign = true;
+    let is_assigned = !props.signed_out_to.clone().unwrap_or_default().is_empty();
+    //let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
+    let assigned_date_trimmed = if props.signed_out_date.clone().is_some() && props.signed_out_date.clone().unwrap_or_default().len() >= 10 {
+        props.signed_out_date.clone().unwrap_or_default().as_str()[0..10].to_string()
+    } else {
+        "".to_string()
+    };
+    
+    let assigned_to = format!("{}  {}", 
+        props.signed_out_to.clone().unwrap_or_default(), 
+        assigned_date_trimmed);
+
+    let show_reassign = assigner_state.show_reassign;
+
+    log!(format!("assigner: props.territory_number: {}, assigned_to: {}", props.territory_number.clone().unwrap_or_default(), props.signed_out_to.clone().unwrap_or_default()));
+    log!(format!("assigner: territory_number: {}, assigned_to: {}", assignment_result_state.link_contract.territory_number.clone(), assigned_to.clone()));
+    log!(format!("assigner: is_assigned 2: {is_assigned} assigner.assignee: {}", assigner_state.assignee.clone()));
 
     html!{
         <>
@@ -225,7 +274,7 @@ pub fn assigner(props: &Props) -> Html {
                     <div class="col-12 col-sm-9 col-md-6">
                         <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
                         <div class="input-group">
-                                <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
+                                <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} /> // email_as_value was true?
                                 <ButtonWithConfirm 
                                     id="assign-button" 
                                     button_text={if is_assigned { "Reassign" } else { "Assign" }}
@@ -249,7 +298,10 @@ pub fn assigner(props: &Props) -> Html {
                         <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
                     </div>
                 </div>
-            }
+            }            
+            <div class="col-12">
+                {if assignment_result_state.success { "Success: true" } else { "Success: false"}}
+            </div>
             if assignment_result_state.success {
                 <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <span class="mx-1 badge bg-success">{"Success"}</span><br/>
