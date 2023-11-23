@@ -128,15 +128,19 @@ pub fn assigner(props: &Props) -> Html {
             if resp.status() == 200 {
                 log!("assigner: The result was 200, successful");
                 let mut modified_state = assignment_result_state_clone.deref().clone();
-                modified_state.link_contract.assignee_name = link_contract.clone().assignee_name;
-                modified_state.link_contract.assigned_date_utc = link_contract.clone().assigned_date_utc;
+                // modified_state.link_contract.assignee_name = link_contract.clone().assignee_name;
+                // modified_state.link_contract.assigned_date_utc = link_contract.clone().assigned_date_utc;
+                modified_state.link_contract = link_contract.clone();
                 //modified_state.territory.stage_id = Some(link_contract.clone().stage_id); 
                 // // //modified_state.show_reassign = false;
+                modified_state.success = true;
                 assignment_result_state_clone.set(modified_state);
 
                 let mut modified_state = assigner_state_clone.deref().clone();
                 modified_state.show_reassign = false;
                 assigner_state_clone.set(modified_state);
+
+                props_clone.assignee_change_callback.emit(assignment_result_state_clone.link_contract.assignee_name.clone());
             }
         });
     });

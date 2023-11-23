@@ -589,7 +589,7 @@ pub fn territory_editor_page() -> Html {
                 if show_status_v2 {
                 <Assigner
                     {assignee_change_callback}
-                    territory_number={state.territory.number.clone()} 
+                    territory_number={state.territory.number.clone()}
                     signed_out_to={state.territory.signed_out_to.clone().unwrap_or_default()} 
                     signed_out_date={state.territory.signed_out.clone().unwrap_or_default()} />
                 }
