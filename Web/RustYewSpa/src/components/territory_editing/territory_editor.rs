@@ -427,6 +427,13 @@ pub fn territory_editor_page() -> Html {
     });
 
     let cloned_state = state.clone();
+    let assignee_change_callback = Callback::from(move |value: String| { 
+        let mut modified_state = cloned_state.deref().clone();
+        modified_state.territory.signed_out_to = Some(value);
+        cloned_state.set(modified_state);                   
+    });
+
+    let cloned_state = state.clone();
     let show_changes_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let mut modification = cloned_state.deref().clone();
@@ -580,7 +587,8 @@ pub fn territory_editor_page() -> Html {
             </CollapsibleSection>
             <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
                 if show_status_v2 {
-                <Assigner                 
+                <Assigner
+                    {assignee_change_callback}
                     territory_number={state.territory.number.clone()} 
                     signed_out_to={state.territory.signed_out_to.clone().unwrap_or_default()} 
                     signed_out_date={state.territory.signed_out.clone().unwrap_or_default()} />

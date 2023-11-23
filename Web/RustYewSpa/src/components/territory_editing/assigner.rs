@@ -35,6 +35,7 @@ pub struct Props {
     pub territory_number: Option<String>,
     pub signed_out_to: Option<String>,
     pub signed_out_date: Option<String>,
+    pub assignee_change_callback: Callback<String>,
 }
 
 
@@ -125,6 +126,7 @@ pub fn assigner(props: &Props) -> Html {
             unassignment_result_state_clone.set(AssignmentResult::default());
 
             if resp.status() == 200 {
+                log!("assigner: The result was 200, successful");
                 let mut modified_state = assignment_result_state_clone.deref().clone();
                 modified_state.link_contract.assignee_name = link_contract.clone().assignee_name;
                 modified_state.link_contract.assigned_date_utc = link_contract.clone().assigned_date_utc;
@@ -231,10 +233,13 @@ pub fn assigner(props: &Props) -> Html {
 
     let show_reassign = assigner_state.show_reassign;
 
+    let assignment_result_state_clone = assignment_result_state.clone();
+
     log!(format!("assigner: props.territory_number: {}, assigned_to: {}", props.territory_number.clone().unwrap_or_default(), props.signed_out_to.clone().unwrap_or_default()));
     log!(format!("assigner: territory_number: {}, assigned_to: {}", assignment_result_state.link_contract.territory_number.clone(), assigned_to.clone()));
     log!(format!("assigner: is_assigned 2: {is_assigned} assigner.assignee: {}", assigner_state.assignee.clone()));
-
+    log!(format!("assigner: assignment_result_state_clone.success: {}", assignment_result_state_clone.success));
+    
     html!{
         <>
             <div class="row p-2">    
@@ -300,9 +305,9 @@ pub fn assigner(props: &Props) -> Html {
                 </div>
             }            
             <div class="col-12">
-                {if assignment_result_state.success { "Success: true" } else { "Success: false"}}
+                {if assignment_result_state_clone.success { "Success: true" } else { "Success: false"}}
             </div>
-            if assignment_result_state.success {
+            if assignment_result_state_clone.success {
                 <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <span class="mx-1 badge bg-success">{"Success"}</span><br/>
                     <a 
