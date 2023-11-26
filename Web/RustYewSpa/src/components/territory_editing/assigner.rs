@@ -127,6 +127,9 @@ pub fn assigner(props: &Props) -> Html {
 
             if resp.status() == 200 {
                 log!("assigner: The result was 200, successful");
+                
+                props_clone.assignee_change_callback.emit(link_contract.clone().assignee_name.clone());
+
                 let mut modified_state = assignment_result_state_clone.deref().clone();
                 // modified_state.link_contract.assignee_name = link_contract.clone().assignee_name;
                 // modified_state.link_contract.assigned_date_utc = link_contract.clone().assigned_date_utc;
@@ -140,7 +143,7 @@ pub fn assigner(props: &Props) -> Html {
                 modified_state.show_reassign = false;
                 assigner_state_clone.set(modified_state);
 
-                props_clone.assignee_change_callback.emit(assignment_result_state_clone.link_contract.assignee_name.clone());
+                
             }
         });
     });
@@ -185,10 +188,11 @@ pub fn assigner(props: &Props) -> Html {
 
             if resp.status() == 200 {
                 let mut modified_state = cloned_state.deref().clone();
-                // modified_state.territory.signed_out_to = None;
+                ////modified_state.assignee = "".to_string();
+                props_clone.assignee_change_callback.emit("".to_string());
                 // modified_state.territory.signed_out = None;
                 // modified_state.territory.stage_id = Some(1000); // TODO: Get a value from the return body
-                // modified_state.show_reassign = false;
+                modified_state.show_reassign = false;
                 cloned_state.set(modified_state);
             }
         });
@@ -247,6 +251,8 @@ pub fn assigner(props: &Props) -> Html {
     html!{
         <>
             <div class="row p-2">    
+                <div class="col-12">{if is_assigned { "is_assigned=true" } else { "is_assigned=false "}}</div>
+                <div class="col-12">{format!("signed_out_to:{}", props.signed_out_to.clone().unwrap_or_default())}</div>
                 if is_assigned {
                     <div class="col-12 col-sm-12 col-md-6">
                         <label class="form-label">{"Assigned to"}</label>
