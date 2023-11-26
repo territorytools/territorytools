@@ -251,8 +251,6 @@ pub fn assigner(props: &Props) -> Html {
     html!{
         <>
             <div class="row p-2">    
-                <div class="col-12">{if is_assigned { "is_assigned=true" } else { "is_assigned=false "}}</div>
-                <div class="col-12">{format!("signed_out_to:{}", props.signed_out_to.clone().unwrap_or_default())}</div>
                 if is_assigned {
                     <div class="col-12 col-sm-12 col-md-6">
                         <label class="form-label">{"Assigned to"}</label>
@@ -314,9 +312,6 @@ pub fn assigner(props: &Props) -> Html {
                     </div>
                 </div>
             }            
-            <div class="col-12">
-                {if assignment_result_state_clone.success { "Success: true" } else { "Success: false"}}
-            </div>
             if assignment_result_state_clone.success {
                 <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <span class="mx-1 badge bg-success">{"Success"}</span><br/>
