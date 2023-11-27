@@ -589,102 +589,105 @@ pub fn territory_editor_page() -> Html {
                 if show_status_v2 {
                 <Assigner
                     {assignee_change_callback}
+                    territory_id={state.territory.id.unwrap_or_default()}
                     territory_number={state.territory.number.clone()}
                     signed_out_to={state.territory.signed_out_to.clone().unwrap_or_default()} 
-                    signed_out_date={state.territory.signed_out.clone().unwrap_or_default()} />
-                }
-                <div class="row p-2">    
-                    if is_assigned {
-                        <div class="col-12 col-sm-12 col-md-6">
-                            <label class="form-label">{"Assigned to"}</label>
-                            <div class="input-group">
-                                <input 
-                                    id="assigned-to-input" 
-                                    readonly=true 
-                                    value={assigned_to} 
-                                    type="text" 
-                                    class="form-control shadow-sm" />
-                                if state.show_reassign {
-                                    <ButtonWithConfirm 
-                                        id="unassign-button" 
-                                        button_text="Unassign" 
-                                        on_confirm={unassign_onclick.clone()} 
-                                        class="me-1 btn btn-danger shadow-sm"
-                                    />
-                                } else {
-                                    <button onclick={show_reassign_onclick.clone()} class="btn btn-outline-primary">{"Change"}</button>
-                                }
-                            </div>
-                        </div>
-                        if unassignment_result_state.load_failed { 
-                            <div class="row m-0 p-0">
-                                <div class="col m-0 p-0">
-                                    <span class="m-0 badge bg-danger">{"Unassignment Error"}</span> 
-                                    <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
-                                    <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                    signed_out_date={state.territory.signed_out.clone().unwrap_or_default()} 
+                    stage_id={state.territory.stage_id.unwrap_or_default()} />
+                } else {
+                    <div class="row p-2">    
+                        if is_assigned {
+                            <div class="col-12 col-sm-12 col-md-6">
+                                <label class="form-label">{"Assigned to"}</label>
+                                <div class="input-group">
+                                    <input 
+                                        id="assigned-to-input" 
+                                        readonly=true 
+                                        value={assigned_to} 
+                                        type="text" 
+                                        class="form-control shadow-sm" />
+                                    if state.show_reassign {
+                                        <ButtonWithConfirm 
+                                            id="unassign-button" 
+                                            button_text="Unassign" 
+                                            on_confirm={unassign_onclick.clone()} 
+                                            class="me-1 btn btn-danger shadow-sm"
+                                        />
+                                    } else {
+                                        <button onclick={show_reassign_onclick.clone()} class="btn btn-outline-primary">{"Change"}</button>
+                                    }
                                 </div>
                             </div>
-                        }                   
-                    }
-                    if !is_assigned || state.show_reassign {
-                        <div class="col-12 col-sm-9 col-md-6">
-                            <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
-                            <div class="input-group">
-                                    <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
-                                    <ButtonWithConfirm 
-                                        id="assign-button" 
-                                        button_text={if is_assigned { "Reassign" } else { "Assign" }}
-                                        on_confirm={assigner_onsubmit.clone()} 
-                                        class={if is_assigned {"me-1 btn btn-success shadow-sm"} else {"me-1 btn btn-primary shadow-sm"}}
-                                    />
-                            </div>
-                        </div>
-                        if state.show_reassign {
-                            <div class="col-12 col-sm-9 col-md-6">
-                                <button onclick={show_reassign_onclick.clone()} class="btn btn-secondary">{"Cancel Assignment Change"}</button>
-                            </div>
+                            if unassignment_result_state.load_failed { 
+                                <div class="row m-0 p-0">
+                                    <div class="col m-0 p-0">
+                                        <span class="m-0 badge bg-danger">{"Unassignment Error"}</span> 
+                                        <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+                                        <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                                    </div>
+                                </div>
+                            }                   
                         }
+                        if !is_assigned || state.show_reassign {
+                            <div class="col-12 col-sm-9 col-md-6">
+                                <label for="assignTo" class="form-label">{if is_assigned { "Reassign to" } else { "Assign" }}</label>
+                                <div class="input-group">
+                                        <UserSelector id="assignee-user-selector" onchange={assignee_onchange} email_as_value={true} />
+                                        <ButtonWithConfirm 
+                                            id="assign-button" 
+                                            button_text={if is_assigned { "Reassign" } else { "Assign" }}
+                                            on_confirm={assigner_onsubmit.clone()} 
+                                            class={if is_assigned {"me-1 btn btn-success shadow-sm"} else {"me-1 btn btn-primary shadow-sm"}}
+                                        />
+                                </div>
+                            </div>
+                            if state.show_reassign {
+                                <div class="col-12 col-sm-9 col-md-6">
+                                    <button onclick={show_reassign_onclick.clone()} class="btn btn-secondary">{"Cancel Assignment Change"}</button>
+                                </div>
+                            }
+                        }
+                    </div>
+                    if assignment_result_state.load_failed { 
+                        <div class="row p-2">
+                            <div class="col">
+                                <span class="mx-1 badge bg-danger">{"Assignment Error"}</span> 
+                                <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
+                                <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                            </div>
+                        </div>
                     }
-                </div>
-                if assignment_result_state.load_failed { 
+                    if assignment_result_state.success {
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                            <span class="mx-1 badge bg-success">{"Success"}</span><br/>
+                            <a 
+                                style="color:blue;margin-bottom:10px;"
+                                href={assignment_result_state.link_contract.territory_uri.clone()}>
+                                {assignment_result_state.link_contract.territory_uri.clone()}
+                            </a>
+                            <SmsSection
+                                territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                                assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
+                                territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                            />
+                            <EmailSection 
+                                territory_number={assignment_result_state.link_contract.territory_number.clone()}
+                                assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
+                                territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
+                            />
+                        </div>
+                    }
                     <div class="row p-2">
-                        <div class="col">
-                            <span class="mx-1 badge bg-danger">{"Assignment Error"}</span> 
-                            <span class="mx-1" style="color:red;">{assignment_result_state.load_failed_message.clone()}</span>
-                            <span class="mx-1 badge bg-danger">{assignment_result_state.status}</span>
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                            <StageSelector 
+                                hidden={false} 
+                                onchange={stage_id32_onchange.clone()} 
+                                territory_id={cloned_state.territory.id.unwrap_or_default()} 
+                                stage_id={cloned_state.territory.stage_id.unwrap_or_default()} 
+                                signed_out_to={cloned_state.territory.signed_out_to.clone()} />
                         </div>
                     </div>
-                }
-                if assignment_result_state.success {
-                    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                        <span class="mx-1 badge bg-success">{"Success"}</span><br/>
-                        <a 
-                            style="color:blue;margin-bottom:10px;"
-                            href={assignment_result_state.link_contract.territory_uri.clone()}>
-                            {assignment_result_state.link_contract.territory_uri.clone()}
-                        </a>
-                        <SmsSection
-                            territory_number={assignment_result_state.link_contract.territory_number.clone()}
-                            assignee_phone={assignment_result_state.link_contract.assignee_phone.clone().unwrap_or_default()}
-                            territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
-                        />
-                        <EmailSection 
-                            territory_number={assignment_result_state.link_contract.territory_number.clone()}
-                            assignee_email={assignment_result_state.link_contract.assignee_email.clone().unwrap_or_default()}
-                            territory_uri={assignment_result_state.link_contract.territory_uri.clone().unwrap_or_default()}
-                        />
-                    </div>
-                } 
-                <div class="row p-2">
-                    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-                        <StageSelector 
-                            hidden={false} 
-                            onchange={stage_id32_onchange.clone()} 
-                            territory_id={cloned_state.territory.id.unwrap_or_default()} 
-                            stage_id={cloned_state.territory.stage_id.unwrap_or_default()} 
-                            signed_out_to={cloned_state.territory.signed_out_to.clone()} />
-                    </div>
-                </div>
+                }               
             </CollapsibleSection>
             <CollapsibleSection text="Edit Territory Details">
             

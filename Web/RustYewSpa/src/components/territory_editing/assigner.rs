@@ -31,25 +31,30 @@ pub struct Props {
     #[prop_or_default]
     pub hidden: bool,
     //pub onchange: Callback<i32>,
-    //pub territory_id: i32,
+    pub territory_id: i32,
     pub territory_number: Option<String>,
     pub signed_out_to: Option<String>,
     pub signed_out_date: Option<String>,
     pub assignee_change_callback: Callback<String>,
+    pub stage_id: i32,
 }
 
 
 #[derive(Properties, PartialEq, Clone, Default, Serialize)]
 pub struct TerritoryAssignerModel {
+    pub territory_id: i32,
     pub territory_number: String,
     pub assignee: String,
     pub show_reassign: bool,
+    pub stage_id: i32,
 }
 
 #[function_component(Assigner)]
 pub fn assigner(props: &Props) -> Html {
+    let territory_id = props.territory_id;
     let territory_number = props.territory_number.clone().unwrap_or_default();
     let assignee = props.signed_out_to.clone().unwrap_or_default();
+    let stage_id = props.stage_id;
     log!(format!(
         "assigner: props: territory_number: {}, assignee: {}", 
         territory_number.clone(), 
@@ -58,9 +63,11 @@ pub fn assigner(props: &Props) -> Html {
     let territory_number_clone = territory_number.clone();
     let assignee_clone = assignee.clone();
     let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(move || TerritoryAssignerModel {
+        territory_id,
         territory_number: territory_number_clone,
         assignee: assignee_clone,
         show_reassign: false,
+        stage_id,
     });
 
     // let territory_number_clone = territory_number.clone();
@@ -224,6 +231,16 @@ pub fn assigner(props: &Props) -> Html {
         modification.show_reassign = !assigner_state_clone.show_reassign;
         assigner_state_clone.set(modification);
     });
+    
+    let cloned_state = assigner_state.clone();
+    let stage_id32_onchange = {
+        let cloned_state = cloned_state.clone();
+        Callback::from(move |stage_id: i32| {
+            let mut modification = cloned_state.deref().clone();
+            modification.stage_id = stage_id;
+            cloned_state.set(modification);
+        })
+    };
 
     let assigner_state_clone = assigner_state.clone();
     
@@ -332,16 +349,16 @@ pub fn assigner(props: &Props) -> Html {
                     />
                 </div>
             } 
-            // <div class="row p-2">
-            //     <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-            //         <StageSelector 
-            //             hidden={false} 
-            //             onchange={stage_id32_onchange.clone()} 
-            //             territory_id={cloned_state.territory.id.unwrap_or_default()} 
-            //             stage_id={cloned_state.territory.stage_id.unwrap_or_default()} 
-            //             signed_out_to={cloned_state.territory.signed_out_to.clone()} />
-            //     </div>
-            // </div>            
+            <div class="row p-2">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                    <StageSelector 
+                        hidden={false} 
+                        onchange={stage_id32_onchange.clone()} 
+                        territory_id={assigner_state.territory_id} 
+                        stage_id={props.stage_id} 
+                        signed_out_to={assigner_state.assignee.clone()} />
+                </div>
+            </div>            
         </>
     }
 }
