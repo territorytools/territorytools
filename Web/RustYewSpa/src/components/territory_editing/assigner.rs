@@ -144,7 +144,7 @@ pub fn assigner(props: &Props) -> Html {
                 props_clone.assignee_change_callback.emit(AssignmentStatus {
                     signed_out_to: Some(link_contract_clone.assignee_name.clone()),
                     signed_out_date: link_contract_clone.assigned_date_utc.clone(),
-                    stage_id: stage_id,
+                    stage_id: link_contract_clone.stage_id,
                 });
 
                 let mut modified_state = assignment_result_state_clone.deref().clone();
