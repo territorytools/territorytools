@@ -1,6 +1,6 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
-use crate::components::territory_editing::assigner::Assigner;
+use crate::components::territory_editing::assigner::{Assigner, AssignmentStatus};
 use crate::components::user_selector::UserSelector;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::models::territories::{Territory, TerritoryEditRequest};
@@ -427,9 +427,11 @@ pub fn territory_editor_page() -> Html {
     });
 
     let cloned_state = state.clone();
-    let assignee_change_callback = Callback::from(move |value: String| { 
+    let assignee_change_callback = Callback::from(move |value: AssignmentStatus| { 
         let mut modified_state = cloned_state.deref().clone();
-        modified_state.territory.signed_out_to = Some(value);
+        modified_state.territory.signed_out_to = value.signed_out_to;
+        modified_state.territory.signed_out = value.signed_out_date;
+        modified_state.territory.stage_id = Some(value.stage_id);
         cloned_state.set(modified_state);                   
     });
 

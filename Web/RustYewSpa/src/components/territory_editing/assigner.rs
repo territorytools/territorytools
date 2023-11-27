@@ -25,17 +25,22 @@ pub struct AssignmentResult {
     pub completed: bool,
 }
 
+#[derive(Properties, PartialEq, Clone, Default)]
+pub struct AssignmentStatus {
+    pub stage_id: i32,
+    pub signed_out_to: Option<String>,
+    pub signed_out_date: Option<String>,
+}
 
 #[derive(Properties, Default, Clone, PartialEq)]
 pub struct Props {
     #[prop_or_default]
     pub hidden: bool,
-    //pub onchange: Callback<i32>,
     pub territory_id: i32,
     pub territory_number: Option<String>,
     pub signed_out_to: Option<String>,
     pub signed_out_date: Option<String>,
-    pub assignee_change_callback: Callback<String>,
+    pub assignee_change_callback: Callback<AssignmentStatus>,
     pub stage_id: i32,
 }
 
@@ -135,7 +140,12 @@ pub fn assigner(props: &Props) -> Html {
             if resp.status() == 200 {
                 log!("assigner: The result was 200, successful");
                 
-                props_clone.assignee_change_callback.emit(link_contract.clone().assignee_name.clone());
+                let link_contract_clone = link_contract.clone();
+                props_clone.assignee_change_callback.emit(AssignmentStatus {
+                    signed_out_to: Some(link_contract_clone.assignee_name.clone()),
+                    signed_out_date: link_contract_clone.assigned_date_utc.clone(),
+                    stage_id: stage_id,
+                });
 
                 let mut modified_state = assignment_result_state_clone.deref().clone();
                 // modified_state.link_contract.assignee_name = link_contract.clone().assignee_name;
@@ -196,7 +206,7 @@ pub fn assigner(props: &Props) -> Html {
             if resp.status() == 200 {
                 let mut modified_state = cloned_state.deref().clone();
                 ////modified_state.assignee = "".to_string();
-                props_clone.assignee_change_callback.emit("".to_string());
+                props_clone.assignee_change_callback.emit(AssignmentStatus::default());
                 // modified_state.territory.signed_out = None;
                 // modified_state.territory.stage_id = Some(1000); // TODO: Get a value from the return body
                 modified_state.show_reassign = false;
