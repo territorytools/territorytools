@@ -88,7 +88,7 @@ namespace TerritoryTools.Web.MainSite.Areas.Identity.Pages.Account
                     return Page();
                 }
 
-                UserContract userFromApi = _userFromApiService.ByEmail(normalizedEmail);
+                UserContract userFromApi = _userFromApiService.ByEmail(normalizedEmail.ToUpper());
                 if (userFromApi == null || !(userFromApi.IsActive ?? false))
                 {
                     ModelState.AddModelError(string.Empty, "That email is not in our system.  You must be invited.");
