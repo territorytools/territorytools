@@ -4,7 +4,9 @@ const DATA_API_PATH: &str = "/api/addresses/search";
 
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
+use crate::functions::document_functions::set_document_title;
 use crate::models::addresses::Address;
+use crate::modals::unauthorized::UnauthorizedModal;
 use crate::Route;
 
 use gloo_console::log;
@@ -25,13 +27,9 @@ pub enum Msg {
 //#[derive(Properties, PartialEq, Clone, Default)]
 pub struct AddressSearchPage {
     _listener: LocationHandle,
-    // pub success: bool,
-    // pub count: i32,
-    // pub search_text: String,
     pub addresses: Vec<Address>,
-    pub result: AddressSearchPageResult
-    // pub load_error: bool,
-    // pub load_error_message: String,
+    pub result: AddressSearchPageResult,
+    pub show_unauthorized_modal: bool,
 }
 
 impl Component for AddressSearchPage {
@@ -48,10 +46,11 @@ impl Component for AddressSearchPage {
             )
             .unwrap();
 
-        return Self {
+        Self {
             _listener: listener,
             addresses: vec![],
             result: AddressSearchPageResult::default(),
+            show_unauthorized_modal: false,
         }
     }
 
@@ -59,6 +58,7 @@ impl Component for AddressSearchPage {
         match msg {
             Msg::Load(result) => {
                 self.addresses = result.addresses.clone();
+                self.show_unauthorized_modal = result.load_error_message == "Unauthorized";
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -72,7 +72,7 @@ impl Component for AddressSearchPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        //set_document_title("Territory Search");
+        set_document_title("Addresses");
         
         let onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
@@ -97,7 +97,8 @@ impl Component for AddressSearchPage {
     
         let _count = self.addresses.len();
         let search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
-      
+        let return_url = format!("%2Fapp%2Faddress-search%3Fsearch_text%3D{}", search_text.clone());
+
         html! {
             <>
                 <MenuBarV2>
@@ -192,6 +193,9 @@ impl Component for AddressSearchPage {
                         }).collect::<Html>()
                     }
                 </div>
+                if self.show_unauthorized_modal {
+                    <UnauthorizedModal {return_url} />              
+                }
             </>
         }
     }

@@ -1,6 +1,8 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::user_selector::UserSelector;
+use crate::functions::document_functions::set_document_title;
+use crate::modals::unauthorized::UnauthorizedModal;
 use crate::models::territories::TerritorySummary;
 use crate::Route;
 
@@ -22,6 +24,7 @@ pub struct MyTerritoriesPage {
     _listener: LocationHandle,
     territories: Vec<TerritorySummary>,
     result: MyTerritoriesResult,
+    show_unauthorized_modal: bool,
 }
 
 impl Component for MyTerritoriesPage {
@@ -38,10 +41,11 @@ impl Component for MyTerritoriesPage {
             )
             .unwrap();
 
-        return Self {
+        Self {
             _listener: listener,
             territories: vec![],
             result: MyTerritoriesResult::default(),
+            show_unauthorized_modal: false,
         }
     }
 
@@ -50,6 +54,7 @@ impl Component for MyTerritoriesPage {
             Msg::Load(result) => {
                 self.territories = result.territories.clone();
                 self.result.contract = result.contract.clone();
+                self.show_unauthorized_modal = result.load_error_message == "Unauthorized";
                 true
             },
             Msg::RefreshFromSearchText() => {
@@ -64,7 +69,7 @@ impl Component for MyTerritoriesPage {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        //set_document_title("Territory Search");
+        set_document_title("My Territories");
         
         let _onsubmit = Callback::from(move |event: SubmitEvent| {
             event.prevent_default();
@@ -110,6 +115,7 @@ impl Component for MyTerritoriesPage {
         let _search_text = ctx.search_query().search_text.clone().unwrap_or_default();  
         let full_name = self.result.contract.full_name.clone();
         let can_impersonate = self.result.contract.can_impersonate;
+        let return_url = "%2Fapp%2Fmy-territories";
 
         html!{
             <>
@@ -128,12 +134,11 @@ impl Component for MyTerritoriesPage {
                 </MenuBarV2>
                 <div class="container pt-3">
                     <div class="row">
-                        <div class="col-12">
-                            <span><strong id="territory-title-span">{"My Territories: "}</strong></span>
-                            <span><strong>{full_name.clone()}</strong></span>
+                        <div class="col-6">
+                            <span><h3 id="territory-title-span">{"My Territories"}</h3></span>
                         </div>
                         if can_impersonate {
-                            <div class="col-12 col-md-4 col-lg-3">
+                            <div class="col-6">
                                 <label for="user-selector" class="form-label">{"Impersonate User"}</label>
                                 <UserSelector id="user-selector" onchange={assignee_onchange} name_as_value={true} />
                             </div>
@@ -149,6 +154,9 @@ impl Component for MyTerritoriesPage {
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-12">
+                            <span><h4>{full_name.clone()}</h4></span>
+                        </div>                        
                         <div class="col-12">
                             <span id="territories-found-summary"><strong>{count}</strong>{" Territories Found"}</span>
                         </div>
@@ -227,6 +235,9 @@ impl Component for MyTerritoriesPage {
                          }).collect::<Html>()
                     }
                 </div>
+                if self.show_unauthorized_modal {
+                    <UnauthorizedModal {return_url} />              
+                }
             </>
         }
     }

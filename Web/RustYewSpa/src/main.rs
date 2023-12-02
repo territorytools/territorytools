@@ -2,6 +2,7 @@ use crate::components::address_edit_page::AddressEditPage;
 use crate::components::address_search_page::AddressSearchPage;
 use crate::components::assign_page::AssignPage;
 use crate::components::link_page::TerritoryLinkPage;
+use crate::components::link_editor::LinkEditPage;
 use crate::components::route_stuff::Route;
 use crate::components::route_stuff::switch;
 use crate::components::territory_editor::*;
@@ -18,6 +19,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 mod components;
+mod modals;
 mod models;
 mod functions;
 mod libs;

@@ -1,7 +1,5 @@
-use crate::components::{
-    //bb_button::BBButton,
-    bb_text_input::{BBTextInput, InputType},
-};
+use crate::components::bb_text_input::{BBTextInput, InputType};
+use crate::functions::document_functions::set_document_title;
 
 use std::ops::Deref;
 use yew::prelude::*;
@@ -24,6 +22,7 @@ pub struct TerritoryModification {
 
 #[function_component(TerritoryEditForm)]
 pub fn territory_edit_form(props: &Props) -> Html {
+    set_document_title("Edit Territory");
 
     let state = use_state(||TerritoryModification {
         territory_number: props.territory_number.clone(),
@@ -79,12 +78,6 @@ pub fn territory_edit_form(props: &Props) -> Html {
                     <BBTextInput value={props.territory_number.clone()} data_test="territory_number" label="区域号码 Territory Number" placeholder="Number" class="form-control" input_type={InputType::Text} onchange={territory_number_onchange} readonly={true} />
                     <BBTextInput value={description} data_test="description" label="区域名称 Description" placeholder="What description do you want?" class="form-control" input_type={InputType::Text} onchange={description_onchange} />
                     <BBTextInput value={group_id} data_test="group_id" label="Group ID" placeholder="Group" class="form-control" input_type={InputType::Text} onchange={group_id_onchange} />
-                    // <label>{"委派给 Assign to"}</label>
-                    // <div class={"input-group-append"}>
-                    // <UserSelector onchange={assignee_onchange} />
-                    // <BBButton label={"Assign"} data_test="submit" />
-                    // </div>
-                    //<BBButton label={"Save"} data_test="submit" class={"btn btn-primary"}/>
                     <button 
                         type="submit"
                         class="btn btn-primary">

@@ -1,12 +1,16 @@
-use crate::AddressEditPage;
-use crate::AddressSearchPage;
 use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::components::territory_stage_report_page::TerritoryReportsPage;
 use crate::components::user_search_page::UserSearchPage;
 use crate::components::user_editor::UserEditorPage;
 
+use crate::AddressEditPage;
+use crate::AddressSearchPage;
 use crate::AssignPage;
+use crate::CanvasMap;
+use crate::LinkEditPage;
+use crate::Model;
 use crate::Secure;
+use crate::SvgMap;
 use crate::TerritoryEditPage;
 use crate::TerritoryEditorPage;
 use crate::TerritoryEditPageExample;
@@ -14,14 +18,12 @@ use crate::TerritorySearchPage;
 use crate::TerritorySearchOld;
 use crate::TerritoryLinkPage;
 use crate::TerritoryMap;
-use crate::SvgMap;
-use crate::CanvasMap;
-use crate::Model;
 
 use yew_router::prelude::*;
 use yew::html;
 use yew::Html;
 
+use super::app_menu::AppMenuPage;
 use super::my_territories_page::MyTerritoriesPage;
 //use gloo_console::log;
 
@@ -29,6 +31,8 @@ use super::my_territories_page::MyTerritoriesPage;
 pub enum Route {
     #[at("/app")]
     Root,
+    #[at("/app/menu")]
+    AppMenu,
     #[at("/wasm/index.html")]
     Start,
     #[at("/app/map-old")]
@@ -65,6 +69,8 @@ pub enum Route {
     AddressSharedLetter,
     #[at("/app/address-edit")]
     AddressEdit,
+    #[at("/app/link-edit")]
+    LinkEdit,
     #[at("/app/territory-edit")]
     TerritoryEditor,
     #[at("/app/user-edit")]
@@ -96,6 +102,7 @@ pub fn switch(route: Route) -> Html {
     match route {
         //Route::Home => html! { <Redirect<Route> to={"/"} },
         Route::Home => html! { <h3>{"Home"}</h3> },
+        Route::AppMenu => html! { <AppMenuPage /> },
         Route::Root => html! { <Redirect<Route> to={Route::Map}/> },
         Route::Start => html! { <Redirect<Route> to={Route::Map}/> },
         //Route::Other => html! { <Redirect<Route> to={"https://google.com"}/> },
@@ -133,6 +140,7 @@ pub fn switch(route: Route) -> Html {
         Route::UserSearch => html! { <UserSearchPage /> },
         Route::AddressSharedLetter => html! { <AddressSharedLetter /> },
         Route::AddressEdit => html! { <AddressEditPage /> },
+        Route::LinkEdit => html! { <LinkEditPage /> },
         Route::TerritoryEditor => html! { <TerritoryEditorPage /> },
         Route::UserEditor => html! { <UserEditorPage /> },
         Route::TerritorySearch => html! { <TerritorySearchPage /> },
