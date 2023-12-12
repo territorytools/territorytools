@@ -45,6 +45,7 @@ pub fn stage_selector(props: &Props) -> Html {
     let cloned_state = state.clone();
     let stage_id_onchange = {
         let state = cloned_state.clone();
+        let props_clone = props.clone();
         Callback::from(move |event: Event| {
             let mut modification = state.deref().clone();
             let value = event
@@ -55,12 +56,15 @@ pub fn stage_selector(props: &Props) -> Html {
 
             modification.stage_id = value.parse().unwrap_or_default();
             state.set(modification);
+
+            props_clone.onchange.emit(value.parse().unwrap_or_default());
         })
     };
 
     let stage_change_result_state_clone = stage_change_result_state.clone();
     let props_clone = props.clone();
     let save_stage_onclick = Callback::from(move |_: i32| { 
+        let props_clone = props_clone.clone();
         let stage_change_result_state_clone = stage_change_result_state_clone.clone();
         let territory_id = props_clone.territory_id;
         let stage_id = props_clone.stage_id;
@@ -92,7 +96,7 @@ pub fn stage_selector(props: &Props) -> Html {
             stage_change_result_state_clone.set(result);
 
             if resp.status() == 200 {
-
+                props_clone.onchange.emit(stage_id);
             }
         });
     });

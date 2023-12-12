@@ -428,11 +428,13 @@ pub fn territory_editor_page() -> Html {
 
     let cloned_state = state.clone();
     let assignee_change_callback = Callback::from(move |value: AssignmentStatus| { 
+        log!(format!("territory_editor: assignee_change_callback value.stage_id: {}", value.stage_id));
+
         let mut modified_state = cloned_state.deref().clone();
         modified_state.territory.signed_out_to = value.signed_out_to;
         modified_state.territory.signed_out = value.signed_out_date;
         modified_state.territory.stage_id = Some(value.stage_id);
-        cloned_state.set(modified_state);                   
+        cloned_state.set(modified_state);
     });
 
     let cloned_state = state.clone();

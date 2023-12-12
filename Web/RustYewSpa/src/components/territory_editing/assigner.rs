@@ -2,14 +2,11 @@ use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use std::ops::Deref;
 use serde::Serialize;
-use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
-use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::email_section::EmailSection;
-use crate::components::selector_option_bilingual::EnglishChineseIdOption;
 use crate::components::sms_section::SmsSection;
 use crate::components::territory_editing::stage_selector::StageSelector;
 use crate::components::user_selector::UserSelector;
@@ -206,7 +203,11 @@ pub fn assigner(props: &Props) -> Html {
             if resp.status() == 200 {
                 let mut modified_state = cloned_state.deref().clone();
                 ////modified_state.assignee = "".to_string();
-                props_clone.assignee_change_callback.emit(AssignmentStatus::default());
+                props_clone.assignee_change_callback.emit(AssignmentStatus{
+                    signed_out_to: None,
+                    signed_out_date: None,
+                    stage_id: 1000, // 1000=Available (for checkout)
+                });
                 // modified_state.territory.signed_out = None;
                 // modified_state.territory.stage_id = Some(1000); // TODO: Get a value from the return body
                 modified_state.show_reassign = false;
@@ -241,18 +242,24 @@ pub fn assigner(props: &Props) -> Html {
         modification.show_reassign = !assigner_state_clone.show_reassign;
         assigner_state_clone.set(modification);
     });
-    
-    let cloned_state = assigner_state.clone();
+
+    let props_clone = props.clone();
     let stage_id32_onchange = {
-        let cloned_state = cloned_state.clone();
         Callback::from(move |stage_id: i32| {
-            let mut modification = cloned_state.deref().clone();
-            modification.stage_id = stage_id;
-            cloned_state.set(modification);
+            log!(format!("assigner: stage_id32_onchange stage_id: {}", stage_id));
+            props_clone.assignee_change_callback.emit(AssignmentStatus {
+                signed_out_to: props_clone.signed_out_to.clone(),
+                signed_out_date: props_clone.signed_out_date.clone(),
+                stage_id,
+            });
+
+            // let mut modification = cloned_state.deref().clone();
+            // modification.stage_id = stage_id;
+            // cloned_state.set(modification);
         })
     };
 
-    let assigner_state_clone = assigner_state.clone();
+    let _assigner_state_clone = assigner_state.clone();
     
     let is_assigned = !props.signed_out_to.clone().unwrap_or_default().is_empty();
     //let is_assigned: bool = !state.territory.signed_out_to.clone().unwrap_or_default().is_empty();
@@ -274,7 +281,8 @@ pub fn assigner(props: &Props) -> Html {
     log!(format!("assigner: territory_number: {}, assigned_to: {}", assignment_result_state.link_contract.territory_number.clone(), assigned_to.clone()));
     log!(format!("assigner: is_assigned 2: {is_assigned} assigner.assignee: {}", assigner_state.assignee.clone()));
     log!(format!("assigner: assignment_result_state_clone.success: {}", assignment_result_state_clone.success));
-    
+    log!(format!("assigner: props.stage_id: {}",props.stage_id));
+
     html!{
         <>
             <div class="row p-2">    
@@ -362,10 +370,10 @@ pub fn assigner(props: &Props) -> Html {
             <div class="row p-2">
                 <div class="col-12 col-sm-8 col-md-6 col-lg-4">
                     <StageSelector 
-                        hidden={false} 
-                        onchange={stage_id32_onchange.clone()} 
-                        territory_id={assigner_state.territory_id} 
-                        stage_id={props.stage_id} 
+                        hidden={false}
+                        onchange={stage_id32_onchange.clone()}
+                        territory_id={props.territory_id}
+                        stage_id={props.stage_id}
                         signed_out_to={assigner_state.assignee.clone()} />
                 </div>
             </div>            

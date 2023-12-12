@@ -224,6 +224,7 @@ impl Component for Model {
 
                 let as_of_date = ctx.search_query().as_of_date.clone();
                 let show_areas = ctx.search_query().show_areas;
+                let language_group_id = ctx.search_query().language_group_id;
                 self.show_menu = if !as_of_date.clone().unwrap_or_default().is_empty() { MapMenu::History } else { self.show_menu };
 
                 // This one is weird because all the territories are preloaded and searchable                
@@ -233,7 +234,8 @@ impl Component for Model {
                             fetch_territory_map_w_mtk(
                                 &mtk.to_string(), 
                                 as_of_date.clone(),
-                                show_areas
+                                show_areas,
+                                language_group_id
                             ).await, 
                             mtk.to_string(), 
                             search_text.clone())
@@ -263,6 +265,7 @@ impl Component for Model {
                 mtk: Some(mtk.clone()),
                 as_of_date,
                 show_areas: ctx.search_query().show_areas,
+                language_group_id: ctx.search_query().language_group_id,
             };
 
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -315,6 +318,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: !show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -336,6 +340,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: Some(value.clone()),
                     show_areas: query_clone.show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 log!(format!("AdOfDateChanged to : {}", value.clone()));
@@ -359,6 +364,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
                     show_areas: query_clone.show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -381,6 +387,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
                     show_areas: query_clone.show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -402,6 +409,7 @@ impl Component for Model {
                     mtk: query_clone.mtk.clone(),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: if value == "show_areas".to_string() { true } else { false },
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -425,6 +433,7 @@ impl Component for Model {
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: query_clone.show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -442,6 +451,7 @@ impl Component for Model {
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: query_clone.show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -457,6 +467,7 @@ impl Component for Model {
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: Some("".to_string()),
                     show_areas: query_clone.show_areas,
+                    language_group_id: query_clone.language_group_id,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -679,6 +690,7 @@ pub struct MapSearchQuery {
     pub mtk: Option<String>,
     pub as_of_date: Option<String>,
     pub show_areas: bool,
+    pub language_group_id: i32,
 }
 
 pub trait SearchQuery {

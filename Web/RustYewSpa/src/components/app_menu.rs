@@ -53,7 +53,7 @@ impl Component for AppMenuPage {
         true
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         set_document_title("Menu");
         
         let _onsubmit = Callback::from(move |event: SubmitEvent| {
@@ -117,7 +117,7 @@ impl SearchQuery for &Context<AppMenuPage> {
 }
 
 
-async fn get_menu(name: &str) -> MenuResult {
+async fn get_menu(_name: &str) -> MenuResult {
     let resp = Request::get("/api/menu/main")
         .header("Content-Type", "application/json")
         .send()

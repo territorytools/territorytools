@@ -29,10 +29,15 @@ fn territory_filter(t: &Territory) -> bool {
     t.border.len() > 2
 }
 
-pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>, _show_areas: bool) -> MapModel {
+pub async fn fetch_territory_map_w_mtk(
+    mtk: &str, 
+    as_of_date: Option<String>, 
+    _show_areas: bool,
+    language_group_id: i32) -> MapModel {
     let fetched_result: BorderFilteredResult = fetch_territories_w_mtk(
         mtk, 
-        as_of_date.clone().unwrap_or_default().as_str()).await;       
+        as_of_date.clone().unwrap_or_default().as_str(),
+        language_group_id).await;       
 
     let map_center = find_center(&fetched_result.territories);
 
@@ -98,12 +103,15 @@ pub async fn fetch_territory_map_w_mtk(mtk: &str, as_of_date: Option<String>, _s
     }
 }
 
-pub async fn fetch_territories_w_mtk(mtk: &str, as_of_date: &str) ->  BorderFilteredResult {
+pub async fn fetch_territories_w_mtk(
+    mtk: &str, 
+    as_of_date: &str,
+    language_group_id: i32) ->  BorderFilteredResult {
     let params = QueryParams::new();
     params.append("mtk", mtk);
     params.append("asOfDate", as_of_date);
     let query_string = params.to_string();    
-    let uri: String = format!("/api/territories/borders-filtered?{query_string}");
+    let uri: String = format!("/api/territories/borders-filtered?{query_string}&languageGroupId={language_group_id}");
     Request::get(uri.as_str())
         .send()
         .await

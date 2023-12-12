@@ -181,7 +181,7 @@ impl Component for TerritorySearchPage {
                                          </div>
                                          <div class="col-4 col-md-2">
                                              <span class="badge" style={format!("border-radius:3px;border-width:1px;border-style:solid;color:white;background-color:{stage_color}")}>
-                                                 {stage.clone()}
+                                                 {stage}
                                              </span>
                                              if false { // TODO: Maybe turn this back on later as a feature
                                                     <span style="ming-width:5px;">{" / "}</span>
