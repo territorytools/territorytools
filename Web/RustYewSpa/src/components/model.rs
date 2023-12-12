@@ -23,7 +23,7 @@ use yew_router::prelude::LocationHandle;
 use gloo_console::log;
 
 pub enum Msg {
-    LoadBordersPath(MapModel, String, String), // Download a "key", which includes a default search
+    LoadBordersPath(MapModel, String, i32, String), // Download a "key", which includes a default search
     Search(String, String, bool),
     RefreshFromSearchText(), // Search what's already downloaded
     ToggleMenu(MapMenu),
@@ -35,6 +35,7 @@ pub enum MapMenu {
     Search,
     History,
     Options,
+    LanguageGroups,
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -53,6 +54,7 @@ pub struct Model {
     search_error: String,
     show_menu: MapMenu,
     last_mtk: Option<String>,
+    last_language_group_id: i32,
 }
 
 impl Component for Model {
@@ -93,16 +95,18 @@ impl Component for Model {
             search_error: "".to_string(),
             tpolygons: vec![],
             last_mtk: None,
+            last_language_group_id: 0,
             show_menu: MapMenu::Search,
         }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::LoadBordersPath(map_model, mtk, search) => {
+            Msg::LoadBordersPath(map_model, mtk, language_group_id, search) => {
                 log!(format!("model::Msg::LoadBordersPath(mtk: {}, search: {})", mtk.clone(), search.clone()));
                 self.territory_map = map_model.clone();
-                self.last_mtk = Some(mtk); // TODO: Do I need this?
+                self.last_mtk = Some(mtk); // TODO: Do I need this? I think so
+                self.last_language_group_id = language_group_id;
                 let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();
                 let show_areas = ctx.search_query().show_areas;
 
@@ -228,7 +232,7 @@ impl Component for Model {
                 self.show_menu = if !as_of_date.clone().unwrap_or_default().is_empty() { MapMenu::History } else { self.show_menu };
 
                 // This one is weird because all the territories are preloaded and searchable                
-                if self.last_mtk != Some(mtk.to_string()) {
+                if self.last_mtk != Some(mtk.to_string()) || self.last_language_group_id != language_group_id {
                     ctx.link().send_future(async move {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_mtk(
@@ -237,7 +241,8 @@ impl Component for Model {
                                 show_areas,
                                 language_group_id
                             ).await, 
-                            mtk.to_string(), 
+                            mtk.to_string(),
+                            language_group_id,
                             search_text.clone())
                     });
                 } else {
@@ -308,6 +313,13 @@ impl Component for Model {
             })
         };
 
+        let link = ctx.link().clone(); 
+        let language_group_menu_onclick = {
+            Callback::from(move |_event: MouseEvent| {
+                link.send_message(Msg::ToggleMenu(MapMenu::LanguageGroups));
+            })
+        };
+
         let navigator = ctx.link().navigator().unwrap();
         let query_clone = ctx.search_query().clone();
         let show_areas = ctx.search_query().clone().show_areas;
@@ -319,6 +331,38 @@ impl Component for Model {
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: !show_areas,
                     language_group_id: query_clone.language_group_id,
+                };
+
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            })
+        };
+
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let language_group_101_click = {
+            Callback::from(move |_event: MouseEvent| {
+                let query = MapSearchQuery {
+                    mtk: query_clone.mtk.clone(),
+                    search: query_clone.search.clone(),
+                    as_of_date: query_clone.as_of_date.clone(),
+                    show_areas: query_clone.show_areas,
+                    language_group_id: 101,
+                };
+
+                let _ = navigator.push_with_query(&Route::MapComponent, &query);
+            })
+        };
+        
+        let navigator = ctx.link().navigator().unwrap();
+        let query_clone = ctx.search_query().clone();
+        let language_group_102_click = {
+            Callback::from(move |_event: MouseEvent| {
+                let query = MapSearchQuery {
+                    mtk: query_clone.mtk.clone(),
+                    search: query_clone.search.clone(),
+                    as_of_date: query_clone.as_of_date.clone(),
+                    show_areas: query_clone.show_areas,
+                    language_group_id: 102,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -589,10 +633,18 @@ impl Component for Model {
                                              </button>
                                              <button 
                                                 id="options-menu-button"
-                                                onclick={options_menu_onclick}
+                                                onclick={options_menu_onclick.clone()}
                                                 class="btn btn-outline-primary position-relative">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-toggles" viewBox="0 0 16 16">
                                                     <path d="M4.5 9a3.5 3.5 0 1 0 0 7h7a3.5 3.5 0 1 0 0-7h-7zm7 6a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm-7-14a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm2.45 0A3.49 3.49 0 0 1 8 3.5 3.49 3.49 0 0 1 6.95 6h4.55a2.5 2.5 0 0 0 0-5H6.95zM4.5 0h7a3.5 3.5 0 1 1 0 7h-7a3.5 3.5 0 1 1 0-7z"/>
+                                                </svg>
+                                            </button>                                             
+                                             <button 
+                                                id="language-groups-menu-button"
+                                                onclick={language_group_menu_onclick}
+                                                class="btn btn-outline-primary position-relative">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                                                 </svg>
                                             </button>                                             
                                         } else if self.show_menu == MapMenu::Options {
@@ -611,6 +663,25 @@ impl Component for Model {
                                                 }
                                                 {" Areas"}
                                             </button>                     
+                                        } else if self.show_menu == MapMenu::LanguageGroups {
+                                            <button 
+                                                id="lg-1"
+                                                onclick={language_group_101_click.clone()}
+                                                class="btn btn-outline-primary position-relative">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                                                </svg>
+                                                {"1"}
+                                            </button>
+                                            <button 
+                                                id="lg-2"
+                                                onclick={language_group_102_click.clone()}
+                                                class="btn btn-outline-primary position-relative">                                           
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                                                </svg>
+                                                {"2"}
+                                            </button>   
                                         } else {
                                             //<form onsubmit={search_text_onsubmit} id="search-form">
                                             <div class="input-group">
