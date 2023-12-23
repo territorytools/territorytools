@@ -5,6 +5,7 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
 use crate::components::selector_option_bilingual::EnglishChineseIdOption;
 use crate::components::language_selector::LanguageSelector;
+use crate::components::language_selector_v2::LanguageSelectorV2;
 use crate::components::territory_editing::territory_editor::TerritoryEditorParameters;
 use crate::models::addresses::Address;
 use crate::models::geocoding_coordinates::AddressToGeocode;
@@ -136,17 +137,32 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.language_id = value.parse().unwrap();
+            modification.address.alba_language_id = value.parse().unwrap();
             // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
-            log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
+            log!(format!("Address language id set to {name:?}", name = modification.address.alba_language_id));
 
             state.set(modification);
         })
     };
 
-    let language_onchange_2 = {
+    let language_onchange_v1 = {
+        let state = cloned_state.clone();
+        Callback::from(move |value: String| {
+            let mut modification = state.deref().clone();
+
+            modification.address.alba_language_id = value.parse().unwrap();
+            // Clear the status string to prevent confusion about which one is right
+            modification.address.language = Some("".to_string());
+
+            log!(format!("Address language id set to {name:?}", name = modification.address.alba_language_id));
+
+            state.set(modification);
+        })
+    };
+
+    let language_onchange_v2 = {
         let state = cloned_state.clone();
         Callback::from(move |value: String| {
             let mut modification = state.deref().clone();
@@ -155,7 +171,7 @@ pub fn address_edit_page() -> Html {
             // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
-            log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
+            log!(format!("Address (non-Alba) language id set to {name:?}", name = modification.address.language_id));
 
             state.set(modification);
         })
@@ -901,9 +917,12 @@ pub fn address_edit_page() -> Html {
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
     
     // TODO: This language_id is a hack, this should be in some sort of configuration
-    let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
+    let selected_alba_language_id: i32 = if state.address.alba_language_id == 0 { 83 } else { state.address.alba_language_id };
+    // TODO: This language_id is also a hack, this should be in some sort of configuration
+    let selected_language_id: i32 = if state.address.language_id == 0 { 100 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
-    log!(format!("selected_language_id: {}, selected_status_id: {}", selected_language_id, selected_status_id));
+    log!(format!("selected_alba_language_id: {}, selected_status_id: {}, selected_language_id: {}", 
+        selected_alba_language_id, selected_status_id, selected_language_id));
 
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
@@ -1119,7 +1138,11 @@ pub fn address_edit_page() -> Html {
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <LanguageSelector id="input-language" onchange={language_onchange_2} value={selected_language_id} />
+                    <LanguageSelector id="input-language" onchange={language_onchange_v1.clone()} value={selected_alba_language_id} />
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <label for="input-language" class="form-label">{"Language v2"}</label>
+                    <LanguageSelectorV2 id="input-language-v2" onchange={language_onchange_v2.clone()} value={selected_language_id} />
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                         <label for="input-status" class="form-label">{"Visit Status"}</label>

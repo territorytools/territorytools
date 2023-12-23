@@ -14,6 +14,7 @@ pub mod button_with_confirm;
 pub mod collapsible_section;
 pub mod email_section;
 pub mod language_selector;
+pub mod language_selector_v2;
 pub mod link_editor;
 pub mod link_page;
 pub mod map_menu;
