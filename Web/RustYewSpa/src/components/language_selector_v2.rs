@@ -16,22 +16,22 @@ pub struct Props {
 #[function_component(LanguageSelectorV2)]
 pub fn language_selector_v2(props: &Props) -> Html {
     
-    let languages = use_state(|| vec![]);
+    let language_groups = use_state(|| vec![]);
     {
-        let languages = languages.clone();
+        let language_groups: UseStateHandle<Vec<LanguageGroup>> = language_groups.clone();
         use_effect_with((), move |_| {
-            let languages = languages.clone();
+            let language_groups = language_groups.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let uri: &str = "/api/languages";
 
-                let fetched: Vec<Language> = Request::get(uri)
+                let fetched: Vec<LanguageGroup> = Request::get(uri)
                     .send()
                     .await
                     .unwrap()
                     .json()
                     .await
                     .unwrap();
-                languages.set(fetched);
+                language_groups.set(fetched);
             });
             || ()
         });
@@ -49,15 +49,27 @@ pub fn language_selector_v2(props: &Props) -> Html {
         })
     };
 
+    //let language_value = format!("{}", props.value);
+
     html! {
         <select id={props.id.clone()} name="languageId" class={"form-select shadow-sm"} {onchange}>
             <option value={"0"}>{"Select Language"}</option>
             {                
-                languages.iter().map(|language| {
-                    let language_id = format!("{}", language.language_id);
-
+                language_groups.iter().map(|language_group| {
+                    let language_group_name = language_group.name.clone();
                     html!{
-                        <option value={language_id.clone()}>{language.name.clone()}</option>
+                        <optgroup label={language_group_name}>
+                        {
+                            language_group.languages.iter().map(|language| {
+                                let language_id = format!("{}", language.language_id);
+                                let selected = language.language_id == props.value;
+
+                                html!{
+                                    <option value={language_id.clone()} {selected}>{language.name.clone()}</option>
+                                }
+                            }).collect::<Html>()
+                        }
+                        </optgroup>
                     }
                 }).collect::<Html>()
             }
@@ -78,4 +90,14 @@ pub struct Language {
     pub alba_langauge_name: Option<String>,
     #[serde(default)]
     pub is_active: bool,
+}
+
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageGroup {
+    #[serde(default)]
+    pub language_group_id: i32,
+    pub name: String,
+    #[serde(default)]
+    pub languages: Vec<Language>,
 }
