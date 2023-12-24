@@ -33,11 +33,11 @@ pub async fn fetch_territory_map_w_mtk(
     mtk: &str, 
     as_of_date: Option<String>, 
     _show_areas: bool,
-    language_group_id: i32) -> MapModel {
+    language_group_index: i32) -> MapModel {
     let fetched_result: BorderFilteredResult = fetch_territories_w_mtk(
         mtk, 
         as_of_date.clone().unwrap_or_default().as_str(),
-        language_group_id).await;       
+        language_group_index).await;       
 
     let map_center = find_center(&fetched_result.territories);
 
@@ -106,12 +106,12 @@ pub async fn fetch_territory_map_w_mtk(
 pub async fn fetch_territories_w_mtk(
     mtk: &str, 
     as_of_date: &str,
-    language_group_id: i32) ->  BorderFilteredResult {
+    language_group_index: i32) ->  BorderFilteredResult {
     let params = QueryParams::new();
     params.append("mtk", mtk);
     params.append("asOfDate", as_of_date);
     let query_string = params.to_string();    
-    let uri: String = format!("/api/territories/borders-filtered?{query_string}&languageGroupId={language_group_id}");
+    let uri: String = format!("/api/territories/borders-filtered?{query_string}&languageGroupIndex={language_group_index}");
     Request::get(uri.as_str())
         .send()
         .await

@@ -1,5 +1,3 @@
-use crate::models::users::User;
-use js_sys::Boolean;
 use reqwasm::http::Request;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
@@ -76,7 +74,6 @@ pub fn language_selector_v2(props: &Props) -> Html {
         </select>
     }
 }
-
 
 #[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
 #[serde(rename_all = "camelCase")]

@@ -54,7 +54,7 @@ pub struct Model {
     search_error: String,
     show_menu: MapMenu,
     last_mtk: Option<String>,
-    last_language_group_id: i32,
+    last_language_group_index: i32,
 }
 
 impl Component for Model {
@@ -79,7 +79,7 @@ impl Component for Model {
             let query = MapSearchQuery {
                 search: Some("".to_string()),
                 mtk: Some(mtk),
-                as_of_date: as_of_date,
+                as_of_date,
                 ..MapSearchQuery::default()
             };
             
@@ -95,18 +95,18 @@ impl Component for Model {
             search_error: "".to_string(),
             tpolygons: vec![],
             last_mtk: None,
-            last_language_group_id: 0,
+            last_language_group_index: 0,
             show_menu: MapMenu::Search,
         }                
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::LoadBordersPath(map_model, mtk, language_group_id, search) => {
+            Msg::LoadBordersPath(map_model, mtk, language_group_index, search) => {
                 log!(format!("model::Msg::LoadBordersPath(mtk: {}, search: {})", mtk.clone(), search.clone()));
                 self.territory_map = map_model.clone();
                 self.last_mtk = Some(mtk); // TODO: Do I need this? I think so
-                self.last_language_group_id = language_group_id;
+                self.last_language_group_index = language_group_index;
                 let as_of_date = ctx.search_query().as_of_date.clone().unwrap_or_default();
                 let show_areas = ctx.search_query().show_areas;
 
@@ -228,21 +228,21 @@ impl Component for Model {
 
                 let as_of_date = ctx.search_query().as_of_date.clone();
                 let show_areas = ctx.search_query().show_areas;
-                let language_group_id = ctx.search_query().language_group_id;
+                let language_group_index = ctx.search_query().language_group_index;
                 self.show_menu = if !as_of_date.clone().unwrap_or_default().is_empty() { MapMenu::History } else { self.show_menu };
 
                 // This one is weird because all the territories are preloaded and searchable                
-                if self.last_mtk != Some(mtk.to_string()) || self.last_language_group_id != language_group_id {
+                if self.last_mtk != Some(mtk.to_string()) || self.last_language_group_index != language_group_index {
                     ctx.link().send_future(async move {
                         Msg::LoadBordersPath(
                             fetch_territory_map_w_mtk(
                                 &mtk.to_string(), 
                                 as_of_date.clone(),
-                                show_areas,
-                                language_group_id
+                                show_areas,                                
+                                language_group_index,
                             ).await, 
                             mtk.to_string(),
-                            language_group_id,
+                            language_group_index,
                             search_text.clone())
                     });
                 } else {
@@ -270,7 +270,7 @@ impl Component for Model {
                 mtk: Some(mtk.clone()),
                 as_of_date,
                 show_areas: ctx.search_query().show_areas,
-                language_group_id: ctx.search_query().language_group_id,
+                language_group_index: ctx.search_query().language_group_index,
             };
 
             let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -330,7 +330,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: !show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -346,7 +346,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: query_clone.show_areas,
-                    language_group_id: 101,
+                    language_group_index: 0,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -362,7 +362,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: query_clone.show_areas,
-                    language_group_id: 102,
+                    language_group_index: 1, // TODO: Use an index instead (add to database table)
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -384,7 +384,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: Some(value.clone()),
                     show_areas: query_clone.show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 log!(format!("AdOfDateChanged to : {}", value.clone()));
@@ -408,7 +408,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
                     show_areas: query_clone.show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -431,7 +431,7 @@ impl Component for Model {
                     search: query_clone.search.clone(),
                     as_of_date: Some(day_after.clone().format("%Y-%m-%d").to_string()),
                     show_areas: query_clone.show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -453,7 +453,7 @@ impl Component for Model {
                     mtk: query_clone.mtk.clone(),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: if value == "show_areas".to_string() { true } else { false },
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -477,7 +477,7 @@ impl Component for Model {
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: query_clone.show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -495,7 +495,7 @@ impl Component for Model {
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: query_clone.as_of_date.clone(),
                     show_areas: query_clone.show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -511,7 +511,7 @@ impl Component for Model {
                     mtk: Some(query_clone.mtk.clone().unwrap_or_default()),
                     as_of_date: Some("".to_string()),
                     show_areas: query_clone.show_areas,
-                    language_group_id: query_clone.language_group_id,
+                    language_group_index: query_clone.language_group_index,
                 };
 
                 let _ = navigator.push_with_query(&Route::MapComponent, &query);
@@ -664,22 +664,21 @@ impl Component for Model {
                                                 {" Areas"}
                                             </button>                     
                                         } else if self.show_menu == MapMenu::LanguageGroups {
+                                        
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="mx-2 bi bi-bag" viewBox="0 0 16 16">
+                                                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                                            </svg>
+                                            
                                             <button 
                                                 id="lg-1"
                                                 onclick={language_group_101_click.clone()}
                                                 class="btn btn-outline-primary position-relative">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
-                                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                </svg>
                                                 {"1"}
                                             </button>
                                             <button 
                                                 id="lg-2"
                                                 onclick={language_group_102_click.clone()}
                                                 class="btn btn-outline-primary position-relative">                                           
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
-                                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                                                </svg>
                                                 {"2"}
                                             </button>   
                                         } else {
@@ -761,7 +760,7 @@ pub struct MapSearchQuery {
     pub mtk: Option<String>,
     pub as_of_date: Option<String>,
     pub show_areas: bool,
-    pub language_group_id: i32,
+    pub language_group_index: i32,
 }
 
 pub trait SearchQuery {
