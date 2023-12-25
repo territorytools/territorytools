@@ -317,15 +317,6 @@ pub fn territory_editor_page() -> Html {
                 .expect("A result from the endpoint");
 
             if resp.status() == 200 {
-                // let model: TerritoryEditorModel = TerritoryEditorModel {
-                //     territory: cloned_state.territory.clone(),
-                //     save_success: true,
-                //     border_json:  json!(&cloned_state.territory.border).to_string(),
-                //     ..TerritoryEditorModel::default()
-                // };
-    
-                // cloned_state.set(model);
-
                 let edit_territory_result: EditTerritoryResult = resp
                     .json()
                     .await
@@ -336,6 +327,19 @@ pub fn territory_editor_page() -> Html {
                 };
 
                 log!(format!("Result from territory edit: territory_id: {}", edit_territory_result.territory_id.unwrap_or_default()));
+
+                
+                let mut modified = model.deref().clone();
+                modified.territory.id = edit_territory_result.territory_id.unwrap_or_default();
+                
+                let model: TerritoryEditorModel = TerritoryEditorModel {
+                    territory: modified.territory.clone(),
+                    save_success: true,
+                    border_json:  json!(&cloned_state.territory.border).to_string(),
+                    ..TerritoryEditorModel::default()
+                };
+    
+                cloned_state.set(model);
 
                 let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
 
@@ -597,8 +601,8 @@ pub fn territory_editor_page() -> Html {
         false)
     };
 
-    //let border_json =  json!(&state.territory.border).to_string();
-    let border_json =  json!(&state.border_json).to_string();
+    let show_status_section = state.territory.id != 0;
+    let show_details_section = state.territory.id == 0;
 
     html! {
         <>
@@ -620,7 +624,7 @@ pub fn territory_editor_page() -> Html {
                     <span class="fs-5 p-2 pt-3">{"Territory "}{state.territory.number.clone()}</span>
                 </div>
             </div>
-            <CollapsibleSection hidden={!show_status_v2} text="委派给 Territory Assignment Status (v2)" show_section_default={true}>
+            <CollapsibleSection hidden={!show_status_v2} text="委派给 Territory Assignment Status (v2)" show_section_default={show_status_section}>
                 <div class="row p-0 m-0">
                     <div class="col-12 col-sm-6 col-lg-4 p-0">
                         <div class="m-0 p-0 px-2" style="background-color:lightgray;"><strong>{"Door-to-door"}</strong></div>
@@ -655,7 +659,7 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 </div>
             </CollapsibleSection>
-            <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={true}>
+            <CollapsibleSection text="委派给 Territory Assignment Status" show_section_default={show_status_section}>
                 if show_status_v2 {
                 <Assigner
                     {assignee_change_callback}
@@ -759,7 +763,7 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 }               
             </CollapsibleSection>
-            <CollapsibleSection text="Edit Territory Details">
+            <CollapsibleSection text="Edit Territory Details" show_section_default={show_details_section}>
             
                 if state.save_success { 
                     <span class="mx-1 badge bg-success">{"Saved"}</span> 

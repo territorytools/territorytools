@@ -112,7 +112,7 @@ impl Component for TerritorySearchPage {
                 </MenuBarV2>
                 <div class="container pt-3">
                     <span><strong id="territory-title-span">{"Territory Search"}</strong></span>
-        
+    
                     <hr/>
                     <form id="search-form" {onsubmit} >
                         <div class="d-flex flex-row">
@@ -135,8 +135,11 @@ impl Component for TerritorySearchPage {
                                 if self.result.load_error { 
                                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
                                     <span class="mx-1" style="color:red;">{self.result.load_error_message.clone()}</span>
-                                }    
+                                }
                             </div>
+                            <div class="d-flex flex-colum mb-2 shadow-sm">
+                                <a href="/app/territory-edit?id=0" class="btn btn-primary ms-2">{"+ New"}</a>
+                            </div> 
                         </div>
                     </form>
                     <div class="row">
