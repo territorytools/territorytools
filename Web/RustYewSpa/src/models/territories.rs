@@ -73,7 +73,7 @@ pub struct TerritoryEditRequest {
     // pub is_active: bool,
     // #[serde(default)]
     // pub is_hidden: bool,
-    // pub border: Vec<Vec<f32>>,
+    pub border: Vec<Vec<f32>>,
     pub modification_type: String,
 }
 

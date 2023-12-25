@@ -10,19 +10,17 @@ use crate::components::email_section::EmailSection;
 use crate::components::sms_section::SmsSection;
 use crate::components::collapsible_section::CollapsibleSection;
 use crate::components::territory_editing::stage_selector::StageSelector;
-
 use chrono::{DateTime,Local,TimeZone};
 use gloo_console::log;
 use reqwasm::http::{Request, Method};
 use serde::{Serialize, Deserialize};
+use serde_json::json;
 use std::ops::Deref;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
-
-const GET_TERRITORY_API_PATH: &str = "/api/territories";
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct TerritoryEditorModel {
@@ -42,6 +40,9 @@ pub struct TerritoryEditorModel {
     pub show_details_section: bool,
     #[prop_or_default]
     pub show_history_section: bool,
+    #[prop_or_default]
+    pub border_json: String,
+    pub territory_border_parsing_error: bool,
 }
 
 impl Default for TerritoryEditorModel {
@@ -57,6 +58,8 @@ impl Default for TerritoryEditorModel {
             show_status_section: true,
             show_details_section: false,
             show_history_section: false,
+            border_json: "".to_string(),
+            territory_border_parsing_error: false,
         }
     }
 }
@@ -185,6 +188,33 @@ pub fn territory_editor_page() -> Html {
     };
 
     let cloned_state = state.clone();
+    let border_onchange = {
+        let cloned_state = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = cloned_state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+            
+            modification.border_json = value.clone();
+            let new_border = serde_json::from_str(value.as_str());
+            match new_border {
+                Ok(v) => {
+                    modification.territory.border = v;
+                    modification.territory_border_parsing_error = false;
+                    cloned_state.set(modification);
+                },
+                Err(_) => {
+                    modification.territory_border_parsing_error = true;
+                    cloned_state.set(modification);
+                }
+            };
+        })
+    };
+
+    let cloned_state = state.clone();
     use_effect_with((), move |_| {
         let cloned_state = cloned_state.clone();
         let territory_number = parameters.number.clone().unwrap_or_default();
@@ -192,9 +222,7 @@ pub fn territory_editor_page() -> Html {
             log!("Loading territory...");
             let territory_id: i32 = territory_id;
             let territory_number = territory_number.clone();
-            let uri: String = format!(
-                "{base_path}?id={territory_id}&territoryNumber={territory_number}", 
-                base_path = GET_TERRITORY_API_PATH);
+            let uri: String = format!("/api/territories?id={territory_id}&territoryNumber={territory_number}");
 
             let territory_response = Request::get(uri.as_str())
                 .send()
@@ -207,20 +235,11 @@ pub fn territory_editor_page() -> Html {
                     .await
                     .expect("Valid territory JSON from API");
 
-                log!(format!(
-                    "Fetched territory, id: {number:?}",
-                    number = fetched_territory.number
-                ));
-
                 let model: TerritoryEditorModel = TerritoryEditorModel {
-                    territory: fetched_territory,
+                    territory: fetched_territory.clone(),
+                    border_json: json!(&fetched_territory.border).to_string(),
                     ..TerritoryEditorModel::default()
                 };
-
-                log!(format!(
-                    "Fetched territory, number: {number:?}",
-                    number = model.territory.number
-                ));
 
                 cloned_state.set(model);
             } else if territory_response.status() == 401 {
@@ -253,6 +272,7 @@ pub fn territory_editor_page() -> Html {
                 group_id: body_model.territory.group_id.clone(),
                 stage_id: body_model.territory.stage_id.unwrap_or_default(),
                 modification_type: "Edit".to_string(),
+                border: body_model.territory.border.clone(),
             };
 
             let data_serialized = serde_json::to_string_pretty(&edit_request)
@@ -272,6 +292,7 @@ pub fn territory_editor_page() -> Html {
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: cloned_state.territory.clone(),
                     save_success: true,
+                    border_json:  json!(&cloned_state.territory.border).to_string(),
                     ..TerritoryEditorModel::default()
                 };
     
@@ -534,6 +555,9 @@ pub fn territory_editor_page() -> Html {
         false)
     };
 
+    //let border_json =  json!(&state.territory.border).to_string();
+    let border_json =  json!(&state.border_json).to_string();
+
     html! {
         <>
         <MenuBarV2>
@@ -731,6 +755,15 @@ pub fn territory_editor_page() -> Html {
                     <div class="col-12">
                         <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
                         <textarea value={state.territory.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
+                    </div>
+                    <div class="col-12">
+                        <label for="input-border" class="form-label">
+                            {"Border"}
+                            if state.territory_border_parsing_error {
+                                <span class="mx-1 badge bg-danger">{"Border Parsing Error!"}</span>
+                            }
+                        </label>
+                        <textarea value={state.border_json.clone()} onchange={border_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-border" placeholder="Border"/>
                     </div>
                     <div class="col-12 pt-2">
                         <ButtonWithConfirm 
