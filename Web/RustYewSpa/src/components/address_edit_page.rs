@@ -137,7 +137,7 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.alba_language_id = value.parse().unwrap();
+            modification.address.alba_language_id = Some(value.parse().unwrap());
             // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
@@ -152,7 +152,7 @@ pub fn address_edit_page() -> Html {
         Callback::from(move |value: String| {
             let mut modification = state.deref().clone();
 
-            modification.address.alba_language_id = value.parse().unwrap();
+            modification.address.alba_language_id = Some(value.parse().unwrap());
             // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
@@ -917,7 +917,7 @@ pub fn address_edit_page() -> Html {
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
     
     // TODO: This language_id is a hack, this should be in some sort of configuration
-    let selected_alba_language_id: i32 = if state.address.alba_language_id == 0 { 83 } else { state.address.alba_language_id };
+    let selected_alba_language_id: i32 = if state.address.alba_language_id.unwrap_or_default() == 0 { 83 } else { state.address.alba_language_id.unwrap_or_default() };
     // TODO: This language_id is also a hack, this should be in some sort of configuration
     let selected_language_id: i32 = if state.address.language_id == 0 { -1 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
