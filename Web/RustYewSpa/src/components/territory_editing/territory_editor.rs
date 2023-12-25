@@ -1,5 +1,6 @@
 use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::menu_bar::MapPageLink;
+use crate::components::route_stuff::Route;
 use crate::components::territory_editing::assigner::{Assigner, AssignmentStatus};
 use crate::components::user_selector::UserSelector;
 use crate::components::button_with_confirm::ButtonWithConfirm;
@@ -20,7 +21,7 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew_router::hooks::use_location;
+use yew_router::hooks::{use_location, use_navigator};
 
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct TerritoryEditorModel {
@@ -89,6 +90,10 @@ pub struct AssignmentResult {
 #[function_component(TerritoryEditorPage)]
 pub fn territory_editor_page() -> Html {
     set_document_title("Territory Editor");
+
+    let navigator = use_navigator().unwrap();
+    let location = use_location().expect("Location with query parameters");
+    let query: TerritoryEditorQuery = location.query::<TerritoryEditorQuery>().expect("A TerritoryEditorQuery struct"); 
 
     let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(TerritoryEditorModel::default);
     let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(TerritoryAssignerModel::default);
@@ -278,8 +283,10 @@ pub fn territory_editor_page() -> Html {
     });
     
     let cloned_state = state.clone();
+    let navigator = navigator.clone();
     let onsubmit = Callback::from(move |_event: i32 /*SubmitEvent*/| { 
         let cloned_state = cloned_state.clone();
+        let navigator = navigator.clone();
         spawn_local(async move {
             log!("Spawing request for territory change...");
             let model = cloned_state.clone();
@@ -310,14 +317,28 @@ pub fn territory_editor_page() -> Html {
                 .expect("A result from the endpoint");
 
             if resp.status() == 200 {
-                let model: TerritoryEditorModel = TerritoryEditorModel {
-                    territory: cloned_state.territory.clone(),
-                    save_success: true,
-                    border_json:  json!(&cloned_state.territory.border).to_string(),
-                    ..TerritoryEditorModel::default()
-                };
+                // let model: TerritoryEditorModel = TerritoryEditorModel {
+                //     territory: cloned_state.territory.clone(),
+                //     save_success: true,
+                //     border_json:  json!(&cloned_state.territory.border).to_string(),
+                //     ..TerritoryEditorModel::default()
+                // };
     
-                cloned_state.set(model);
+                // cloned_state.set(model);
+
+                let edit_territory_result: EditTerritoryResult = resp
+                    .json()
+                    .await
+                    .expect("Valid territory edit respose JSON from API");
+
+                let query = TerritoryEditorQuery {
+                    id: Some(edit_territory_result.territory_id.unwrap_or_default()), //Some(cloned_state.territory.clone().id),
+                };
+
+                log!(format!("Result from territory edit: territory_id: {}", edit_territory_result.territory_id.unwrap_or_default()));
+
+                let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
+
             } else if resp.status() == 401 {
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: cloned_state.territory.clone(),
@@ -910,6 +931,17 @@ pub fn EnglishChineseIdOption(props: &EnglishChineseIdOptionProps) -> Html {
             {props.chinese.clone()}{" "}{props.english.clone()}
         </option>
     }
+}
+
+#[derive(Clone, Default, Deserialize, PartialEq, Serialize)]
+pub struct TerritoryEditorQuery {
+    pub id: Option<i32>,
+}
+
+#[derive(Serialize, Deserialize, Default, PartialEq, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct EditTerritoryResult {
+    pub territory_id: Option<i32>,
 }
 
 pub fn format_date(text: Option<String>) -> String {
