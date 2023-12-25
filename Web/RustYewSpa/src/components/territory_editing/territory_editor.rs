@@ -299,6 +299,7 @@ pub fn territory_editor_page() -> Html {
                 notes: body_model.territory.notes.clone(),
                 group_id: body_model.territory.group_id.clone(),
                 stage_id: body_model.territory.stage_id.unwrap_or_default(),
+                language_group_id: body_model.territory.language_group_id,
                 modification_type: "Edit".to_string(),
                 border: body_model.territory.border.clone(),
             };

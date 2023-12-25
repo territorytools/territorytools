@@ -66,6 +66,7 @@ pub struct TerritoryEditRequest {
     pub territory_number: String,
     //pub status: String,
     pub stage_id: i32,
+    pub language_group_id: i32,
     pub description: Option<String>,
     pub notes: Option<String>,
     // pub area_code: Option<String>,
