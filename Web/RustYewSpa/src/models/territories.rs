@@ -23,7 +23,7 @@ pub struct Territory {
     #[serde(default)]
     pub id: i32,
     pub number: String,
-    pub status: String,
+    pub status: Option<String>,
     pub stage_id: Option<i32>,
     pub stage: Option<String>,
     #[serde(default)]

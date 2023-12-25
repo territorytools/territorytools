@@ -189,13 +189,13 @@ pub fn territory_map() -> Html {
         let territory_color: String = {
             if area_code == "TER" {
                 "red".to_string()
-            } else if t.status == "Signed-out" {
+            } else if t.status == Some("Signed-out".to_string()) {
                 // TerritorySummary // signed_out_count += 1;
                 "magenta".to_string()
-            } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
+            } else if t.status == Some("Completed".to_string()) || t.status == Some("Available".to_string()) && completed_by == "yes" {
                 // TerritorySummary // completed_count += 1;
                 "blue".to_string() // Completed
-            } else if t.status == "Available" {
+            } else if t.status == Some("Available".to_string()) {
                 // TerritorySummary // available_count += 1;
                 "black".to_string()
             } else {
@@ -659,7 +659,7 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
                     .contains(number)
                 || format!("g{}", t.group_id.clone().unwrap_or("".to_string()))
                     == number.to_string()
-                || t.status.clone() == number.to_string()),
+                || t.status.clone() == Some(number.to_string())),
             border: t.border.clone(),
             addresses: t.addresses.clone(),
             ..Territory::default()

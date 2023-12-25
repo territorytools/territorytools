@@ -93,7 +93,6 @@ pub fn territory_editor_page() -> Html {
 
     let navigator = use_navigator().unwrap();
     let location = use_location().expect("Location with query parameters");
-    let query: TerritoryEditorQuery = location.query::<TerritoryEditorQuery>().expect("A TerritoryEditorQuery struct"); 
 
     let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(TerritoryEditorModel::default);
     let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(TerritoryAssignerModel::default);
@@ -258,8 +257,6 @@ pub fn territory_editor_page() -> Html {
                     .json()
                     .await
                     .expect("Valid territory JSON from API");
-
-                log!(format!("GET territory.territory_id: {}", fetched_territory.id));
 
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: fetched_territory.clone(),
@@ -623,6 +620,9 @@ pub fn territory_editor_page() -> Html {
                         <button class="btn btn-outline-secondary">{"Open"}</button>
                     }
                     <span class="fs-5 p-2 pt-3">{"Territory "}{state.territory.number.clone()}</span>
+                    if state.territory.id == 0 {
+                        <span class="badge rounded-pill text-bg-success ms-3" style="background-color:green;">{"NEW TERRITORY"}</span>
+                    }
                 </div>
             </div>
             <CollapsibleSection hidden={!show_status_v2} text="委派给 Territory Assignment Status (v2)" show_section_default={show_status_section}>
@@ -787,7 +787,7 @@ pub fn territory_editor_page() -> Html {
                             onchange={number_onchange} 
                             type="text" 
                             class="form-control shadow-sm" 
-                            placeholder="Number"/>
+                            placeholder="Required"/>
                     </div>
                     <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                         <label for="input-group-id" class="form-label">{"Group ID"}</label>
@@ -845,60 +845,47 @@ pub fn territory_editor_page() -> Html {
                     </div>
                 </div>
                 <div class="row p-2">
-                    <div class="col-12">
-                        <button onclick={show_changes_onclick} class="btn btn-outline-primary">
-                        if state.show_changes {
-                            {"Hide Changes"}
-                        } else {
-                            {"Show Changes"}
-                        }
-                        </button>
-                    </div>
-                </div>
-                if state.show_changes {
-                    <div class="row p-2">
-                        <div class="col-12 table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">{"Changed"}</th>
-                                        <th scope="col">{"Stage"}</th>
-                                        <th scope="col">{"Assignee Name"}</th>
-                                        <th scope="col">{"Changed by"}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {
-                                    state.territory.stage_changes.iter().map(|change| {   
-                                        let _change_date = change.change_date_utc.clone().chars().take(10).collect::<String>();
-                                        let _change_time = change.change_date_utc.clone().as_str()[11..16].to_string();
-                                        let assignee = if change.assignee_name.is_none() {
-                                            change.assignee_normalized_email.clone()
-                                        } else {
-                                            change.assignee_name.clone() 
-                                        };
+                    <div class="col-12 table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">{"Changed"}</th>
+                                    <th scope="col">{"Stage"}</th>
+                                    <th scope="col">{"Assignee Name"}</th>
+                                    <th scope="col">{"Changed by"}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {
+                                state.territory.stage_changes.iter().map(|change| {   
+                                    let _change_date = change.change_date_utc.clone().chars().take(10).collect::<String>();
+                                    let _change_time = change.change_date_utc.clone().as_str()[11..16].to_string();
+                                    let assignee = if change.assignee_name.is_none() {
+                                        change.assignee_normalized_email.clone()
+                                    } else {
+                                        change.assignee_name.clone() 
+                                    };
 
-                                        let formatted_date_time = format_date(Some(change.change_date_utc.clone()));
+                                    let formatted_date_time = format_date(Some(change.change_date_utc.clone()));
 
-                                        html! {
-                                                <tr>
-                                                    //<td scope="row">{change_date}{" "}{change_time}</td>
-                                                    <td>{formatted_date_time}</td>
-                                                    //<td>{change.stage_id}</td>
-                                                    <td>{change.stage.clone()}</td>
-                                                    <td>{assignee}</td>
-                                                    //<td>{change.assignee_normalized_email.clone()}</td>
-                                                    <td>{change.created_by_user_id.clone()}</td>
-                                                </tr>
-                                                
-                                        }
-                                    }).collect::<Html>()
-                                }
-                                </tbody>
-                            </table>                        
-                        </div>
+                                    html! {
+                                            <tr>
+                                                //<td scope="row">{change_date}{" "}{change_time}</td>
+                                                <td>{formatted_date_time}</td>
+                                                //<td>{change.stage_id}</td>
+                                                <td>{change.stage.clone()}</td>
+                                                <td>{assignee}</td>
+                                                //<td>{change.assignee_normalized_email.clone()}</td>
+                                                <td>{change.created_by_user_id.clone()}</td>
+                                            </tr>
+                                            
+                                    }
+                                }).collect::<Html>()
+                            }
+                            </tbody>
+                        </table>                        
                     </div>
-                }
+                </div>                
             </CollapsibleSection>
         </div>
         </>

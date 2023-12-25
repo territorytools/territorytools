@@ -919,7 +919,7 @@ pub fn address_edit_page() -> Html {
     // TODO: This language_id is a hack, this should be in some sort of configuration
     let selected_alba_language_id: i32 = if state.address.alba_language_id == 0 { 83 } else { state.address.alba_language_id };
     // TODO: This language_id is also a hack, this should be in some sort of configuration
-    let selected_language_id: i32 = if state.address.language_id == 0 { 100 } else { state.address.language_id };
+    let selected_language_id: i32 = if state.address.language_id == 0 { -1 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
     log!(format!("selected_alba_language_id: {}, selected_status_id: {}, selected_language_id: {}", 
         selected_alba_language_id, selected_status_id, selected_language_id));
@@ -1136,12 +1136,14 @@ pub fn address_edit_page() -> Html {
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
                     <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
                 </div>
+                if false { // deprecated
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <label for="input-language" class="form-label">{"Language v1"}</label>
+                        <LanguageSelector id="input-language" onchange={language_onchange_v1.clone()} value={selected_alba_language_id} />
+                    </div>
+                }
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <LanguageSelector id="input-language" onchange={language_onchange_v1.clone()} value={selected_alba_language_id} />
-                </div>
-                <div class="col-12 col-sm-6 col-md-4">
-                    <label for="input-language" class="form-label">{"Language v2"}</label>
                     <LanguageSelectorV2 id="input-language-v2" onchange={language_onchange_v2.clone()} value={selected_language_id} />
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
