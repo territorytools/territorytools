@@ -45,7 +45,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
             None => "(empty)".to_string()
         };
         
-        let _id = territory.id.unwrap_or_default();
+        let _id = territory.id;
         if options.edit_territory_button_enabled { //1 == 1 { //id == 0 {
             format!("<br/><a 
                 style='margin-top:5px;color:white;'
@@ -53,7 +53,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
                 href='/app/territory-edit?id={id}'>
                 Assign
                 </a>",
-                id = territory.id.unwrap_or_default(),
+                id = territory.id,
             )
         } else { 
             "".to_string()
@@ -67,9 +67,9 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
         None => "".to_string()
     };
     
-    let territory_id: i32 = territory.id.unwrap_or(0);
+    let territory_id: i32 = territory.id;
  
-    let id = territory.id.unwrap_or_default();
+    let id = territory.id;
     let _description: String = match &territory.description {
         Some(v) => if v.is_empty() { "(empty)".to_string() } else { v.clone() },
         None => "(empty)".to_string()

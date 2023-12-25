@@ -148,6 +148,25 @@ pub fn territory_editor_page() -> Html {
             state_clone.set(modification);
         })
     };
+
+    let cloned_state = state.clone();
+    let language_group_id_onchange = {
+        let state_clone = cloned_state.clone();
+        Callback::from(move |event: Event| {
+            let mut modification = cloned_state.deref().clone();
+            let value = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .value();
+
+            modification.territory.language_group_id = value.parse().unwrap_or_default();
+            
+            log!(format!("Territory language_group_id set to {language_group_id:?}", language_group_id = modification.territory.language_group_id));
+
+            state_clone.set(modification);
+        })
+    };
    
     let cloned_state = state.clone();
     let group_id_onchange = {
@@ -235,6 +254,8 @@ pub fn territory_editor_page() -> Html {
                     .await
                     .expect("Valid territory JSON from API");
 
+                log!(format!("GET territory.territory_id: {}", fetched_territory.id));
+
                 let model: TerritoryEditorModel = TerritoryEditorModel {
                     territory: fetched_territory.clone(),
                     border_json: json!(&fetched_territory.border).to_string(),
@@ -265,7 +286,7 @@ pub fn territory_editor_page() -> Html {
             let uri: &str = "/api/territories/save";
             let body_model = &model.deref();
             let edit_request = TerritoryEditRequest {
-                id: body_model.territory.id.unwrap_or_default(),
+                territory_id: body_model.territory.id,
                 territory_number: body_model.territory.number.clone(),
                 description: body_model.territory.description.clone(),
                 notes: body_model.territory.notes.clone(),
@@ -617,7 +638,7 @@ pub fn territory_editor_page() -> Html {
                 if show_status_v2 {
                 <Assigner
                     {assignee_change_callback}
-                    territory_id={state.territory.id.unwrap_or_default()}
+                    territory_id={state.territory.id}
                     territory_number={state.territory.number.clone()}
                     signed_out_to={state.territory.signed_out_to.clone().unwrap_or_default()} 
                     signed_out_date={state.territory.signed_out.clone().unwrap_or_default()} 
@@ -710,7 +731,7 @@ pub fn territory_editor_page() -> Html {
                             <StageSelector 
                                 hidden={false} 
                                 onchange={stage_id32_onchange.clone()} 
-                                territory_id={cloned_state.territory.id.unwrap_or_default()} 
+                                territory_id={cloned_state.territory.id} 
                                 stage_id={cloned_state.territory.stage_id.unwrap_or_default()} 
                                 signed_out_to={cloned_state.territory.signed_out_to.clone()} />
                         </div>
@@ -729,13 +750,13 @@ pub fn territory_editor_page() -> Html {
                 if state.load_error { 
                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
                     <span class="mx-1" style="color:red;">{state.error_message.clone()}</span>
-                }        
+                }
                 <div class="row p-2">
                     <div class="col-6 col-sm-6 col-md-4 col-lg-3">
                         <label for="inputNumber" class="form-label">{"区域号码 Territory No."}</label>
                         <input 
                             id="territory-number-input" 
-                            readonly=true 
+                            readonly={state.territory.id != 0}
                             value={state.territory.number.clone()} 
                             onchange={number_onchange} 
                             type="text" 
@@ -764,6 +785,10 @@ pub fn territory_editor_page() -> Html {
                             }
                         </label>
                         <textarea value={state.border_json.clone()} onchange={border_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-border" placeholder="Border"/>
+                    </div>
+                    <div class="col-6 col-sm-5 col-md-4">
+                        <label for="inputLanguageGroup" class="form-label">{"Language Group ID"}</label>
+                        <input value={format!("{}", state.territory.language_group_id)} onchange={language_group_id_onchange} type="text" class="form-control shadow-sm" id="inputLanguageGroup" placeholder="Language Group ID"/>
                     </div>
                     <div class="col-12 pt-2">
                         <ButtonWithConfirm 

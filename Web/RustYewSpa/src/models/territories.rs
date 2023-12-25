@@ -21,7 +21,7 @@ pub struct BorderFilteredResult {
 #[serde(rename_all = "camelCase")]
 pub struct Territory {
     #[serde(default)]
-    pub id: Option<i32>,
+    pub id: i32,
     pub number: String,
     pub status: String,
     pub stage_id: Option<i32>,
@@ -47,6 +47,8 @@ pub struct Territory {
     pub is_hidden: bool,
     pub border: Vec<Vec<f32>>,
     #[serde(default)]
+    pub language_group_id: i32,
+    #[serde(default)]
     pub addresses: Vec<Address>,
     #[serde(default)]
     pub addresses_total: Option<i32>,
@@ -60,7 +62,7 @@ pub struct Territory {
 #[serde(rename_all = "camelCase")]
 pub struct TerritoryEditRequest {
     #[serde(default)]
-    pub id: i32,
+    pub territory_id: i32,
     pub territory_number: String,
     //pub status: String,
     pub stage_id: i32,
