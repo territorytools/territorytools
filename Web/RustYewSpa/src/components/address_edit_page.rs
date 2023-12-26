@@ -915,6 +915,7 @@ pub fn address_edit_page() -> Html {
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
+    let show_territory_id = features.clone().contains(&"show-territory-id");
     
     // TODO: This language_id is a hack, this should be in some sort of configuration
     let selected_alba_language_id: i32 = if state.address.alba_language_id.unwrap_or_default() == 0 { 83 } else { state.address.alba_language_id.unwrap_or_default() };
@@ -1186,6 +1187,14 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
                     }         
                 </div>
+                if show_territory_id {
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <label for="inputTerritoryId" class="form-label">{"Territory ID"}</label>
+                        <div class="input-group">
+                            <input readonly={true} value={format!("{:?}",state.address.territory_id.unwrap_or_default())} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory ID"/>                            
+                        </div>        
+                    </div>
+                }
                 // <div class="col-6 col-sm-4 col-md-4">
                 //     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
                 //     <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange.clone()} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>
