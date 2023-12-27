@@ -734,7 +734,7 @@ pub fn address_edit_page() -> Html {
                 };
     
                 cloned_state.set(model);
-                navigator.back();
+                //navigator.back();
             } else if resp.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(),
