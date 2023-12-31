@@ -346,8 +346,8 @@ pub fn stage_as_of_date(territory: &Territory, as_of_date: String) -> String {
         .unwrap_or(
             &&&TerritoryStageChange {
                 change_date_utc: "".to_string(),
-                stage_id: 1,
-                stage: Some("Error".to_string()),
+                stage_id: 1000,
+                stage: Some("Available".to_string()),
                 assignee_normalized_email: None,
                 assignee_name: None,
                 created_by_user_id: None,

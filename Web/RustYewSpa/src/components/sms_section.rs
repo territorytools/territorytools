@@ -19,7 +19,7 @@ pub fn sms_section(props: &SmsSectionProps) -> Html {
     html! {
         <>
         //<div class={"form-group"}>
-            <label for={"sms-number"}>{"Send as test message:"}</label>
+            <label for={"sms-number"}>{"Send as text message:"}</label>
             <div class={"input-group"}>
                 <input 
                     id="assignee-phone-input"

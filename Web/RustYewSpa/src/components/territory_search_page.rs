@@ -112,7 +112,7 @@ impl Component for TerritorySearchPage {
                 </MenuBarV2>
                 <div class="container pt-3">
                     <span><strong id="territory-title-span">{"Territory Search"}</strong></span>
-        
+    
                     <hr/>
                     <form id="search-form" {onsubmit} >
                         <div class="d-flex flex-row">
@@ -135,8 +135,11 @@ impl Component for TerritorySearchPage {
                                 if self.result.load_error { 
                                     <span class="mx-1 badge bg-danger">{"Error"}</span> 
                                     <span class="mx-1" style="color:red;">{self.result.load_error_message.clone()}</span>
-                                }    
+                                }
                             </div>
+                            <div class="d-flex flex-colum mb-2 shadow-sm">
+                                <a href="/app/territory-edit?id=0" class="btn btn-primary ms-2">{"+ New"}</a>
+                            </div> 
                         </div>
                     </form>
                     <div class="row">
@@ -181,7 +184,7 @@ impl Component for TerritorySearchPage {
                                          </div>
                                          <div class="col-4 col-md-2">
                                              <span class="badge" style={format!("border-radius:3px;border-width:1px;border-style:solid;color:white;background-color:{stage_color}")}>
-                                                 {stage.clone()}
+                                                 {stage}
                                              </span>
                                              if false { // TODO: Maybe turn this back on later as a feature
                                                     <span style="ming-width:5px;">{" / "}</span>

@@ -5,7 +5,8 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::state_selector::SelectAddressState;
 use crate::components::selector_option_bilingual::EnglishChineseIdOption;
 use crate::components::language_selector::LanguageSelector;
-use crate::components::territory_editor::TerritoryEditorParameters;
+use crate::components::language_selector_v2::LanguageSelectorV2;
+use crate::components::territory_editing::territory_editor::TerritoryEditorParameters;
 use crate::models::addresses::Address;
 use crate::models::geocoding_coordinates::AddressToGeocode;
 use crate::models::geocoding_coordinates::GeocodingCoordinates;
@@ -136,17 +137,32 @@ pub fn address_edit_page() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
 
-            modification.address.language_id = value.parse().unwrap();
+            modification.address.alba_language_id = Some(value.parse().unwrap());
             // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
-            log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
+            log!(format!("Address language id set to {name:?}", name = modification.address.alba_language_id));
 
             state.set(modification);
         })
     };
 
-    let language_onchange_2 = {
+    let language_onchange_v1 = {
+        let state = cloned_state.clone();
+        Callback::from(move |value: String| {
+            let mut modification = state.deref().clone();
+
+            modification.address.alba_language_id = Some(value.parse().unwrap());
+            // Clear the status string to prevent confusion about which one is right
+            modification.address.language = Some("".to_string());
+
+            log!(format!("Address language id set to {name:?}", name = modification.address.alba_language_id));
+
+            state.set(modification);
+        })
+    };
+
+    let language_onchange_v2 = {
         let state = cloned_state.clone();
         Callback::from(move |value: String| {
             let mut modification = state.deref().clone();
@@ -155,7 +171,7 @@ pub fn address_edit_page() -> Html {
             // Clear the status string to prevent confusion about which one is right
             modification.address.language = Some("".to_string());
 
-            log!(format!("Address language id set to {name:?}", name = modification.address.language_id));
+            log!(format!("Address (non-Alba) language id set to {name:?}", name = modification.address.language_id));
 
             state.set(modification);
         })
@@ -226,12 +242,15 @@ pub fn address_edit_page() -> Html {
 
     let territory_id = state.address.territory_id;
     let navigator = use_navigator().unwrap();
+    let parameters_clone = parameters.clone();
     let territory_open_onclick = {
         let navigator = navigator.clone();
+        let parameters_clone = parameters_clone.clone();
         Callback::from(move |_| {
             let query = TerritoryEditorParameters {
                 id: territory_id,
                 number: None,
+                features: parameters_clone.features.clone(),
             };
             let _ = navigator.push_with_query(&Route::TerritoryEditor, &query);
         })
@@ -715,7 +734,7 @@ pub fn address_edit_page() -> Html {
                 };
     
                 cloned_state.set(model);
-                navigator.back();
+                //navigator.back();
             } else if resp.status() == 401 {
                 let model: AddressEditModel = AddressEditModel {
                     address: cloned_state.address.clone(),
@@ -896,11 +915,15 @@ pub fn address_edit_page() -> Html {
     //let show_alba_address_id = features.clone().iter().any(|&i| i=="show-alba-address-id");
     let show_alba_address_id = features.clone().contains(&"show-alba-address-id");
     let show_delivery_status_date = features.clone().contains(&"show-delivery-status-date");
+    let show_territory_id = features.clone().contains(&"show-territory-id");
     
     // TODO: This language_id is a hack, this should be in some sort of configuration
-    let selected_language_id: i32 = if state.address.language_id == 0 { 83 } else { state.address.language_id };
+    let selected_alba_language_id: i32 = if state.address.alba_language_id.unwrap_or_default() == 0 { 83 } else { state.address.alba_language_id.unwrap_or_default() };
+    // TODO: This language_id is also a hack, this should be in some sort of configuration
+    let selected_language_id: i32 = if state.address.language_id == 0 { -1 } else { state.address.language_id };
     let selected_status_id: i32 = if state.address.status_id == 0 { 1 } else { state.address.status_id };
-    log!(format!("selected_language_id: {}, selected_status_id: {}", selected_language_id, selected_status_id));
+    log!(format!("selected_alba_language_id: {}, selected_status_id: {}, selected_language_id: {}", 
+        selected_alba_language_id, selected_status_id, selected_language_id));
 
 
     let mtk = parameters.mtk.clone().unwrap_or_default();
@@ -1114,9 +1137,15 @@ pub fn address_edit_page() -> Html {
                     <label for="input-notes" class="form-label">{"笔记 Notes"}</label>
                     <textarea value={state.address.notes.clone()} onchange={notes_onchange} type="text" rows="2" cols="30" class="form-control shadow-sm" id="input-notes" placeholder="Notes"/>
                 </div>
+                if false { // deprecated
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <label for="input-language" class="form-label">{"Language v1"}</label>
+                        <LanguageSelector id="input-language" onchange={language_onchange_v1.clone()} value={selected_alba_language_id} />
+                    </div>
+                }
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <LanguageSelector id="input-language" onchange={language_onchange_2} value={selected_language_id} />
+                    <LanguageSelectorV2 id="input-language-v2" onchange={language_onchange_v2.clone()} value={selected_language_id} />
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                         <label for="input-status" class="form-label">{"Visit Status"}</label>
@@ -1158,6 +1187,14 @@ pub fn address_edit_page() -> Html {
                         <span class="mx-1" style="color:blue;">{format!("Moved to territory {}", state.moved_to_territory_number.clone())}</span> 
                     }         
                 </div>
+                if show_territory_id {
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <label for="inputTerritoryId" class="form-label">{"Territory ID"}</label>
+                        <div class="input-group">
+                            <input readonly={true} value={format!("{:?}",state.address.territory_id.unwrap_or_default())} type="text" class="form-control shadow-sm" id="inputTerritoryNumber" placeholder="Territory ID"/>                            
+                        </div>        
+                    </div>
+                }
                 // <div class="col-6 col-sm-4 col-md-4">
                 //     <label for="input-latitude" class="form-label">{"纬度 Latitude"}</label>
                 //     <input readonly={true} value={state.address.latitude.to_string()} onchange={latitude_onchange.clone()} type="text" class="form-control shadow-sm" id="input-latitude" placeholder="纬度 Latitude"/>

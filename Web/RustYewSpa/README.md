@@ -13,6 +13,11 @@ trunk serve
 
 Then open http://localhost:8080
 
+## Build
+```bash
+trunk build --release --public-url "/app/"
+```
+
 ## Run with Prox
 
 Latest Method running with YARP TestingProxy in front of this

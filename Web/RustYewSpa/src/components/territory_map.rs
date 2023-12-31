@@ -189,13 +189,13 @@ pub fn territory_map() -> Html {
         let territory_color: String = {
             if area_code == "TER" {
                 "red".to_string()
-            } else if t.status == "Signed-out" {
+            } else if t.status == Some("Signed-out".to_string()) {
                 // TerritorySummary // signed_out_count += 1;
                 "magenta".to_string()
-            } else if t.status == "Completed" || t.status == "Available" && completed_by == "yes" {
+            } else if t.status == Some("Completed".to_string()) || t.status == Some("Available".to_string()) && completed_by == "yes" {
                 // TerritorySummary // completed_count += 1;
                 "blue".to_string() // Completed
-            } else if t.status == "Available" {
+            } else if t.status == Some("Available".to_string()) {
                 // TerritorySummary // available_count += 1;
                 "black".to_string()
             } else {
@@ -203,19 +203,13 @@ pub fn territory_map() -> Html {
             }
         };
 
-        let opacity: f32 = {
-            if t.is_active {
-                1.0
-            } else {
-                1.0
-            }
-        };
+        let opacity: f32 = 1.0;
 
         if area_code == "TER" {
             let polyline = Polyline::new_with_options(
                 polygon.iter().map(JsValue::from).collect(),
                 &serde_wasm_bindgen::to_value(&PolylineOptions {
-                    color: territory_color.into(),
+                    color: territory_color,
                     opacity: 1.0,
                 })
                 .expect("Unable to serialize polygon options"),
@@ -230,18 +224,18 @@ pub fn territory_map() -> Html {
             let poly = Polygon::new_with_options(
                 polygon.iter().map(JsValue::from).collect(),
                 &serde_wasm_bindgen::to_value(&PolylineOptions {
-                    color: territory_color.into(),
-                    opacity: opacity.into(),
+                    color: territory_color,
+                    opacity: opacity,
                 })
                 .expect("Unable to serialize polygon options"),
             );
 
-            if t.number == "10001".to_string() {
+            if t.number == *"10001" {
                 let bounds = poly.getBounds();
                 leaflet_map.fitBounds(&bounds);
             }
 
-            let tooltip_text: String = t.number.clone().to_string(); //format!("{group_id}: {area_code}: {}", t.number);
+            let tooltip_text: String = t.number.clone().to_string();
 
             let popup_options = PopupContentOptions {
                 edit_territory_button_enabled: true,
@@ -665,7 +659,7 @@ fn setup_number_filter(model: UseStateHandle<TerritoryMapModel>, number: &str) {
                     .contains(number)
                 || format!("g{}", t.group_id.clone().unwrap_or("".to_string()))
                     == number.to_string()
-                || t.status.clone() == number.to_string()),
+                || t.status.clone() == Some(number.to_string())),
             border: t.border.clone(),
             addresses: t.addresses.clone(),
             ..Territory::default()

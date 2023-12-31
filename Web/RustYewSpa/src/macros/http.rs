@@ -1,93 +1,132 @@
 use reqwasm::http::Response;
 use yew::prelude::*;
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
+extern crate jsonpath;
+extern crate serde_json;
 
 #[macro_export]
-macro_rules! http_get_set {
-    ($state:ident.$($field_path:ident).+, $uri:ident) => {{
+macro_rules! get_result_by_id {
+     ($uri:expr, $state:ident.$result:ident.$entity:ident.$id:ident) => {{
+        let uri = format!($uri);
         let state = $state.clone();
-        let uri = $uri.clone();
-        wasm_bindgen_futures::spawn_local(async move {
+        spawn_local(async move {
             let response = Request::get(uri.as_str())
                 .send()
                 .await
                 .expect("Response (raw) from API");
-
-            let status = $crate::macros::http::response_status(&response);
-            let mut modification = state.deref().clone();
-            modification.$($field_path).+ = response.json().await.expect("Valid JSON");
-            modification.error_message = status.error_message;
-            modification.load_error = status.load_error;
             
+            let mut modification = state.deref().clone();
+            modification.$result = response.json().await.expect("Valid JSON"); 
+            modification.$entity = modification.$result.$entity.clone();
             state.set(modification);
         });
     }};
 }
 
 #[macro_export]
-macro_rules! http_put {
+macro_rules! http_get_set {
     ($state:ident.$($field_path:ident).+, $uri:ident) => {{
-        Callback::from(move |_: i32| { 
-            let state = $state.clone();
-            let uri = $uri.clone();
-            spawn_local(async move {
-                let uri: &str = uri.as_str();
-                let model = state.$($field_path).+.clone();
-                let model_serialized = serde_json::to_string_pretty(&model)
-                    .expect("Cannot serialize model into JSON");
-                let method = Method::PUT;
-                let resp = Request::new(uri)
-                    .method(method)
-                    .header("Content-Type", "application/json")
-                    .body(model_serialized)
-                    .send()
-                    .await
-                    .expect("A result from the endpoint");        
-                
-                let mut modified = state.deref().clone();
+        let state = $state.clone();
+        let uri = $uri.clone();
+        spawn_local(async move {
+            let response = Request::get(uri.as_str())
+                .send()
+                .await
+                .expect("Response (raw) from API");
 
-                if resp.status() == 200 {
-                    modified.save_success = true;
-                    modified.save_error = false;
-                } else {
-                    let errors = if (401..403).contains(&resp.status()) { 
-                        Some("Unauthorized".to_string()) 
-                    } else {
-                        Some(resp.status().to_string())
-                    };
-                    modified.error_message = errors.unwrap_or_default();
-                    modified.save_error = true;
-                    modified.save_success = false;
-                };
+            let status = $crate::macros::http::load_status(&response);
+            
+            let mut modification = state.deref().clone();
+            modification.$($field_path).+ = response.json().await.unwrap_or_default();
+            modification.load_status = status.clone();
+            // TODO: copy the result.entity to the ui_model.entity
+            // TODO: copy the satus to the result
+            // TODO: Select the right method POST/PUT
+            // ...maybe a macro is more complicated that just doing the code...
+            state.set(modification);
+        });
+    }};
+     // More simple for user_editor
+     (
+        result_entity: $result_state:ident.$($result_entity_path:ident).+,
+        uri: $uri:ident,
+        body: $body:block
+    ) => {{
+        let result_state = $result_state.clone();
+        let uri = $uri.clone();
+        spawn_local(async move {
+            let response = Request::get(uri.as_str())
+                .send()
+                .await
+                .expect("Response (raw) from API");
 
-                state.set(modified);
-            });
-        })
-    }}
+            $body
+
+        });
+    }};
+    // More complicated for user_editor
+    (
+        entity: $entity_state:ident.$($entity_path:ident).+, 
+        result: $result_state:ident.$($result_path:ident).+, 
+        result_entity: $result_state2:ident.$($result_entity_path:ident).+,
+        uri: $uri:ident
+    ) => {{
+        let entity_state = $entity_state.clone();
+        let result_state = $result_state.clone();
+        let uri = $uri.clone();
+        spawn_local(async move {
+            let response = Request::get(uri.as_str())
+                .send()
+                .await
+                .expect("Response (raw) from API");
+
+                //response.bo
+
+            //let mut modification = result_state.deref().clone();
+            let mut modification = entity_state.deref().clone();
+
+            gloo_console::log!("modification.$($result_path).+    {}", stringify!( modification.$($result_path).+));
+            gloo_console::log!("modification.$($result_path).+.status {}", stringify!(modification.$($result_path).+.status));
+            gloo_console::log!("modification.$($entity_path).+ {}", stringify!(modification.$($entity_path).+));
+            gloo_console::log!("modification.$($result_entity_path).+ {}", stringify!(modification.$($result_entity_path).+));
+            
+            modification.$($result_path).+ = response.json().await.unwrap_or_default();
+            gloo_console::log!("after unwrap", stringify!(modification.$($result_path).+.user.id), modification.$($result_path).+.user.id);
+
+            modification.$($result_path).+.status = $crate::macros::http::load_status(&response);
+            //result_state.set(modification);
+
+            //let mut modification = entity_state.deref().clone();
+            let result_entity_id = modification.$($result_entity_path).+.id;
+            let entity_id = modification.$($entity_path).+.id;
+
+            modification.$($entity_path).+ = modification.$($result_entity_path).+.clone();
+            entity_state.set(modification);            
+
+            gloo_console::log!(stringify!(modification.$($result_entity_path).+.id), result_entity_id);
+            gloo_console::log!(stringify!(modification.$($entity_path).+.id), entity_id);
+        });
+    }};
 }
 
-#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
+#[derive(Properties, PartialEq, Clone, Default, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ResponseStatus {
-    // pub success: bool,
-    // pub errors: Option<String>,
-    // pub status: u16,
-    // pub completed: bool,
+pub struct LoadStatus {
     pub load_error: bool,
     pub error_message: String,
 }
 
-pub fn response_status(response: &Response) -> ResponseStatus {
+pub fn load_status(response: &Response) -> LoadStatus {
     if response.status() == 200 {
         //$crate::macros::http::GetResult::default()
-        ResponseStatus::default()
-    } else if response.status() == 401 {
-        ResponseStatus {
+        LoadStatus::default()
+    } else if (401..403).contains(&response.status()) {
+        LoadStatus {
             load_error: true,
             error_message: "Unauthorized".to_string(),
         }
     } else {
-        ResponseStatus {
+        LoadStatus {
             load_error: true,
             error_message: format!("Error: {}", response.status()),
         }
