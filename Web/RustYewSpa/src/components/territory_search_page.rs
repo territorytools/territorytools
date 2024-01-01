@@ -149,10 +149,10 @@ impl Component for TerritorySearchPage {
                     </div>
                     <div class="row py-1" style="border-top: 1px solid gray;">
                         <div class="col-2 col-md-1"><strong>{"#"}</strong></div>
-                        <div class="col-6 col-md-3"><strong>{"Description"}</strong></div>
-                        <div class="col-4 col-md-2"><strong>{"Status"}</strong></div>
-                        <div class="col-8 col-md-3"><strong>{"Publisher"}</strong></div>
-                        <div class="col-4 col-md-2"><strong>{"Date"}</strong></div>
+                        <div class="col-5 col-md-3"><strong>{"Description"}</strong></div>
+                        <div class="col-5 col-md-3"><strong>{"Status Visited"}</strong></div>
+                        <div class="col-7 col-md-3"><strong>{"Publisher"}</strong></div>
+                        <div class="col-5 col-md-2"><strong>{"Date"}</strong></div>
                     </div>
                     {
                         self.territories.iter().map(|territory| {   
@@ -173,20 +173,25 @@ impl Component for TerritorySearchPage {
                                 _ => "gray"
                             };
 
+                            let address_summary = format!(
+                                "{}/{}", 
+                                (territory.addresses_active-territory.addresses_unvisited), 
+                                territory.addresses_active);
+
                             html! {
                                  <a href={edit_uri} style="text-decoration:none;color:black;">
                                      <div class="row py-1" style="border-top: 1px solid lightgray;">
                                          <div class="col-2 col-md-1" style="font-weight:bold;">
                                              {territory.number.clone()}
                                          </div>
-                                         <div class="col-6 col-md-3">
+                                         <div class="col-5 col-md-3">
                                              {territory.description.clone()}
                                          </div>
-                                         <div class="col-4 col-md-2">
-                                             <span class="badge" style={format!("border-radius:3px;border-width:1px;border-style:solid;color:white;background-color:{stage_color}")}>
-                                                 {stage}
-                                             </span>
-                                             if false { // TODO: Maybe turn this back on later as a feature
+                                         <div class="col-5 col-md-3">
+                                            <span class="badge" style={format!("border-radius:3px;border-width:1px;border-style:solid;color:white;background-color:{stage_color}")}>
+                                                {stage}
+                                            </span>
+                                            if false { // TODO: Maybe turn this back on later as a feature
                                                     <span style="ming-width:5px;">{" / "}</span>
                                                 if territory.status.clone() == Some("Available".to_string()) {
                                                     <span class="badge" style="background-color:green">{territory.status.clone()}</span> 
@@ -200,11 +205,12 @@ impl Component for TerritorySearchPage {
                                                     <span class="badge" style="background-color:gray">{territory.status.clone()}</span> 
                                                 }
                                             }
+                                             <span class="ms-1">{address_summary}</span>
                                         </div>
-                                        <div class="col-8 col-md-3">
+                                        <div class="col-7 col-md-3">
                                             {territory.publisher.clone()}
                                         </div>
-                                        <div class="col-4 col-md-2">
+                                        <div class="col-5 col-md-2">
                                             {territory.status_date.clone()}
                                         </div>
                                     </div>
