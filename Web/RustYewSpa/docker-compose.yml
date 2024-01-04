@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:  
+  proxy:
+    container_name: proxy-a
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - "./dist_output:/var/www"
+    networks:
+      - main  
+    ports:
+      - "127.0.0.1:5966:80"
+    environment:
+      - ASPNETCORE_URLS=ignore me
+
+networks:
+  main:
+    name: tt-network
