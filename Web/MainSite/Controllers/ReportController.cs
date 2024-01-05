@@ -29,7 +29,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IAlbaCredentialService albaCredentialService,
             MainDbContext database,
             IAccountLists accountLists,
-            Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationServiceDeprecated authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 userFromApiService,
                 userService,

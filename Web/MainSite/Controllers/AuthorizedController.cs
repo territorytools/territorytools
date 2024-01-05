@@ -13,12 +13,12 @@ namespace TerritoryTools.Web.MainSite.Controllers
     {
         private readonly IUserFromApiService _userFromApiService;
         readonly IUserService _userService;
-        readonly IAuthorizationService _authorizationService;
+        readonly IAuthorizationServiceDeprecated _authorizationService;
 
         public AuthorizedController(
             IUserFromApiService userFromApiService,
             IUserService userService,
-            IAuthorizationService authorizationService,
+            IAuthorizationServiceDeprecated authorizationService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             _userFromApiService = userFromApiService;

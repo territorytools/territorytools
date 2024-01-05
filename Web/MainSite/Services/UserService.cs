@@ -14,11 +14,11 @@ namespace TerritoryTools.Web.MainSite.Services
     {
         readonly WebUIOptions options;
         readonly IAlbaUserGateway _albaUserGateway;
-        readonly IAuthorizationService _authorizationService;
+        readonly IAuthorizationServiceDeprecated _authorizationService;
 
         public UserService(
             IAlbaUserGateway albaUserGateway,
-            IAuthorizationService authorizationService,
+            IAuthorizationServiceDeprecated authorizationService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             options = optionsAccessor.Value;
@@ -36,7 +36,7 @@ namespace TerritoryTools.Web.MainSite.Services
                 users = _albaUserGateway.GetAlbaUsers(currentUser);
             }
 
-            var adminUserNames = _authorizationService.GetAdminUsers();
+            var adminUserNames = _authorizationService.GetAdminUsersDeprecated();
             foreach (string name in adminUserNames)
             {
                 if (users.Exists(u => string.Equals(u.Email, name)))

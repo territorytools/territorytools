@@ -25,17 +25,20 @@ namespace TerritoryTools.Web.MainSite.Controllers
         };
 
         readonly MainDbContext _database;
-        readonly Services.IAuthorizationService _authorizationService;
+        readonly Services.IAuthorizationServiceDeprecated _authorizationService;
+        private readonly IUserFromApiService _userFromApiService;
         readonly WebUIOptions _options;
 
         public ManagePhoneTerritoryController(
             MainDbContext database,
-            Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationServiceDeprecated authorizationService,
+            IUserFromApiService userFromApiService,
             IOptions<WebUIOptions> optionsAccessor)
         {
             _options = optionsAccessor.Value;
             _database = database;
             _authorizationService = authorizationService;
+            _userFromApiService = userFromApiService;
         }
 
         [Authorize]
@@ -43,7 +46,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (!User.Identity.IsAuthenticated || !_authorizationService.IsAdmin(User.Identity.Name))
+                if (IsAdmin())
                 {
                     return Forbid();
                 }
@@ -79,6 +82,20 @@ namespace TerritoryTools.Web.MainSite.Controllers
             {
                 throw;
             }
+        }
+
+        protected bool IsAdmin()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = _userFromApiService.ByEmail(User.Identity.Name);
+                if (user != null && (user.IsActive ?? false) && user.CanAssignTerritories)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

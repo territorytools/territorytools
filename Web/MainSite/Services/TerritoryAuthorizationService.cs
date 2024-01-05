@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace TerritoryTools.Web.MainSite.Services
 {
-    public interface IAuthorizationService
+    public interface IAuthorizationServiceDeprecated
     {
-        bool IsAdmin(string userName);
-        bool IsUser(string userName);
-        IEnumerable<string> GetAdminUsers();
+        bool IsAdminDeprecated(string userName);
+        bool IsUserDeprecated(string userName);
+        IEnumerable<string> GetAdminUsersDeprecated();
         IEnumerable<string> GetUsers();
     }
 
-    public class TerritoryAuthorizationService : IAuthorizationService
+    public class TerritoryAuthorizationService : IAuthorizationServiceDeprecated
     {
         IEnumerable<string> userNames;
         IEnumerable<string> adminUserNames;
@@ -23,7 +23,7 @@ namespace TerritoryTools.Web.MainSite.Services
             this.adminUserNames = adminUserNames;
         }
 
-        public bool IsAdmin(string userName)
+        public bool IsAdminDeprecated(string userName)
         {
             foreach (string adminUserName in adminUserNames)
             {
@@ -38,7 +38,7 @@ namespace TerritoryTools.Web.MainSite.Services
             return false;
         }
 
-        public bool IsUser(string userName)
+        public bool IsUserDeprecated(string userName)
         {
             foreach (string name in userNames)
             {
@@ -51,7 +51,7 @@ namespace TerritoryTools.Web.MainSite.Services
             return false;
         }
 
-        public IEnumerable<string> GetAdminUsers()
+        public IEnumerable<string> GetAdminUsersDeprecated()
         {
             return adminUserNames;
         }
