@@ -32,20 +32,21 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     
     let status = {
         if territory.last_completed_by.is_none() {
-            &territory.status
+            territory.status.clone()
         } else {
-            "Completed"
+            Some("Completed".to_string())
         }
     };
     
     let assign_button_html = 
-        if territory.status.as_str() == "Available" && status != "Completed" {
+        if territory.status.clone().unwrap_or_default().as_str() == "Available" 
+            && status.clone().unwrap_or_default().as_str() != "Completed" {
         let _description: String = match &territory.description {
             Some(v) => if v == "" { "(empty)".to_string() } else { v.clone() },
             None => "(empty)".to_string()
         };
         
-        let _id = territory.id.unwrap_or_default();
+        let _id = territory.id;
         if options.edit_territory_button_enabled { //1 == 1 { //id == 0 {
             format!("<br/><a 
                 style='margin-top:5px;color:white;'
@@ -53,7 +54,7 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
                 href='/app/territory-edit?id={id}'>
                 Assign
                 </a>",
-                id = territory.id.unwrap_or_default(),
+                id = territory.id,
             )
         } else { 
             "".to_string()
@@ -67,9 +68,9 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
         None => "".to_string()
     };
     
-    let territory_id: i32 = territory.id.unwrap_or(0);
+    let territory_id: i32 = territory.id;
  
-    let id = territory.id.unwrap_or_default();
+    let id = territory.id;
     let _description: String = match &territory.description {
         Some(v) => if v.is_empty() { "(empty)".to_string() } else { v.clone() },
         None => "(empty)".to_string()
@@ -117,8 +118,8 @@ pub fn popup_content_w_button(territory: &Territory, options: PopupContentOption
     let total = territory.addresses_total.unwrap_or_default();
     let unvisited = territory.addresses_unvisited.unwrap_or_default();
     let visited = active-unvisited;
-    let status_letter = &status[..1];
-
+    let status_letter = &status.clone().unwrap_or_default()[..1];
+    let status = &status.clone().unwrap_or_default();
     format!(
         "<div style='font-size:15px;'>
             <span><strong>{territory_number}</strong></span>

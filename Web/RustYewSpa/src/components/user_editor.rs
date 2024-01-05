@@ -2,11 +2,12 @@ use crate::components::menu_bar_v2::MenuBarV2;
 use crate::components::button_with_confirm::ButtonWithConfirm;
 use crate::components::menu_bar::MapPageLink;
 use crate::components::text_box::{InputCell, CheckboxCell, TextAreaCell};
-use crate::components::input_callback_macros::GridInput;
+use crate::macros::http::LoadStatus;
+use crate::macros::save_callback::SaveStatus;
+use crate::macros::input_callback_macros::GridInput;
 use crate::functions::document_functions::set_document_title;
-use crate::models::users::{UserChanges,UserResponse};
-use crate::field_checked;
-use crate::field;
+use crate::models::users::{UserChanges,UserLoadResult};
+use crate::{field, field_checked, save_callback, get_result_by_id};
 
 use reqwasm::http::Request;
 use reqwasm::http::Method;
@@ -18,28 +19,74 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::hooks::use_location;
 
+
+#[derive(Properties, PartialEq, Clone, Default, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSaveResult {
+    pub user: UserChanges,
+    pub success: bool,
+    pub errors: Option<String>,
+    pub status: SaveStatus,
+    pub completed: bool,
+}
+
+#[derive(Properties, PartialEq, Clone, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSaveRequest {
+    pub created_by: Option<String>,
+    pub user: UserChanges, // <-- Can I add this later?
+}
+
+// #[derive(Properties, PartialEq, Clone, Serialize)]
+// pub struct UserEditorModelTest {
+//     pub user: UserChanges,
+//     pub load_response: UserResponse,
+//     // pub save_response: SaveStatus,
+//     // pub save_request: SaveUserRequest,
+
+//     pub load_status: LoadStatus,
+//     pub save_status: SaveStatus,
+// }
+
 #[derive(Properties, PartialEq, Clone, Serialize)]
 pub struct UserEditorModel {
     pub user: UserChanges,
-    pub user_response: UserResponse,
+    pub load_result: UserLoadResult,
+    pub save_result: UserSaveResult,
+    pub save_request: UserSaveRequest,
     pub save_success: bool,
     pub save_error: bool,
     #[prop_or_default]
     pub load_error: bool,
     pub error_message: String,
+    pub load_status: LoadStatus,
+    pub save_status: SaveStatus,
+    pub wrapper: Wrapper<UserChanges>,
 }
 
 impl Default for UserEditorModel {
     fn default() -> Self {
         UserEditorModel {
             user: UserChanges::default(),
-            user_response: UserResponse::default(),
+            load_result: UserLoadResult::default(),
+            save_result: UserSaveResult::default(),
+            save_request: UserSaveRequest::default(),
             save_success: false,
             save_error: false,
             load_error: false,
             error_message: "".to_string(),
+            load_status: LoadStatus::default(),
+            save_status: SaveStatus::default(),
+            wrapper: Wrapper::<UserChanges>::default(),
         }
     }
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct Wrapper<E> {
+    pub entity: E,
+    pub timestamp: String,
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -55,129 +102,19 @@ pub fn user_editor_page() -> Html {
     let state: yew::UseStateHandle<UserEditorModel> = use_state(UserEditorModel::default);
     let location = use_location().expect("Should be a location to get query string");
     let parameters: UserEditorParameters = location.query::<UserEditorParameters>().expect("An object");
-    let user_id: i32 = match parameters.user_id { Some(v) => v, _ => 0 };
 
     let cloned_state = state.clone();
-    let save_onclick = Callback::from(move |_: i32| { 
-        //event.prevent_default();
-        let cloned_state = cloned_state.clone();
-        spawn_local(async move {
-            let uri_string: String = "/api/users".to_string();
+    let save_onclick = save_callback!(
+        "/api/users",
+        id: cloned_state.save_request.user.id,
+        status: cloned_state.save_status);
 
-            let uri: &str = uri_string.as_str();
-
-            let body_model = UserSaveRequest {
-                created_by: Some("unkown".to_string()),
-                user: UserChanges {
-                    id: cloned_state.user.id,
-                    alba_full_name: cloned_state.user.alba_full_name.clone(),
-                    given_name: cloned_state.user.given_name.clone(),
-                    surname: cloned_state.user.surname.clone(),
-                    phone: cloned_state.user.phone.clone(),
-                    notes: cloned_state.user.notes.clone(),
-                    alba_user_id: cloned_state.user.alba_user_id.clone(),
-                    normalized_email: cloned_state.user.normalized_email.clone(),
-                    group_id: cloned_state.user.group_id.clone(),
-                    roles: cloned_state.user.roles.clone(),
-                    territory_summary: cloned_state.user.territory_summary.clone(), 
-                    is_active: cloned_state.user.is_active,
-                    can_assign_territories: cloned_state.user.can_assign_territories,
-                    can_edit_territories: cloned_state.user.can_edit_territories,
-                    can_impersonate_users: cloned_state.user.can_impersonate_users,                    
-                }
-            };
-
-            let data_serialized = serde_json::to_string_pretty(&body_model)
-                .expect("Should be able to serialize address for geocoding into JSON");
-
-            let method = if user_id == 0 { Method::POST } else { Method::PUT };
-
-            let resp = Request::new(uri)
-                .method(method)
-                .header("Content-Type", "application/json")
-                .body(data_serialized)
-                .send()
-                .await
-                .expect("A result from the endpoint");
-            
-            let _result = UserSaveResult {
-                success: (resp.status() == 200),
-                errors: Some("".to_string()),
-                status: resp.status(),
-                completed: true,
-            };
-
-            //stage_change_result_state_clone.set(result);
-            let mut modified = cloned_state.deref().clone();
-
-            if resp.status() == 200 {
-                modified.save_success = true;
-                modified.save_error = false;
-                // UserSaveResult {
-                //     success: true,
-                //     errors: Some("".to_string()),
-                //     status: resp.status(),
-                //     completed: true,
-                // }
-            } else {
-                let errors = if (401..403).contains(&resp.status()) { 
-                    Some("Unauthorized".to_string()) 
-                } else {
-                    Some(resp.status().to_string())
-                };
-                modified.error_message = errors.unwrap_or_default();
-                modified.save_error = true;
-                modified.save_success = false;
-                // UserSaveResult {
-                //     success: false,
-                //     errors,
-                //     status: resp.status(),
-                //     completed: true,
-                // }
-            };
-
-            cloned_state.set(modified);
-        });
-    });
-   
     let cloned_state = state.clone();
+    let user_id = parameters.user_id.unwrap_or_default();
     use_effect_with((), move |_| {
-        let cloned_state = cloned_state.clone();
-        let user_id = parameters.user_id.unwrap_or_default();
-        wasm_bindgen_futures::spawn_local(async move {
-            let uri: String = format!("/api/users?userId={user_id}");
-
-            let response = Request::get(uri.as_str())
-                .send()
-                .await
-                .expect("User response (raw) from API");
-            
-            if response.status() == 200 {
-                let user_response: UserResponse = response
-                    .json()
-                    .await
-                    .expect("Valid UserResponse JSON from API");
-  
-                let model: UserEditorModel = UserEditorModel {
-                    user: user_response.clone().user.unwrap_or_default(),
-                    user_response: user_response.clone(),
-                    ..UserEditorModel::default()
-                };
-
-                cloned_state.set(model);
-            } else if response.status() == 401 {
-                let model: UserEditorModel = UserEditorModel {
-                    user: UserChanges::default(),
-                    user_response: UserResponse::default(),
-                    load_error: true,
-                    error_message: "Unauthorized".to_string(),
-                    ..UserEditorModel::default()
-                };
-
-                cloned_state.set(model);
-            }
-        });
-        || ()
+        get_result_by_id!(
+            "/api/users?userId={user_id}", 
+            cloned_state.load_result.user.id)
     });
 
     let full_name = state.user.alba_full_name.clone().unwrap_or_default();
@@ -199,14 +136,17 @@ pub fn user_editor_page() -> Html {
                         <span><strong>{"User Editor"}</strong></span>
                     </div>
                     <div class="col-12 col-sm-6 col-md-4">
-                        <a href={my_territories_link} class="btn btn-primary">{"View My Territories Page"}</a>
+                        <a href={my_territories_link} class="btn btn-primary">{"My Territories"}</a>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <a href="/app/user-edit?user_id=0" class="btn btn-primary">{"New User"}</a>
                     </div>                    
                 </div>
                 <div class="row g-3 my-2">    
                     <InputCell label="Full Name" field={field!(cloned_state.user.alba_full_name)} /> 
                     <InputCell label="Surname (family name)" field={field!(cloned_state.user.surname)} /> 
                     <InputCell label="Given Name" field={field!(cloned_state.user.given_name)} />                      
-                    if state.user_response.email_visible {
+                    if state.load_result.email_visible {
                          <InputCell label="Email" field={field!(cloned_state.user.normalized_email)} />  
                          <InputCell label="Phone" field={field!(cloned_state.user.phone)} />  
                     }
@@ -214,41 +154,26 @@ pub fn user_editor_page() -> Html {
                 </div>
                 <div class="row g-3 my-2">
                     <CheckboxCell label="Active" field={field_checked!(cloned_state.user.is_active)} />  
-                    if state.user_response.roles_visible {
+                    if state.load_result.roles_visible {
                         <CheckboxCell label="Can Impersonate Users"  field={field_checked!(cloned_state.user.can_impersonate_users)} /> 
                         <CheckboxCell label="Can Assign Territories" field={field_checked!(cloned_state.user.can_assign_territories)} /> 
                         <CheckboxCell label="Can Edit Territories"   field={field_checked!(cloned_state.user.can_edit_territories)} /> 
                     }
                     <TextAreaCell label="Notes" field={field!(cloned_state.user.notes)} />
-                    if state.user_response.roles_visible {
+                    if state.load_result.roles_visible {
                         <InputCell 
                             class="col-12 col-sm-12 col-md-12" 
                             label="Roles" 
                             field={field!(cloned_state.user.roles)} />  
                     }
-                    if state.user_response.user_can_edit {
+                    if state.load_result.user_can_edit {
                         <div class="col-12 p-3">
                             <ButtonWithConfirm id="save-button" button_text="Save" on_confirm={save_onclick.clone()} />
                         </div>
                     }
+                    <div class="col-12"><span><small>{"UID:"}{cloned_state.user.id}</small></span></div>
                 </div>
             </div>
         </>
     }
-}
-
-#[derive(Properties, PartialEq, Clone, Default, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct UserSaveResult {
-    pub success: bool,
-    pub errors: Option<String>,
-    pub status: u16,
-    pub completed: bool,
-}
-
-#[derive(Properties, PartialEq, Clone, Default, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct UserSaveRequest {
-    pub created_by: Option<String>,
-    pub user: UserChanges,
 }

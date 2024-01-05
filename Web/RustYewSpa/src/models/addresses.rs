@@ -9,7 +9,8 @@ pub struct Address {
     pub territory_id: Option<i32>,
     pub territory_number: Option<String>,
     pub language: Option<String>,
-    pub language_id : i32,
+    pub language_id: i32,
+    pub alba_language_id : Option<i32>, // TODO: Deprecate
     pub status: Option<String>,
     pub status_id: i32,
     pub delivery_status_id: i32,
