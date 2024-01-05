@@ -46,7 +46,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         {
             try
             {
-                if (IsAdmin())
+                if (!IsAdmin())
                 {
                     return Forbid();
                 }
