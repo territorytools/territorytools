@@ -7,6 +7,7 @@ use yew::prelude::*;
 #[derive(Properties, Default, Clone, PartialEq)]
 pub struct Props {
     pub id: String,
+    pub mtk: String,
     pub onchange: Callback<String>,
     pub value: i32,
 }
@@ -17,12 +18,15 @@ pub fn language_selector_v2(props: &Props) -> Html {
     let language_groups = use_state(|| vec![]);
     {
         let language_groups: UseStateHandle<Vec<LanguageGroup>> = language_groups.clone();
+        let props_clone = props.clone();
+        let mtk = props.mtk.clone();
         use_effect_with((), move |_| {
             let language_groups = language_groups.clone();
+            let props_clone = props_clone.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let uri: &str = "/api/languages";
+                let uri = format!("/api/languages?mtk={}", mtk.clone());
 
-                let fetched: Vec<LanguageGroup> = Request::get(uri)
+                let fetched: Vec<LanguageGroup> = Request::get(uri.as_str())
                     .send()
                     .await
                     .unwrap()

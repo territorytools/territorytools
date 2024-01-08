@@ -1145,7 +1145,7 @@ pub fn address_edit_page() -> Html {
                 }
                 <div class="col-12 col-sm-6 col-md-4">
                     <label for="input-language" class="form-label">{"Language"}</label>
-                    <LanguageSelectorV2 id="input-language-v2" onchange={language_onchange_v2.clone()} value={selected_language_id} />
+                    <LanguageSelectorV2 id="input-language-v2" mtk={mtk.clone()} onchange={language_onchange_v2.clone()} value={selected_language_id} />
                 </div>
                 <div class="col-12 col-sm-6 col-md-4">
                         <label for="input-status" class="form-label">{"Visit Status"}</label>

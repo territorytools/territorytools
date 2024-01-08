@@ -23,10 +23,11 @@ FROM nginx:latest
 RUN mkdir /etc/nginx/sites-available/
 RUN mkdir /etc/nginx/sites-enabled/
 #RUN mkdir /var/www/html
+RUN mkdir  /usr/share/nginx/html/app
 COPY ./nginx/default /etc/nginx/sites-available/default
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 RUN ln -s -f /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
-COPY --from=build /usr/app/dist /usr/share/nginx/html
+COPY --from=build /usr/app/dist /usr/share/nginx/html/app
 #COPY --from=build /usr/app/dist /var/www/html
 
 EXPOSE 80

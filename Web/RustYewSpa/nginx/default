@@ -41,27 +41,31 @@ server {
         root /usr/share/nginx/html;
 
         # Add index.php to the list if you are using PHP
-        index index.html index.htm index.nginx-debian.html;
+        ####index index.html index.htm index.nginx-debian.html;
 
         server_name _;
 
-        location /tt-spa-slot-a/wasm/ {
-                root /var/www;
-                try_files $uri $uri/ /tt-spa-slot-a/wasm/index.html =404;
-        }
-        location /tt-spa-slot-b/wasm/ {
-                root /var/www;
-                try_files $uri $uri/ /tt-spa-slot-b/wasm/index.html =404;
-        }
-        location /app {
+        # location /tt-spa-slot-a/wasm/ {
+        #         root /var/www;
+        #         try_files $uri $uri/ /tt-spa-slot-a/wasm/index.html =404;
+        # }
+        # location /tt-spa-slot-b/wasm/ {
+        #         root /var/www;
+        #         try_files $uri $uri/ /tt-spa-slot-b/wasm/index.html =404;
+        # }
+
+        location /app/ {
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
-                try_files $uri $uri/ =404;
+                #root /usr/share/nginx/html;
+                #try_files $uri $uri/ /app/$uri /app/$uri/ /index.html =406;
+                try_files not_real.html =406;
         }
         location / {
                 # First attempt to serve request as file, then
                 # as directory, then fall back to displaying a 404.
-                try_files $uri $uri/ =404;
+                #try_files $uri $uri/ =404;
+                try_files $uri $uri/ /app/$uri /app/$uri/ /app/index.html =403;
         }
 
         # pass PHP scripts to FastCGI server
