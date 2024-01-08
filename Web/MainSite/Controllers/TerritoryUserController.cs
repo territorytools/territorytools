@@ -24,7 +24,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IUserFromApiService userFromApiService,
             IUserService userService,
             MainDbContext database,
-            Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationServiceDeprecated authorizationService,
             IAlbaCredentialService albaCredentialService,
             IOptions<WebUIOptions> optionsAccessor) 
             : base(

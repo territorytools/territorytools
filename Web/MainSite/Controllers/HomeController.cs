@@ -27,7 +27,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IUserFromApiService userFromApiService,
             IUserService userService,
             ICombinedAssignmentService combinedAssignmentService,
-            Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationServiceDeprecated authorizationService,
             Services.IQRCodeActivityService qrCodeActivityService,
             IConfiguration configuration,
             IOptions<WebUIOptions> optionsAccessor,

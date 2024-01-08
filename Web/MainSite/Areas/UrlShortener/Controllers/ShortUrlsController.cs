@@ -28,7 +28,7 @@ namespace TerritoryTools.Web.MainSite.Areas.UrlShortener.Controllers
             IUserService userService,
             MainDbContext database,
             IShortUrlService service, 
-            Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationServiceDeprecated authorizationService,
             IOptions<WebUIOptions> optionsAccessor) : base(
                 userFromApiService,
                 userService,

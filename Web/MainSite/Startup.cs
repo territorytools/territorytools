@@ -237,7 +237,7 @@ namespace TerritoryTools.Web.MainSite
             services.AddSingleton<IAccountLists>(l => new AccountLists(
                 Configuration["TT_AreaNames"] ?? string.Empty));
 
-            services.AddScoped<IAuthorizationService>(s =>
+            services.AddScoped<IAuthorizationServiceDeprecated>(s =>
                 new TerritoryAuthorizationService(users, adminUsers));
 
             services.AddTransient<IAlbaCredentialService, AlbaCredentialAzureVaultService>();

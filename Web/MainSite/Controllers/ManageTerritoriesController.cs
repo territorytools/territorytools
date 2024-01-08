@@ -25,7 +25,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
         private readonly ICombinedAssignmentService _combinedAssignmentService;
         private readonly IUserService _userService;
         private readonly AreaService _areaService;
-        private readonly Services.IAuthorizationService _authorizationService;
+        private readonly Services.IAuthorizationServiceDeprecated _authorizationService;
         private readonly IAlbaCredentialService _albaCredentialService;
         private readonly IAlbaAuthClientService _albaAuthClientService;
         private readonly IConfiguration _configuration;
@@ -37,7 +37,7 @@ namespace TerritoryTools.Web.MainSite.Controllers
             IUserService userService,
             AreaService areaService,
             IAccountLists accountLists,
-            Services.IAuthorizationService authorizationService,
+            Services.IAuthorizationServiceDeprecated authorizationService,
             IAlbaCredentialService albaCredentialService,
             IAlbaAuthClientService albaAuthClientService,
             IConfiguration configuration,
