@@ -77,36 +77,51 @@ namespace TerritoryTools.Alba.Controllers.AlbaServer
 
         private void SubmitCredentials(Credentials credentials)
         {
-            var result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
-            LogonResult logonResult = JsonSerializer.Deserialize<LogonResult>(result);
+            string result = DownloadString(RelativeUrlBuilder.AuthenticationUrlFrom(credentials));
+	    try
+	    {
+		    LogonResult logonResult = JsonSerializer.Deserialize<LogonResult>(result);
 
-            LogonResultChecker.CheckForErrors(logonResult);
+		    LogonResultChecker.CheckForErrors(logonResult);
 
-            if(logonResult?.user == null)
-            {
-                return;
-            }
+		    if(logonResult?.user == null)
+		    {
+			    return;
+		    }
 
-            IsAuthenticated = true;
+		    IsAuthenticated = true;
 
-            var user = logonResult.user;
+		    var user = logonResult.user;
 
-            // In the JSON returned the user.id is the Account ID
-            AccountId = user.id ?? 0;
-            AccountName = user.account_name;
-            AccountFullName = user.account_full_name;
-            Address = user.address;
-            City = user.city;
-            Province = user.province;
-            Country = user.country;
-            PostalCode = user.postcode;
-            Latitude = user.location_lat ?? 0.0;
-            Longitude = user.location_lng ?? 0.0;
+		    // In the JSON returned the user.id is the Account ID
+		    int userId = 0;
+		    int.TryParse(user.id, out userId);
+		    AccountId = userId;
+		    AccountName = user.account_name;
+		    AccountFullName = user.account_full_name;
+		    Address = user.address;
+		    City = user.city;
+		    Province = user.province;
+		    Country = user.country;
+		    PostalCode = user.postcode;
 
-            if (AccountId == 0)
-            {
-                throw new ArgumentException("Account ID cannot be zero");
-            }
+		    double locationLat = 0.0;
+		    double.TryParse(user.location_lat, out locationLat);
+		    Latitude = locationLat;
+
+		    double locationLon = 0.0;
+		    double.TryParse(user.location_lng, out locationLon);
+		    Longitude = locationLon;
+
+		    if (AccountId == 0)
+		    {
+			    throw new ArgumentException("Account ID cannot be zero");
+		    }
+	    }
+	    catch(Exception e)
+	    {
+		  throw new Exception($"Error getting auth response. Error Message: {e.Message} JSON Result: {result}", e);  
+	    }
         }
 
         public string DownloadString(string url)

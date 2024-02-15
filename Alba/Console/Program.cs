@@ -165,7 +165,7 @@ namespace TerritoryTools.Alba.Cli
 
         public static AlbaConnection AlbaClient()
         {
-            string albaHost = Environment.GetEnvironmentVariable("alba_host");
+            string albaHost = Environment.GetEnvironmentVariable("ALBA_HOST");
             if (string.IsNullOrWhiteSpace(albaHost))
             {
                 throw new Exception("ALBA_HOST environment variable is missing!");
@@ -571,16 +571,16 @@ namespace TerritoryTools.Alba.Cli
 
         public static Credentials GetCredentials()
         {
-            string host = Environment.GetEnvironmentVariable("alba_host");
-            string account = Environment.GetEnvironmentVariable("alba_account");
-            string user = Environment.GetEnvironmentVariable("alba_user");
-            string password = Environment.GetEnvironmentVariable("alba_password");
+            string host = Environment.GetEnvironmentVariable("ALBA_HOST");
+            string account = Environment.GetEnvironmentVariable("ALBA_ACCOUNT");
+            string user = Environment.GetEnvironmentVariable("ALBA_USER");
+            string password = Environment.GetEnvironmentVariable("ALBA_PASSWORD");
 
             if (string.IsNullOrWhiteSpace(account)
                 || string.IsNullOrWhiteSpace(user)
                 || string.IsNullOrWhiteSpace(password))
             {
-                throw new NormalException("Missing credentials, please set your credentials as environment variables:  alba_host, alba_account, alba_user, alba_password");
+                throw new NormalException("Missing credentials, please set your credentials as environment variables:  ALBA_HOST, ALBA_ACCOUNT, ALBA_USER, ALBA_PASSWORD");
             }
 
             return new Credentials(
