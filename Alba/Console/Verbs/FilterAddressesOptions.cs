@@ -28,6 +28,13 @@ namespace TerritoryTools.Alba.Cli.Verbs
         public string NotesPrivateContain { get; set; }
 
         [Option(
+          "postal-code",
+          Required = false,
+          HelpText = "Find records where Postal_code equal this value")]
+        [Value(0)]
+        public string PostalCode { get; set; }
+
+        [Option(
          "alba-territory-id",
          Required = false,
          HelpText = "Find records with the Alba territory id")]
@@ -75,6 +82,24 @@ namespace TerritoryTools.Alba.Cli.Verbs
             {
                 var filtered = source
                     .Where(a => a.Notes_private.Contains(NotesPrivateContain))
+                    .ToList();
+
+                Console.WriteLine($"Filtered Addresses: {filtered.Count}");
+
+                var results = new List<AlbaAddressImport>();
+                foreach (var address in filtered)
+                {
+                    results.Add(AlbaAddressImport.From(address));
+                }
+
+                Console.WriteLine($"Result Addresses: {results.Count}");
+
+                LoadCsvAddresses.SaveTo(results, OutputFilePath);
+            }
+            else if (!string.IsNullOrWhiteSpace(PostalCode))
+            {
+                var filtered = source
+                    .Where(a => a.Postal_code.Equals(PostalCode))
                     .ToList();
 
                 Console.WriteLine($"Filtered Addresses: {filtered.Count}");
