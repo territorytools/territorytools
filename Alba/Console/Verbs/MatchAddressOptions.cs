@@ -23,10 +23,18 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
         [Option(
             "match-path",
-            Required = true,
+            Required = false,
             HelpText = "Path of address file to match with input file in Alba TSV format")]
         [Value(0)]
         public string MatchPath { get; set; }
+
+	[Option(
+            "no-match-path",
+            Required = false,
+            HelpText = "Path of address file for no match with input file in Alba TSV format")]
+        [Value(0)]
+        public string NoMatchPath { get; set; }
+
 
         [Option(
             "output-path",
@@ -65,6 +73,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
 
             var errors = new List<AlbaAddressExport>();
             var output = new List<AlbaAddressExport>();
+	    var noMatchOutput = new List<AlbaAddressExport>();
 
             var streetTypes = StreetType.Parse(NormalizeAddressesOptions.StreetTypes);
             var parser = new CompleteAddressParser(streetTypes);
@@ -73,6 +82,7 @@ namespace TerritoryTools.Alba.Cli.Verbs
             {
                 try
                 {
+		    bool wasMatched = false;
                     foreach (var b in matches)
                     {
                         //string aText = $"{a.Address}, {a.Suite}, {a.City}, {a.Province} {a.Postal_code}";
@@ -88,9 +98,18 @@ namespace TerritoryTools.Alba.Cli.Verbs
                                 || string.Equals(a.Postal_code, b.Postal_code, StringComparison.OrdinalIgnoreCase))
                             && string.Equals(a.Province, b.Province, StringComparison.OrdinalIgnoreCase))
                         {
-                            output.Add(a);
+			    wasMatched = true;
+			    if(!string.IsNullOrWhiteSpace(MatchPath))
+			    {
+				    output.Add(a);
+			    }
                         }
                     }
+
+		    if(!wasMatched && !string.IsNullOrWhiteSpace(NoMatchPath)) 
+		    {
+                         noMatchOutput.Add(a);
+		    }
                 }
                 catch (Exception e)
                 {
@@ -111,7 +130,15 @@ namespace TerritoryTools.Alba.Cli.Verbs
                 Console.WriteLine($"Count: {errors.Count}");
             }
 
-            LoadTsvAlbaAddresses.SaveTo(output, OutputPath);
+	    if(!string.IsNullOrWhiteSpace(NoMatchPath))
+	    {
+                LoadTsvAlbaAddresses.SaveTo(noMatchOutput, NoMatchPath);
+	    }
+
+	    if(!string.IsNullOrWhiteSpace(MatchPath))
+	    {
+                LoadTsvAlbaAddresses.SaveTo(output, OutputPath);
+	    }
 
             if (errors.Count > 0)
             {
