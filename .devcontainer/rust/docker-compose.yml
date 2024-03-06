@@ -22,8 +22,8 @@ services:
     #networks:
     #  - main
     ports:
-      - "127.0.0.1:8000:80"
-      - "${LocalPrivateIp}:8000:80"
+      - "127.0.0.1:8088:80"
+      - "${LocalPrivateIp}:8088:80"
     #    env_file:
     #  - tt-web-common.env
     #  - ../tt-web-prod.env
@@ -160,6 +160,26 @@ services:
     ports:
     - '127.0.0.1:11433:1433'
     - '${LocalPrivateIp}:11433:1433'
+
+  proxy:
+    image: nginx
+    ports:
+    #- 81:80
+    - 127.0.0.1:80:80
+    volumes:
+    - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+    - ./nginx-proxy-shared.conf:/etc/nginx/sites-enabled/shared
+    - ./data/tt-app-prod-a:/var/www/html
+    # - /data/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  client:
+    image: nginx
+    ports:
+    #- 8007:80
+    - 127.0.0.1:8007:80
+    volumes:
+    - /data/tt-app-prod-a:/usr/share/nginx/html/app
+    #- /data/tt-app-prod-a:/var/www
 
 volumes:
   mssql-db-vol:
