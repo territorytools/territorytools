@@ -158,8 +158,8 @@ services:
     #networks:
     #  - main
     ports:
-    - '127.0.0.1:11433:1433'
-    - '${LocalPrivateIp}:11433:1433'
+    - '127.0.0.1:1433:1433'
+    - '${LocalPrivateIp}:1433:1433'
 
   proxy:
     image: nginx
