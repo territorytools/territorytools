@@ -168,16 +168,17 @@ services:
     - 127.0.0.1:80:80
     volumes:
     - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
-    - ./nginx-proxy-shared.conf:/etc/nginx/sites-enabled/shared
-    - ./data/tt-app-prod-a:/var/www/html
+    - ./nginx-proxy-shared.conf:/etc/nginx/sites-enabled/shared:ro
+    #- ./data/tt-app-prod-a:/var/www/html
     # - /data/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
 
-  client:
+  static-files:
     image: nginx
     ports:
     #- 8007:80
     - 127.0.0.1:8007:80
     volumes:
+    - ./nginx-static.conf:/etc/nginx/nginx.conf:ro
     - /data/tt-app-prod-a:/usr/share/nginx/html/app
     #- /data/tt-app-prod-a:/var/www
 
