@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  tt-web:
+    container_name: tt-web
+    restart: unless-stopped
+    build: 
+      context: ../../..
+      dockerfile: Web/MainSite/Dockerfile
+    volumes:
+      - "/data/tt-web:/data"
+      - "/data/tt-web/secrets:/app/secrets"
+      - "/data/tt-web/keys:/data/keys"
+    #networks:
+    #  - main
+    ports:
+      - "127.0.0.1:8088:80"
+      - "${LocalPrivateIp}:8088:80"
+    #    env_file:
+    #  - tt-web-common.env
+    #  - ../tt-web-prod.env
+    environment:
+      #DB_NAME: $DB_NAME
+      #SA_PASSWORD: $SA_PASSWORD
+      #- GitCommit=$
+      ##- ASPNETCORE_URLS=http://*:80
+      ASPNETCORE_ENVIRONMENT: Production
+      ##- ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.ApplicationInsights.HostingStartup
+      # Connection Strings
+      APPLICATIONINSIGHTS_CONNECTION_STRING: $tt_prod_APPLICATIONINSIGHTS_CONNECTION_STRING
+      Authentication:Google:ClientId: $GoogleClientId
+      Authentication:Google:ClientSecret: $GoogleClientSecret
+      Authentication:Microsoft:ClientId: $MicrosoftClientId
+      Authentication:Microsoft:ClientSecret: $MicrosoftClientSecret      
+      ##- ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
+      ConnectionStrings:MainDbContextConnection: Server=db,1433;Initial Catalog=tt-web-dev;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;  
+      REMOVE_ConnectionStrings:MainDbContextConnection=Server=db,1433;Initial Catalog=tt-web-prod-2023-04-20-111111;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout: 30;
+      REMOVE_MainDbContextConnection=Server=db,1433;Initial Catalog=tt-web-prod-2023-04-20-111111;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout: 30;
+      # Alba Account
+      AlbaHost: $AlbaHost
+      AlbaAccount: $AlbaAccount
+      AlbaUser: $AlbaUser
+      AlbaPassword: $AlbaPassword_kirkland_marcdurham
+      HttpPort: 5000
+      SlotPort: 5000
+      HOST_NAME: $HOST_NAME
+      UrlShortenerDomain: xf2.us
+      # Phone Territories (Google Docs)
+      DefaultPhoneTerritorySourceDocumentId: $DefaultPhoneTerritorySourceDocumentId
+      DefaultPhoneTerritorySourceSheetName: WeChat
+      SharedPhoneTerritoryEmailAddress: $SharedPhoneTerritoryEmailAddress
+      SharedPhoneTerritoryFullName: Shared
+      SharedCampaignLink: $SharedCampaignLink
+      SharedPhoneTerritoryLink: $SharedPhoneTerritoryLink
+      SharedLettersReturnedLink: $SharedLettersReturnedLink
+      # Staging
+      #- NewMobileServerFqdn=mobile.staging.territorytools.org
+      # tt-api
+      #- TerritoryApiHostAndPort=tt-api-staging
+      #- TerritoryApiBaseUrl=http://tt-api-staging
+      #- MobileBaseUrl=https://mobile.staging.territorytools.org
+      # Production
+      NewMobileServerFqdn: $NewMobileServerFqdn
+      # tt-api
+      TerritoryApiHostAndPort: tt-api
+      TerritoryApiBaseUrl: http://tt-api
+      MobileBaseUrl: $MobileBaseUrl
+      # Logging
+      Logging:LogLevel:Default: Trace
+      Logging:LogLevel:Microsoft: Trace
+      Logging:LogLevel:Microsoft.Hosting.Lifetime: Information
+      ApplicationInsights:LogLevel:Default: Trace
+      GoogleMyMapLink: /app/map

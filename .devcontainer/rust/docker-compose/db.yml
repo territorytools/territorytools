@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db
+    image: 'mcr.microsoft.com/mssql/server:2022-latest'
+    restart: always
+    volumes:
+    - mssql-db-vol:/var/opt/msql
+    #  - '/data/db/data:/var/opt/mssql/data'
+    #  - '/data/db/log:/var/opt/mssql/log'
+    environment:
+    - MSSQL_PID=Express
+    - ACCEPT_EULA=Y
+    - SA_PASSWORD=$SA_PASSWORD
+    - MSSQL_SA_PASSWORD=$SA_PASSWORD
+    #networks:
+    #  - main
+    ports:
+    - '127.0.0.1:1433:1433'
+    - '${LocalPrivateIp}:1433:1433'
+
+volumes:
+  mssql-db-vol:

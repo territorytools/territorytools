@@ -1,4 +1,11 @@
 version: '3.8'
+
+include:
+- docker-compose/tt-api.yml
+- docker-compose/tt-mob.yml
+- docker-compose/tt-web.yml
+- docker-compose/db.yml
+
 services:
   devcontainer:
     build:
@@ -8,158 +15,6 @@ services:
     - ../..:/workspaces:cached
     #network_mode: service:db
     command: sleep infinity
-
-  tt-web:
-    container_name: tt-web
-    restart: unless-stopped
-    build: 
-      context: ../..
-      dockerfile: Web/MainSite/Dockerfile
-    volumes:
-      - "/data/tt-web:/data"
-      - "/data/tt-web/secrets:/app/secrets"
-      - "/data/tt-web/keys:/data/keys"
-    #networks:
-    #  - main
-    ports:
-      - "127.0.0.1:8088:80"
-      - "${LocalPrivateIp}:8088:80"
-    #    env_file:
-    #  - tt-web-common.env
-    #  - ../tt-web-prod.env
-    environment:
-      #DB_NAME: $DB_NAME
-      #SA_PASSWORD: $SA_PASSWORD
-      #- GitCommit=$
-      ##- ASPNETCORE_URLS=http://*:80
-      ASPNETCORE_ENVIRONMENT: Production
-      ##- ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.ApplicationInsights.HostingStartup
-      # Connection Strings
-      APPLICATIONINSIGHTS_CONNECTION_STRING: $tt_prod_APPLICATIONINSIGHTS_CONNECTION_STRING
-      Authentication:Google:ClientId: $GoogleClientId
-      Authentication:Google:ClientSecret: $GoogleClientSecret
-      Authentication:Microsoft:ClientId: $MicrosoftClientId
-      Authentication:Microsoft:ClientSecret: $MicrosoftClientSecret      
-      ##- ConnectionStrings:MainDbContextConnection=$MainDbContextConnection
-      ConnectionStrings:MainDbContextConnection: Server=db,1433;Initial Catalog=tt-web-dev;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;  
-      REMOVE_ConnectionStrings:MainDbContextConnection=Server=db,1433;Initial Catalog=tt-web-prod-2023-04-20-111111;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout: 30;
-      REMOVE_MainDbContextConnection=Server=db,1433;Initial Catalog=tt-web-prod-2023-04-20-111111;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout: 30;
-      # Alba Account
-      AlbaHost: $AlbaHost
-      AlbaAccount: $AlbaAccount
-      AlbaUser: $AlbaUser
-      AlbaPassword: $AlbaPassword_kirkland_marcdurham
-      HttpPort: 5000
-      SlotPort: 5000
-      HOST_NAME: $HOST_NAME
-      UrlShortenerDomain: xf2.us
-      # Phone Territories (Google Docs)
-      DefaultPhoneTerritorySourceDocumentId: $DefaultPhoneTerritorySourceDocumentId
-      DefaultPhoneTerritorySourceSheetName: WeChat
-      SharedPhoneTerritoryEmailAddress: $SharedPhoneTerritoryEmailAddress
-      SharedPhoneTerritoryFullName: Shared
-      SharedCampaignLink: $SharedCampaignLink
-      SharedPhoneTerritoryLink: $SharedPhoneTerritoryLink
-      SharedLettersReturnedLink: $SharedLettersReturnedLink
-      # Staging
-      #- NewMobileServerFqdn=mobile.staging.territorytools.org
-      # tt-api
-      #- TerritoryApiHostAndPort=tt-api-staging
-      #- TerritoryApiBaseUrl=http://tt-api-staging
-      #- MobileBaseUrl=https://mobile.staging.territorytools.org
-      # Production
-      NewMobileServerFqdn: $NewMobileServerFqdn
-      # tt-api
-      TerritoryApiHostAndPort: tt-api-prod
-      TerritoryApiBaseUrl: http://tt-api-prod
-      MobileBaseUrl: $MobileBaseUrl
-      # Logging
-      Logging:LogLevel:Default: Trace
-      Logging:LogLevel:Microsoft: Trace
-      Logging:LogLevel:Microsoft.Hosting.Lifetime: Information
-      ApplicationInsights:LogLevel:Default: Trace
-      GoogleMyMapLink: /app/map
-
-  tt-api:
-    # extends:
-    #   file: tt-api-common.yml
-    #   service: tt-api
-    container_name: tt-api
-    restart: unless-stopped
-    build:
-      context: ../../../TerritoryTools.Mobile
-      dockerfile: TerritoryTools.Api/Dockerfile
-    logging:
-      options:
-        max-size: "500m"
-        max-file: "3"
-    volumes:
-    - "/data/tt-api-prod-a/data/alba:/data/alba/"
-    - "/data/tt-api-prod-a/ApplicationInsights:/var/tmp/Microsoft/ApplicationInsights"
-    #- "/data/tt-api-prod-a/tmp:/tmp"
-    ports:
-    - "127.0.0.1:8722:80"
-    - "${LocalPrivateIp}:8722:80"
-    # env_file:
-    #   - ../database-names/tt-api-prod
-    #   - ../tt-api-prod.env
-    #networks:
-    #- main
-    environment:
-    # Common
-    - GitCommit=${GitCommit}
-    - APPLICATIONINSIGHTS_CONNECTION_STRING=$tt_api_a_APPLICATIONINSIGHTS_CONNECTION_STRING
-    - SourceServerName=www.mcmxiv.com
-    - SourceServerBaseUrl=https://www.mcmxiv.com
-    - ConnectionStrings:MainDbContextConnection=Server=db,1433;Initial Catalog=$DB_NAME;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;
-    - Rollback=false
-    - AlbaHost=$AlbaHost
-    - AlbaAccountId=$AlbaAccountId_kirkland
-    - AlbaAccount=$AlbaAccount
-    - AlbaUser=$AlbaUser
-    - AlbaPassword=$AlbaPassword_territoryservice
-    - CorsPolicyAllowedOrigins=http://127.0.0.1,http://localhost,https://*.territorytools.org,https://*.lkwa.org
-    - Application:TimeZoneOffset=-8:00
-    - Application:TimeZone=America/Los_Angeles
-    # Specific
-    - ASPNETCORE_ENVIRONMENT=Production
-    - LinkHost=$LinkHost
-    - TimerIntervalSeconds=0
-    - StartSyncImmediatley=false
-    - Business:ShopTerritoryId=726887
-    - Business:OtherTerritoryId=726888
-    - Business:OfficeTerritoryId=726885
-    - Application:MobileBaseUrl=$Application_MobileBaseUrl
-    - SyncAssignmentsTimeSpan=01:00:00
-    - Logging:LogLevel:Default=Trace
-    - Logging:LogLevel:Microsoft=Trace
-    - Logging:LogLevel:Microsoft.Hosting.Lifetime=Trace
-    - ApplicationInsights:LogLevel:Default=Trace
-    - Logging:ApplicationInsights:DependencyTrackingOptions:EnableSqlCommandTextInstrumentation=true
-    - Logging:ApplicationInsights:EnableDependencyTracking=true
-    - AzureMapConfiguration:ClientId=$AzureMapConfiguration_ClientId
-    - AzureMapConfiguration:ClientSecret=$AzureMapConfiguration_ClientSecret
-    - DefaultTargetLanguageId=83
-    - TerritoryAddressSummaryTimerIntervalSeconds=900 
-
-  db:
-    container_name: dbdevc
-    image: 'mcr.microsoft.com/mssql/server:2022-latest'
-    restart: always
-    volumes:
-    - mssql-db-vol:/var/opt/msql
-    #  - '/data/db/data:/var/opt/mssql/data'
-    #  - '/data/db/log:/var/opt/mssql/log'
-    environment:
-    - MSSQL_PID=Express
-    - ACCEPT_EULA=Y
-    - SA_PASSWORD=$SA_PASSWORD
-    - MSSQL_SA_PASSWORD=$SA_PASSWORD
-    #networks:
-    #  - main
-    ports:
-    - '127.0.0.1:1433:1433'
-    - '${LocalPrivateIp}:1433:1433'
 
   proxy:
     image: nginx
@@ -182,5 +37,5 @@ services:
     - /data/tt-app-prod-a:/usr/share/nginx/html/app
     #- /data/tt-app-prod-a:/var/www
 
-volumes:
-  mssql-db-vol:
+
+# TODO: Maybe add a network?

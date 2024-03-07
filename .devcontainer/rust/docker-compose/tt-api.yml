@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  tt-api:
+    # extends:
+    #   file: tt-api-common.yml
+    #   service: tt-api
+    container_name: tt-api
+    restart: unless-stopped
+    build:
+      context: ../../../../TerritoryTools.Mobile
+      dockerfile: TerritoryTools.Api/Dockerfile
+    logging:
+      options:
+        max-size: "500m"
+        max-file: "3"
+    volumes:
+    - "/data/tt-api-prod-a/data/alba:/data/alba/"
+    - "/data/tt-api-prod-a/ApplicationInsights:/var/tmp/Microsoft/ApplicationInsights"
+    #- "/data/tt-api-prod-a/tmp:/tmp"
+    ports:
+    - "127.0.0.1:8722:80"
+    - "${LocalPrivateIp}:8722:80"
+    # env_file:
+    #   - ../database-names/tt-api-prod
+    #   - ../tt-api-prod.env
+    #networks:
+    #- main
+    environment:
+    # Common
+    - GitCommit=${GitCommit}
+    - APPLICATIONINSIGHTS_CONNECTION_STRING=$tt_api_a_APPLICATIONINSIGHTS_CONNECTION_STRING
+    - SourceServerName=www.mcmxiv.com
+    - SourceServerBaseUrl=https://www.mcmxiv.com
+    - ConnectionStrings:MainDbContextConnection=Server=db,1433;Initial Catalog=$DB_NAME;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;
+    - Rollback=false
+    - AlbaHost=$AlbaHost
+    - AlbaAccountId=$AlbaAccountId_kirkland
+    - AlbaAccount=$AlbaAccount
+    - AlbaUser=$AlbaUser
+    - AlbaPassword=$AlbaPassword_territoryservice
+    - CorsPolicyAllowedOrigins=http://127.0.0.1,http://localhost,https://*.territorytools.org,https://*.lkwa.org
+    - Application:TimeZoneOffset=-8:00
+    - Application:TimeZone=America/Los_Angeles
+    # Specific
+    - ASPNETCORE_ENVIRONMENT=Production
+    - LinkHost=$LinkHost
+    - TimerIntervalSeconds=0
+    - StartSyncImmediatley=false
+    - Business:ShopTerritoryId=726887
+    - Business:OtherTerritoryId=726888
+    - Business:OfficeTerritoryId=726885
+    - Application:MobileBaseUrl=$Application_MobileBaseUrl
+    - SyncAssignmentsTimeSpan=01:00:00
+    - Logging:LogLevel:Default=Trace
+    - Logging:LogLevel:Microsoft=Trace
+    - Logging:LogLevel:Microsoft.Hosting.Lifetime=Trace
+    - ApplicationInsights:LogLevel:Default=Trace
+    - Logging:ApplicationInsights:DependencyTrackingOptions:EnableSqlCommandTextInstrumentation=true
+    - Logging:ApplicationInsights:EnableDependencyTracking=true
+    - AzureMapConfiguration:ClientId=$AzureMapConfiguration_ClientId
+    - AzureMapConfiguration:ClientSecret=$AzureMapConfiguration_ClientSecret
+    - DefaultTargetLanguageId=83
+    - TerritoryAddressSummaryTimerIntervalSeconds=900 
