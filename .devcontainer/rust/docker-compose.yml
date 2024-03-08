@@ -20,7 +20,8 @@ services:
     image: nginx
     ports:
     #- 81:80
-    - 127.0.0.1:80:80
+    #- 127.0.0.1:7000:80
+    - 7000:80
     volumes:
     - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
     - ./nginx-proxy-shared.conf:/etc/nginx/sites-enabled/shared:ro
