@@ -27,7 +27,7 @@ services:
     #- ./data/tt-app-prod-a:/var/www/html
     # - /data/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
 
-  static-files:
+  static-files: 
     image: nginx
     ports:
     #- 8007:80

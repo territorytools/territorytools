@@ -12,8 +12,8 @@ services:
     ports:
       - "127.0.0.1:5621:80"
       - "${LocalPrivateIp}:5621:80"
-    networks:
-      - main
+    # networks:
+    #   - main
     #env_file:
     #  - tt-mob-test-a.env
     environment:
@@ -22,10 +22,10 @@ services:
       - Apple_MapKit_Jwt=$Apple_MapKit_Jwt
       - APPLICATIONINSIGHTS_CONNECTION_STRING=$tt_prod_APPLICATIONINSIGHTS_CONNECTION_STRING
       - SourceServerName=www.mcmxiv.com
-      - TerritoryApiHostAndPort=tt-api-prod
-      - TerritoryToolsApiOptions:BaseUrl=http://tt-api-prod
+      - TerritoryApiHostAndPort=tt-api
+      - TerritoryToolsApiOptions:BaseUrl=http://tt-api
       - Features:FeatureList=not-home-button-v3,better-map-colors,row-striping,inaccessible-menu,combined-business-menu,borderless-rows,black-row-borders,letter-status,letter-not-home
       - Features:FeatureList_Other=better-map-colors
-networks:
-  main:
-    name: tt-network
+# networks:
+#   main:
+#     name: tt-network
