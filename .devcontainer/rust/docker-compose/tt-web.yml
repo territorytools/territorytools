@@ -24,10 +24,10 @@ services:
       #SA_PASSWORD: $SA_PASSWORD
       #- GitCommit=$
       ##- ASPNETCORE_URLS=http://*:80
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: $ASPNETCORE_ENVIRONMENT
       ##- ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.ApplicationInsights.HostingStartup
       # Connection Strings
-      APPLICATIONINSIGHTS_CONNECTION_STRING: $tt_prod_APPLICATIONINSIGHTS_CONNECTION_STRING
+      APPLICATIONINSIGHTS_CONNECTION_STRING: $tt_api_APPLICATIONINSIGHTS_CONNECTION_STRING
       Authentication:Google:ClientId: $GoogleClientId
       Authentication:Google:ClientSecret: $GoogleClientSecret
       Authentication:Microsoft:ClientId: $MicrosoftClientId

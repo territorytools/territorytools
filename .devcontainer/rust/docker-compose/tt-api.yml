@@ -29,7 +29,7 @@ services:
     environment:
     # Common
     - GitCommit=${GitCommit}
-    - APPLICATIONINSIGHTS_CONNECTION_STRING=$tt_api_a_APPLICATIONINSIGHTS_CONNECTION_STRING
+    - APPLICATIONINSIGHTS_CONNECTION_STRING=$tt_api_APPLICATIONINSIGHTS_CONNECTION_STRING
     - SourceServerName=www.mcmxiv.com
     - SourceServerBaseUrl=https://www.mcmxiv.com
     - ConnectionStrings:MainDbContextConnection=Server=db,1433;Initial Catalog=$DB_NAME;User ID=sa;Password=$SA_PASSWORD;Persist Security Info=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;
@@ -43,7 +43,7 @@ services:
     - Application:TimeZoneOffset=-8:00
     - Application:TimeZone=America/Los_Angeles
     # Specific
-    - ASPNETCORE_ENVIRONMENT=Production
+    - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
     - LinkHost=$LinkHost
     - TimerIntervalSeconds=0
     - StartSyncImmediatley=false

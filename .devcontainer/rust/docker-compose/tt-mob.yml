@@ -18,7 +18,7 @@ services:
     #  - tt-mob-test-a.env
     environment:
       - GitCommit=$GitCommit
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
       - Apple_MapKit_Jwt=$Apple_MapKit_Jwt
       - APPLICATIONINSIGHTS_CONNECTION_STRING=$tt_prod_APPLICATIONINSIGHTS_CONNECTION_STRING
       - SourceServerName=www.mcmxiv.com
