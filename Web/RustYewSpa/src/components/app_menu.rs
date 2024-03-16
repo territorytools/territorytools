@@ -91,8 +91,10 @@ impl Component for AppMenuPage {
                             } 
                             <a href="/app/address-search" class="btn btn-outline-primary">{"Search Addresses"}</a>
                             <a href="/" class="btn btn-outline-primary">{"Phone Territories Etc"}</a>
+                            if user.can_edit_territories {
+                                <a href="/app/territory-reports/sign-out" class="btn btn-outline-primary">{"Sign Out Report"}</a>
+                            }
                         }
-                        <p>{"Four"}</p>
                     </div>
                 </div>
             </>

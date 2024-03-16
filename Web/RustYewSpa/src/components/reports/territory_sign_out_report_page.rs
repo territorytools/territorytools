@@ -74,35 +74,42 @@ impl Component for TerritorySignOutReportPage {
                     </ul>
                 </MenuBarV2>
                 <div class="container">
-                    <span><strong>{"Territory Reports - Sign Out Summary"}</strong></span>
-                    <div class="row py-1" style="border-top: 1px solid gray;">
-                        <div class="col-2 col-md-1"><strong>{"Number"}</strong></div>
-                        <div class="col-4 col-md-2"><strong>{"Publisher"}</strong></div>
-                        <div class="col-2 col-md-2"><strong>{"Signed Out"}</strong></div>
-                        <div class="col-2 col-md-2"><strong>{"Completed"}</strong></div>
-                    </div>
+                <span><strong>{"Territory Reports - Sign Out Summary"}</strong></span>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col"><strong>{"Number"}</strong></th>
+                        <th scope="col"><strong>{"Publisher"}</strong></th>
+                        <th scope="col"><strong>{"Signed Out"}</strong></th>
+                        <th scope="col"><strong>{"Completed"}</strong></th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     {
-                        self.territories.iter().map(|territory| {   
+                        self.territories.iter().map(|territory| {  
+                            let territory_uri = format!("/app/territory-edit?id={}",territory.territory_id);
                             html! {
-                                 <a style="text-decoration:none;color:black;">
-                                     <div class="row py-1" style="border-top: 1px solid lightgray;">
-                                         <div class="col-2 col-md-1" style="font-weight:bold;">
+                                <tr>
+                                    <th scope="row">
+                                        <a href={territory_uri} style="text-decoration:none;color:blue;">
                                              {territory.number.clone()}
-                                         </div>
-                                         <div class="col-4 col-md-2">
+                                             </a>
+                                         </th>
+                                         <td >
                                              {territory.publisher.clone()}
-                                         </div>
-                                         <div class="col-2 col-md-2">
+                                         </td>
+                                         <td>
                                             {territory.signed_out.clone()}
-                                        </div>
-                                        <div class="col-2 col-md-2">
+                                        </td>
+                                        <td>
                                             {territory.completed.clone()}
-                                        </div>
-                                    </div>
-                                 </a>
+                                        </td>
+                                    </tr>
                            }
                          }).collect::<Html>()
                     }
+                    </tbody>
+                </table>
                 </div>
             </>
         }

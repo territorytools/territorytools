@@ -27,7 +27,7 @@ pub fn MenuBarV2(props: &MenuBarV2Props) -> Html {
 
     html! {
       //<header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm py-0 mb-0">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm py-0 mb-0 d-print-none">
           //div class="container">
             <div class="container"> //-fluid">
               
