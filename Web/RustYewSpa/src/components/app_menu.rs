@@ -92,6 +92,7 @@ impl Component for AppMenuPage {
                             <a href="/app/address-search" class="btn btn-outline-primary">{"Search Addresses"}</a>
                             <a href="/" class="btn btn-outline-primary">{"Phone Territories Etc"}</a>
                         }
+                        <p>{"Four"}</p>
                     </div>
                 </div>
             </>

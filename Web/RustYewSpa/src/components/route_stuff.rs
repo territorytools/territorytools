@@ -1,5 +1,6 @@
 use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::components::territory_stage_report_page::TerritoryReportsPage;
+use crate::components::reports::territory_sign_out_report_page::TerritorySignOutReportPage;
 use crate::components::user_search_page::UserSearchPage;
 use crate::components::user_editor::UserEditorPage;
 
@@ -87,6 +88,8 @@ pub enum Route {
     TerritoryView { id: String },
     #[at("/app/territory-reports/monthly-completion")]
     TerritoryReportsMonthlyCompletion,
+    #[at("/app/territory-reports/sign-out")]
+    TerritoryReportsSignOut,
     //#[at("/app/testmap")]
     // TestMap,
     #[at("/app/links")]
@@ -147,6 +150,7 @@ pub fn switch(route: Route) -> Html {
         Route::MyTerritoriesPage => html! { <MyTerritoriesPage /> },
         Route::TerritorySearchOld => html! { <TerritorySearchOld /> },
         Route::TerritoryReportsMonthlyCompletion => html! { <TerritoryReportsPage /> },
+        Route::TerritoryReportsSignOut => html! { <TerritorySignOutReportPage /> },
         Route::Secure => html! { // TODO: Delete this
             <Secure />
         },
