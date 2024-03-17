@@ -92,7 +92,7 @@ pub fn territory_editor_page() -> Html {
     set_document_title("Territory Editor");
 
     let navigator = use_navigator().unwrap();
-    let location = use_location().expect("Location with query parameters");
+    let _location = use_location().expect("Location with query parameters");
 
     let state: yew::UseStateHandle<TerritoryEditorModel> = use_state(TerritoryEditorModel::default);
     let assigner_state: yew::UseStateHandle<TerritoryAssignerModel> = use_state(TerritoryAssignerModel::default);
@@ -503,7 +503,7 @@ pub fn territory_editor_page() -> Html {
     });
 
     let cloned_state = state.clone();
-    let show_changes_onclick = Callback::from(move |event: MouseEvent| {
+    let _show_changes_onclick = Callback::from(move |event: MouseEvent| {
         event.prevent_default();
         let mut modification = cloned_state.deref().clone();
         modification.show_changes = !cloned_state.show_changes;

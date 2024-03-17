@@ -660,7 +660,7 @@ pub fn address_edit_page() -> Html {
     let save_confirmed_onclick = Callback::from(move |event: MouseEvent| {   //model: AddressEditModel| { //
         event.prevent_default();
         let cloned_state = cloned_state.clone();
-        let navigator = navigator.clone();
+        let _navigator = navigator.clone();
         let mtk = mtk.clone();
         spawn_local(async move {
             log!("Spawing request for address change...");

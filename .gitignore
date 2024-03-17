@@ -349,3 +349,4 @@ data/nginx.conf
 
 *.secrets.json
 test.png
+.mono/

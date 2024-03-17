@@ -22,7 +22,7 @@ pub fn language_selector_v2(props: &Props) -> Html {
         let mtk = props.mtk.clone();
         use_effect_with((), move |_| {
             let language_groups = language_groups.clone();
-            let props_clone = props_clone.clone();
+            let _props_clone = props_clone.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let uri = format!("/api/languages?mtk={}", mtk.clone());
 
