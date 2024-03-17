@@ -1,6 +1,6 @@
 use crate::components::address_shared_letter_page::AddressSharedLetter;
 use crate::components::territory_stage_report_page::TerritoryReportsPage;
-use crate::components::reports::territory_sign_out_report_page::TerritorySignOutReportPage;
+use crate::components::reports::sign_out_report_page::TerritorySignOutReportPage;
 use crate::components::user_search_page::UserSearchPage;
 use crate::components::user_editor::UserEditorPage;
 
